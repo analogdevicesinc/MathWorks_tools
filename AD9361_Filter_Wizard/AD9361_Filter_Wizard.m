@@ -920,8 +920,9 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.filters = rxFilters;
     handles.taps = rfirtaps;
 else
+    DAC_mult = get(handles.DAC_by2, 'Value');
     [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar] = internal_designtxfilters9361_fixed(...
-        data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
+        data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
     handles.taps = tfirtaps;
 end

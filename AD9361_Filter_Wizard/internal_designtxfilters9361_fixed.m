@@ -37,6 +37,7 @@
 % Fin        = Input sample data rate (in Hz)
 % FIR_interp = FIR interpolation factor
 % HB_interp  = half band filters interpolation factor
+% DAC_mult   = DAC to ADC ratio
 % PLL_mult   = PLL multiplication
 % Fpass      = passband frequency (in Hz)
 % Fstop      = stopband frequency (in Hz)
@@ -56,7 +57,7 @@
 % delay            = actual delay used in phase equalization
 % webinar          = initialzation for SimRF FMCOMMS2 Tx model
 %
-function [tfirtaps,txFilters,dBripple_actual,dBstop_actual,delay,webinar] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR, wnom)
+function [tfirtaps,txFilters,dBripple_actual,dBstop_actual,delay,webinar] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR, wnom)
 
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * PLL_mult;
@@ -197,7 +198,7 @@ switch FIR_interp
         Nmax = 128;
 end
 
-N = min(16*floor(Fdac/(2*Fin)),Nmax);
+N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
 
 % Design the PROG TX FIR
 G = 16384;
