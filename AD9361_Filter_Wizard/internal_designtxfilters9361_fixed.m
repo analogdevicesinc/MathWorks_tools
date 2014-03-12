@@ -37,7 +37,7 @@
 % Fin        = Input sample data rate (in Hz)
 % FIR_interp = FIR interpolation factor
 % HB_interp  = half band filters interpolation factor
-% DAC_mult   = DAC to ADC ratio
+% DAC_mult   = ADC to DAC ratio
 % PLL_mult   = PLL multiplication
 % Fpass      = passband frequency (in Hz)
 % Fstop      = stopband frequency (in Hz)
@@ -198,7 +198,7 @@ switch FIR_interp
         Nmax = 128;
 end
 
-N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
+N = min(16*floor((Fdac*DAC_mult)/(2*Fin)),Nmax);
 
 % Design the PROG TX FIR
 G = 16384;
@@ -310,6 +310,7 @@ rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac));
 dBripple_actual = mag2db(max(rg_pass))-mag2db(min(rg_pass));
 dBstop_actual = -mag2db(max(rg_stop));
 
+webinar.Fin = Fin;
 webinar.Hd1_tx = Hd1;
 webinar.Hd2_tx = Hd2;
 webinar.Hm1_tx = Hm1;

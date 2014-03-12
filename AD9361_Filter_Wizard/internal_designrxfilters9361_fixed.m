@@ -301,6 +301,7 @@ rg_stop = abs(freqz(rxFilters,omega(Gpass+2:end),Fadc));
 dBripple_actual = mag2db(max(rg_pass))-mag2db(min(rg_pass));
 dBstop_actual = -mag2db(max(rg_stop));
 
+webinar.Fout = Fout;
 webinar.Hd1_rx = Hd1;
 webinar.Hd2_rx = Hd2;
 webinar.Hm1_rx = Hm1;

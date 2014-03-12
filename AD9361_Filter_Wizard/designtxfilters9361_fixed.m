@@ -3,7 +3,7 @@
 % Fin        = Input sample data rate (in Hz)
 % FIR_interp = FIR interpolation factor
 % HB_interp  = half band filters interpolation factor
-% DAC_mult   = DAC to ADC ratio
+% DAC_mult   = ADC to DAC ratio
 % PLL_mult   = PLL multiplication
 % Fpass      = passband frequency (in Hz)
 % Fstop      = stopband frequency (in Hz)

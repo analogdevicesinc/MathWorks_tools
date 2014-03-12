@@ -20,4 +20,4 @@
 %
 function [rfirtaps,rxFilters] = designrxfilters9361_fixed(Fout,FIR_interp,HB_interp,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR,wnom)
 
-[rfirtaps,rxFilters,~,~,~] = designrxfilters9361_fixed(Fout,FIR_interp,HB_interp,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR,wnom);
+[rfirtaps,rxFilters,~,~,~] = internal_designrxfilters9361_fixed(Fout,FIR_interp,HB_interp,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR,wnom);
