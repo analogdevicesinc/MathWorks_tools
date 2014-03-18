@@ -9,7 +9,7 @@
 % Fstop      = stopband frequency (in Hz)
 % dBripple   = max ripple allowed in passband (in dB)
 % dBstop     = min attenuation in stopband (in dB)
-% dBstopmin  = min rejection that TFIR is required to have (in dB)
+% dBstop_FIR = min rejection that TFIR is required to have (in dB)
 % phEQ       = Phase Equalization on (not -1)/off (-1)
 % int_FIR    = Use AD9361 FIR on (1)/off (0)
 % wnom       = analog cutoff frequency (in Hz)
@@ -19,6 +19,6 @@
 % tfirtaps         = fixed point coefficients for AD9361
 % txFilters        = system object for visualization
 %
-function [tfirtaps,txFilters] = designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR, wnom)
+function [tfirtaps,txFilters] = designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
 
-[tfirtaps,txFilters,~,~,~] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstopmin,phEQ,int_FIR, wnom);
+[tfirtaps,txFilters,~,~,~] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom);
