@@ -861,6 +861,12 @@ set(handles.save2target, 'Visible', 'off');
 set(handles.save2workspace, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
+set(handles.results_Apass, 'Visible', 'off');
+set(handles.results_Astop, 'Visible', 'off');
+set(handles.results_taps, 'Visible', 'off');
+set(handles.results_group_delay, 'Visible', 'off');
+
+
 function create_filter(hObject, handles)
 
 if ~ license('test','signal_blocks') || ~ license('checkout','signal_blocks')
@@ -899,6 +905,9 @@ wnom = value2Hz(handles, handles.clock_units, str2double(get(handles.Fcutoff, 'S
 
 Use_9361 = get(handles.Use_FIR, 'Value');
 
+
+plot_buttons_off(handles);
+
 % make sure things are sane before drawing
 if fpass >= fstop || fpass <= 0 || fstop <= 0
     display_default_image(handles);
@@ -908,9 +917,6 @@ if fpass >= fstop || fpass <= 0 || fstop <= 0
     guidata(hObject, handles);
     return;
 end
-
-set(handles.results_Astop, 'String', '');
-set(handles.results_Apass, 'String', '');
 
 drawnow;
 
@@ -936,6 +942,7 @@ handles.simrfmodel = webinar;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
+
 units = cellstr(get(handles.Clock_units, 'String'));
 units = char(units(get(handles.Clock_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('Launch FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
@@ -948,6 +955,11 @@ set(handles.save2workspace, 'Visible', 'on');
 if ~ get(handles.Use_FIR, 'Value')
     set(handles.save2HDL, 'Visible', 'on');
 end
+
+set(handles.results_Apass, 'Visible', 'on');
+set(handles.results_Astop, 'Visible', 'on');
+set(handles.results_taps, 'Visible', 'on');
+set(handles.results_group_delay, 'Visible', 'on');
 
 set(handles.results_taps, 'String', [num2str(length(handles.taps)) ' ']);
 
