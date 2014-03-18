@@ -1893,7 +1893,7 @@ function DAC_by2_Callback(hObject, eventdata, handles)
 % hObject    handle to DAC_by2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+fix_converter2pll(hObject, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns DAC_by2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from DAC_by2
 
