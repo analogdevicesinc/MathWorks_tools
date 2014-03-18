@@ -605,7 +605,7 @@ function save2coeffienients_Callback(hObject, eventdata, handles)
 % hObject    handle to save2coeffienients (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-filename = uiputfile('*.txt', 'Save coefficients as');
+filename = uiputfile('*.ftr', 'Save coefficients as');
 if filename == 0
     return;
 end
