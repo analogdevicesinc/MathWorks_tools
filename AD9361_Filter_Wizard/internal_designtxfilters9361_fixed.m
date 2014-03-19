@@ -328,9 +328,10 @@ while (1)
         dBripple_actual = dBripple_actual_vecotr(i-1);
         dBstop_actual = dBstop_actual_vector(i-1);
         break
+    else
+        N = N-16;
+        i = i+1;
     end
-    N = N-16;
-    i = i+1;
 end
 
 Hmd = mfilt.firinterp(FIR_interp,h);

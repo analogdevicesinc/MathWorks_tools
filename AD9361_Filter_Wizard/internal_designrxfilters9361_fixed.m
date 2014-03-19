@@ -312,14 +312,15 @@ while (1)
         dBripple_actual = dBripple_actual_vecotr(1);
         dBstop_actual = dBstop_actual_vector(1);
         break
-    elseif dBripple_actual_vecotr(i)>dBripple || dBstop_actual_vector(i)<dBstop
+    elseif dBripple_actual_vecotr(i) > dBripple || dBstop_actual_vector(i) < dBstop
         h = tap_store(i-1,1:N+16);
         dBripple_actual = dBripple_actual_vecotr(i-1);
         dBstop_actual = dBstop_actual_vector(i-1);
         break
+    else
+        N = N-16;
+        i = i+1;
     end
-    N = N-16;
-    i = i+1;
 end
 
 Hmd = mfilt.firdecim(FIR_interp,h);
