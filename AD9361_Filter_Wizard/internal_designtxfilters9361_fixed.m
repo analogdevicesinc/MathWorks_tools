@@ -37,7 +37,7 @@
 % Fin        = Input sample data rate (in Hz)
 % FIR_interp = FIR interpolation factor
 % HB_interp  = half band filters interpolation factor
-% DAC_mult   = ADC to DAC ratio
+% DAC_mult   = DAC to ADC ratio
 % PLL_mult   = PLL multiplication
 % Fpass      = passband frequency (in Hz)
 % Fstop      = stopband frequency (in Hz)
@@ -188,18 +188,6 @@ else
     delay = phEQ*(1e-9);
 end
 
-% Determine the number of taps for TFIR
-switch FIR_interp
-    case 1
-        Nmax = 64;
-    case 2
-        Nmax = 128;
-    case 4
-        Nmax = 128;
-end
-
-N = min(16*floor((Fdac*DAC_mult)/(2*Fin)),Nmax);
-
 % Design the PROG TX FIR
 G = 16384;
 clkTFIR = Fin*FIR_interp;
@@ -248,49 +236,104 @@ A1 = cr(1:Gpass+1);
 A2 = cr(Gpass+2:end);
 W1 = weight(1:Gpass+1);
 W2 = weight(Gpass+2:end);
-if int_FIR
-    d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
-else
-    d = fdesign.arbmag('B,F,A,R');
-    d.NBands = 2;
-    d.B1Frequencies = F1;
-    d.B1Amplitudes = A1;
-    d.B1Ripple = db2mag(-dBstop);
-    d.B2Frequencies = F2;
-    d.B2Amplitudes = A2;
-    d.B2Ripple = db2mag(-dBstop);
-end
-Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
-ccoef = Hd.Numerator;
-M = length(ccoef);
 
-if phEQ ~= -1
-    sg = 0.5-grid(end:-1:1);
-    sr = imag(resp(end:-1:1));
-    sw = weight(end:-1:1);
-    F3 = sg(1:G/2-Gstop+1)*2;
-    F4 = sg(G/2-Gstop+2:end)*2;
-    A3 = sr(1:G/2-Gstop+1);
-    A4 = sr(G/2-Gstop+2:end);
-    W3 = sw(1:G/2-Gstop+1);
-    W4 = sw(G/2-Gstop+2:end);
-    if int_FIR
-        d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
-    else
-        d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
-    end
-    Hd2 = design(d2,'equiripple','B1Weights',W3,'B2Weights',W4,'SystemObject',false);
-    scoef = Hd2.Numerator;
-    for k = 1:length(scoef)
-        scoef(k) = -scoef(k)*(-1)^(k-1);
-    end
-else
-    scoef = 0;
+% Determine the number of taps for TFIR
+switch FIR_interp
+    case 1
+        Nmax = 64;
+    case 2
+        Nmax = 128;
+    case 4
+        Nmax = 128;
 end
-h = ccoef+scoef;
+
+N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
+tap_store = zeros(N/16,N);
+dBripple_actual_vecotr = zeros(N/16,1);
+dBstop_actual_vector = zeros(N/16,1);
+i = 1;
+
+while (1)
+    if int_FIR
+        d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
+    else
+        d = fdesign.arbmag('B,F,A,R');
+        d.NBands = 2;
+        d.B1Frequencies = F1;
+        d.B1Amplitudes = A1;
+        d.B1Ripple = db2mag(-dBstop);
+        d.B2Frequencies = F2;
+        d.B2Amplitudes = A2;
+        d.B2Ripple = db2mag(-dBstop);
+    end
+    Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
+    ccoef = Hd.Numerator;
+    M = length(ccoef);
+    
+    if phEQ ~= -1
+        sg = 0.5-grid(end:-1:1);
+        sr = imag(resp(end:-1:1));
+        sw = weight(end:-1:1);
+        F3 = sg(1:G/2-Gstop+1)*2;
+        F4 = sg(G/2-Gstop+2:end)*2;
+        A3 = sr(1:G/2-Gstop+1);
+        A4 = sr(G/2-Gstop+2:end);
+        W3 = sw(1:G/2-Gstop+1);
+        W4 = sw(G/2-Gstop+2:end);
+        if int_FIR
+            d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
+        else
+            d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
+        end
+        Hd2 = design(d2,'equiripple','B1Weights',W3,'B2Weights',W4,'SystemObject',false);
+        scoef = Hd2.Numerator;
+        for k = 1:length(scoef)
+            scoef(k) = -scoef(k)*(-1)^(k-1);
+        end
+    else
+        scoef = 0;
+    end
+    tap_store(i,1:M)=ccoef+scoef;
+    
+    Hmd = mfilt.firinterp(FIR_interp,tap_store(i,1:M));
+    if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
+        set(Hmd,'arithmetic','fixed');
+        Hmd.InputWordLength = 16;
+        Hmd.InputFracLength = 14;
+        Hmd.FilterInternals = 'SpecifyPrecision';
+        Hmd.OutputWordLength = 12;
+        Hmd.OutputFracLength = 10;
+        Hmd.CoeffWordLength = 16;
+    end
+    txFilters=cascade(Hmd,Filter1);
+    
+    % quantitative values about actual passband and stopband
+    rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),Fdac));
+    rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac));
+    dBripple_actual_vecotr(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
+    dBstop_actual_vector(i) = -mag2db(max(rg_stop));
+    
+    if int_FIR == 0
+        h = tap_store(1,1:M);
+        dBripple_actual = dBripple_actual_vecotr(1);
+        dBstop_actual = dBstop_actual_vector(1);
+        break
+    elseif dBripple_actual_vecotr(1) > dBripple || dBstop_actual_vector(1) < dBstop
+        h = tap_store(1,1:N);
+        dBripple_actual = dBripple_actual_vecotr(1);
+        dBstop_actual = dBstop_actual_vector(1);
+        break
+    elseif dBripple_actual_vecotr(i) > dBripple || dBstop_actual_vector(i) < dBstop
+        h = tap_store(i-1,1:N+16);
+        dBripple_actual = dBripple_actual_vecotr(i-1);
+        dBstop_actual = dBstop_actual_vector(i-1);
+        break
+    end
+    N = N-16;
+    i = i+1;
+end
 
 Hmd = mfilt.firinterp(FIR_interp,h);
-
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
     set(Hmd,'arithmetic','fixed');
     Hmd.InputWordLength = 16;
@@ -300,15 +343,8 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     Hmd.OutputFracLength = 10;
     Hmd.CoeffWordLength = 16;
 end
-
-tfirtaps = Hmd.Numerator.*(2^16);
 txFilters=cascade(Hmd,Filter1);
-
-% show the quantitative values about actual passband and stopband
-rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),Fdac));
-rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac));
-dBripple_actual = mag2db(max(rg_pass))-mag2db(min(rg_pass));
-dBstop_actual = -mag2db(max(rg_stop));
+tfirtaps = Hmd.Numerator.*(2^16);
 
 webinar.Fin = Fin;
 webinar.Hd1_tx = Hd1;

@@ -235,10 +235,11 @@ A2 = cr(Gpass+2:end);
 W1 = weight(1:Gpass+1);
 W2 = weight(Gpass+2:end);
 
+% Determine the number of taps for RFIR
 N = min(16*floor(Fadc/(2*Fout)),128);
-a = zeros(8,128);
-dBripple_actual_vecotr = zeros(8,1);
-dBstop_actual_vector = zeros(8,1);
+tap_store = zeros(N/16,N);
+dBripple_actual_vecotr = zeros(N/16,1);
+dBstop_actual_vector = zeros(N/16,1);
 i = 1;
 
 while (1)
@@ -281,9 +282,9 @@ while (1)
     else
         scoef = 0;
     end
-    a(i,1:M)=ccoef+scoef;
-    Hmd = mfilt.firdecim(FIR_interp,a(i,1:M));
+    tap_store(i,1:M)=ccoef+scoef;
     
+    Hmd = mfilt.firdecim(FIR_interp,tap_store(i,1:M));
     if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
         set(Hmd,'arithmetic','fixed');
         Hmd.InputWordLength = 16;
@@ -293,32 +294,26 @@ while (1)
         Hmd.OutputFracLength = 10;
         Hmd.CoeffWordLength = 16;
     end
-    
     rxFilters=cascade(Filter1,Hmd);
     
-    % add the quantitative values about actual passband and stopband
+    % quantitative values about actual passband and stopband
     rg_pass = abs(freqz(rxFilters,omega(1:Gpass+1),Fadc));
     rg_stop = abs(freqz(rxFilters,omega(Gpass+2:end),Fadc));
     dBripple_actual_vecotr(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
     dBstop_actual_vector(i) = -mag2db(max(rg_stop));
     
     if int_FIR == 0
-        dBripple_actual = dBripple_actual_vecotr(i);
-        dBstop_actual = dBstop_actual_vector(i);
+        h = tap_store(1,1:M);
+        dBripple_actual = dBripple_actual_vecotr(1);
+        dBstop_actual = dBstop_actual_vector(1);
+        break
+    elseif dBripple_actual_vecotr(1) > dBripple || dBstop_actual_vector(1) < dBstop
+        h = tap_store(1,1:N);
+        dBripple_actual = dBripple_actual_vecotr(1);
+        dBstop_actual = dBstop_actual_vector(1);
         break
     elseif dBripple_actual_vecotr(i)>dBripple || dBstop_actual_vector(i)<dBstop
-        h = a(i-1,1:M+16);
-        Hmd = mfilt.firdecim(FIR_interp,h);
-        if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
-            set(Hmd,'arithmetic','fixed');
-            Hmd.InputWordLength = 16;
-            Hmd.InputFracLength = 14;
-            Hmd.FilterInternals = 'SpecifyPrecision';
-            Hmd.OutputWordLength = 12;
-            Hmd.OutputFracLength = 10;
-            Hmd.CoeffWordLength = 16;
-        end
-        rxFilters=cascade(Filter1,Hmd);
+        h = tap_store(i-1,1:N+16);
         dBripple_actual = dBripple_actual_vecotr(i-1);
         dBstop_actual = dBstop_actual_vector(i-1);
         break
@@ -327,6 +322,17 @@ while (1)
     i = i+1;
 end
 
+Hmd = mfilt.firdecim(FIR_interp,h);
+if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
+    set(Hmd,'arithmetic','fixed');
+    Hmd.InputWordLength = 16;
+    Hmd.InputFracLength = 14;
+    Hmd.FilterInternals = 'SpecifyPrecision';
+    Hmd.OutputWordLength = 12;
+    Hmd.OutputFracLength = 10;
+    Hmd.CoeffWordLength = 16;
+end
+rxFilters=cascade(Filter1,Hmd);
 rfirtaps = Hmd.Numerator.*(2^16);
 
 webinar.Fout = Fout;
