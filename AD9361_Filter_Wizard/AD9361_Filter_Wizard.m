@@ -1013,6 +1013,8 @@ guidata(hObject, handles);
 
 
 function reset_input(hObject, handles)
+handles.active_plot = 0;
+display_default_image(handles);
 
 options = load('ad9361_settings.mat');
 
@@ -1157,9 +1159,6 @@ units = cellstr(get(handles.Clock_units, 'String'));
 units = char(units(get(handles.Clock_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('Launch FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
-handles.active_plot = 0;
-display_default_image(handles);
-
 % don't have data - so don't display the FVTool button
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
@@ -1194,16 +1193,79 @@ guidata(hObject, handles);
 
 
 function display_default_image(handles)
+axes(handles.magnitude_plot);
 
-pict = imread('filter.png');
-image(pict);
-axis image;
-box off;
-set(handles.magnitude_plot, 'XTickLabel', []);
-set(handles.magnitude_plot, 'YTickLabel', []);
-set(handles.magnitude_plot, 'XTick', []);
-set(handles.magnitude_plot, 'YTick', []);
-set(handles.magnitude_plot, 'Box', 'off');
+max_y = 20;
+ripple = 10;
+Fpass = 90;
+Fstop = 110;
+label_colour = 'Red';
+
+plot([Fstop Fstop], [ripple -80], 'Color', 'Black');
+
+box on;
+axis on;
+
+%xlabel('Frequency');
+set(gca,'XTickLabel',{});
+xlim([0 200]);
+text(-15, 0, '0dB');
+
+ylabel('Mag (dB)');
+set(gca,'YTickLabel',{});
+ylim([-100 max_y]);
+
+% Pass band
+line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
+line([Fpass Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
+line([0 Fstop], [ripple ripple], 'Color', 'Black');
+line([Fstop Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
+line([0 Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
+
+[x1, y1] = xy2norm(130, ripple);
+[x2, y2] = xy2norm(130, max_y);
+a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+set(a, 'Color', label_colour);
+[x1, y1] = xy2norm(130, -ripple);
+[x2, y2] = xy2norm(130, -max_y);
+a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+set(a, 'Color', label_colour);
+text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
+
+% Stop band
+line([Fstop 200], [-80 -80], 'Color', 'Black');
+line([Fpass Fpass], [-ripple -100], 'Color', 'Black');
+line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+
+line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
+text(Fpass - 5, -105, 'F_{pass}');
+text(Fstop - 5, -105, 'F_{stop}');
+text(195, -105, 'Fs_{/2}');
+
+% Arrows
+w = 185;
+[x1, y1] = xy2norm(w, 0);
+[x2, y2] = xy2norm(w, -35);
+a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+set(a, 'Color', label_colour);
+[x1, y1] = xy2norm(w, -80);
+[x2, y2] = xy2norm(w, -45);
+a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+set(a, 'Color', label_colour);
+text(150, -40, 'A_{stop}');
+
+function [x1, y1] = xy2norm(x, y)
+y_limits = get(gca, 'ylim');
+x_limits = get(gca, 'xlim');
+% Position = [left bottom width height]
+axesoffsets = get(get(gcf, 'CurrentAxes'), 'Position');
+Figure_Size = get(gcf, 'Position');
+y1 = axesoffsets(2) / Figure_Size(4);
+y2 = axesoffsets(4) / Figure_Size(4);
+y3 = abs((y - y_limits(1)) / abs(y_limits(2) - y_limits(1)))
+y1 = y1 + y2 * y3;
+x1 = axesoffsets(1) / Figure_Size(4) + ...
+    axesoffsets(2)/Figure_Size(4) * abs((x - x_limits(1)) / abs(x_limits(2) - x_limits(1)));
 
 
 % --------------------------------------------------------------------
