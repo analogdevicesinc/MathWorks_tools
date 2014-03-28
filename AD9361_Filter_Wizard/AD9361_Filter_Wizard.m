@@ -1262,7 +1262,7 @@ axesoffsets = get(get(gcf, 'CurrentAxes'), 'Position');
 Figure_Size = get(gcf, 'Position');
 y1 = axesoffsets(2) / Figure_Size(4);
 y2 = axesoffsets(4) / Figure_Size(4);
-y3 = abs((y - y_limits(1)) / abs(y_limits(2) - y_limits(1)))
+y3 = abs((y - y_limits(1)) / abs(y_limits(2) - y_limits(1)));
 y1 = y1 + y2 * y3;
 x1 = axesoffsets(1) / Figure_Size(4) + ...
     axesoffsets(2)/Figure_Size(4) * abs((x - x_limits(1)) / abs(x_limits(2) - x_limits(1)));
@@ -1359,6 +1359,14 @@ x_pos = 1;
 y_pos = 2;
 width = 3;
 height = 4;
+
+if ~exist('handles', 'var')
+    return;
+end
+
+if ~isfield(handles, 'Original_Size')
+    return;
+end
 
 if (Figure_Size(width) < handles.Original_Size(width)) || (Figure_Size(height) < handles.Original_Size(height))
     set(hObject, 'Position', handles.Original_Size);
