@@ -871,8 +871,8 @@ function create_filter(hObject, handles)
 
 v = version('-release');
 v = str2num(v(1:4));
-if (v < 2013)
-    choice = questdlg('Sorry. The AD9361/AD9364 Filter Design Wizard requires at least the 2013 version of MATLAB. You do not seem to have it installed.', ...
+if (v < 2012)
+    choice = questdlg('Sorry. The AD9361/AD9364 Filter Design Wizard requires at least the R2012 version of MATLAB. You do not seem to have it installed.', ...
         'Error Message', ...
         'More Information','OK','OK');
     switch choice
