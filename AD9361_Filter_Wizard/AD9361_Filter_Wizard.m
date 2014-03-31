@@ -869,6 +869,20 @@ set(handles.results_group_delay, 'Visible', 'off');
 
 function create_filter(hObject, handles)
 
+v = version('-release');
+v = str2num(v(1:4));
+if (v < 2013)
+    choice = questdlg('Sorry. The AD9361/AD9364 Filter Design Wizard requires at least the 2013 version of MATLAB. You do not seem to have it installed.', ...
+        'Error Message', ...
+        'More Information','OK','OK');
+    switch choice
+        case 'More Information'
+            web('http://www.mathworks.com/products/matlab/');
+        case 'OK'
+    end
+    return
+end
+
 if ~ license('test','signal_blocks') || ~ license('checkout','signal_blocks')
     choice = questdlg('Sorry. The AD9361/AD9364 Filter Design Wizard requires the DSP System Toolbox. You do not seem to have it installed.', ...
         'Error Message', ...
