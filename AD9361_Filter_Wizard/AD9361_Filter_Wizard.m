@@ -87,6 +87,7 @@ function AD9361_Filter_Wizard_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for AD9361_Filter_Wizard
 handles.output = hObject;
+
 handles.Original_Size = get(handles.AD9361_Filter_app, 'Position');
 
 handles.MAX_BBPLL_FREQ = 1430000000;                         % 1430.0 MHz
@@ -111,6 +112,7 @@ set(handles.ADI_logo, 'YTickLabel', []);
 set(handles.ADI_logo, 'XTick', []);
 set(handles.ADI_logo, 'YTick', []);
 set(handles.ADI_logo, 'Box', 'off');
+set(handles.ADI_logo, 'HandleVisibility', 'off');
 
 axes(handles.magnitude_plot);
 
@@ -924,7 +926,7 @@ plot_buttons_off(handles);
 
 % make sure things are sane before drawing
 if fpass >= fstop || fpass <= 0 || fstop <= 0
-    display_default_image(handles);
+    display_default_image(hObject, handles);
     plot_buttons_off(handles);
     handles.active_plot = 0;
     set(handles.design_filter, 'Visible', 'on');
@@ -983,6 +985,7 @@ G = 8192;
 % if this is a new plot, make a new plot, if we are just tweaking
 % things, then redraw in the same zoom window.
 if handles.active_plot == 0
+    clf(handles.magnitude_plot);
     handles.active_plot = plot(linspace(0,data_rate/2,G),mag2db(abs(freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
     xlim([0 data_rate/2]);
     ylim([-100 10]);
@@ -1028,7 +1031,7 @@ guidata(hObject, handles);
 
 function reset_input(hObject, handles)
 handles.active_plot = 0;
-display_default_image(handles);
+display_default_image(hObject, handles);
 
 options = load('ad9361_settings.mat');
 
@@ -1206,7 +1209,8 @@ handles.active_plot = 0;
 guidata(hObject, handles);
 
 
-function display_default_image(handles)
+function display_default_image(hObject, handles)
+set(handles.FVTool_deeper, 'Visible', 'off');
 axes(handles.magnitude_plot);
 
 max_y = 20;
@@ -1223,7 +1227,7 @@ axis on;
 %xlabel('Frequency');
 set(gca,'XTickLabel',{});
 xlim([0 200]);
-text(-15, 0, '0dB');
+text(-10, 0, '0dB');
 
 ylabel('Mag (dB)');
 set(gca,'YTickLabel',{});
@@ -1267,6 +1271,8 @@ set(a, 'Color', label_colour);
 a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
 set(a, 'Color', label_colour);
 text(150, -40, 'A_{stop}');
+
+guidata(hObject, handles);
 
 function [x1, y1] = xy2norm(x, y)
 y_limits = get(gca, 'ylim');
@@ -1337,7 +1343,7 @@ if filename == 0
 end
 %t = fgets(fp);
 
-reset_input(handles);
+reset_input(hObject, handles);
 
 fp = fopen(filename, 'rt');
 
