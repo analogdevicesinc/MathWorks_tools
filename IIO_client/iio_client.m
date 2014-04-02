@@ -132,7 +132,7 @@ attribute = cellstr(get(handles.iio_attributes, 'String'));
 attribute = char(attribute(get(handles.iio_attributes, 'Value')));
 
 %TODO : This doesn't seem to work
-[ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read %s %s\n', device, attribute);
+[ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 2048, 'read %s\n', [device ' ' attribute]);
 
 if ret ~= -1
     set(handles.iio_attribute_value, 'String', rbuf);
@@ -145,7 +145,7 @@ device = char(device(get(handles.iio_devices, 'Value')));
 function populate_attributes(handles)
 device = get_device(handles);
 
-[ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 200, 'show %s .\n', device);
+[ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 512, 'show %s .\n', device);
 tmp = strsplit(rbuf);
 set(handles.iio_attributes, 'String', tmp);
 
@@ -234,7 +234,11 @@ num_samples = str2num(get(handles.num_samples, 'String'));
 device = get_device(handles);
 
 %TODO : This doesn't seem to work
-[ret, rbuf] = iio_cmd_sample(handles.iio_devices, device, num_samples, 2);
+[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples, 2);
+if(ret > 0)
+    data = uint16(rbuf(1:2:end))*2^8 + uint16(rbuf(2:2:end));
+    plot(data); grid;
+end
 
 % --- Executes on selection change in iio_attributes.
 function iio_attributes_Callback(hObject, eventdata, handles)

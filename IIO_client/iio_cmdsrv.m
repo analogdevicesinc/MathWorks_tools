@@ -197,6 +197,7 @@ classdef iio_cmdsrv < handle
             obj.hudpr = dsp.UDPReceiver;
             obj.hudpr.LocalIPPort = port;
             obj.hudpr.BlockingTime = 1;
+            obj.hudpr.MaximumMessageLength = 4096;
             step(obj.hudpr);
             
             obj.hudps = dsp.UDPSender;
