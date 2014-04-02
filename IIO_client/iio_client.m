@@ -302,6 +302,16 @@ function iio2workspace_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+num_samples = str2num(get(handles.num_samples, 'String'));
+device = get_device(handles);
+
+%TODO : This doesn't seem to work
+[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples, 2);
+if(ret > 0)
+    data = uint16(rbuf(1:2:end))*2^8 + uint16(rbuf(2:2:end));
+    assignin('base', 'IIO_Scope_Data', data);
+end
+
 
 % --- Executes on selection change in iio_devices.
 function iio_devices_Callback(hObject, eventdata, handles)
