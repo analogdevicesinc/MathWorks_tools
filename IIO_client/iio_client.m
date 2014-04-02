@@ -236,8 +236,11 @@ device = get_device(handles);
 %TODO : This doesn't seem to work
 [ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples, 2);
 if(ret > 0)
-    data = uint16(rbuf(1:2:end))*2^8 + uint16(rbuf(2:2:end));
-    plot(data); grid;
+    data = uint16(rbuf(2:2:end))*2^8 + uint16(rbuf(1:2:end));
+    data = int32(data);
+    data(data>2^15)= data(data>2^15)-2^16;    
+    t = 1:length(data)/2;
+    plot(t, data(1:2:end), 'b', t, data(2:2:end), 'r'); grid;
 end
 
 % --- Executes on selection change in iio_attributes.
