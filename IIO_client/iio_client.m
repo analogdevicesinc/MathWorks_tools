@@ -230,7 +230,7 @@ function iio_capture_Callback(hObject, eventdata, handles)
 % hObject    handle to iio_capture (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-num_samples = str2num(get(handles.num_samples, 'String'));
+num_samples = str2num(get(handles.num_samples, 'String'))*2;
 device = get_device(handles);
 
 %TODO : This doesn't seem to work
@@ -241,6 +241,8 @@ if(ret > 0)
     data(data>2^15)= data(data>2^15)-2^16;    
     t = 1:length(data)/2;
     plot(t, data(1:2:end), 'b', t, data(2:2:end), 'r'); grid;
+    xlim([0 num_samples/2]);
+    ylim([min(data)*1.1 max(data)*1.1]);
 end
 
 % --- Executes on selection change in iio_attributes.
@@ -302,16 +304,18 @@ function iio2workspace_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-num_samples = str2num(get(handles.num_samples, 'String'));
+num_samples = str2num(get(handles.num_samples, 'String'))*2;
 device = get_device(handles);
 
 %TODO : This doesn't seem to work
 [ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples, 2);
 if(ret > 0)
-    data = uint16(rbuf(1:2:end))*2^8 + uint16(rbuf(2:2:end));
-    assignin('base', 'IIO_Scope_Data', data);
+    data = uint16(rbuf(2:2:end))*2^8 + uint16(rbuf(1:2:end));
+    data = int32(data);
+    data(data>2^15)= data(data>2^15)-2^16;    
+    assignin('base', 'IIO_Scope_I', data(1:2:end));
+    assignin('base', 'IIO_Scope_Q', data(2:2:end));
 end
-
 
 % --- Executes on selection change in iio_devices.
 function iio_devices_Callback(hObject, eventdata, handles)
