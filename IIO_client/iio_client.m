@@ -56,7 +56,7 @@ function varargout = iio_client(varargin)
 
 % Edit the above text to modify the response to help iio_client
 
-% Last Modified by GUIDE v2.5 01-Apr-2014 15:06:50
+% Last Modified by GUIDE v2.5 03-Apr-2014 13:14:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -90,6 +90,7 @@ function iio_client_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 hide_buttons(handles);
 handles.iio_cmdsrv = {};
+handles.timer = {};
 
 try
 tmp = evalin('base', 'IIO_ip_address');
@@ -121,8 +122,12 @@ set(handles.iio_capture, 'Visible', 'off');
 set(handles.iio2workspace, 'Visible', 'off');
 set(handles.iio_attribute_value, 'Visible', 'off');
 set(handles.iio_write_attribute, 'Visible', 'off');
-set(handles.results, 'Visible', 'off');
 set(handles.num_samples, 'Visible', 'off');
+set(handles.text_devices, 'Visible', 'off');
+set(handles.text_dev_attr, 'Visible', 'off');
+set(handles.text_data_capture, 'Visible', 'off');
+set(handles.text_sample_no, 'Visible', 'off');
+set(handles.pushbutton6, 'Visible', 'off');
 
 function populate_attribute_value(handles)
 device = cellstr(get(handles.iio_devices, 'String'));
@@ -148,8 +153,13 @@ device = get_device(handles);
 [ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 512, 'show %s .\n', device);
 tmp = strsplit(rbuf);
 set(handles.iio_attributes, 'String', tmp);
-
-
+% if the selected device is AD9361 enable all the data channels
+if(strcmp(device, 'cf-ad9361-lpc') == 1)
+    ret = iio_cmd_send(handles.iio_cmdsrv, 'write %s\n', [device ' scan_elements/in_voltage0_en 1'])
+    ret = iio_cmd_send(handles.iio_cmdsrv, 'write %s\n', [device ' scan_elements/in_voltage1_en 1'])
+    ret = iio_cmd_send(handles.iio_cmdsrv, 'write %s\n', [device ' scan_elements/in_voltage2_en 1'])
+    ret = iio_cmd_send(handles.iio_cmdsrv, 'write %s\n', [device ' scan_elements/in_voltage3_en 1'])
+end
 
 % --- Executes on button press in iio_connect.
 function iio_connect_Callback(hObject, eventdata, handles)
@@ -195,6 +205,11 @@ if(ret ~= -1)
     set(handles.iio_attribute_value, 'Visible', 'on');
     set(handles.iio_write_attribute, 'Visible', 'on');
     set(handles.num_samples, 'Visible', 'on');
+    set(handles.text_devices, 'Visible', 'on');
+    set(handles.text_dev_attr, 'Visible', 'on');
+    set(handles.text_data_capture, 'Visible', 'on');
+    set(handles.text_sample_no, 'Visible', 'on');
+    set(handles.pushbutton6, 'Visible', 'on');
 else
     msgbox('Could not connect to target!', 'Error','error');
     hide_buttons(handles);
@@ -224,6 +239,37 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+function my_capture_Callback(obj, event, string_arg)
+handles = obj.UserData;
+num_samples = str2num(get(handles.num_samples, 'String'))*2;
+device = get_device(handles);
+[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples*2, 2);
+if(ret > 0)
+    data = uint16(rbuf(2:2:end))*2^8 + uint16(rbuf(1:2:end));
+    data = int32(data);
+    data(data>2^15)= data(data>2^15)-2^16;    
+    
+    %plot the time domain data
+    t = 1:length(data)/4;
+    plot(handles.ch1_data, t, data(1:4:end), 'b', t, data(2:4:end), 'r'); grid(handles.ch1_data);    
+    xlim(handles.ch1_data, [0 num_samples/2]);
+    ylim(handles.ch1_data, [min(data)*1.1 max(data)*1.1]);
+    plot(handles.ch2_data, t, data(3:4:end), 'b', t, data(4:4:end), 'r'); grid(handles.ch2_data);
+    xlim(handles.ch2_data, [0 num_samples/2]);
+    ylim(handles.ch2_data, [min(data)*1.1 max(data)*1.1]);
+    
+    %plot the FFT
+    sample_rate = 30720000;
+    f = -sample_rate/2:sample_rate/(num_samples/2):sample_rate/2;
+    fdata1 = 20*log10(abs(fftshift(fft(complex(double(data(1:4:end)), double(data(2:4:end))), length(data(1:4:end)))))/length(data(1:4:end)));
+    plot(handles.ch1_fft, f(1:end-1), fdata1); grid(handles.ch1_fft);
+    xlim(handles.ch1_fft, [f(1) f(end)]);
+    ylim(handles.ch1_fft, [min(fdata1)*1.1 max(fdata1)*1.1]);    
+    fdata2 = 20*log10(abs(fftshift(fft(complex(double(data(3:4:end)), double(data(4:4:end))), length(data(3:4:end)))))/length(data(3:4:end)));
+    plot(handles.ch2_fft, f(1:end-1), fdata2); grid(handles.ch2_fft);
+    xlim(handles.ch2_fft, [f(1) f(end)]);
+    ylim(handles.ch2_fft, [min(fdata2)*1.1 max(fdata2)*1.1]);
+end
 
 % --- Executes on button press in iio_capture.
 function iio_capture_Callback(hObject, eventdata, handles)
@@ -233,16 +279,32 @@ function iio_capture_Callback(hObject, eventdata, handles)
 num_samples = str2num(get(handles.num_samples, 'String'))*2;
 device = get_device(handles);
 
-%TODO : This doesn't seem to work
-[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples, 2);
+[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples*2, 2);
 if(ret > 0)
     data = uint16(rbuf(2:2:end))*2^8 + uint16(rbuf(1:2:end));
     data = int32(data);
     data(data>2^15)= data(data>2^15)-2^16;    
-    t = 1:length(data)/2;
-    plot(t, data(1:2:end), 'b', t, data(2:2:end), 'r'); grid;
-    xlim([0 num_samples/2]);
-    ylim([min(data)*1.1 max(data)*1.1]);
+    
+    %plot the time domain data
+    t = 1:length(data)/4;
+    plot(handles.ch1_data, t, data(1:4:end), 'b', t, data(2:4:end), 'r'); grid(handles.ch1_data);    
+    xlim(handles.ch1_data, [0 num_samples/2]);
+    ylim(handles.ch1_data, [min(data)*1.1 max(data)*1.1]);
+    plot(handles.ch2_data, t, data(3:4:end), 'b', t, data(4:4:end), 'r'); grid(handles.ch2_data);
+    xlim(handles.ch2_data, [0 num_samples/2]);
+    ylim(handles.ch2_data, [min(data)*1.1 max(data)*1.1]);
+    
+    %plot the FFT
+    sample_rate = 30720000;
+    f = -sample_rate/2:sample_rate/(num_samples/2):sample_rate/2;
+    fdata1 = 20*log10(abs(fftshift(fft(complex(double(data(1:4:end)), double(data(2:4:end))), length(data(1:4:end)))))/length(data(1:4:end)));
+    plot(handles.ch1_fft, f(1:end-1), fdata1); grid(handles.ch1_fft);
+    xlim(handles.ch1_fft, [f(1) f(end)]);
+    ylim(handles.ch1_fft, [min(fdata1)*1.1 max(fdata1)*1.1]);    
+    fdata2 = 20*log10(abs(fftshift(fft(complex(double(data(3:4:end)), double(data(4:4:end))), length(data(3:4:end)))))/length(data(3:4:end)));
+    plot(handles.ch2_fft, f(1:end-1), fdata2); grid(handles.ch2_fft);
+    xlim(handles.ch2_fft, [f(1) f(end)]);
+    ylim(handles.ch2_fft, [min(fdata2)*1.1 max(fdata2)*1.1]);
 end
 
 % --- Executes on selection change in iio_attributes.
@@ -361,3 +423,22 @@ function num_samples_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if(strcmp(get(handles.pushbutton6, 'String'), 'Start Data Streaming') == 1)
+    handles.timer = timer('StartDelay', 1, 'Period', 1, 'ExecutionMode', 'fixedRate');
+    handles.timer.TimerFcn = {@my_capture_Callback, ''};
+    handles.timer.UserData = handles;
+    start(handles.timer);
+    set(handles.pushbutton6, 'String', 'Stop Data Streaming');
+else
+    stop(handles.timer);
+    delete(handles.timer);
+    set(handles.pushbutton6, 'String', 'Start Data Streaming');
+end
+guidata(hObject, handles);
