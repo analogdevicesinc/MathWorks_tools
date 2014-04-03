@@ -369,14 +369,16 @@ function iio2workspace_Callback(hObject, eventdata, handles)
 num_samples = str2num(get(handles.num_samples, 'String'))*2;
 device = get_device(handles);
 
-%TODO : This doesn't seem to work
-[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples, 2);
+[ret, rbuf] = iio_cmd_sample(handles.iio_cmdsrv, device, num_samples*2, 2);
 if(ret > 0)
     data = uint16(rbuf(2:2:end))*2^8 + uint16(rbuf(1:2:end));
     data = int32(data);
     data(data>2^15)= data(data>2^15)-2^16;    
-    assignin('base', 'IIO_Scope_I', data(1:2:end));
-    assignin('base', 'IIO_Scope_Q', data(2:2:end));
+    
+    assignin('base', 'Channel_1_I', data(1:4:end));
+    assignin('base', 'Channel_1_Q', data(2:4:end));
+    assignin('base', 'Channel_2_I', data(3:4:end));
+    assignin('base', 'Channel_2_Q', data(4:4:end));
 end
 
 % --- Executes on selection change in iio_devices.
