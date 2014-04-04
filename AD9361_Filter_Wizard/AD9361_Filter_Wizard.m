@@ -607,12 +607,14 @@ function save2coeffienients_Callback(hObject, eventdata, handles)
 % hObject    handle to save2coeffienients (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-filename = uiputfile('*.ftr', 'Save coefficients as');
+[filename,path] = uiputfile('*.ftr', 'Save coefficients as');
 if filename == 0
     return;
+else
+    newpath = strcat(path,filename);
 end
 
-fid = fopen(filename,'w');
+fid = fopen(newpath,'w');
 
 fprintf(fid, '# Generated with the Matlab AD9361 filter wizard, version 4\n');
 fprintf(fid, '%s\n', strcat('# Generated', 32, datestr(now())));
@@ -652,7 +654,7 @@ end
 
 fclose(fid);
 
-dlmwrite(filename, handles.taps, '-append','delimiter', '\n','newline', 'pc');
+dlmwrite(newpath, handles.taps, '-append','delimiter', '\n','newline', 'pc');
 
 
 % Hint: get(hObject,'Value') returns toggle state of save2coeffienients
