@@ -140,6 +140,7 @@ attribute = char(attribute(get(handles.iio_attributes, 'Value')));
 [ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 2048, 'read %s\n', [device ' ' attribute]);
 
 if ret ~= -1
+    rbuf = strtrim(rbuf);
     set(handles.iio_attribute_value, 'String', rbuf);
 end
 
@@ -387,6 +388,8 @@ function iio_devices_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 populate_attributes(handles);
+populate_attribute_value(handles);
+
 % Hints: contents = cellstr(get(hObject,'String')) returns iio_devices contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from iio_devices
 
