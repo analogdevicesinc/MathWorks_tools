@@ -334,6 +334,20 @@ while (1)
     end
 end
 
+if int_FIR == 1 && FIR_interp == 2
+    R = rem(length(h),32);
+    if R ~= 0
+        h = [zeros(1,8),h,zeros(1,8)];
+    end
+elseif int_FIR == 1 && FIR_interp == 4
+    R = rem(length(h),64);
+    if R ~= 0
+        newlength = ceil(length(h)/64)*64;
+        addlength = (newlength-length(h))/2;
+        h = [zeros(1,addlength),h,zeros(1,addlength)];
+    end
+end
+
 Hmd = mfilt.firinterp(FIR_interp,h);
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
     set(Hmd,'arithmetic','fixed');
