@@ -266,16 +266,17 @@ if(ret > 0)
     signal2 = complex(double(data(3:4:end)), double(data(4:4:end)));
     Nsignal = length(data(1:4:end));
     w = hamming(Nsignal);
-    newsignal1 = signal1.*w;
-    newsignal2 = signal2.*w;
-    fdata1 = 20*log10(abs(fftshift(fft(newsignal1), Nsignal)))/Nsignal;
+    newsignal1 = signal1.*(w');
+    newsignal2 = signal2.*(w');
+    
+    fdata1 = 20*log10(abs(fftshift(fft(newsignal1)/Nsignal^2)));
     plot(handles.ch1_fft, f(1:end-1), fdata1); grid(handles.ch1_fft);
     xlim(handles.ch1_fft, [f(1) f(end)]);
-    ylim(handles.ch1_fft, [min(fdata1)*1.1 max(fdata1)*1.1]);    
-    fdata2 = 20*log10(abs(fftshift(fft(newsignal2), Nsignal)))/Nsignal;
+    ylim(handles.ch1_fft, [min(fdata1)*1.1 0]);    
+    fdata2 = 20*log10(abs(fftshift(fft(newsignal2)/Nsignal^2)));
     plot(handles.ch2_fft, f(1:end-1), fdata2); grid(handles.ch2_fft);
     xlim(handles.ch2_fft, [f(1) f(end)]);
-    ylim(handles.ch2_fft, [min(fdata2)*1.1 max(fdata2)*1.1]);
+    ylim(handles.ch2_fft, [min(fdata2)*1.1 0]);
 end
 
 % --- Executes on button press in iio_capture.
@@ -304,14 +305,21 @@ if(ret > 0)
     %plot the FFT
     sample_rate = 30720000;
     f = -sample_rate/2:sample_rate/(num_samples/2):sample_rate/2;
-    fdata1 = 20*log10(abs(fftshift(fft(complex(double(data(1:4:end)), double(data(2:4:end))), length(data(1:4:end)))))/length(data(1:4:end)));
+    signal1 = complex(double(data(1:4:end)), double(data(2:4:end)));
+    signal2 = complex(double(data(3:4:end)), double(data(4:4:end)));
+    Nsignal = length(data(1:4:end));
+    w = hamming(Nsignal);
+    newsignal1 = signal1.*(w');
+    newsignal2 = signal2.*(w');
+    
+    fdata1 = 20*log10(abs(fftshift(fft(newsignal1)/Nsignal^2)));
     plot(handles.ch1_fft, f(1:end-1), fdata1); grid(handles.ch1_fft);
     xlim(handles.ch1_fft, [f(1) f(end)]);
-    ylim(handles.ch1_fft, [min(fdata1)*1.1 max(fdata1)*1.1]);    
-    fdata2 = 20*log10(abs(fftshift(fft(complex(double(data(3:4:end)), double(data(4:4:end))), length(data(3:4:end)))))/length(data(3:4:end)));
+    ylim(handles.ch1_fft, [min(fdata1)*1.1 0]);    
+    fdata2 = 20*log10(abs(fftshift(fft(newsignal2)/Nsignal^2)));
     plot(handles.ch2_fft, f(1:end-1), fdata2); grid(handles.ch2_fft);
     xlim(handles.ch2_fft, [f(1) f(end)]);
-    ylim(handles.ch2_fft, [min(fdata2)*1.1 max(fdata2)*1.1]);
+    ylim(handles.ch2_fft, [min(fdata2)*1.1 0]);
 end
 
 % --- Executes on selection change in iio_attributes.
