@@ -337,6 +337,17 @@ rxFilters=cascade(Filter1,Hmd);
 rfirtaps = Hmd.Numerator.*(2^16);
 
 webinar.Fout = Fout;
+webinar.FIR_interp = FIR_interp;
+webinar.HB_interp = HB_interp;
+webinar.PLL_mult = PLL_mult;
+webinar.Fpass = Fpass;
+webinar.Fstop = Fstop;
+webinar.dBripple = dBripple;
+webinar.dBstop = dBstop;
+webinar.dBstop_FIR = dBstop_FIR;
+webinar.phEQ = phEQ;
+webinar.int_FIR = int_FIR;
+webinar.wnom = wnom;
 webinar.Hd1_rx = Hd1;
 webinar.Hd2_rx = Hd2;
 webinar.Hm1_rx = Hm1;
