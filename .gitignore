@@ -1,2 +1,4 @@
 *.mlappinstall
 *.prj
+*.mexw64
+**/slprj/**
