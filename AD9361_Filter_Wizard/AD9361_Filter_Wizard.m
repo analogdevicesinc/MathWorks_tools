@@ -1296,12 +1296,14 @@ function save_filter_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-filename = uiputfile('*.txt', 'Save filter setup as');
+[filename,path] = uiputfile('*.txt', 'Save filter setup as');
 if filename == 0
     return;
+else
+    newpath = strcat(path,filename);
 end
 
-fp = fopen(filename, 'wt');
+fp = fopen(newpath, 'wt');
 fprintf(fp, 'Filter = %d\n', get(handles.filter_type, 'Value'));
 fprintf(fp, 'Phase Equalization = %d\n', get(handles.phase_eq, 'Value'));
 fprintf(fp, 'Use AD936x FIR = %d\n', get(handles.Use_FIR, 'Value'));
