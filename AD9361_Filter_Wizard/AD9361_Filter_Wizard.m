@@ -632,7 +632,7 @@ if get(handles.filter_type, 'Value') == 1
 else
     fprintf(fid, 'T');
 end
-fprintf(fid, 'X %d ', get(handles.FIR_1, 'Value') + (2 * get(handles.FIR_1, 'Value')));
+fprintf(fid, 'X %d ', get(handles.FIR_1, 'Value') + (2 * get(handles.FIR_2, 'Value')));
 % calculate the gain
 s = ceil(sum(handles.taps)/2^15);
 s = (s - 1) * -6;
