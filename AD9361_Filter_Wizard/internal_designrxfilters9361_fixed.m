@@ -56,7 +56,7 @@
 % delay            = actual delay used in phase equalization
 % webinar          = initialzation for SimRF FMCOMMS2 Rx model
 %
-function [rfirtaps,rxFilters,dBripple_actual,dBstop_actual,delay,webinar] = internal_designrxfilters9361_fixed(Fout,FIR_interp,HB_interp,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR,wnom)
+function [rfirtaps,rxFilters,dBripple_actual,dBstop_actual,delay,webinar,tohw] = internal_designrxfilters9361_fixed(Fout,FIR_interp,HB_interp,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR,wnom)
 
 Fadc = Fout * FIR_interp * HB_interp;
 clkPLL = Fadc * PLL_mult;
@@ -356,3 +356,12 @@ webinar.Hm3_rx = Hm3;
 webinar.Hm4_rx = Hm4;
 webinar.Hmd_rx = Hmd;
 webinar.enable_rx = enables;
+
+tohw.RXSAMP = Fout;
+tohw.RF = Fout * FIR_interp;
+tohw.R1 = tohw.RF * hb1;
+tohw.R2 = tohw.R1 * hb2;
+tohw.ADC = Fadc;
+tohw.BBPLL = clkPLL;
+tohw.coefficient = rfirtaps;
+tohw.decimation = FIR_interp;

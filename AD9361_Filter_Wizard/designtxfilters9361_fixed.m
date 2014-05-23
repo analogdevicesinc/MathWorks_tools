@@ -21,4 +21,4 @@
 %
 function [tfirtaps,txFilters] = designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
 
-[tfirtaps,txFilters,~,~,~] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom);
+[tfirtaps,txFilters,~,~,~,~,~] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom);

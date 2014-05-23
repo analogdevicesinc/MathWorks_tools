@@ -939,13 +939,13 @@ end
 drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
-    [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar] = internal_designrxfilters9361_fixed(...
+    [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar,tohw] = internal_designrxfilters9361_fixed(...
         data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = rxFilters;
     handles.taps = rfirtaps;
 else
     DAC_mult = get(handles.DAC_by2, 'Value');
-    [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar] = internal_designtxfilters9361_fixed(...
+    [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar,tohw] = internal_designtxfilters9361_fixed(...
         data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
     handles.taps = tfirtaps;
@@ -957,6 +957,7 @@ if (str2double(get(handles.target_delay, 'String'))) == 0
 end
 
 handles.simrfmodel = webinar;
+handles.supportpack = tohw;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
@@ -1477,9 +1478,11 @@ function save2workspace_Callback(hObject, eventdata, handles)
 if get(handles.filter_type, 'Value') == 1
     assignin('base', 'AD9361_Rx_Filter_object', handles.filters);
     assignin('base', 'FMCOMMS2_RX_Model_init', handles.simrfmodel);
+    assignin('base', 'FMCOMMS2_RX_Hardware', handles.supportpack);
 else
     assignin('base', 'AD9361_Tx_Filter_object', handles.filters);
     assignin('base', 'FMCOMMS2_TX_Model_init', handles.simrfmodel);
+    assignin('base', 'FMCOMMS2_TX_Hardware', handles.supportpack);
 end
 
 % Hint: get(hObject,'Value') returns toggle state of save2workspace

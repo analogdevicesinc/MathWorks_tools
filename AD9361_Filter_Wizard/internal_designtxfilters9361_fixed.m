@@ -57,7 +57,7 @@
 % delay            = actual delay used in phase equalization
 % webinar          = initialzation for SimRF FMCOMMS2 Tx model
 %
-function [tfirtaps,txFilters,dBripple_actual,dBstop_actual,delay,webinar] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
+function [tfirtaps,txFilters,dBripple_actual,dBstop_actual,delay,webinar,tohw] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
 
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * PLL_mult;
@@ -382,3 +382,12 @@ webinar.Hm3_tx = Hm3;
 webinar.Hm4_tx = Hm4;
 webinar.Hmd_tx = Hmd;
 webinar.enable_tx = enables;
+
+tohw.TXSAMP = Fin;
+tohw.TF = Fin * FIR_interp;
+tohw.T1 = tohw.TF * hb1;
+tohw.T2 = tohw.T1 * hb2;
+tohw.DAC = Fdac;
+tohw.BBPLL = clkPLL;
+tohw.coefficient = tfirtaps;
+tohw.interp = FIR_interp;
