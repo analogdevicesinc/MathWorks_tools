@@ -334,7 +334,19 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     Hmd.CoeffWordLength = 16;
 end
 rxFilters=cascade(Filter1,Hmd);
-rfirtaps = Hmd.Numerator.*(2^16);
+aTFIR = 1 + ceil(log2(max(Hmd.Numerator)));
+switch aTFIR
+    case 2
+        gain = +6;
+    case 1
+        gain = 0;
+    case 0
+        gain = -6;
+    otherwise
+        gain = -12;
+end
+bTFIR = 16 - aTFIR;
+rfirtaps = Hmd.Numerator.*(2^bTFIR);
 
 webinar.Fout = Fout;
 webinar.FIR_interp = FIR_interp;
@@ -363,5 +375,6 @@ tohw.R1 = tohw.RF * hb1;
 tohw.R2 = tohw.R1 * hb2;
 tohw.ADC = Fadc;
 tohw.BBPLL = clkPLL;
-tohw.coefficient = rfirtaps;
-tohw.decimation = FIR_interp;
+tohw.Coefficient = rfirtaps;
+tohw.Decimation = FIR_interp;
+tohw.Gain = gain;

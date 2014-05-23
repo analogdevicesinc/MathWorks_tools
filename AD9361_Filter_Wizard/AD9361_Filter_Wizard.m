@@ -616,7 +616,7 @@ end
 
 fid = fopen(newpath,'w');
 
-fprintf(fid, '# Generated with the Matlab AD9361 filter wizard, version 4\n');
+fprintf(fid, '# Generated with the MATLAB AD9361 Filter Design Wizard\n');
 fprintf(fid, '%s\n', strcat('# Generated', 32, datestr(now())));
 fprintf(fid, '# Inputs:\n');
 
@@ -624,31 +624,22 @@ data_rate = get_data_rate(handles);
 converter_rate = get_converter_clk(handles);
 pll_rate = get_pll_rate(handles);
 
-fprintf(fid, '# PLL CLK frequecy = %f Hz\n', pll_rate);
-fprintf(fid, '# Converter sample frequecy = %f Hz\n', converter_rate);
-fprintf(fid, '# Data sample frequecy = %f Hz\n', data_rate);
+fprintf(fid, '# PLL CLK Frequecy = %f Hz\n', pll_rate);
+fprintf(fid, '# Converter Sample Frequecy = %f Hz\n', converter_rate);
+fprintf(fid, '# Data Sample Frequecy = %f Hz\n', data_rate);
 if get(handles.filter_type, 'Value') == 1
     fprintf(fid, 'R');
 else
     fprintf(fid, 'T');
 end
 fprintf(fid, 'X %d ', get(handles.FIR_1, 'Value') + (2 * get(handles.FIR_2, 'Value')));
-% calculate the gain
-s = ceil(sum(handles.taps)/2^15);
-s = (s - 1) * -6;
+fprintf(fid, 'GAIN %d ', handles.gain);
 
 if get(handles.filter_type, 'Value') == 1
     % Receive
-    fprintf(fid, 'GAIN %d ', s);
     fprintf(fid, 'DEC %d\n', handles.int);
 else
     % Transmit
-    if handles.int == 2
-        s = s+6;
-    elseif handles.int == 4
-        s = s+12;
-    end
-    fprintf(fid, 'GAIN %d ', s);
     fprintf(fid, 'INT %d\n', handles.int);
 end
 
@@ -958,6 +949,7 @@ end
 
 handles.simrfmodel = webinar;
 handles.supportpack = tohw;
+handles.gain = tohw.Gain;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
