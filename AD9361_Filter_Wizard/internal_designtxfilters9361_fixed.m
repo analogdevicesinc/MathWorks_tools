@@ -371,9 +371,9 @@ switch aTFIR
         gain = -12;
 end
 if FIR_interp == 2
-        gain = gain+6;
-    elseif FIR_interp == 4
-        gain = gain+12;
+    gain = gain+6;
+elseif FIR_interp == 4
+    gain = gain+12;
 end
 bTFIR = 16 - aTFIR;
 tfirtaps = Hmd.Numerator.*(2^bTFIR);
@@ -409,3 +409,4 @@ tohw.BBPLL = clkPLL;
 tohw.Coefficient = tfirtaps;
 tohw.Interp = FIR_interp;
 tohw.Gain = gain;
+tohw.RFBandwidth = Fpass*2;

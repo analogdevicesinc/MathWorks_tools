@@ -378,3 +378,4 @@ tohw.BBPLL = clkPLL;
 tohw.Coefficient = rfirtaps;
 tohw.Decimation = FIR_interp;
 tohw.Gain = gain;
+tohw.RFBandwidth = Fpass*2;
