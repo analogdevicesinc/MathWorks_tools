@@ -72,7 +72,7 @@ function varargout = AD9361_Filter_Wizard(varargin)
 
 % Edit the above text to modify the response to help AD9361_Filter_Wizard
 
-% Last Modified by GUIDE v2.5 11-Mar-2014 13:19:35
+% Last Modified by GUIDE v2.5 18-Jun-2014 16:29:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -205,7 +205,6 @@ for i = 1:2:length(varargin)
         error('Unknown input to function');
     end
 end
-    
 
 handles.Original_Size = get(handles.AD9361_Filter_app, 'Position');
 
@@ -244,7 +243,7 @@ set(zoom(gca),'ActionPostCallback',@(x,y) zoom_axis(gca));
 guidata(hObject, handles);
 
 % UIWAIT makes AD9361_Filter_Wizard wait for user response (see UIRESUME)
-% uiwait(handles.AD9361_Filter_app);
+uiwait(handles.AD9361_Filter_app);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = AD9361_Filter_Wizard_OutputFcn(hObject, eventdata, handles)
@@ -253,8 +252,10 @@ function varargout = AD9361_Filter_Wizard_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Get default command line output from handles structure
 varargout{1} = handles.output;
+% The figure can be deleted now
+delete(handles.AD9361_Filter_app);
+
 
 % --- Executes on selection change in Freq_units.
 function Freq_units_Callback(hObject, eventdata, handles)
@@ -2166,3 +2167,19 @@ function Pll_rate_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to Pll_rate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes when user attempts to close AD9361_Filter_app.
+function AD9361_Filter_app_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to AD9361_Filter_app (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if isequal(get(hObject, 'waitstatus'), 'waiting')
+    % The GUI is still in UIWAIT, us UIRESUME
+    uiresume(hObject);
+else
+    % The GUI is no longer waiting, just close it
+    delete(hObject);
+end
+
