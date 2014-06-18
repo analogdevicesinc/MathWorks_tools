@@ -1,4 +1,20 @@
-%  Copyright 2014(c) Analog Devices, Inc.
+% Name-Value Pair Arguments
+%
+% Specify optional comma-separated pairs of Name,Value arguments. Name is
+% the argument name and Value is the corresponding value. Name must 
+% appear inside single quotes (' '). You can specify several name and
+% value pair arguments in any order as Name1,Value1,...,NameN,ValueN.
+% Example: 'remote','192.168.0.1','MarkerFaceColor','red'
+%
+%   Name       Value
+%   'remote'          'hide' | 'IP_number' | 'IP_number:port'
+%   'PathConfig'      'rx' | 'tx' | 'either'
+%   'ApplyString'     'Save String'
+%   'helpurl'         'http:\\help.com\'
+%   'DefaultVals'     Structure of default values
+%
+%%
+% Copyright 2014(c) Analog Devices, Inc.
 %
 %  All rights reserved.
 %
@@ -88,8 +104,6 @@ function AD9361_Filter_Wizard_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for AD9361_Filter_Wizard
 handles.output = hObject;
 
-handles.Original_Size = get(handles.AD9361_Filter_app, 'Position');
-
 handles.MAX_BBPLL_FREQ = 1430000000;                         % 1430.0 MHz
 handles.MIN_BBPLL_FREQ =  715000000;                         %  715.0 MHz
 
@@ -99,6 +113,101 @@ handles.MAX_DAC_CLK    =  handles.MAX_ADC_CLK / 2;           % (MAX_ADC_CLK / 2)
 
 handles.MAX_DATA_RATE  =   61440000;                         %   61.44 MSPS
 handles.MIN_DATA_RATE  =  handles.MIN_BBPLL_FREQ / (48 * (2 ^ 6));
+
+new = 0;
+% inputs need to be name/value _pairs_
+if rem(length(varargin),2)
+    error('myApp:argChk', 'Wrong number of input arguments')
+end
+
+for i = 1:2:length(varargin)
+    if strcmpi(varargin{i}, 'remote')
+        % 'remote'      'ip_number' | 'none'
+        if (strcmpi(varargin{i + 1}, 'hide')) || isempty(varargin{i + 1})
+            set(handles.target_remote, 'Visible', 'off');
+        else
+            set(handles.IP_num, 'String', varargin{i+ 1});
+        end
+    elseif strcmpi(varargin{i}, 'PathConfig')
+        % 'PathConfig'     'rx' | 'tx' | 'either'
+        if (strcmpi(varargin{i + 1}, 'rx'))
+             set(handles.filter_type, 'Value', 1.0);
+             set(handles.filter_type, 'Enable', 'off');
+        elseif (strcmpi(varargin{i + 1}, 'tx'))
+            set(handles.filter_type, 'Value', 2.0);
+            set(handles.filter_type, 'Enable', 'off');
+        elseif (strcmpi(varargin{i + 1}, 'either'))
+            set(handles.filter_type, 'Value', 1.0);
+            set(handles.filter_type, 'Enable', 'on');
+        else
+            error('Unknown value to "PathConfig"');
+        end
+        filter_type_Callback(handles.filter_type, eventdata, handles);
+    elseif strcmpi(varargin{i}, 'ApplyString')
+        % 'ApplyString'  'Save String'
+         set(handles.save2workspace, 'String', varargin{i + 1});
+    elseif strcmpi(varargin{i}, 'helpurl')
+        % 'helpurl'  'http://help.com/url'
+        set(handles.help_button, 'TooltipString', varargin{i + 1});
+    elseif strcmpi(varargin{i}, 'DefaultVals')
+        % 'DefaultVals'     'structure (in MHz)'
+        new = 1;
+        handles.freq_units = 3;
+        set(handles.Freq_units, 'Value', handles.freq_units);
+        handles.clock_units = 3;
+        set(handles.Clock_units, 'Value', handles.clock_units);
+        
+        setting = varargin{i +1};
+
+        set(handles.Advanced_options, 'Value', 0);
+        if isfield(setting, 'Pheq') || setting.Pheq == -1
+            set(handles.phase_eq, 'Value', 0);
+        else
+            set(handles.Advanced_options, 'Value', 1);
+            set(handles.phase_eq, 'Value', 1);
+            set(handles.target_delay, 'Value', num2str(setting.Pheq));
+        end       
+        if isfield(setting, 'Fpass')
+            set(handles.Fpass, 'String', num2str(setting.Fpass));
+        else
+            error('default input must specify Fpass');
+        end       
+        if isfield(setting, 'Fstop')
+            set(handles.Fstop, 'String', num2str(setting.Fstop));
+        else
+            set(handles.Fstop, 'String', num2str(setting.Fpass) * 1.2);
+        end
+        if isfield(setting, 'dBripple')
+            set(handles.Apass, 'String', num2str(setting.dBripple));
+        else
+            set(handles.Apass, 'String', num2str(0.2));
+        end
+        if isfield(setting, 'dBstop')
+            set(handles.Astop, 'String', num2str(setting.dBstop));
+        else
+            set(handles.Astop, 'String', num2str(80));
+        end
+        
+        if ~isfield(setting, 'Rdata')
+            error('Must have output data rate in default values');
+        end
+        
+        if setting.Rdata > handles.MAX_DATA_RATE / 1e6
+            setting.Rdata = handles.MAX_DATA_RATE / 1e6;
+        end
+        if setting.Rdata < handles.MIN_DATA_RATE / 1e6
+            setting.Rdata = handles.MIN_DATA_RATE / 1e6
+        end
+
+        set(handles.data_clk, 'String', num2str(setting.Rdata));
+        
+    else
+        error('Unknown input to function');
+    end
+end
+    
+
+handles.Original_Size = get(handles.AD9361_Filter_app, 'Position');
 
 guidata(hObject, handles);
 
@@ -119,7 +228,12 @@ axes(handles.magnitude_plot);
 handles.iio_cmdsrv = {};
 handles.taps = {};
 
-reset_input(hObject, handles);
+if ~new
+    reset_input(hObject, handles);
+else
+    handles.active_plot = 0;
+    display_default_image(hObject, handles)
+end
 handles.clock_units = get(handles.Clock_units, 'Value');
 handles.freq_units = get(handles.Freq_units, 'Value');
 handles.active_plot = 0;
@@ -1030,9 +1144,20 @@ display_default_image(hObject, handles);
 
 options = load('ad9361_settings.mat');
 
-Tx = strcat('Tx_', fieldnames(options.ad9361_settings.tx));
-Rx = strcat('Rx_', fieldnames(options.ad9361_settings.rx));
-choices  = cat(1, Rx, Tx);
+if strcmp(get(handles.filter_type, 'Enable'), 'on');
+    Tx = strcat('Tx_', fieldnames(options.ad9361_settings.tx));
+    Rx = strcat('Rx_', fieldnames(options.ad9361_settings.rx));
+else
+    if get(handles.filter_type, 'Value') == 1.0
+        Rx = strcat('Rx_', fieldnames(options.ad9361_settings.rx));
+        Tx = '';
+    else
+        Rx = '';
+        Tx = strcat('Tx_', fieldnames(options.ad9361_settings.tx));
+    end
+end
+
+choices = cat(1, Rx, Tx); 
 
 [selection,ok] = listdlg('PromptString','Please Select a Profile:',...
     'SelectionMode','single',...
@@ -1555,7 +1680,7 @@ function help_button_Callback(hObject, eventdata, handles)
 % hObject    handle to help_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-web('http://wiki.analog.com/resources/eval/user-guides/ad-fmcomms2-ebz/software/filters');
+web(strcat('http://', get(hObject, 'TooltipString')));
 % Hint: get(hObject,'Value') returns toggle state of help_button
 
 
