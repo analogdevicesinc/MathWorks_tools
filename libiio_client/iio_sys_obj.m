@@ -88,8 +88,12 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                             obj.iio_channel{j+1} = calllib(obj.libname, 'iio_device_get_channel', dev, j);
                             calllib(obj.libname, 'iio_channel_enable', obj.iio_channel{j+1});
                         end
+                        for j = nb_channels:obj.ch_no-1
+                            obj.iio_channel{j+1} = calllib(obj.libname, 'iio_device_get_channel', dev, j);
+                            calllib(obj.libname, 'iio_channel_disable', obj.iio_channel{j+1});
+                        end
                         obj.iio_buf_size = obj.ch_size * nb_channels;
-                        obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', dev, obj.iio_buf_size);
+                        obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', dev, obj.iio_buf_size, 0);
                         return;
                     end                
                     clear dev;
