@@ -345,6 +345,9 @@ switch aTFIR
     otherwise
         gain = -12;
 end
+if aTFIR > 2
+    gain = +6;
+end
 bTFIR = 16 - aTFIR;
 rfirtaps = Hmd.Numerator.*(2^bTFIR);
 

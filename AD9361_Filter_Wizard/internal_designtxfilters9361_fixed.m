@@ -375,6 +375,11 @@ if FIR_interp == 2
 elseif FIR_interp == 4
     gain = gain+12;
 end
+if gain > 0
+    gain = 0;
+elseif gain < -6
+    gain = -6;
+end
 bTFIR = 16 - aTFIR;
 tfirtaps = Hmd.Numerator.*(2^bTFIR);
 
