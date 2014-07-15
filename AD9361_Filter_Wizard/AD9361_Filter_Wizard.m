@@ -1042,6 +1042,8 @@ if fpass >= fstop || fpass <= 0 || fstop <= 0
     return;
 end
 
+oldpointer = get(gcf, 'pointer');
+set(gcf,'Pointer','watch');
 drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
@@ -1056,6 +1058,8 @@ else
     handles.filters = txFilters;
     handles.taps = tfirtaps;
 end
+
+set(gcf,'Pointer',oldpointer);
 
 handles.int = FIR_interp;
 if (str2double(get(handles.target_delay, 'String'))) == 0
