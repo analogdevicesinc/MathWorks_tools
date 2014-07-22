@@ -63,14 +63,17 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                 % Create network context
                 obj.iio_ctx = calllib(obj.libname, 'iio_create_network_context', obj.ip_address);
                 
-                % Get the number of devices
-                try
-                    nb_devices = calllib(obj.libname, 'iio_context_get_devices_count', obj.iio_ctx);
-                catch
+                % Check if the network context is valid
+                ctx_valid = calllib(obj.libname, 'iio_context_valid', obj.iio_ctx);
+                if(ctx_valid < 0)
                     obj.iio_ctx = {};
                     unloadlibrary(obj.libname);
                     msgbox('Could not connect to the IIO server!', 'Error','error');
+                    return;
                 end
+                
+                % Get the number of devices
+                nb_devices = calllib(obj.libname, 'iio_context_get_devices_count', obj.iio_ctx);
                 
                 % If no devices are present unload the library and exit
                 if(nb_devices == 0)
