@@ -24,8 +24,9 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
         %out_ch_size Output channel size [samples]
         out_ch_size = 8192;
         
-        %ot_ch_no Number of active output channels
+        %out_ch_no Number of active output channels
         out_ch_no = 1;
+        
     end
     
     properties (Access = private)
@@ -51,11 +52,27 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
         end
     end
     
+    methods (Static, Access = private)
+        %% Static functions
+        function out = modInstanceCnt(val)
+            % Manages the number of object instances to hadle proper DLL
+            % unloading
+            persistent instance_cnt;
+            if isempty(instance_cnt)
+                instance_cnt = 0;
+            end
+            instance_cnt = instance_cnt + val;
+            out = instance_cnt;
+        end
+    end
+    
     methods (Access = protected)
         %% Common functions
-        function setupImpl(obj,u)
+        function setupImpl(obj,~)
             % Implement tasks that need to be performed only once,
             % such as pre-computed constants.
+            
+            iio_sys_obj.modInstanceCnt(1);
             
             [notfound, warnings]= loadlibrary(obj.libname, obj.hname);
             
@@ -188,7 +205,10 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                 obj.iio_channel = {};
                 obj.iio_dev = {};
                 obj.iio_ctx = {};
-                unloadlibrary(obj.libname);
+                instCnt = iio_sys_obj.modInstanceCnt(-1);
+                if(instCnt == 0)
+                    unloadlibrary(obj.libname);
+                end
             end
         end
         
