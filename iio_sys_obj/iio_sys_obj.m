@@ -143,9 +143,10 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                             end
                             
                             % Create the IIO buffer used to read / write data
-                            obj.iio_buf_size = obj.in_ch_size * obj.in_ch_no;
+                            obj.iio_buf_size = obj.in_ch_size * obj.iio_scan_elements_no;
                             obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', dev,...
-                                                     obj.in_ch_size * (obj.in_ch_no / obj.iio_scan_elements_no), 1);
+                                                     obj.in_ch_size, 1);
+                                                     
                         end
                         
                         % Enable the system object output channels
@@ -236,7 +237,10 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                     data = calllib(obj.libname, 'iio_buffer_start', obj.iio_buffer);
                     setdatatype(data, 'int16Ptr', obj.iio_buf_size);
                     for i = 1:getNumInputs(obj)
-                        data.Value(i:getNumInputs(obj):obj.iio_buf_size) = int16(varargin{i});
+                        data.Value(i:obj.iio_scan_elements_no:obj.iio_buf_size) = int16(varargin{i});
+                    end
+                    for i = getNumInputs(obj)+1:obj.iio_scan_elements_no
+                        data.Value(i:obj.iio_scan_elements_no:obj.iio_buf_size) = 0;
                     end
                     calllib(obj.libname, 'iio_buffer_push', obj.iio_buffer);
                 end
