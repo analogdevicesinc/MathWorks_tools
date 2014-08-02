@@ -25,8 +25,7 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
         out_ch_size = 8192;
         
         %out_ch_no Number of active output channels
-        out_ch_no = 1;
-        
+        out_ch_no = 1;        
     end
     
     properties (Access = private)
@@ -69,11 +68,9 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
     methods (Access = protected)
         %% Common functions
         function setupImpl(obj,~)
-            % Implement tasks that need to be performed only once,
-            % such as pre-computed constants.
+            % Implement tasks that need to be performed only once.
             
-            iio_sys_obj.modInstanceCnt(1);
-            
+            % Load the libiio library
             [notfound, warnings]= loadlibrary(obj.libname, obj.hname);
             
             if(libisloaded(obj.libname))
@@ -87,6 +84,52 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                     unloadlibrary(obj.libname);
                     msgbox('Could not connect to the IIO server!', 'Error','error');
                     return;
+                else
+                    % Increase the object instance count
+                    iio_sys_obj.modInstanceCnt(1);
+                    fprintf('%s: Connected to IP %s\n', class(obj), obj.ip_address);
+                end
+                
+                % Create a set of pointers to read the iiod and dll
+                % versions
+                data = zeros(1, 10);
+                pMajor = libpointer('uint32Ptr',data(1));
+                pMinor = libpointer('uint32Ptr',data(2));
+                pGitTag = libpointer('int8Ptr',[int8(data(3:end)) 0]);
+                pNull = libpointer('iio_contextPtr'); 
+                
+                % Check if the libiio version running on the device is
+                % compatible with this version of the system object                
+                calllib(obj.libname, 'iio_context_get_version', obj.iio_ctx, pMajor, pMinor, pGitTag);
+                if(pMajor.Value == 0 && pMinor.Value < 1)
+                    pNull = {};
+                    releaseContext(obj);
+                    msgbox('The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.', 'Error','error');
+                    return;
+                elseif(pMajor.Value > 0 || pMinor.Value > 1)
+                    pNull = {};
+                    releaseContext(obj);
+                    msgbox('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.', 'Error','error');
+                    return;
+                else
+                    fprintf('%s: Remote libiio version is %d.%d, %s\n', class(obj), pMajor.Value, pMinor.Value, pGitTag.Value);
+                end
+                
+                % Check if the libiio dll is compatible with this version
+                % of the system object 
+                calllib(obj.libname, 'iio_context_get_version', pNull, pMajor, pMinor, pGitTag);
+                if(pMajor.Value == 0 && pMinor.Value < 1)
+                    pNull = {};
+                    releaseContext(obj);
+                    msgbox('The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.', 'Error','error');
+                    return;
+                elseif(pMajor.Value > 0 || pMinor.Value > 1)
+                    pNull = {};
+                    releaseContext(obj);
+                    msgbox('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.', 'Error','error');
+                    return;
+                else
+                    fprintf('%s: libiio dll version is %d.%d, %s\n', class(obj), pMajor.Value, pMinor.Value, pGitTag.Value);
                 end
                 
                 % Get the number of devices
@@ -94,12 +137,11 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                 
                 % If no devices are present unload the library and exit
                 if(nb_devices == 0)
-                    calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
-                    obj.iio_ctx = {};
-                    unloadlibrary(obj.libname);
+                    releaseContext(obj);
                     msgbox('No devices were detected in the system!', 'Error','error');
                     return;
                 end
+                fprintf('%s: Found %d devices in the system\n', class(obj), nb_devices);
                 
                 % Detect if the targeted device is installed and activate
                 % the number of desired channels
@@ -111,10 +153,8 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                         obj.iio_dev = dev;
                         nb_channels = calllib(obj.libname, 'iio_device_get_channels_count', dev);
                         if(nb_channels == 0)
-                            calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
-                            obj.iio_ctx = {};
-                            unloadlibrary(obj.libname);
-                            msgbox('The seleted device does not have any channels!', 'Error','error');
+                            releaseContext(obj);
+                            msgbox('The selected device does not have any channels!', 'Error','error');
                             return;
                         end
                         
@@ -126,10 +166,8 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                             obj.iio_channel{1} = calllib(obj.libname, 'iio_device_get_channel', dev, 0);
                             is_output = calllib(obj.libname, 'iio_channel_is_output', obj.iio_channel{1});                            
                             if(is_output == 0)
-                                calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
-                                obj.iio_ctx = {};
-                                unloadlibrary(obj.libname);
-                                msgbox('The seleted device does not have output channels!', 'Error','error');
+                                releaseContext(obj);
+                                msgbox('The selected device does not have output channels!', 'Error','error');
                                 return;
                             end
                             % Enable all the channels
@@ -141,12 +179,22 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                                     obj.iio_scan_elements_no = obj.iio_scan_elements_no + 1;
                                 end
                             end
+                            fprintf('%s: Found %d output channels for the device %s\n', class(obj), obj.iio_scan_elements_no, obj.dev_name);
+                            
+                            % Check if the number of channels in the device
+                            % is greater or equal to the system object
+                            % input channels
+                            if(obj.iio_scan_elements_no < obj.in_ch_no)
+                                obj.iio_channel = {};
+                                releaseContext(obj);
+                                msgbox('The selected device does not have enough output channels!', 'Error','error');
+                                return;
+                            end
                             
                             % Create the IIO buffer used to read / write data
                             obj.iio_buf_size = obj.in_ch_size * obj.iio_scan_elements_no;
                             obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', dev,...
-                                                     obj.in_ch_size, 1);
-                                                     
+                                                     obj.in_ch_size, 1);                                                     
                         end
                         
                         % Enable the system object output channels
@@ -157,29 +205,36 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                             obj.iio_channel{1} = calllib(obj.libname, 'iio_device_get_channel', dev, 0);
                             is_output = calllib(obj.libname, 'iio_channel_is_output', obj.iio_channel{1});                            
                             if(is_output == 1)
-                                calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
-                                obj.iio_ctx = {};
-                                unloadlibrary(obj.libname);
+                                releaseContext(obj);
                                 msgbox('The seleted device does not have input channels!', 'Error','error');
                                 return;
                             end
-                            % Enable the channels
-                            if(obj.out_ch_no <= nb_channels)
-                                nb_channels = obj.out_ch_no;
+                            fprintf('%s: Found %d input channels for the device %s\n', class(obj), nb_channels, obj.dev_name);
+                            
+                            % Check if the number of channels in the device
+                            % is greater or equal to the system object
+                            % output channels
+                            if(nb_channels < obj.in_ch_no)
+                                obj.iio_channel = {};
+                                releaseContext(obj);
+                                msgbox('The selected device does not have enough input channels!', 'Error','error');
+                                return;
                             end
-                            for j = 0 : nb_channels-1
+                            
+                            % Enable the channels
+                            for j = 0 : obj.out_ch_no - 1
                                 obj.iio_channel{j+1} = calllib(obj.libname, 'iio_device_get_channel', dev, j);
                                 calllib(obj.libname, 'iio_channel_enable', obj.iio_channel{j+1});
                             end
-                            for j = nb_channels:obj.out_ch_no-1
+                            for j = obj.out_ch_no : nb_channels - 1
                                 obj.iio_channel{j+1} = calllib(obj.libname, 'iio_device_get_channel', dev, j);
                                 calllib(obj.libname, 'iio_channel_disable', obj.iio_channel{j+1});
                             end
                             % Create the IIO buffer used to read / write data
-                            obj.iio_buf_size = obj.out_ch_size * nb_channels;
+                            obj.iio_buf_size = obj.out_ch_size * obj.out_ch_no;
                             obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', dev, obj.iio_buf_size, 0);
                         end                 
-                        
+                        fprintf('%s: Communication with %s successfully initialized\n', class(obj), obj.dev_name);
                         return;
                     end                
                     clear dev;
@@ -187,9 +242,7 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                 
                 % The target device was not detected, display an error and
                 % unload the library
-                calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
-                obj.iio_ctx = {};
-                unloadlibrary(obj.libname);
+                releaseContext(obj);
                 msgbox('Could not find target device!', 'Error','error');
             else
                 % Could not load library
@@ -210,6 +263,16 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
                 if(instCnt == 0)
                     unloadlibrary(obj.libname);
                 end
+            end
+        end
+        
+        function releaseContext(obj)
+            % Release the IIO context and unload the libiio library
+            calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
+            obj.iio_ctx = {};
+            instCnt = iio_sys_obj.modInstanceCnt(-1);
+            if(instCnt == 0)
+                unloadlibrary(obj.libname);
             end
         end
         
