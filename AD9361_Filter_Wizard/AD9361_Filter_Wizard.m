@@ -224,7 +224,11 @@ set(handles.ADI_logo, 'HandleVisibility', 'off');
 
 axes(handles.magnitude_plot);
 
-handles.iio_cmdsrv = {};
+handles.libname = 'libiio';
+handles.hname = 'iio.h';
+handles.iio_ctx = {};
+handles.iio_dev = {};
+
 handles.taps = {};
 
 if ~new
@@ -859,19 +863,45 @@ function target_get_clock_Callback(hObject, eventdata, handles)
 % hObject    handle to target_get_clock (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if ~ isempty(handles.iio_cmdsrv)
-    [ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy in_voltage_sampling_frequency\n');
-    if(ret == -1)
+if libisloaded(handles.libname)
+    data = double(0);
+    pData = libpointer('doublePtr', data(1));
+    pAttr = libpointer('stringPtr', 'sampling_frequency');
+    retCode = -1;
+    
+    nb_channels = calllib(handles.libname, 'iio_device_get_channels_count', handles.iio_dev);
+    iio_channel = {};
+    for j = 0 : nb_channels-1        
+        iio_channel = calllib(handles.libname, 'iio_device_get_channel', handles.iio_dev, j);
+        ret = calllib(handles.libname, 'iio_channel_find_attr', iio_channel, pAttr);
+        if(~isempty(ret))
+            ret = calllib(handles.libname, 'iio_channel_attr_get_filename', iio_channel, pAttr);
+            if(strcmp(ret, 'in_voltage_sampling_frequency'))
+                retCode = calllib(handles.libname, 'iio_channel_attr_read_double', iio_channel, pAttr, pData); 
+                iio_channel = {};
+                break;
+            end            
+        end
+        iio_channel = {};
+    end    
+    if(retCode < 0)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    [ret, rbuf1] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy rx_path_rates\n');
-    if(ret == -1)
+    data_clk = pData.Value;
+    pData = {};
+    
+    data = char(ones(1, 512));
+    pData = libpointer('stringPtr', data);
+    pAttr = libpointer('stringPtr', 'rx_path_rates');
+    [~,~,~,rbuf] = calllib(handles.libname, 'iio_device_attr_read', handles.iio_dev, pAttr, pData, 512);
+    if(isempty(data_clk) < 0)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    data_clk = str2num(rbuf);
-    clocks = sscanf(rbuf1, 'BBPLL:%d ADC:%d');
+    
+    clocks = sscanf(rbuf, 'BBPLL:%d ADC:%d');
+    clear rbuf; pData = {};
     div_adc = num2str(clocks(2) / data_clk);
     interpolate = cellstr(get(handles.HB2converter, 'String'))';
     idx = find(strncmp(interpolate, div_adc, length(div_adc)) == 1);
@@ -1078,7 +1108,7 @@ units = char(units(get(handles.Clock_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('Launch FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
 set(handles.save2coeffienients, 'Visible', 'on');
-if ~ isempty(handles.iio_cmdsrv)
+if libisloaded(handles.libname)
     set(handles.save2target, 'Visible', 'on');
 end
 set(handles.save2workspace, 'Visible', 'on');
@@ -2037,31 +2067,64 @@ function connect2target_Callback(hObject, eventdata, handles)
 % hObject    handle to connect2target (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-tmp = get(handles.IP_num,'String');
-tmp = strsplit(tmp, ':');
-ip=char(tmp(1));
-if length(tmp) == 2
-    port = str2num(char(tmp(2)));
-    if ~ port
-        port = 1234;
-    end
-else
-    port = 1234;
+ip = get(handles.IP_num,'String');
+
+% Load the libiio library
+if(~libisloaded(handles.libname))
+    [notfound, warnings]= loadlibrary(handles.libname, handles.hname);
 end
 
-obj = iio_cmdsrv;
-iio_cmdsrv_connect(obj, ip, port);
-[ret, rbuf] = iio_cmd_read(obj, 200, 'version\n');
-if(ret ~= -1)
-    set(handles.target_get_clock, 'Visible', 'on');
-    handles.iio_cmdsrv = obj;
-    if ~ isempty(handles.taps)
-        set(handles.save2target, 'Visible', 'on');
+if(libisloaded(handles.libname))
+    % Create network context
+    handles.iio_ctx = calllib(handles.libname, 'iio_create_network_context', ip);
+
+    % Check if the network context is valid
+    ctx_valid = calllib(handles.libname, 'iio_context_valid', handles.iio_ctx);
+    if(ctx_valid < 0)
+        handles.iio_ctx = {};
+        unloadlibrary(handles.libname);
+        set(handles.target_get_clock, 'Visible', 'off');
+        msgbox('Could not connect to the IIO server!', 'Error','error');
+        return;
     end
-else
+    
+    % Get the number of devices
+    nb_devices = calllib(handles.libname, 'iio_context_get_devices_count', handles.iio_ctx);
+                
+    % If no devices are present unload the library and exit
+    if(nb_devices == 0)
+        handles.iio_ctx = {};
+        unloadlibrary(handles.libname);
+        msgbox('No devices were detected in the system!', 'Error','error');
+        return;
+    end
+                
+    % Detect if the targeted device is installed
+    iio_dev = {};
+    for i = 0 : nb_devices-1
+        iio_dev = calllib(handles.libname, 'iio_context_get_device', handles.iio_ctx, i);
+        name = calllib(handles.libname, 'iio_device_get_name', iio_dev);
+        if(strcmp(name, 'ad9361-phy'))
+            handles.iio_dev = iio_dev;
+            set(handles.target_get_clock, 'Visible', 'on');
+            % Update handles structure
+            guidata(hObject, handles);
+            return;
+        end
+        iio_dev = {};
+    end
+    iio_dev = {};
+    
+    % The target device was not detected
     set(handles.target_get_clock, 'Visible', 'off');
-    msgbox('Could not connect to target!', 'Error','error');
+    msgbox('Could not find target device!', 'Error','error');
+else
+    % Could not load library
+    set(handles.target_get_clock, 'Visible', 'off');
+    msgbox('Could not load libiio library!', 'Error','error');
 end
+
+
 % Update handles structure
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of connect2target
@@ -2178,6 +2241,11 @@ function AD9361_Filter_app_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to AD9361_Filter_app (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+if(libisloaded(handles.libname))
+    handles.iio_dev = {};
+    handles.iio_ctx = {};   
+end
 
 if isequal(get(hObject, 'waitstatus'), 'waiting')
     % The GUI is still in UIWAIT, us UIRESUME
