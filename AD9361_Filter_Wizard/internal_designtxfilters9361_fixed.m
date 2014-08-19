@@ -60,7 +60,7 @@
 function [tfirtaps,txFilters,dBripple_actual,dBstop_actual,delay,webinar,tohw] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
 
 Fdac = Fin * FIR_interp * HB_interp;
-clkPLL = Fdac * PLL_mult;
+clkPLL = Fdac * DAC_mult * PLL_mult;
 
 % Define the analog filters (represented by digital Butterworth)
 if ~wnom
