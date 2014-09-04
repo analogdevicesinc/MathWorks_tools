@@ -1,0 +1,5 @@
+#!/bin/bash
+
+make -C motor_control/linux_utils/ uninstall
+make -C motor_control/linux_utils/
+make -C motor_control/linux_utils/ install
