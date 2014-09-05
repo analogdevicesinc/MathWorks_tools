@@ -19,6 +19,7 @@ twos_complement () {
 	if [ $1 -ge 2147483648 ]; then
 		TWS_VAL=-$((4294967296-TWS_VAL))
 	fi	
+}
 
 ###########################################################################
 # Start the controller in open loop mode to determine the electrical offset
@@ -41,32 +42,28 @@ OFFSET_ERR=$(sudo ./uio /dev/uio0 r 292) # read the encoder offset error
 str_to_dec $OFFSET_ERR
 twos_complement $DEC_VAL
 OFFSET_DEC=$((TWS_VAL/4))
-echo 'OFFSET1'
-echo $OFFSET_DEC
+echo 'OFFSET1:' $OFFSET_DEC
 
 # Write the first estimated offset and read the encoder error
-sudo ./uio /dev/uio0 w 288 -$OFFSET_DEC # encoder offset sfix18.14
+sudo ./uio /dev/uio0 w 288 $((OFFSET_DEC*-1)) # encoder offset sfix18.14
 sleep 0.5s
 OFFSET_ERR=$(sudo ./uio /dev/uio0 r 292) # read the encoder offset error
 str_to_dec $OFFSET_ERR
 abs $DEC_VAL
 OFFSET_ERR1=$ABS_VAL
-echo 'ERR1'
-echo $OFFSET_ERR1
+echo 'ERR1:' $OFFSET_ERR1
 
 # Write the second estimated offset and read the encoder error
 STEP=500
 OFFSET_DEC=$((OFFSET_DEC + STEP))
-echo 'OFFSET2'
-echo $OFFSET_DEC
-sudo ./uio /dev/uio0 w 288 -$OFFSET_DEC # encoder offset sfix18.14
+echo 'OFFSET2:' $OFFSET_DEC
+sudo ./uio /dev/uio0 w 288 $((OFFSET_DEC*-1)) # encoder offset sfix18.14
 sleep 0.5s
 OFFSET_ERR=$(sudo ./uio /dev/uio0 r 292) # read the encoder offset error
 str_to_dec $OFFSET_ERR
 abs $DEC_VAL
 OFFSET_ERR2=$ABS_VAL
-echo 'ERR2'
-echo $OFFSET_ERR2
+echo 'ERR2:' $OFFSET_ERR2
 
 # Check if the offset changing step must reverse the sign 
 if [ $OFFSET_ERR2 -ge $OFFSET_ERR1 ]; then
@@ -81,27 +78,25 @@ fi
 OFFSET_ERR=$OFFSET_ERR2
 while [ $OFFSET_ERR -ge 100 ]
 do
-	OFFSET_DEC=$((OFFSET_DEC+STEP))
-	sudo ./uio /dev/uio0 w 288 -$OFFSET_DEC # encoder offset sfix18.14
-	sleep 0.1s
+	OFFSET_DEC=$((OFFSET_DEC+STEP))	
+	sudo ./uio /dev/uio0 w 288 $((OFFSET_DEC*-1)) # encoder offset sfix18.14
+	sleep 0.15s
 	OFFSET_ERR=$(sudo ./uio /dev/uio0 r 292) # read the encoder offset error
 	str_to_dec $OFFSET_ERR
 	abs $DEC_VAL
 	OFFSET_ERR=$ABS_VAL
-	echo 'OFFSET_ERR'
-	echo $OFFSET_ERR
+	echo 'OFFSET / OFFSET ERR:' $OFFSET_DEC '/' $OFFSET_ERR		
 done
-sudo ./uio /dev/uio0 w 288 $OFFSET_DEC # encoder offset sfix18.14
-echo 'OFFSET_DEC'	
-echo $OFFSET_DEC
+sudo ./uio /dev/uio0 w 288 $((17000 - OFFSET_DEC)) # encoder offset sfix18.14
+echo 'OFFSET: ' $((17000 - OFFSET_DEC))
 
 ###########################################################################
 # Set the controller to close loop mode
 ###########################################################################
 # Set the parameters of the PI velocity and current controllers
 echo "Initializing the closed loop FOC mode..."
-sudo ./uio /dev/uio0 w 264 1000   # velocity p gain sfix18.16
-sudo ./uio /dev/uio0 w 268 200    # velocity i gain sfix18.15
+sudo ./uio /dev/uio0 w 264 1500   # velocity p gain sfix18.16
+sudo ./uio /dev/uio0 w 268 250    # velocity i gain sfix18.15
 sudo ./uio /dev/uio0 w 272 1500   # current p gain sfix18.10
 sudo ./uio /dev/uio0 w 276 150    # current i gain sfix18.2
 # Set the reference speed
