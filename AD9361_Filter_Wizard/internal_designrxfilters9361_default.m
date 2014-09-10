@@ -42,10 +42,10 @@
 % dBripple_actual = actual pass band ripple
 % dBstop_actual = actual stop band attenuation
 %
-function [tohw,dBripple_actual,dBstop_actual] = internal_designrxfilters9361_default(Fout)
+function tohwrx = internal_designrxfilters9361_default(Fout)
 
-[Fout,~,~,~,~,FIR_interp,HB_interp,PLL_multr] = settxrxclock(Fout);
-Fadc = Fout * FIR_interp * HB_interp;
+[Fout,~,~,~,~,FIR_decim,HB_decim,PLL_multr] = settxrxclock(Fout);
+Fadc = Fout * FIR_decim * HB_decim;
 clkPLL = Fadc * PLL_multr;
 
 Fstop = Fout/2;
@@ -57,7 +57,7 @@ phEQ = -1;
 int_FIR = 1;
 wnom = 0;
 
-% Define the analog filters (represented by digital Butterworth)
+% Define the analog filters
 if ~wnom
     wnom = 1.4*Fpass;
     div = ceil((clkPLL/wnom)*(log(2)/(2*pi)));
@@ -71,21 +71,6 @@ wTIA = wc*(2.5/1.4);
 
 [b1,a1] = butter(1,2*pi*wTIA,'s');  % 1st order
 [b2,a2] = butter(3,2*pi*wc,'s');    % 3rd order
-
-% plot the analog response
-f = linspace(0,Fstop,1024)';
-sincresponse = sinc(f/Fadc).^3;
-plot(f,20*log10(abs(sincresponse)));
-title('ADC Sinc Response');
-w = 2*pi*f;
-rg1 = freqs(b1,a1,w);
-rg2 = freqs(b2,a2,w);
-figure(2);
-plot(f,20*log10(abs(rg1)));
-title('TIA');
-figure(3);
-plot(f,20*log10(abs(rg2)));
-title('Butterworth');
 
 % Define the digital filters with fixed coefficients
 hb1 = 2^(-11)*[-8 0 42 0 -147 0 619 1013 619 0 -147 0 42 0 -8];
@@ -135,7 +120,7 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     
 end
 
-[hb1, hb2, hb3, dec3] = setrxhb9361(HB_interp);
+[hb1, hb2, hb3, dec3] = setrxhb9361(HB_decim);
 
 % convert the enables into a string
 enables = strrep(num2str([hb1 hb2 hb3 dec3]), ' ', '');
@@ -194,7 +179,7 @@ end
 
 % Design the PROG RX FIR
 G = 16384;
-clkRFIR = Fout*FIR_interp;
+clkRFIR = Fout*FIR_decim;
 Gpass = floor(G*Fpass/clkRFIR);
 Gstop=ceil(G*Fstop/clkRFIR);
 Gpass = min(Gpass,Gstop-1);
@@ -290,7 +275,7 @@ while (1)
     end
     tap_store(i,1:M)=ccoef+scoef;
     
-    Hmd = mfilt.firdecim(FIR_interp,tap_store(i,1:M));
+    Hmd = mfilt.firdecim(FIR_decim,tap_store(i,1:M));
     if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
         set(Hmd,'arithmetic','fixed');
         Hmd.InputWordLength = 16;
@@ -329,7 +314,7 @@ while (1)
     end
 end
 
-Hmd = mfilt.firdecim(FIR_interp,h);
+Hmd = mfilt.firdecim(FIR_decim,h);
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
     set(Hmd,'arithmetic','fixed');
     Hmd.InputWordLength = 16;
@@ -339,18 +324,6 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     Hmd.OutputFracLength = 10;
     Hmd.CoeffWordLength = 16;
 end
-rxFilters=cascade(Filter1,Hmd);
-
-% plot the composite response
-f = linspace(0,Fout,1024)';
-rg = analogresp('Rx',f,Fadc,b1,a1,b2,a2).*freqz(rxFilters,f,Fadc);
-figure(4);
-plot(f,20*log10(abs(rg)));
-axis([0 Fout -100 5]);
-title('Amplitude');
-figure(5);
-plot(f,(unwrap(angle(rg))));
-title('Phase');
 
 aTFIR = 1 + ceil(log2(max(Hmd.Numerator)));
 switch aTFIR
@@ -369,13 +342,13 @@ end
 bTFIR = 16 - aTFIR;
 rfirtaps = Hmd.Numerator.*(2^bTFIR);
 
-tohw.RXSAMP = Fout;
-tohw.RF = Fout * FIR_interp;
-tohw.R1 = tohw.RF * hb1;
-tohw.R2 = tohw.R1 * hb2;
-tohw.ADC = Fadc;
-tohw.BBPLL = clkPLL;
-tohw.Coefficient = rfirtaps;
-tohw.Decimation = FIR_interp;
-tohw.Gain = gain;
-tohw.RFBandwidth = Fpass*2;
+tohwrx.RXSAMP = Fout;
+tohwrx.RF = Fout * FIR_decim;
+tohwrx.R1 = tohwrx.RF * hb1;
+tohwrx.R2 = tohwrx.R1 * hb2;
+tohwrx.ADC = Fadc;
+tohwrx.BBPLL = clkPLL;
+tohwrx.Coefficient = rfirtaps;
+tohwrx.Decimation = FIR_decim;
+tohwrx.Gain = gain;
+tohwrx.RFBandwidth = Fpass*2;

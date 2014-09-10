@@ -34,17 +34,39 @@
 
 % Inputs
 % ============================================
-% Fin        = Input sample data rate (in Hz)
+% tohwRx = Parameters to set up the Rx hardware
 %
 % Outputs
 %===============================================
-% tohw = parameters to set up the hardware
-% dBripple_actual = actual pass band ripple
-% dBstop_actual = actual stop band attenuation
+% tohwTx = Parameters to set up the Tx hardware
 %
-function tohwtx = internal_designtxfilters9361_default(Fin)
+function tohwTx = internal_designtxfilters9361_default2(tohwRx)
 
-[Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,~,~,~] = settxrxclock(Fin);
+tohwTx = internal_designtxfilters9361_default(tohwRx.RXSAMP);
+if tohwTx.BBPLL == tohwRx.BBPLL
+    return;
+else
+    FIR_decim = tohwRx.RF/tohwRx.RXSAMP;
+    HB_decim = tohwRx.ADC/tohwRx.RF;
+    PLL_multr = tohwRx.BBPLL/tohwRx.ADC;
+    DAC_mult = 2;
+    if FIR_decim ==4
+        FIR_interp = FIR_decim/2;
+        HB_interp = HB_decim;
+        PLL_mult = PLL_multr;
+    elseif rem(HB_decim,2)== 0
+        FIR_interp = FIR_decim;
+        HB_interp = HB_decim/2;
+        PLL_mult = PLL_multr;
+    elseif PLL_multr>=4
+        FIR_interp = FIR_decim;
+        HB_interp = HB_decim;
+        PLL_mult = PLL_multr/2;
+    else error('Error: Invalid Rx Clock Settings.')
+    end
+end
+
+Fin = tohwRx.RXSAMP;
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * DAC_mult * PLL_mult;
 
@@ -373,13 +395,13 @@ end
 bTFIR = 16 - aTFIR;
 tfirtaps = Hmd.Numerator.*(2^bTFIR);
 
-tohwtx.TXSAMP = Fin;
-tohwtx.TF = Fin * FIR_interp;
-tohwtx.T1 = tohwtx.TF * hb1;
-tohwtx.T2 = tohwtx.T1 * hb2;
-tohwtx.DAC = Fdac;
-tohwtx.BBPLL = clkPLL;
-tohwtx.Coefficient = tfirtaps;
-tohwtx.Interp = FIR_interp;
-tohwtx.Gain = gain;
-tohwtx.RFBandwidth = Fpass*2;
+tohwTx.TXSAMP = Fin;
+tohwTx.TF = Fin * FIR_interp;
+tohwTx.T1 = tohwTx.TF * hb1;
+tohwTx.T2 = tohwTx.T1 * hb2;
+tohwTx.DAC = Fdac;
+tohwTx.BBPLL = clkPLL;
+tohwTx.Coefficient = tfirtaps;
+tohwTx.Interp = FIR_interp;
+tohwTx.Gain = gain;
+tohwTx.RFBandwidth = Fpass*2;

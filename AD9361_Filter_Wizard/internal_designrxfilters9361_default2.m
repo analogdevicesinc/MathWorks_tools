@@ -34,21 +34,42 @@
 
 % Inputs
 % ============================================
-% Fin        = Input sample data rate (in Hz)
+% tohwTx = Parameters to set up the Tx hardware
 %
 % Outputs
 %===============================================
-% tohw = parameters to set up the hardware
-% dBripple_actual = actual pass band ripple
-% dBstop_actual = actual stop band attenuation
+% tohwRx = Parameters to set up the Rx hardware
 %
-function tohwtx = internal_designtxfilters9361_default(Fin)
+function tohwRx = internal_designrxfilters9361_default2(tohwTx)
 
-[Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,~,~,~] = settxrxclock(Fin);
-Fdac = Fin * FIR_interp * HB_interp;
-clkPLL = Fdac * DAC_mult * PLL_mult;
+tohwRx = internal_designrxfilters9361_default(tohwTx.TXSAMP);
+if tohwRx.BBPLL == tohwTx.BBPLL
+    return;
+else
+    FIR_int = tohwTx.TF/tohwTx.TXSAMP;
+    HB_int = tohwTx.DAC/tohwTx.TF;
+    PLL_multt = tohwTx.BBPLL/tohwTx.DAC;
+    if PLL_multt <= 64
+        FIR_decim = FIR_int;
+        HB_decim = HB_int;
+        PLL_multr = PLL_multt;
+    elseif FIR_int <=2
+        FIR_decim = FIR_int*2;
+        HB_decim = HB_int;
+        PLL_multr = PLL_multt/2;
+    elseif HB_int <=6
+        FIR_decim = FIR_int;
+        HB_decim = HB_int*2;
+        PLL_multr = PLL_multt/2;
+    else error('Error: Invalid Tx Clock Settings.')
+    end
+end
 
-Fstop = Fin/2;
+Fout = tohwTx.TXSAMP;
+Fadc = Fout * FIR_decim * HB_decim;
+clkPLL = Fadc * PLL_multr;
+
+Fstop = Fout/2;
 Fpass = Fstop/1.2;
 dBripple = 0.1;
 dBstop = 80;
@@ -59,7 +80,7 @@ wnom = 0;
 
 % Define the analog filters
 if ~wnom
-    wnom = 1.6*Fpass;
+    wnom = 1.4*Fpass;
     div = ceil((clkPLL/wnom)*(log(2)/(2*pi)));
     caldiv = min(max(div,3),511);
     wc = (clkPLL/caldiv)*(log(2)/(2*pi));
@@ -67,21 +88,21 @@ else
     wc = wnom;
 end
 
-wreal = wc*(5.0/1.6);
+wTIA = wc*(2.5/1.4);
 
-[b1,a1] = butter(3,2*pi*wc,'s');     % 3rd order
-[b2,a2] = butter(1,2*pi*wreal,'s');  % 1st order
+[b1,a1] = butter(1,2*pi*wTIA,'s');  % 1st order
+[b2,a2] = butter(3,2*pi*wc,'s');    % 3rd order
 
 % Define the digital filters with fixed coefficients
-hb1 = 2^(-14)*[-53 0 313 0 -1155 0 4989 8192 4989 0 -1155 0 313 0 -53];
+hb1 = 2^(-11)*[-8 0 42 0 -147 0 619 1013 619 0 -147 0 42 0 -8];
 hb2 = 2^(-8)*[-9 0 73 128 73 0 -9];
-hb3 = 2^(-2)*[1 2 1];
-int3 = (1/3)*2^(-13)*[36 -19 0 -156 -12 0 479 223 0 -1215 -993 0 3569 6277 8192 6277 3569 0 -993 -1215 0 223 479 0 -12 -156 0 -19 36];
+hb3 = 2^(-4)*[1 4 6 4 1];
+dec3 = 2^(-14)*[55 83 0 -393 -580 0 1914 4041 5120 4041 1914 0 -580 -393 0 83 55];
 
-Hm1 = mfilt.firinterp(2,hb1);
-Hm2 = mfilt.firinterp(2,hb2);
-Hm3 = mfilt.firinterp(2,hb3);
-Hm4 = mfilt.firinterp(3,int3);
+Hm1 = mfilt.firdecim(2,hb1);
+Hm2 = mfilt.firdecim(2,hb2);
+Hm3 = mfilt.firdecim(2,hb3);
+Hm4 = mfilt.firdecim(3,dec3);
 
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
     
@@ -120,26 +141,25 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     
 end
 
-% pick up the right combination
-[hb1, hb2, hb3, int3] = settxhb9361(HB_interp);
+[hb1, hb2, hb3, dec3] = setrxhb9361(HB_decim);
 
 % convert the enables into a string
-enables = strrep(num2str([hb1 hb2 hb3 int3]), ' ', '');
+enables = strrep(num2str([hb1 hb2 hb3 dec3]), ' ', '');
 switch enables
-    case '1111' % only TFIR
+    case '1111' % only RFIR
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
-    case '2211' % Hb1,Hb2
-        Filter1 = cascade(Hm1,Hm2);
-    case '2221' % Hb1,Hb2,Hb3
-        Filter1 = cascade(Hm1,Hm2,Hm3);
-    case '1113' % Int3
+    case '2211' % Hb2,Hb1
+        Filter1 = cascade(Hm2,Hm1);
+    case '2221' % Hb3,Hb2,Hb1
+        Filter1 = cascade(Hm3,Hm2,Hm1);
+    case '1113' % Dec3
         Filter1 = Hm4;
-    case '2113' % Hb1,Int3
-        Filter1 = cascade(Hm1,Hm4);
-    case '2213' % Hb1,Hb2,Int3
-        Filter1 = cascade(Hm1,Hm2,Hm4);
+    case '2113' % Dec3,Hb1
+        Filter1 = cascade(Hm4,Hm1);
+    case '2213' % Dec3,Hb2,Hb1
+        Filter1 = cascade(Hm4,Hm2,Hm1);
     otherwise
         error('ddcresponse:IllegalOption', 'At least one of the stages must be there.')
 end
@@ -155,7 +175,7 @@ for i = 2:(Nw)
     w(i) = w(1)-2*w(1)*i/(Nw);
 end
 
-response = freqz(Filter1,w,Fdac).*analogresp('Tx',w,Fdac,b1,a1,b2,a2);
+response = analogresp('Rx',w,Fadc,b1,a1,b2,a2).*freqz(Filter1,w,Fadc);
 for i = 1:(Nw)
     invariance(i) = real(response(i))^2+imag(response(i))^2;
 end
@@ -178,21 +198,21 @@ else
     delay = phEQ*(1e-9);
 end
 
-% Design the PROG TX FIR
+% Design the PROG RX FIR
 G = 16384;
-clkTFIR = Fin*FIR_interp;
-Gpass = floor(G*Fpass/clkTFIR);
-Gstop=ceil(G*Fstop/clkTFIR);
+clkRFIR = Fout*FIR_decim;
+Gpass = floor(G*Fpass/clkRFIR);
+Gstop=ceil(G*Fstop/clkRFIR);
 Gpass = min(Gpass,Gstop-1);
 fg = zeros(1,Gpass);
 omega = zeros(1,Gpass);
 
-% passband
+% pass band
 for i = 1:(Gpass+1)
     fg(i) = (i-1)/G;
-    omega(i) = fg(i)*clkTFIR;
+    omega(i) = fg(i)*clkRFIR;
 end
-rg1 = freqz(Filter1,omega,Fdac).*analogresp('Tx',omega,Fdac,b1,a1,b2,a2);
+rg1 = analogresp('Rx',omega,Fadc,b1,a1,b2,a2).*freqz(Filter1,omega,Fadc);
 rg2 = exp(-1i*2*pi*omega*delay);
 rg = rg2./rg1;
 w = abs(rg1)/(dBinv(dBripple/2)-1);
@@ -202,11 +222,11 @@ g = Gpass+1;
 for m = Gstop:(G/2)
     g = g+1;
     fg(g) = m/G;
-    omega(g) = fg(g)*clkTFIR;
+    omega(g) = fg(g)*clkRFIR;
     rg(g) = 0;
 end
-wg1 = abs(freqz(Filter1,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
-wg2 = (sqrt(FIR_interp)*wg1)/(dBinv(-dBstop));
+wg1 = abs(analogresp('Rx',omega(Gpass+2:end),Fadc,b1,a1,b2,a2).*freqz(Filter1,omega(Gpass+2:end),Fadc));
+wg2 = (wg1)/(dBinv(-dBstop));
 wg3 = dBinv(dBstop_FIR);
 wg = max(wg2,wg3);
 grid = fg;
@@ -217,7 +237,7 @@ end
 weight = [w wg];
 weight = weight/max(weight);
 
-% design TFIR filter
+% design RFIR filter
 cr = real(resp);
 B = 2;
 F1 = grid(1:Gpass+1)*2;
@@ -227,17 +247,8 @@ A2 = cr(Gpass+2:end);
 W1 = weight(1:Gpass+1);
 W2 = weight(Gpass+2:end);
 
-% Determine the number of taps for TFIR
-switch FIR_interp
-    case 1
-        Nmax = 64;
-    case 2
-        Nmax = 128;
-    case 4
-        Nmax = 128;
-end
-
-N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
+% Determine the number of taps for RFIR
+N = min(16*floor(Fadc/(2*Fout)),128);
 tap_store = zeros(N/16,N);
 dBripple_actual_vecotr = zeros(N/16,1);
 dBstop_actual_vector = zeros(N/16,1);
@@ -285,7 +296,7 @@ while (1)
     end
     tap_store(i,1:M)=ccoef+scoef;
     
-    Hmd = mfilt.firinterp(FIR_interp,tap_store(i,1:M));
+    Hmd = mfilt.firdecim(FIR_decim,tap_store(i,1:M));
     if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
         set(Hmd,'arithmetic','fixed');
         Hmd.InputWordLength = 16;
@@ -295,11 +306,11 @@ while (1)
         Hmd.OutputFracLength = 10;
         Hmd.CoeffWordLength = 16;
     end
-    txFilters=cascade(Hmd,Filter1);
+    rxFilters=cascade(Filter1,Hmd);
     
     % quantitative values about actual passband and stopband
-    rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),Fdac).*analogresp('Tx',omega(1:Gpass+1),Fdac,b1,a1,b2,a2));
-    rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
+    rg_pass = abs(analogresp('Rx',omega(1:Gpass+1),Fadc,b1,a1,b2,a2).*freqz(rxFilters,omega(1:Gpass+1),Fadc));
+    rg_stop = abs(analogresp('Rx',omega(Gpass+2:end),Fadc,b1,a1,b2,a2).*freqz(rxFilters,omega(Gpass+2:end),Fadc));
     dBripple_actual_vecotr(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
     dBstop_actual_vector(i) = -mag2db(max(rg_stop));
     
@@ -324,21 +335,7 @@ while (1)
     end
 end
 
-if int_FIR == 1 && FIR_interp == 2
-    R = rem(length(h),32);
-    if R ~= 0
-        h = [zeros(1,8),h,zeros(1,8)];
-    end
-elseif int_FIR == 1 && FIR_interp == 4
-    R = rem(length(h),64);
-    if R ~= 0
-        newlength = ceil(length(h)/64)*64;
-        addlength = (newlength-length(h))/2;
-        h = [zeros(1,addlength),h,zeros(1,addlength)];
-    end
-end
-
-Hmd = mfilt.firinterp(FIR_interp,h);
+Hmd = mfilt.firdecim(FIR_decim,h);
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
     set(Hmd,'arithmetic','fixed');
     Hmd.InputWordLength = 16;
@@ -360,26 +357,19 @@ switch aTFIR
     otherwise
         gain = -12;
 end
-if FIR_interp == 2
-    gain = gain+6;
-elseif FIR_interp == 4
-    gain = gain+12;
-end
-if gain > 0
-    gain = 0;
-elseif gain < -6
-    gain = -6;
+if aTFIR > 2
+    gain = +6;
 end
 bTFIR = 16 - aTFIR;
-tfirtaps = Hmd.Numerator.*(2^bTFIR);
+rfirtaps = Hmd.Numerator.*(2^bTFIR);
 
-tohwtx.TXSAMP = Fin;
-tohwtx.TF = Fin * FIR_interp;
-tohwtx.T1 = tohwtx.TF * hb1;
-tohwtx.T2 = tohwtx.T1 * hb2;
-tohwtx.DAC = Fdac;
-tohwtx.BBPLL = clkPLL;
-tohwtx.Coefficient = tfirtaps;
-tohwtx.Interp = FIR_interp;
-tohwtx.Gain = gain;
-tohwtx.RFBandwidth = Fpass*2;
+tohwRx.RXSAMP = Fout;
+tohwRx.RF = Fout * FIR_decim;
+tohwRx.R1 = tohwRx.RF * hb1;
+tohwRx.R2 = tohwRx.R1 * hb2;
+tohwRx.ADC = Fadc;
+tohwRx.BBPLL = clkPLL;
+tohwRx.Coefficient = rfirtaps;
+tohwRx.Decimation = FIR_decim;
+tohwRx.Gain = gain;
+tohwRx.RFBandwidth = Fpass*2;
