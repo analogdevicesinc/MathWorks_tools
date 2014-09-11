@@ -38,9 +38,7 @@
 %
 % Outputs
 %===============================================
-% tohw = parameters to set up the hardware
-% dBripple_actual = actual pass band ripple
-% dBstop_actual = actual stop band attenuation
+% tohwrx = parameters to set up the hardware
 %
 function tohwrx = internal_designrxfilters9361_default(Fout)
 
@@ -227,92 +225,49 @@ W1 = weight(1:Gpass+1);
 W2 = weight(Gpass+2:end);
 
 % Determine the number of taps for RFIR
-N = min(16*floor(Fadc/(2*Fout)),128);
-tap_store = zeros(N/16,N);
-dBripple_actual_vecotr = zeros(N/16,1);
-dBstop_actual_vector = zeros(N/16,1);
-i = 1;
+%N = min(16*floor(Fadc/(2*Fout)),128);
+N = 128;
 
-while (1)
-    if int_FIR
-        d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
-    else
-        d = fdesign.arbmag('B,F,A,R');
-        d.NBands = 2;
-        d.B1Frequencies = F1;
-        d.B1Amplitudes = A1;
-        d.B1Ripple = db2mag(-dBstop);
-        d.B2Frequencies = F2;
-        d.B2Amplitudes = A2;
-        d.B2Ripple = db2mag(-dBstop);
-    end
-    Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
-    ccoef = Hd.Numerator;
-    M = length(ccoef);
-    
-    if phEQ ~= -1
-        sg = 0.5-grid(end:-1:1);
-        sr = imag(resp(end:-1:1));
-        sw = weight(end:-1:1);
-        F3 = sg(1:G/2-Gstop+1)*2;
-        F4 = sg(G/2-Gstop+2:end)*2;
-        A3 = sr(1:G/2-Gstop+1);
-        A4 = sr(G/2-Gstop+2:end);
-        W3 = sw(1:G/2-Gstop+1);
-        W4 = sw(G/2-Gstop+2:end);
-        if int_FIR
-            d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
-        else
-            d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
-        end
-        Hd2 = design(d2,'equiripple','B1Weights',W3,'B2Weights',W4,'SystemObject',false);
-        scoef = Hd2.Numerator;
-        for k = 1:length(scoef)
-            scoef(k) = -scoef(k)*(-1)^(k-1);
-        end
-    else
-        scoef = 0;
-    end
-    tap_store(i,1:M)=ccoef+scoef;
-    
-    Hmd = mfilt.firdecim(FIR_decim,tap_store(i,1:M));
-    if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
-        set(Hmd,'arithmetic','fixed');
-        Hmd.InputWordLength = 16;
-        Hmd.InputFracLength = 14;
-        Hmd.FilterInternals = 'SpecifyPrecision';
-        Hmd.OutputWordLength = 12;
-        Hmd.OutputFracLength = 10;
-        Hmd.CoeffWordLength = 16;
-    end
-    rxFilters=cascade(Filter1,Hmd);
-    
-    % quantitative values about actual passband and stopband
-    rg_pass = abs(analogresp('Rx',omega(1:Gpass+1),Fadc,b1,a1,b2,a2).*freqz(rxFilters,omega(1:Gpass+1),Fadc));
-    rg_stop = abs(analogresp('Rx',omega(Gpass+2:end),Fadc,b1,a1,b2,a2).*freqz(rxFilters,omega(Gpass+2:end),Fadc));
-    dBripple_actual_vecotr(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
-    dBstop_actual_vector(i) = -mag2db(max(rg_stop));
-    
-    if int_FIR == 0
-        h = tap_store(1,1:M);
-        dBripple_actual = dBripple_actual_vecotr(1);
-        dBstop_actual = dBstop_actual_vector(1);
-        break
-    elseif dBripple_actual_vecotr(1) > dBripple || dBstop_actual_vector(1) < dBstop
-        h = tap_store(1,1:N);
-        dBripple_actual = dBripple_actual_vecotr(1);
-        dBstop_actual = dBstop_actual_vector(1);
-        break
-    elseif dBripple_actual_vecotr(i) > dBripple || dBstop_actual_vector(i) < dBstop
-        h = tap_store(i-1,1:N+16);
-        dBripple_actual = dBripple_actual_vecotr(i-1);
-        dBstop_actual = dBstop_actual_vector(i-1);
-        break
-    else
-        N = N-16;
-        i = i+1;
-    end
+if int_FIR
+    d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
+else
+    d = fdesign.arbmag('B,F,A,R');
+    d.NBands = 2;
+    d.B1Frequencies = F1;
+    d.B1Amplitudes = A1;
+    d.B1Ripple = db2mag(-dBstop);
+    d.B2Frequencies = F2;
+    d.B2Amplitudes = A2;
+    d.B2Ripple = db2mag(-dBstop);
 end
+Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
+ccoef = Hd.Numerator;
+M = length(ccoef);
+
+if phEQ ~= -1
+    sg = 0.5-grid(end:-1:1);
+    sr = imag(resp(end:-1:1));
+    sw = weight(end:-1:1);
+    F3 = sg(1:G/2-Gstop+1)*2;
+    F4 = sg(G/2-Gstop+2:end)*2;
+    A3 = sr(1:G/2-Gstop+1);
+    A4 = sr(G/2-Gstop+2:end);
+    W3 = sw(1:G/2-Gstop+1);
+    W4 = sw(G/2-Gstop+2:end);
+    if int_FIR
+        d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
+    else
+        d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
+    end
+    Hd2 = design(d2,'equiripple','B1Weights',W3,'B2Weights',W4,'SystemObject',false);
+    scoef = Hd2.Numerator;
+    for k = 1:length(scoef)
+        scoef(k) = -scoef(k)*(-1)^(k-1);
+    end
+else
+    scoef = 0;
+end
+h = ccoef+scoef;
 
 Hmd = mfilt.firdecim(FIR_decim,h);
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
