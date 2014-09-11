@@ -55,12 +55,16 @@ HBandFIR_tmp = [1 2 3 4 6 8 12 16 24 32 48];
 PLL_tmp = [2 4 8 16 32 64];
 
 % TX
-for i = 1:length(HBandFIR_tmp)
-    if Fdata * HBandFIR_tmp(i) > MAX_DAC_CLK
-        break;
-    else
-        HBandFIR = HBandFIR_tmp(i);
-        Fdac = Fdata * HBandFIR;
+if Fdata * HBandFIR_tmp(end) < MAX_DAC_CLK
+    HBandFIR = HBandFIR_tmp(end);
+    Fdac = Fdata * HBandFIR;
+else
+    for i = 1:length(HBandFIR_tmp)
+        if Fdata * HBandFIR_tmp(i) > MAX_DAC_CLK
+            HBandFIR = HBandFIR_tmp(i-1);
+            Fdac = Fdata * HBandFIR;
+            break;
+        end
     end
 end
 
@@ -124,15 +128,18 @@ Fdac = Fdata * FIR_interp * HB_interp;
 clkPLLt = Fdac * DAC_mult * PLL_mult;
 
 % RX
-for i = 1:length(HBandFIR_tmp)
-    if Fdata * HBandFIR_tmp(i) > MAX_ADC_CLK
-        break;
-    else
-        HBandFIRr = HBandFIR_tmp(i);
-        Fadc = Fdata * HBandFIRr;
+if Fdata * HBandFIR_tmp(end) < MAX_ADC_CLK
+    HBandFIRr = HBandFIR_tmp(end);
+    Fadc = Fdata * HBandFIRr;
+else
+    for i = 1:length(HBandFIR_tmp)
+        if Fdata * HBandFIR_tmp(i) > MAX_ADC_CLK
+            HBandFIRr = HBandFIR_tmp(i-1);
+            Fadc = Fdata * HBandFIRr;
+            break;
+        end
     end
 end
-
 
 if Fadc * PLL_tmp(1) > MAX_BBPLL_FREQ
     PLL_multr = 2;
