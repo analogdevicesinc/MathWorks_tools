@@ -53,6 +53,16 @@ end
 DAC_mult = 2;
 HBandFIR_tmp = [1 2 3 4 6 8 12 16 24 32 48];
 PLL_tmp = [2 4 8 16 32 64];
+FIR_interp = 1;
+HB_interp = 1;
+PLL_mult = 2;
+FIR_decim = 1;
+HB_decim = 1;
+PLL_multr = 2;
+HBandFIR = 1;
+HBandFIRr = 1;
+Fdac = MAX_DAC_CLK;
+Fadc = MAX_ADC_CLK;
 
 % TX
 if Fdata * HBandFIR_tmp(end) < MAX_DAC_CLK
