@@ -54,7 +54,7 @@ classdef TestFiltWiz < handle
         end
         
         function applyFilterWizardCallback(obj, tohwRx)
-            tohwTx = internal_designtxfilters9361_default2(tohwRx);
+            tohwTx = internal_designtxfilters9361_default(tohwRx.RXSAMP);
             obj.applyFilterWizardDesign('CustomFilter', tohwTx, tohwRx);
         end
         % ***** Callback set during wizard invocation *****
@@ -74,6 +74,10 @@ classdef TestFiltWiz < handle
             
             assert(obj.BasebandSampleRate == tohwRx.RXSAMP, 'BasebandSampleRate does not match the filter design');
             
+            if(length(tohwRx.Coefficient) < length(tohwTx.Coefficient))
+                padLength = (length(tohwTx.Coefficient) - length(tohwRx.Coefficient)) / 2;
+                tohwRx.Coefficient = [zeros(1, padLength) tohwRx.Coefficient zeros(1, padLength)];
+            end
             obj.FIRCoefficients      = [tohwTx.Coefficient; tohwRx.Coefficient];
             obj.FIRGain              = [tohwTx.Gain ; tohwRx.Gain];
             obj.FIRDecimInterpFactor = [tohwTx.Interp ; tohwRx.Decimation];
