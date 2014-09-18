@@ -10,8 +10,10 @@
 %   'remote'          'hide' | 'IP_number' | 'IP_number:port'
 %   'PathConfig'      'rx' | 'tx' | 'either'
 %   'ApplyString'     'Save String'
+%   'ApplyCallback    'Callback for Apply button'
 %   'helpurl'         'http:\\help.com\'
-%   'DefaultVals'     Structure of default values
+%   'DefaultRxVals'     Structure of default values (in Hz)
+%   'DefaultTxVals'     Structure of default values (in Hz)
 %
 %%
 % Copyright 2014(c) Analog Devices, Inc.
@@ -72,7 +74,7 @@ function varargout = AD9361_Filter_Wizard(varargin)
 
 % Edit the above text to modify the response to help AD9361_Filter_Wizard
 
-% Last Modified by GUIDE v2.5 18-Jun-2014 16:29:15
+% Last Modified by GUIDE v2.5 09-Sep-2014 10:36:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -113,8 +115,17 @@ handles.MAX_DAC_CLK    =  handles.MAX_ADC_CLK / 2;           % (MAX_ADC_CLK / 2)
 
 handles.MAX_DATA_RATE  =   61440000;                         %   61.44 MSPS
 handles.MIN_DATA_RATE  =  handles.MIN_BBPLL_FREQ / (48 * (2 ^ 6));
+handles.MAX_FIR        =  handles.MAX_DATA_RATE * 2;
+handles.MAX_RX.HB1     =  245760000;
+handles.MAX_RX.HB2     =  320000000;
+handles.MAX_RX.HB3     =  640000000;
+handles.MAX_TX.HB1     =  160000000;
+handles.MAX_TX.HB2     =  320000000;
+handles.MAX_TX.HB3     =  320000000;
 
 new = 0;
+handles.freq_units = 3;
+
 % inputs need to be name/value _pairs_
 if rem(length(varargin),2)
     error('myApp:argChk', 'Wrong number of input arguments')
@@ -142,68 +153,39 @@ for i = 1:2:length(varargin)
         else
             error('Unknown value to "PathConfig"');
         end
-        filter_type_Callback(handles.filter_type, eventdata, handles);
+        %filter_type_Callback(handles.filter_type, eventdata, handles);
     elseif strcmpi(varargin{i}, 'ApplyString')
         % 'ApplyString'  'Save String'
          set(handles.save2workspace, 'String', varargin{i + 1});
     elseif strcmpi(varargin{i}, 'helpurl')
         % 'helpurl'  'http://help.com/url'
         set(handles.help_button, 'TooltipString', varargin{i + 1});
-    elseif strcmpi(varargin{i}, 'DefaultVals')
-        % 'DefaultVals'     'structure (in MHz)'
+    elseif strcmpi(varargin{i}, 'DefaultRxVals')
+        % 'DefaultRxVals'     'structure (in Hz)'
+        handles.input_rx  = cook_input(varargin{i +1});
+        handles.input_rx.RxTx = 'Rx';
         new = 1;
-        handles.freq_units = 3;
-        set(handles.Freq_units, 'Value', handles.freq_units);
-        handles.clock_units = 3;
-        set(handles.Clock_units, 'Value', handles.clock_units);
-        
-        setting = varargin{i +1};
-
-        set(handles.Advanced_options, 'Value', 0);
-        if isfield(setting, 'Pheq') || setting.Pheq == -1
-            set(handles.phase_eq, 'Value', 0);
-        else
-            set(handles.Advanced_options, 'Value', 1);
-            set(handles.phase_eq, 'Value', 1);
-            set(handles.target_delay, 'Value', num2str(setting.Pheq));
-        end       
-        if isfield(setting, 'Fpass')
-            set(handles.Fpass, 'String', num2str(setting.Fpass));
-        else
-            error('default input must specify Fpass');
-        end       
-        if isfield(setting, 'Fstop')
-            set(handles.Fstop, 'String', num2str(setting.Fstop));
-        else
-            set(handles.Fstop, 'String', num2str(setting.Fpass) * 1.2);
-        end
-        if isfield(setting, 'dBripple')
-            set(handles.Apass, 'String', num2str(setting.dBripple));
-        else
-            set(handles.Apass, 'String', num2str(0.2));
-        end
-        if isfield(setting, 'dBstop')
-            set(handles.Astop, 'String', num2str(setting.dBstop));
-        else
-            set(handles.Astop, 'String', num2str(80));
-        end
-        
-        if ~isfield(setting, 'Rdata')
-            error('Must have output data rate in default values');
-        end
-        
-        if setting.Rdata > handles.MAX_DATA_RATE / 1e6
-            setting.Rdata = handles.MAX_DATA_RATE / 1e6;
-        end
-        if setting.Rdata < handles.MIN_DATA_RATE / 1e6
-            setting.Rdata = handles.MIN_DATA_RATE / 1e6
-        end
-
-        set(handles.data_clk, 'String', num2str(setting.Rdata));
-        
+    elseif strcmpi(varargin{i}, 'DefaultTxVals')
+        % 'DefaultTxVals'     'structure (in Hz)'
+        handles.input_tx = cook_input(varargin{i +1});
+        handles.input_tx.RxTx = 'Tx';
+        new = 1;
+    elseif strcmpi(varargin{i}, 'ApplyCallback')
+        handles.callback = str2func(varargin{i + 1});
+    elseif strcmpi(varargin{i}, 'CallbackObj')
+        handles.callbackObj = varargin{i + 1};
     else
         error('Unknown input to function');
     end
+end
+
+if isfield(handles, 'input_tx') || isfield(handles, 'input_rx')
+    set(handles.store_filter, 'Visible', 'off');
+    guidata(hObject, handles);
+    data2gui(hObject, handles);
+else
+    handles.input_rx = 0;
+    handles.input_tx = 0;
 end
 
 handles.Original_Size = get(handles.AD9361_Filter_app, 'Position');
@@ -224,24 +206,32 @@ set(handles.ADI_logo, 'HandleVisibility', 'off');
 
 axes(handles.magnitude_plot);
 
-handles.libname = 'libiio';
-handles.hname = 'iio.h';
-handles.iio_ctx = {};
-handles.iio_dev = {};
-
+handles.iio_cmdsrv = {};
 handles.taps = {};
+
+handles.arrows_1 = 0;
+handles.arrows_2 = 0;
+handles.arrows_3 = 0;
+handles.arrows_4 = 0;
+
+% Update handles structure
+guidata(hObject, handles);
 
 if ~new
     reset_input(hObject, handles);
+    load_settings(hObject, handles);
 else
+    reset_input(hObject, handles);
+    dirty(hObject, handles);
     handles.active_plot = 0;
-    display_default_image(hObject, handles)
+    display_default_image(hObject);
 end
-handles.clock_units = get(handles.Clock_units, 'Value');
+handles = guidata(hObject);
+
 handles.freq_units = get(handles.Freq_units, 'Value');
 handles.active_plot = 0;
 
-set(zoom(gca),'ActionPostCallback',@(x,y) zoom_axis(gca));
+% set(zoom(gca),'ActionPostCallback',@(x,y) zoom_axis(gca));
 
 % Update handles structure
 guidata(hObject, handles);
@@ -271,10 +261,12 @@ units = get(hObject, 'Value');
 if (handles.freq_units ~= units)
     fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
     fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
+    data_rate = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
     
     handles.freq_units = units;
     set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, fstop)));
     set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, fpass)));
+    set(handles.data_clk, 'String', num2str(Hz2value(handles, handles.freq_units, data_rate)));
     % Update handles structure
     guidata(hObject, handles);
 end
@@ -296,14 +288,35 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
+function dirty(hObject, handles)
+handles.active_plot = 0;
+plot_buttons_off(handles);
+Filters = get(handles.Saved_Filters, 'String');
+if ~ strcmp(Filters{get(handles.Saved_Filters, 'Value')}, 'New')
+    n = length(Filters) + 1;
+    Filters{n} = 'New';
+    set(handles.Saved_Filters, 'String', Filters);
+    set(handles.Saved_Filters, 'Value', n);
+    set(handles.store_filter, 'Visible', 'on');
+end
 
 function Fpass_Callback(hObject, eventdata, handles)
 % hObject    handle to Fpass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.active_plot = 0;
-plot_buttons_off(handles);
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+Fpass = value2Hz(handles, get(handles.Freq_units, 'Value'),str2double(get(hObject,'String')));
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.Fpass = Fpass;
+else
+    handles.input_tx.Fpass = Fpass;
+end
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
+
 guidata(hObject, handles)
 % Hints: get(hObject,'String') returns contents of Fpass as text
 %        str2double(get(hObject,'String')) returns contents of Fpass as a double
@@ -327,17 +340,19 @@ function Fstop_Callback(hObject, eventdata, handles)
 % hObject    handle to Fstop (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+dirty(hObject, handles);
+handles = guidata(hObject);
 
-if str2double(get(hObject,'String')) >= get_data_rate(handles) / 2
-    set(hObject,'String', get_data_rate(handles)/2);
+Fstop = value2Hz(handles, get(handles.Freq_units, 'Value'),str2double(get(hObject,'String')));
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.Fstop = Fstop;
+else
+    handles.input_tx.Fstop = Fstop;
 end
 
-if str2double(get(hObject,'String')) <= str2double(get(handles.Fpass,'String'))
-    set(hObject,'String', get(handles.Fpass,'String'));
-end
+data2gui(hObject, handles);
+handles = guidata(hObject);
 
-handles.active_plot = 0;
-plot_buttons_off(handles);
 guidata(hObject, handles)
 % Hints: get(hObject,'String') returns contents of Fstop as text
 %        str2double(get(hObject,'String')) returns contents of Fstop as a double
@@ -381,249 +396,39 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-function converter_clk_Callback(hObject, eventdata, handles)
-% hObject    handle to converter_clk (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of converter_clk as text
-%        str2double(get(hObject,'String')) returns contents of converter_clk as a double
-if (handles.active_plot ~= 0)
-    handles.active_plot = 0;
-end
-plot_buttons_off(handles);
-
-% --- Executes during object creation, after setting all properties.
-function converter_clk_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to converter_clk (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-% --- Executes on selection change in Clock_units.
-function Clock_units_Callback(hObject, eventdata, handles)
-% hObject    handle to Clock_units (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-units = get(hObject, 'Value');
-
-if (handles.clock_units ~= units)
-    data_clk = value2Hz(handles, handles.clock_units, str2double(get(handles.data_clk, 'String')));
-    converter_clk = value2Hz(handles, handles.clock_units, str2double(get(handles.converter_clk, 'String')));
-    pll_clk = value2Hz(handles, handles.clock_units, str2double(get(handles.Pll_rate, 'String')));
-    
-    handles.clock_units = units;
-    
-    put_data_clk(handles, data_clk);
-    set_converter_rate(handles, converter_clk);
-    set_pll_rate(handles, pll_clk);
-    
-    % Update handles structure
-    guidata(hObject, handles);
-end
-% Hints: contents = cellstr(get(hObject,'String')) returns Clock_units contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from Clock_units
-
-
-% --- Executes during object creation, after setting all properties.
-function Clock_units_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to Clock_units (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 function interpolate = converter_interp(handles)
 interpolate = cellstr(get(handles.converter2PLL, 'String'));
+if isempty(interpolate{1})
+    error('For some reason converter2PLL is empty. This will cause me to crash');
+    dbstack('-completenames');
+end
 interpolate = char(interpolate(get(handles.converter2PLL, 'Value')));
 interpolate = str2num(interpolate(1:2));
 
-function interpolate = HB_interp(handles)
-interpolate = cellstr(get(handles.HB2converter, 'String'));
-interpolate = char(interpolate(get(handles.HB2converter, 'Value')));
-interpolate = str2num(interpolate(1:2));
 
-function interpolate = fir_interp(handles)
-interpolate = cellstr(get(handles.FIR2HB, 'String'));
-interpolate = char(interpolate(get(handles.FIR2HB, 'Value')));
-interpolate = str2num(interpolate(1:2));
-
-function fix_converter2pll(hObject, handles)
-
-converter_rate = get_converter_clk(handles) * get(handles.DAC_by2, 'Value');
-
-i = 1;
-j = 0;
-str = '';
-% avalible interpolation factors base on dividers
-while i <= 6 & (converter_rate * (2^i) <= handles.MAX_BBPLL_FREQ)
-    if (converter_rate * (2^i) >= handles.MIN_BBPLL_FREQ)
-        if j
-            str = char(str, sprintf('%d x', 2 ^ i));
-        else
-            str = sprintf('%d x', 2 ^ i);
-        end
-        j = j + 1;
-    end
-    i = i + 1;
-end
-i = i - 1;
-
-if get(handles.converter2PLL, 'Value') > j
-    set(handles.converter2PLL, 'Value', j);
-end
-set(handles.converter2PLL, 'String', str);
-
-pll_rate = converter_rate * converter_interp(handles);
-set_pll_rate(handles, pll_rate);
-
-% Update handles structure
-guidata(hObject, handles);
-
-function fix_FIR2HB(hObject, handles)
-data_rate = get_data_rate(handles);
-i = 1;
-j = 0;
-k = fir_interp(handles);
-l = 0;
-str = '';
-tmp = [1 2 4];
-while i <= (size(tmp, 2)) && (data_rate * tmp(i) <= 122.88 * 1e6)
-    if (data_rate * tmp(i) >= handles.MIN_ADC_CLK / 12)
-        if j
-            str = char(str, sprintf('%d x', tmp(i)));
-        else
-            str = sprintf('%d x', tmp(i));
-        end
-        j = j + 1;
-        if k == tmp(i)
-            l = j;
-        end
-    end
-    i = i + 1;
-end
-
-if l
-    set(handles.FIR2HB, 'Value', l);
-else
-    set(handles.FIR2HB, 'Value', j);
-end
-
-set(handles.FIR2HB, 'String', str);
-
-
-function fix_HB2converter(hObject, handles)
-
-data_rate = get_data_rate(handles);
-
-converter_rate = data_rate * HB_interp(handles) * fir_interp(handles);
-
+function sel = get_current_rxtx(handles)
 if (get(handles.filter_type, 'Value') == 1)
     % receive
-    max_rate = handles.MAX_ADC_CLK;
+    sel = handles.input_rx;
 else
     %transmitt
-    max_rate = handles.MAX_DAC_CLK;
+    sel = handles.input_tx;
 end
-
-if converter_rate >= max_rate
-    while (converter_rate >= max_rate)
-        set(handles.HB2converter, 'Value', get(handles.HB2converter, 'Value') - 1);
-        converter_rate = data_rate * HB_interp(handles) * fir_interp(handles);;
-    end
-    set_converter_rate(handles, converter_rate);
-end
-
-i = 1;
-j = 0;
-k = HB_interp(handles);
-l = 0;
-str = '';
-% avalible interpolation factors base on HB1/HB2/HB3
-tmp = [1 2 3 4 6 8 12];
-while i <= (size(tmp, 2)) && (data_rate * fir_interp(handles) * tmp(i) <= max_rate)
-    if (data_rate * fir_interp(handles) * tmp(i) >= handles.MIN_ADC_CLK)
-        if j
-            str = char(str, sprintf('%d x', tmp(i)));
-        else
-            str = sprintf('%d x', tmp(i));
-        end
-        j = j + 1;
-        if k == tmp(i)
-            l = j;
-        end
-    end
-    i = i + 1;
-end
-
-if l
-    set(handles.HB2converter, 'Value', l);
-else
-    set(handles.HB2converter, 'Value', j);
-end
-set(handles.HB2converter, 'String', str);
-
-pll_rate = data_rate * fir_interp(handles) * HB_interp(handles) * converter_interp(handles) * get(handles.DAC_by2, 'Value');
-
-if (pll_rate < handles.MIN_BBPLL_FREQ)
-    % Can we increase the Converter -> PLL dividor?
-    x = log2(handles.MIN_BBPLL_FREQ / (data_rate * fir_interp(handles) * HB_interp(handles) * get(handles.DAC_by2, 'Value')));
-    if round(x) > 6
-        % Set to the max already, so we need to increase the interpolation rate.
-        set(handles.HB2converter, 'Value', get(handles.HB2converter, 'Value') + 1);
-        fix_converter2pll(hObject, handles)
-    end
-end
-
-% Update handles structure
-guidata(hObject, handles);
 
 function data_clk_Callback(hObject, eventdata, handles)
 % hObject    handle to data_clk (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+dirty(hObject, handles);
+handles = guidata(hObject);
 
-data_rate = get_data_rate(handles);
+data_rate = value2Hz(handles, get(handles.Freq_units, 'Value'),str2double(get(hObject,'String')));
+handles.input_rx.Rdata = data_rate;
+handles.input_tx.Rdata = data_rate;
 
-fstop = value2Hz(handles, get(handles.Freq_units, 'Value'), str2double(get(handles.Fstop, 'String')));
+data2gui(hObject, handles);
+handles = guidata(hObject);
 
-if data_rate / 2 <= fstop
-    fstop = data_rate / 2;
-    set(handles.Fstop, 'String', Hz2value(handles, get(handles.Freq_units, 'Value'),fstop));
-    if value2Hz(handles, get(handles.Freq_units, 'Value'), str2double(get(handles.Fpass, 'String'))) >= fstop
-        set(handles.Fpass, 'String', num2str(0.9 * Hz2value(handles, get(handles.Freq_units, 'Value'),fstop)));
-    end
-end
-
-fix_FIR2HB(hObject, handles);
-fix_HB2converter(hObject, handles);
-
-converter_rate = data_rate * HB_interp(handles) * fir_interp(handles);
-pll_rate = converter_rate * converter_interp(handles) * get(handles.DAC_by2, 'Value');
-
-if (pll_rate < handles.MIN_BBPLL_FREQ)
-    fix_converter2pll(hObject, handles);
-end
-
-put_data_clk(handles, data_rate);
-set_converter_rate(handles, converter_rate);
-set_pll_rate(handles, pll_rate);
-
-fix_converter2pll(hObject, handles);
-
-handles.active_plot = 0;
-plot_buttons_off(handles);
 guidata(hObject, handles)
 
 % --- Executes during object creation, after setting all properties.
@@ -696,14 +501,8 @@ function filter_type_Callback(hObject, eventdata, handles)
 % hObject    handle to filter_type (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if get(hObject,'Value') == 1
-    set(handles.DAC_by2, 'Visible', 'off');
-    set(handles.DAC_by2, 'Value', 1);
-    set(handles.DAC_by2_label, 'Visible', 'off');
-else
-    set(handles.DAC_by2, 'Visible', 'on');
-    set(handles.DAC_by2_label, 'Visible', 'on');
-end
+data2gui(hObject, handles);
+
 % Hints: contents = cellstr(get(hObject,'String')) returns filter_type contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from filter_type
 
@@ -740,7 +539,10 @@ fprintf(fid, '%s\n', strcat('# Generated', 32, datestr(now())));
 fprintf(fid, '# Inputs:\n');
 
 data_rate = get_data_rate(handles);
-converter_rate = get_converter_clk(handles);
+%FIXME
+%converter_rate = get_converter_clk(handles);
+converter_rate = get_ADC_clk(handles);
+
 pll_rate = get_pll_rate(handles);
 
 fprintf(fid, '# PLL CLK Frequecy = %f Hz\n', pll_rate);
@@ -751,7 +553,6 @@ if get(handles.filter_type, 'Value') == 1
 else
     fprintf(fid, 'T');
 end
-fprintf(fid, 'X %d ', get(handles.FIR_1, 'Value') + (2 * get(handles.FIR_2, 'Value')));
 fprintf(fid, 'GAIN %d ', handles.gain);
 
 if get(handles.filter_type, 'Value') == 1
@@ -863,50 +664,24 @@ function target_get_clock_Callback(hObject, eventdata, handles)
 % hObject    handle to target_get_clock (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if libisloaded(handles.libname)
-    data = double(0);
-    pData = libpointer('doublePtr', data(1));
-    pAttr = libpointer('stringPtr', 'sampling_frequency');
-    retCode = -1;
-    
-    nb_channels = calllib(handles.libname, 'iio_device_get_channels_count', handles.iio_dev);
-    iio_channel = {};
-    for j = 0 : nb_channels-1        
-        iio_channel = calllib(handles.libname, 'iio_device_get_channel', handles.iio_dev, j);
-        ret = calllib(handles.libname, 'iio_channel_find_attr', iio_channel, pAttr);
-        if(~isempty(ret))
-            ret = calllib(handles.libname, 'iio_channel_attr_get_filename', iio_channel, pAttr);
-            if(strcmp(ret, 'in_voltage_sampling_frequency'))
-                retCode = calllib(handles.libname, 'iio_channel_attr_read_double', iio_channel, pAttr, pData); 
-                iio_channel = {};
-                break;
-            end            
-        end
-        iio_channel = {};
-    end    
-    if(retCode < 0)
+if ~ isempty(handles.iio_cmdsrv)
+    [ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy in_voltage_sampling_frequency\n');
+    if(ret == -1)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    data_clk = pData.Value;
-    pData = {};
-    
-    data = char(ones(1, 512));
-    pData = libpointer('stringPtr', data);
-    pAttr = libpointer('stringPtr', 'rx_path_rates');
-    [~,~,~,rbuf] = calllib(handles.libname, 'iio_device_attr_read', handles.iio_dev, pAttr, pData, 512);
-    if(isempty(data_clk) < 0)
+    [ret, rbuf1] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy rx_path_rates\n');
+    if(ret == -1)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    
-    clocks = sscanf(rbuf, 'BBPLL:%d ADC:%d');
-    clear rbuf; pData = {};
+    data_clk = str2num(rbuf);
+    clocks = sscanf(rbuf1, 'BBPLL:%d ADC:%d');
     div_adc = num2str(clocks(2) / data_clk);
-    interpolate = cellstr(get(handles.HB2converter, 'String'))';
+    interpolate = cellstr(get(handles.HB1, 'String'))';
     idx = find(strncmp(interpolate, div_adc, length(div_adc)) == 1);
     if(~isempty(idx))
-        set(handles.HB2converter, 'Value', idx(1));
+        set(handles.HB1, 'Value', idx(1));
     end
     put_data_clk(handles, data_clk);
     data_clk_Callback(handles.data_clk, eventdata, handles);
@@ -920,10 +695,12 @@ function FVTool_deeper_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-data_rate = get_data_rate(handles);
-converter_rate = value2Hz(handles, handles.clock_units, str2double(get(handles.converter_clk, 'String')));
-fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
-fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
+sel = get_current_rxtx(handles);
+
+data_rate = sel.Rdata;
+converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
+fstop = sel.Fstop;
+fpass = sel.Fpass;
 
 if (get(handles.filter_type, 'Value') == 1)
     Hanalog = handles.filters.Stage(1).Stage(1);
@@ -996,7 +773,7 @@ set(ax, 'XTickLabel', A);
 function plot_buttons_off(handles)
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
-set(handles.save2coeffienients, 'Visible', 'off');
+%set(handles.save2coeffienients, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2workspace, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
@@ -1008,7 +785,7 @@ set(handles.results_group_delay, 'Visible', 'off');
 
 
 function create_filter(hObject, handles)
-
+handles= guidata(hObject);
 v = version('-release');
 v = str2num(v(1:4));
 if (v < 2012)
@@ -1037,25 +814,23 @@ end
 
 set(handles.design_filter, 'Visible', 'off');
 
-fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
-fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
+sel = get_current_rxtx(handles);
 
-apass = str2double(get(handles.Apass, 'String'));
-astop = str2double(get(handles.Astop, 'String'));
-dbstop_min = get(handles.FIR_Astop, 'Value');
+fstop = sel.Fstop;
+fpass = sel.Fpass;
 
-data_rate = get_data_rate(handles);
-FIR_interp = fir_interp(handles);
-HB_interp = HB_interp(handles);
-PLL_mult = converter_interp(handles) * get(handles.DAC_by2, 'Value');
+apass = sel.dBripple;
+astop = sel.dBstop;
+dbstop_min = sel.FIRdBmin;
 
-if get(handles.Advanced_options, 'Value') && get(handles.phase_eq, 'Value')
-    Ph_eq = str2double(get(handles.target_delay, 'String'));
-else
-    Ph_eq = -1;
-end
+data_rate = sel.Rdata;
+FIR_interp = sel.FIR;
+HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
+PLL_mult = sel.PLL_mult;
 
-wnom = value2Hz(handles, handles.clock_units, str2double(get(handles.Fcutoff, 'String')));
+Ph_eq = sel.phEQ;
+
+wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
 
 Use_9361 = get(handles.Use_FIR, 'Value');
 
@@ -1064,7 +839,7 @@ plot_buttons_off(handles);
 
 % make sure things are sane before drawing
 if fpass >= fstop || fpass <= 0 || fstop <= 0
-    display_default_image(hObject, handles);
+    display_default_image(hObject);
     plot_buttons_off(handles);
     handles.active_plot = 0;
     set(handles.design_filter, 'Visible', 'on');
@@ -1103,14 +878,14 @@ handles.gain = tohw.Gain;
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
 
-units = cellstr(get(handles.Clock_units, 'String'));
-units = char(units(get(handles.Clock_units, 'Value')));
-set(handles.FVTool_datarate, 'String', sprintf('Launch FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
+units = cellstr(get(handles.Freq_units, 'String'));
+units = char(units(get(handles.Freq_units, 'Value')));
+set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
-set(handles.save2coeffienients, 'Visible', 'on');
-if libisloaded(handles.libname)
-    set(handles.save2target, 'Visible', 'on');
-end
+%set(handles.save2coeffienients, 'Visible', 'on');
+%if ~ isempty(handles.iio_cmdsrv)
+%    set(handles.save2target, 'Visible', 'on');
+%end
 set(handles.save2workspace, 'Visible', 'on');
 if ~ get(handles.Use_FIR, 'Value')
     set(handles.save2HDL, 'Visible', 'on');
@@ -1129,8 +904,21 @@ G = 8192;
 % if this is a new plot, make a new plot, if we are just tweaking
 % things, then redraw in the same zoom window.
 if handles.active_plot == 0
-    clf(handles.magnitude_plot);
-    handles.active_plot = plot(linspace(0,data_rate/2,G),mag2db(abs(freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+    axes(handles.magnitude_plot);
+    cla(handles.magnitude_plot);
+    if handles.arrows_1
+      delete(handles.arrows_1); handles.arrows_1 = 0;
+    end
+    if handles.arrows_2
+        delete(handles.arrows_2); handles.arrows_2 = 0;
+    end
+    if handles.arrows_3
+        delete(handles.arrows_3); handles.arrows_3 = 0;
+    end
+    if handles.arrows_4
+        delete(handles.arrows_4); handles.arrows_4 = 0;
+    end
+    handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
     xlim([0 data_rate/2]);
     ylim([-100 10]);
     zoom_axis(gca);
@@ -1172,37 +960,311 @@ end
 set(handles.design_filter, 'Visible', 'on');
 guidata(hObject, handles);
 
+function load_settings(hObject, handles)
 
-function reset_input(hObject, handles)
-handles.active_plot = 0;
-display_default_image(hObject, handles);
+filename = 'ad9361_settings.mat';
 
-options = load('ad9361_settings.mat');
+if ~ exist(filename)
+    errordlg('I can not find the required files, must be some sort of installation error', ...
+        'File Error');
+    set(handles.Saved_Filters, 'Visible', 'off');
+    return;
+end
 
-if strcmp(get(handles.filter_type, 'Enable'), 'on');
-    Tx = strcat('Tx_', fieldnames(options.ad9361_settings.tx));
-    Rx = strcat('Rx_', fieldnames(options.ad9361_settings.rx));
-else
-    if get(handles.filter_type, 'Value') == 1.0
-        Rx = strcat('Rx_', fieldnames(options.ad9361_settings.rx));
-        Tx = '';
-    else
-        Rx = '';
-        Tx = strcat('Tx_', fieldnames(options.ad9361_settings.tx));
+options = load(filename);
+Tx = fieldnames(options.ad9361_settings.tx);
+Rx = fieldnames(options.ad9361_settings.rx);
+
+
+Tx_numRows = size(Tx, 1);
+Rx_numRows = size(Rx, 1);
+
+needle = cellstr(get(handles.Saved_Filters, 'String'));
+needle = char(needle(get(handles.Saved_Filters, 'Value')));
+needle = strsplit(needle, '(');
+needle = deblank(needle{1});
+
+for matchRx = 1:Rx_numRows;
+    match = Rx{matchRx, end};
+    if strmatch(needle, match)
+        break
     end
 end
 
-choices = cat(1, Rx, Tx); 
-
-[selection,ok] = listdlg('PromptString','Please Select a Profile:',...
-    'SelectionMode','single',...
-    'OKString', 'Select', ...
-    'ListSize', [150 150], ...
-    'ListString', choices);
-
-if ~ ok
-    selection = 1;
+for matchTx = 1:Tx_numRows;
+    match = Tx{matchTx, end};
+    if strmatch(needle, match)
+        break
+    end
 end
+
+handles.input_rx = cook_input(getfield(options.ad9361_settings.rx, Rx{matchRx}));
+handles.input_tx = cook_input(getfield(options.ad9361_settings.tx, Tx{matchTx}));
+
+set(handles.store_filter, 'Visible', 'off');
+guidata(hObject, handles);
+data2gui(hObject, handles);
+
+function data2gui(hObject, handles)
+
+OK = 1;
+
+if get(handles.filter_type, 'Value') == 1
+    % Receive
+    sel = handles.input_rx;
+    max_HB = handles.MAX_RX;
+else
+    % Transmitt
+    sel = handles.input_tx;
+    max_HB = handles.MAX_TX;
+end
+
+% Set the defaults
+set(handles.Advanced_options, 'Value', 0);
+set(handles.Use_FIR, 'Value', 1);
+
+% set things from the file.
+advanced = 0;
+if sel.phEQ == -1
+    set(handles.phase_eq, 'Value', 0);
+else
+    set(handles.Advanced_options, 'Value', 1);
+    advanced = 1;
+    set(handles.phase_eq, 'Value', 1);
+    set(handles.target_delay, 'Value', num2str(sel.phEQ));
+end
+
+if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
+    set(handles.Advanced_options, 'Value', 1);
+    set_caldiv(handles, sel.caldiv);
+    advanced = 1;
+end
+
+if advanced
+    show_advanced(handles);
+else
+    hide_advanced(handles);
+end
+
+set(handles.Fpass, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fpass)));
+set(handles.Fstop, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fstop)));
+
+set(handles.Fcenter, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fcenter)));
+
+set(handles.Apass, 'String', num2str(sel.dBripple));
+set(handles.Astop, 'String', num2str(sel.dBstop));
+
+set(handles.data_clk, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'),sel.Rdata)));
+
+if handles.input_rx.Fstop <= handles.input_rx.Rdata / 2
+    set(handles.Fstop, 'ForegroundColor', [0 0 0]);
+else
+    set(handles.Fstop, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'Data rate must be at least 2 times Fstop';
+    end
+    OK = 0;
+end
+
+if handles.input_rx.Rdata == handles.input_tx.Rdata
+   set(handles.data_clk, 'ForegroundColor', [0 0 0]);
+else
+   set(handles.data_clk, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'Rx and Tx data rates need to be the same';
+    end
+    OK = 0;    
+end
+
+opts = get(handles.FIR, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == sel.FIR
+        set(handles.FIR, 'Value', i);
+        break;
+    end
+end
+set(handles.FIR_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR));
+if (sel.Rdata * sel.FIR) > handles.MAX_FIR
+    set(handles.FIR_rate, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'FIR rate too high';
+    end
+    OK = 0; 
+else
+    set(handles.FIR_rate, 'ForegroundColor', [0 0 0]);
+end
+
+if ~advanced
+    tmp = sel.HB1 * sel.HB2 * sel.HB3;
+else
+    tmp = sel.HB1;
+end
+
+opts = get(handles.HB1, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == tmp
+        set(handles.HB1, 'Value', i);
+        break;
+    end
+end
+
+set(handles.HB1_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1));
+if (sel.Rdata * sel.FIR * sel.HB1) > max_HB.HB1
+   set(handles.HB1_rate, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'HB1 rate too high';
+    end
+    OK = 0; 
+else
+   set(handles.HB1_rate, 'ForegroundColor', [0 0 0]);
+end
+
+opts = get(handles.HB2, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == sel.HB2
+        set(handles.HB2, 'Value', i);
+        break;
+    end
+end
+set(handles.HB2_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1 * sel.HB2));
+if (sel.Rdata * sel.FIR * sel.HB1 * sel.HB2) > max_HB.HB2
+   set(handles.HB2_rate, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'HB2 rate too high';
+    end
+    OK = 0; 
+else
+   set(handles.HB2_rate, 'ForegroundColor', [0 0 0]);
+end
+
+opts = get(handles.HB3, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == sel.HB3
+        set(handles.HB3, 'Value', i);
+        break;
+    end
+end
+set(handles.HB3_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3));
+if (sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3) > max_HB.HB3
+   set(handles.HB3_rate, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'HB3 rate too high';
+    end
+    OK = 0; 
+else
+   set(handles.HB3_rate, 'ForegroundColor', [0 0 0]);
+end
+
+% PLL Settings
+set(handles.DAC_by2, 'Value', handles.input_tx.DAC_div);
+set(handles.ADC_clk, 'String', num2str(handles.input_rx.Rdata / 1e6 * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3));
+set(handles.DAC_clk, 'String', num2str(handles.input_tx.Rdata / 1e6 * handles.input_tx.FIR * handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3));
+
+% Make sure they are the same...
+if (handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3) == ...
+        (handles.input_tx.FIR * handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div)
+    set(handles.ADC_clk, 'ForegroundColor', [0 0 0]);
+    set(handles.DAC_clk, 'ForegroundColor', [0 0 0]);
+else
+    set(handles.ADC_clk, 'ForegroundColor', [1 0 0]);
+    set(handles.DAC_clk, 'ForegroundColor', [1 0 0]);
+    set(handles.Pll_rate, 'String', '?');
+    if OK
+        warn = '(DAC * multipler) and ADC rates do not match';
+    end
+    OK = 0; 
+end
+
+
+% Check the PLL, based on rx values...
+set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
+            handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
+pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+if (pll < handles.MAX_BBPLL_FREQ) && (pll > handles.MIN_BBPLL_FREQ)
+    set(handles.Pll_rate, 'ForegroundColor', [0 0 0]);
+else
+    set(handles.Pll_rate, 'ForegroundColor', [1 0 0]);
+    if OK
+        warn = 'PLL rate out of bounds';
+    end
+    OK = 0; 
+end
+        
+% don't have data - so don't display the FVTool button
+set(handles.FVTool_deeper, 'Visible', 'off');
+set(handles.FVTool_datarate, 'Visible', 'off');
+
+%set(handles.save2coeffienients, 'Visible', 'off');
+set(handles.save2target, 'Visible', 'off');
+set(handles.save2workspace, 'Visible', 'off');
+set(handles.save2HDL, 'Visible', 'off');
+
+set(handles.target_get_clock, 'Visible', 'off');
+
+if OK
+    set(handles.design_filter, 'Enable', 'on');
+    set(handles.design_warning, 'String', '');
+    set(handles.design_warning, 'Visible', 'off');
+else
+    set(handles.design_filter, 'Enable', 'off');
+    set(handles.design_warning, 'String', warn);
+    set(handles.design_warning, 'Visible', 'on');
+end
+
+guidata(hObject, handles);
+
+function reset_input(hObject, handles)
+handles.active_plot = 0;
+display_default_image(hObject);
+handles = guidata(hObject);
+filename = 'ad9361_settings.mat';
+
+if ~ exist(filename)
+    errordlg('I can not find the required files, must be some sort of installation error', ...
+        'File Error');
+    set(handles.Saved_Filters, 'Visible', 'off');
+    return;
+end
+
+options = load(filename);
+Tx = fieldnames(options.ad9361_settings.tx);
+Rx = fieldnames(options.ad9361_settings.rx);
+
+
+Tx_numRows = size(Tx, 1);
+Rx_numRows = size(Rx, 1);
+choices = cell(1, Tx_numRows);
+
+for rowTx = 1:Tx_numRows;
+    needle = Tx{rowTx, end};
+    if strmatch(needle, Rx)
+        choices{rowTx} = strcat(needle, ' (Rx & Tx)');
+    else
+        choices{rowTx} = strcat(needle, ' (Tx only)');
+    end
+end
+for rowRx = 1:Rx_numRows;
+    needle = Rx{rowRx, end};
+    if ~ strmatch(needle, choices)
+        rowTx=+1;
+        choices{rowTx} = strcat(needle, ' (Rx only)');
+    end
+end
+
+choices = sort(choices);
+set(handles.Saved_Filters, 'String', choices);
+set(handles.Saved_Filters, 'Value', 1);
+
+handles = guidata(hObject);
+guidata(hObject, handles);
 
 %                               Rx           Tx
 % FIR = [1 2 4];                0.23|61.44        61.44
@@ -1213,142 +1275,7 @@ end
 % DAC_by2 [1 2]                                   11.2|640
 % PLL = [1 2 4 8 16 32 64];     715|1430          715|1430
 
-if strcmp(choices{selection}(1:2), 'Rx')
-    set(handles.filter_type, 'Value', 1);
-    sel = getfield(options.ad9361_settings.rx, Rx{selection}(4:end));
-    set(handles.DAC_by2, 'Visible', 'off');
-    set(handles.DAC_by2_label, 'Visible', 'off');
-    set(handles.DAC_by2, 'Value', 1);
-else
-    set(handles.filter_type, 'Value', 2);
-    sel = getfield(options.ad9361_settings.tx, Tx{selection - length(Rx)}(4:end));
-    set(handles.DAC_by2, 'Visible', 'on');
-    set(handles.DAC_by2_label, 'Visible', 'on');
-    set(handles.DAC_by2, 'Value', sel.DAC_div);
-end
 
-% Set the defaults
-set(handles.Advanced_options, 'Value', 0);
-set(handles.Use_FIR, 'Value', 1);
-set(handles.FIR_1, 'Value', 1);
-set(handles.FIR_2, 'Value', 1);
-
-% File is in MHz
-handles.freq_units = 3;
-set(handles.Freq_units, 'Value', handles.freq_units);
-handles.clock_units = 3;
-set(handles.Clock_units, 'Value', handles.clock_units);
-
-% set things from the file.
-if sel.phEQ == -1
-    set(handles.phase_eq, 'Value', 0);
-else
-    set(handles.Advanced_options, 'Value', 1);
-    set(handles.phase_eq, 'Value', 1);
-    set(handles.target_delay, 'Value', num2str(sel.phEQ));
-end
-
-set(handles.Fpass, 'String', num2str(sel.Fpass));
-set(handles.Fstop, 'String', num2str(sel.Fstop));
-set(handles.Apass, 'String', num2str(sel.dBripple));
-set(handles.Astop, 'String', num2str(sel.dBstop));
-
-if sel.Rdata > handles.MAX_DATA_RATE / 1e6
-    sel.Rdata = handles.MAX_DATA_RATE / 1e6;
-end
-if sel.Rdata < handles.MIN_DATA_RATE / 1e6
-    sel.Rdata = handles.MIN_DATA_RATE / 1e6
-end
-
-set(handles.data_clk, 'String', num2str(sel.Rdata));
-
-% make sure it's not too small
-if sel.Rdata * 12 < (handles.MIN_ADC_CLK / 1e6)
-    fir = [4];
-elseif sel.Rdata * 6 < (handles.MIN_ADC_CLK / 1e6)
-    fir = [2 4];
-else
-    fir = [1 2 4];
-end
-
-% make sure it's not too big
-% Fastest the FIR can run is 122.88 MSPS
-for i = 1:length(fir)
-    if sel.Rdata * fir(i) > 122.88
-        fir(i) = 1;
-    end
-end
-fir = unique(sort(fir));
-
-tmp = {};
-j = 1;
-for i = 1:length(fir)
-    tmp = [tmp, sprintf('%i x', fir(i))];
-    if sel.FIR_interp == fir(i)
-        j = i;
-    end
-end
-set(handles.FIR2HB, 'String', tmp);
-set(handles.FIR2HB, 'Value', j);
-
-
-hb_min = [1 2 3 4 6 8 12];
-% make sure it's not too small
-for i = 1:length(hb_min)
-    if sel.Rdata * sel.FIR_interp * hb_min(i) <= (handles.MIN_ADC_CLK / 1e6)
-        hb_min(i) = 0;
-    end
-end
-hb_min = unique(sort(hb_min));
-while hb_min(1) == 0
-    hb_min = hb_min(2:end);
-end
-
-tmp = {};
-j = 1;
-for i = 1:length(hb_min)
-    tmp = [tmp, sprintf('%i x', hb_min(i))];
-    if sel.HB_interp == hb_min(i)
-        j = i;
-    end
-end
-set(handles.HB2converter, 'String', tmp);
-set(handles.HB2converter, 'Value', j);
-
-converter = sel.Rdata * sel.FIR_interp * sel.HB_interp;
-
-set_converter_rate(handles, converter * 1e6);
-
-fix_converter2pll(hObject, handles);
-
-% This **must** be set **after** the PLL clock is set properly
-if sel.caldiv
-    set(handles.Advanced_options, 'Value', 1);
-    set_caldiv(handles, sel.caldiv);
-end
-
-units = cellstr(get(handles.Clock_units, 'String'));
-units = char(units(get(handles.Clock_units, 'Value')));
-set(handles.FVTool_datarate, 'String', sprintf('Launch FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
-
-% don't have data - so don't display the FVTool button
-set(handles.FVTool_deeper, 'Visible', 'off');
-set(handles.FVTool_datarate, 'Visible', 'off');
-
-set(handles.save2coeffienients, 'Visible', 'off');
-set(handles.save2target, 'Visible', 'off');
-set(handles.save2workspace, 'Visible', 'off');
-set(handles.save2HDL, 'Visible', 'off');
-
-set(handles.target_get_clock, 'Visible', 'off');
-
-if get(handles.Advanced_options, 'Value')
-    show_advanced(handles);
-else
-    hide_advanced(handles);
-end
-
-guidata(hObject, handles);
 
 % --------------------------------------------------------------------
 function new_tooltip_ClickedCallback(hObject, eventdata, handles)
@@ -1357,90 +1284,220 @@ function new_tooltip_ClickedCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 reset_input(hObject, handles);
-handles.clock_units = get(handles.Clock_units, 'Value');
+load_settings(hObject, handles);
 handles.freq_units = get(handles.Freq_units, 'Value');
 handles.active_plot = 0;
 
 guidata(hObject, handles);
 
 
-function display_default_image(hObject, handles)
+function display_default_image(hObject)
+handles = guidata(gcf);
 set(handles.FVTool_deeper, 'Visible', 'off');
 axes(handles.magnitude_plot);
+handles.active_plot = 0;
+
+cla(handles.magnitude_plot);
+if handles.arrows_1
+  delete(handles.arrows_1); handles.arrows_1 = 0;
+end
+if handles.arrows_2
+    delete(handles.arrows_2); handles.arrows_2 = 0;
+end
+if handles.arrows_3
+    delete(handles.arrows_3); handles.arrows_3 = 0;
+end
+if handles.arrows_4
+    delete(handles.arrows_4); handles.arrows_4 = 0;
+end
+
 
 max_y = 20;
+max_x = 200;
 ripple = 10;
 Fpass = 90;
+Fcenter = 100;
 Fstop = 110;
 label_colour = 'Red';
-
-plot([Fstop Fstop], [ripple -80], 'Color', 'Black');
 
 box on;
 axis on;
 
-%xlabel('Frequency');
 set(gca,'XTickLabel',{});
-xlim([0 200]);
+xlabel('');
+xlim([0 max_x]);
 text(-10, 0, '0dB');
 
 ylabel('Mag (dB)');
 set(gca,'YTickLabel',{});
 ylim([-100 max_y]);
 
-% Pass band
-line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
-line([Fpass Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
-line([0 Fstop], [ripple ripple], 'Color', 'Black');
-line([Fstop Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
-line([0 Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
 
-[x1, y1] = xy2norm(130, ripple);
-[x2, y2] = xy2norm(130, max_y);
-a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-set(a, 'Color', label_colour);
-[x1, y1] = xy2norm(130, -ripple);
-[x2, y2] = xy2norm(130, -max_y);
-a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-set(a, 'Color', label_colour);
-text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
 
-% Stop band
-line([Fstop 200], [-80 -80], 'Color', 'Black');
-line([Fpass Fpass], [-ripple -100], 'Color', 'Black');
-line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
+    
+    case 'Lowpass'
+        % Low part of the low pass
+        line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
+        line([0 Fpass], [ripple ripple], 'Color', 'Black');
+        line([Fpass Fpass], [max_y ripple], 'Color', 'Black');
+        line([Fpass Fpass], [-ripple -100], 'Color', 'Black');
+        line([0 Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
+        line([Fpass Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
+        line([Fpass Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
 
-line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
-text(Fpass - 5, -105, 'F_{pass}');
-text(Fstop - 5, -105, 'F_{stop}');
-text(195, -105, 'Fs_{/2}');
 
-% Arrows
-w = 185;
-[x1, y1] = xy2norm(w, 0);
-[x2, y2] = xy2norm(w, -35);
-a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-set(a, 'Color', label_colour);
-[x1, y1] = xy2norm(w, -80);
-[x2, y2] = xy2norm(w, -45);
-a = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-set(a, 'Color', label_colour);
-text(150, -40, 'A_{stop}');
+        [x1, y1] = xy2norm(130, ripple, handles);
+        [x2, y2] = xy2norm(130, max_y, handles);
+        handles.arrows_1 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_1, 'Color', label_colour);
+        [x1, y1] = xy2norm(130, -ripple, handles);
+        [x2, y2] = xy2norm(130, -max_y, handles);
+        handles.arrows_2 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_2, 'Color', label_colour);
+        text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
+
+        % Stop band
+        line([Fstop max_x-10], [-80 -80], 'Color', 'Black');
+        line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
+        line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
+        line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
+        line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+        line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+
+        line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
+        text(0, -108, '0');
+        text(Fpass - 5, -108, 'F_{pass}');
+        text(Fstop - 5, -108, 'F_{stop}');
+        text(max_x - 15, -108, 'Fs_{/2}');
+
+        % A(stop) label and arrows
+        hTest = text(150, -40, 'A_{stop}');
+        textExt = get(hTest,'Extent');
+        w = textExt(1) + textExt(3)/2;
+        [x1, y1] = xy2norm(w, 0, handles);
+        [x2, y2] = xy2norm(w, -35, handles);
+        handles.arrows_3 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_3, 'Color', label_colour);
+        [x1, y1] = xy2norm(w, -80, handles);
+        [x2, y2] = xy2norm(w, -45, handles);
+        handles.arrows_4 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_4, 'Color', label_colour);
+    case 'Root Raised Cosine'
+        % Pass band
+        line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
+        line([0 Fpass], [ripple ripple], 'Color', 'Black');
+        line([Fpass Fpass], [max_y ripple], 'Color', 'Black');
+        line([Fpass Fpass], [-ripple -100], 'Color', 'Black');
+
+        % Stop band
+        line([Fstop max_x-10], [-80 -80], 'Color', 'Black');
+        line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
+        line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
+        line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
+        line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+        line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+
+        text(0, -108, '0');
+        text(Fpass - 5, -108, 'F_{pass}');
+        text(Fstop - 5, -108, 'F_{stop}');
+        text(max_x - 15, -108, 'Fs_{/2}');
+
+    case 'Bandpass'
+        Fpass = 20;
+        Fcenter = 80;
+        Fstop = 30;
+        % pass part of the bandpass
+        line([Fcenter-Fpass Fcenter+Fpass], [-ripple -ripple], 'Color', 'Black');
+        line([Fcenter-Fstop Fcenter+Fstop], [ripple ripple], 'Color', 'Black');
+        line([Fcenter-Fstop Fcenter-Fstop], [max_y ripple], 'Color', 'Black');
+        line([Fcenter+Fstop Fcenter+Fstop], [max_y ripple], 'Color', 'Black');
+        line([Fcenter-Fpass Fcenter-Fpass], [-ripple -80], 'Color', 'Black');
+        line([Fcenter+Fpass Fcenter+Fpass], [-ripple -80], 'Color', 'Black');
+      
+        line([0 Fcenter+Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
+        line([Fcenter+Fstop Fcenter+Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
+        line([Fcenter+Fstop Fcenter+Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
+           
+        [x1, y1] = xy2norm(130, ripple, handles);
+        [x2, y2] = xy2norm(130, max_y, handles);
+        handles.arrows_1 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_1, 'Color', label_colour);
+        [x1, y1] = xy2norm(130, -ripple, handles);
+        [x2, y2] = xy2norm(130, -max_y, handles);
+        handles.arrows_2 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_2, 'Color', label_colour);
+        text(Fcenter + Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
+
+        % Stop band
+        line([Fcenter+Fstop max_x-10], [-80 -80], 'Color', 'Black');
+        line([0 Fcenter-Fstop], [-80 -80], 'Color', 'Black');
+   
+        line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
+        line([Fcenter+Fstop Fcenter+Fstop], [-80+ripple -80], 'Color', 'Black');
+        line([Fcenter-Fstop Fcenter-Fstop], [-80+ripple -80], 'Color', 'Black');
+
+        line([Fcenter-Fstop Fcenter-Fstop], [ripple -100], 'Color', label_colour, 'LineStyle', ':');
+        line([Fcenter+Fstop Fcenter+Fstop], [ripple -100], 'Color', label_colour, 'LineStyle', ':');
+        line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
+        line([Fcenter Fcenter], [0 -100], 'Color', label_colour, 'LineStyle', ':');
+%        line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
+        
+        % Labels "0" "Fcenter"
+        text(0, -108, '0');
+        text(Fcenter - 5, -108, 'F_{center}');
+        line([Fcenter Fcenter+Fpass], [-40 -40], 'Color', label_colour, 'LineStyle', ':');
+        text(Fcenter + Fstop +5, -40, 'F_{pass}');
+        line([Fcenter Fcenter+Fstop], [-60 -60], 'Color', label_colour, 'LineStyle', ':');
+        text(Fcenter + Fstop +5, -60, 'F_{stop}');
+        text(max_x - 15, -108, 'Fs_{/2}');
+
+        % A(stop) label and arrows
+        hTest = text(Fcenter/4, -40, 'A_{stop}');
+        textExt = get(hTest,'Extent');
+        w = textExt(1) + textExt(3)/2;
+        [x1, y1] = xy2norm(w, 0, handles);
+        [x2, y2] = xy2norm(w, -35, handles);
+        handles.arrows_3 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_3, 'Color', label_colour);
+        [x1, y1] = xy2norm(w, -80, handles);
+        [x2, y2] = xy2norm(w, -45, handles);
+        handles.arrows_4 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows_4, 'Color', label_colour);
+        
+    case 'Equalize'
+        line([0 max_x-10], [0 0], 'Color', 'Black');
+        line([max_x-10 max_x-10], [0 ripple], 'Color', 'Black');
+        text(0, -108, '0');
+        text(max_x - 15, -108, 'Fs_{/2}');
+
+end
 
 guidata(hObject, handles);
 
-function [x1, y1] = xy2norm(x, y)
-y_limits = get(gca, 'ylim');
-x_limits = get(gca, 'xlim');
+
+function [x1, y1] = xy2norm(x, y, handles)
+x_pos = 1;
+y_pos = 2;
+width = 3;
+height = 4;
+
+y_limits = get(handles.magnitude_plot, 'YLim');
+x_limits = get(handles.magnitude_plot, 'XLim');
 % Position = [left bottom width height]
-axesoffsets = get(get(gcf, 'CurrentAxes'), 'Position');
+axesoffsets0 = get(handles.magnitude_plot, 'Position');
+axesoffsets1 = get(handles.filter_specs, 'Position');
+
 Figure_Size = get(gcf, 'Position');
-y1 = axesoffsets(2) / Figure_Size(4);
-y2 = axesoffsets(4) / Figure_Size(4);
+y1 = (axesoffsets1(y_pos) + axesoffsets0(y_pos)) / Figure_Size(height);
+y2 = axesoffsets0(height) / Figure_Size(height);
 y3 = abs((y - y_limits(1)) / abs(y_limits(2) - y_limits(1)));
+
 y1 = y1 + y2 * y3;
-x1 = axesoffsets(1) / Figure_Size(4) + ...
-    axesoffsets(2)/Figure_Size(4) * abs((x - x_limits(1)) / abs(x_limits(2) - x_limits(1)));
+
+x1 = (axesoffsets1(x_pos) + axesoffsets0(x_pos)) / Figure_Size(width) + ...
+    axesoffsets0(width)/Figure_Size(width) * ...
+    abs((x - x_limits(1)) / abs(x_limits(2) - x_limits(1)));
 
 
 % --------------------------------------------------------------------
@@ -1474,9 +1531,9 @@ fprintf(fp, 'Astop = %d\n', str2double(get(handles.Astop, 'String')));
 fprintf(fp, 'Param = %f\n', get(handles.FIR_Astop, 'Value'));
 
 pll_rate = str2double(get(handles.Pll_rate, 'String'));
-converter_rate = str2double(get(handles.converter_clk, 'String'));
+converter_rate = str2double(get(handles.ADC_clk, 'String'));
 data_rate = str2double(get(handles.data_clk, 'String'));
-if (handles.clock_units == 2)
+if (handles.freq_units == 2)
     pll_rate = pll_rate * 1e6;
     converter_rate = converter_rate * 1e6;
     data_rate = data_rate * 1e6;
@@ -1501,6 +1558,7 @@ end
 %t = fgets(fp);
 
 reset_input(hObject, handles);
+load_settings(hObject, handles);
 
 fp = fopen(filename, 'rt');
 
@@ -1515,10 +1573,9 @@ set(handles.Fstop, 'String', num2str((fscanf(fp, 'Fstop = %d\n') / 1e6)));
 set(handles.Apass, 'String', num2str((fscanf(fp, 'Apass = %e\n'))));
 set(handles.Astop, 'String', num2str((fscanf(fp, 'stop = %e\n'))));
 set(handles.FIR_Astop, 'Value', fscanf(fp, 'Param = %f\n'));
-handles.clock_units = 3;
-set(handles.Clock_units, 'Value', handles.clock_units);
 set(handles.Pll_rate, 'String', num2str((fscanf(fp, 'LL rate = %d\n') / 1e6)));
-set(handles.converter_clk, 'String', num2str((fscanf(fp, 'Converter = %d\n') / 1e6)));
+% FIXME
+set(handles.ADC_clk, 'String', num2str((fscanf(fp, 'Converter = %d\n') / 1e6)));
 set(handles.data_clk, 'String', num2str((fscanf(fp, 'Data rate = %d\n') / 1e6)));
 
 fclose(fp);
@@ -1530,6 +1587,8 @@ function AD9361_Filter_app_ResizeFcn(hObject, eventdata, handles)
 % hObject    handle to AD9361_Filter_app (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+return;
+
 Figure_Size = get(hObject, 'Position');
 
 x_pos = 1;
@@ -1550,18 +1609,22 @@ if (Figure_Size(width) < handles.Original_Size(width)) || (Figure_Size(height) <
     Figure_Size = handles.Original_Size;
 end
 
+pos_filter = get(handles.filter_specs,'Position');
 pos_mag = get(handles.magnitude_plot,'Position');
 pos_cont = get(handles.controls,'Position');
+pos_current = get(handles.current_filter,'Position');
 pos_logo = get(handles.ADI_logo, 'Position');
-pos_title = get(handles.title, 'Position');
 pos_help = get(handles.help_button, 'Position');
 pos_deeper = get(handles.FVTool_deeper, 'Position');
 
-% 7 from the top
-pos_mag(height) = Figure_Size(height) - pos_cont(height) - 7;
+% 10 from the top
+pos_filter(height) = Figure_Size(height) - pos_cont(height) - 4.5;
+pos_filter(width) = Figure_Size(width) - pos_current(width) - 5;
+set(handles.filter_specs, 'Position', pos_filter);
+
 % 10 on each side
-pos_mag(width) = Figure_Size(width) - 20;
-%pos_mag(y_pos) = 10;
+pos_mag(width) = pos_filter(width) - 11;
+pos_mag(height) = Figure_Size(height) - pos_cont(height) - 9;
 set(handles.magnitude_plot, 'Position', pos_mag);
 
 pos_cont(x_pos) = (Figure_Size(width) - pos_cont(width))/2;
@@ -1570,16 +1633,12 @@ set(handles.controls,'Position', pos_cont);
 pos_logo(y_pos) = Figure_Size(height) - pos_logo(height) - .5 ;
 set(handles.ADI_logo, 'Position', pos_logo);
 
-pos_title(x_pos) = (Figure_Size(width) - pos_title(width))/2;
-pos_title(y_pos) = Figure_Size(height) - pos_title(height) - 1 ;
-set(handles.title, 'Position', pos_title);
-
 pos_help(x_pos) = Figure_Size(width) - pos_help(width) - 2;
 pos_help(y_pos) = Figure_Size(height) - pos_help(height) - 1 ;
 set(handles.help_button, 'Position', pos_help);
 
 pos_deeper(x_pos) = Figure_Size(width) - pos_deeper(width) - 10;
-pos_deeper(y_pos) = Figure_Size(height) - pos_deeper(height) - 6;
+pos_deeper(y_pos) = pos_filter(x_pos) - 6;
 set(handles.FVTool_deeper, 'Position', pos_deeper);
 
 guidata(hObject, handles);
@@ -1636,38 +1695,43 @@ else
     assignin('base', 'FMCOMMS2_TX_Model_init', handles.simrfmodel);
     assignin('base', 'FMCOMMS2_TX_Hardware', handles.supportpack);
 end
+%CALLBACK call
+handles.callback(handles.callbackObj, handles.supportpack);
+
 
 % Hint: get(hObject,'Value') returns toggle state of save2workspace
 
-% --- Executes on selection change in HB2converter.
-function HB2converter_Callback(hObject, eventdata, handles)
-% hObject    handle to HB2converter (see GCBO)
+% --- Executes on selection change in HB1.
+function HB1_Callback(hObject, eventdata, handles)
+% hObject    handle to HB1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-fix_HB2converter(hObject, handles);
-data_rate = get_data_rate(handles);
+dirty(hObject, handles);
+handles = guidata(hObject);
 
-converter_rate = data_rate * HB_interp(handles) * fir_interp(handles);
-set_converter_rate(handles, converter_rate);
+HB = cellstr(get(hObject,'String'));
+HB = HB{get(hObject,'Value')};
+HB = str2num(HB(1:2));
 
-fix_converter2pll(hObject, handles);
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.HB1 = HB;
+else
+    handles.input_tx.HB1 = HB;
+end
 
+data2gui(hObject, handles);
+handles = guidata(hObject);
 % Update handles structure
 guidata(hObject, handles);
 
-if (handles.active_plot ~= 0)
-    handles.active_plot = 0;
-end
-plot_buttons_off(handles);
-
-% Hints: contents = cellstr(get(hObject,'String')) returns HB2converter contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from HB2converter
+% Hints: contents = cellstr(get(hObject,'String')) returns HB1 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from HB1
 
 
 % --- Executes during object creation, after setting all properties.
-function HB2converter_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to HB2converter (see GCBO)
+function HB1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to HB1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1682,14 +1746,18 @@ function converter2PLL_Callback(hObject, eventdata, handles)
 % hObject    handle to converter2PLL (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fix_converter2pll(hObject, handles);
+dirty(hObject, handles);
+handles = guidata(hObject);
 
-converter_rate = get_converter_clk(handles);
+HB = cellstr(get(hObject,'String'));
+HB = HB{get(hObject,'Value')};
+HB = str2num(HB(1:2));
 
-pll_rate = converter_rate * converter_interp(handles) * get(handles.DAC_by2, 'Value');
+handles.input_tx.PLL_mult = HB;
+handles.input_rx.PLL_mult = HB;
 
-set_pll_rate(handles, pll_rate);
-
+data2gui(hObject, handles);
+handles = guidata(hObject);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -1749,32 +1817,18 @@ fdhdltool(Hd);
 % Hint: get(hObject,'Value') returns toggle state of save2HDL
 
 
-% --- Executes on button press in FIR_1.
-function FIR_1_Callback(hObject, eventdata, handles)
-% hObject    handle to FIR_1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of FIR_1
-
-
-% --- Executes on button press in FIR_2.
-function FIR_2_Callback(hObject, eventdata, handles)
-% hObject    handle to FIR_2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of FIR_2
-
-
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over HB2converter.
-function HB2converter_ButtonDownFcn(hObject, eventdata, handles)
-% hObject    handle to HB2converter (see GCBO)
+% --- Otherwise, executes on mouse press in 5 pixel border or over HB1.
+function HB1_ButtonDownFcn(hObject, eventdata, handles)
+% hObject    handle to HB1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 function ret = value2Hz(handles, pulldown, value)
+if isnan(value)
+    value = 0;
+end
+
 switch pulldown
     case 1
         ret = value;
@@ -1791,77 +1845,84 @@ switch pulldown
     case 2
         ret = value / 1e3;
     case 3
-        ret = value / 1e6;
+        ret = value / 1000.0;
+        ret = ret / 1000.0;
 end
 
 function put_data_clk(handles, data_clk)
-data_clk = Hz2value(handles, get(handles.Clock_units, 'Value'), data_clk);
-set(handles.data_clk, 'String', num2str(data_clk, '%g'));
+data_clk = Hz2value(handles, get(handles.Freq_units, 'Value'), data_clk);
+set(handles.data_clk, 'String', num2str(data_clk, 10));
 
 function data_clk = get_data_rate(handles)
+sel = get_current_rxtx(handles)
+data_clk = sel.Rdata;
 
-data_rate = str2double(get(handles.data_clk, 'String'));
-if isnan(data_rate)
-    data_rate = str2num(get(handles.data_clk, 'String'));
+function ret = default_caldiv(handles)
+if (get(handles.filter_type, 'Value') == 1)
+    wnom = 1.4 * handles.input_rx.Fstop;  % Rx
+    pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
+        handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+else
+    wnom = 1.6 * handles.input_tx.Fstop;  % Tx
+    pll = handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
+        handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
+        handles.input_tx.PLL_mult;
 end
 
-data_rate = value2Hz(handles, get(handles.Clock_units, 'Value'), data_rate);
-
-if data_rate <= handles.MIN_DATA_RATE
-    data_rate = handles.MIN_DATA_RATE;
-end
-if data_rate >= handles.MAX_DATA_RATE
-    data_rate = handles.MAX_DATA_RATE;
-end
-
-put_data_clk(handles, data_rate);
-data_clk = data_rate;
-
+div = ceil((pll/wnom)*(log(2)/(2*pi)));
+caldiv = min(max(div,3),511);
+ret = caldiv;
+    
 function caldiv = get_caldiv(handles)
 
+if (get(handles.filter_type, 'Value') == 1)
+    wnom = 1.4 * input.input_rx.Fstop;  % Rx
+    pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
+        handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+else
+    wnom = 1.6 * input.input_rx.Fstop;  % Tx
+    pll = handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
+        handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
+        handles.input_tx.PLL_mult;
+end
+
+    
 Fcutoff = str2double(get(handles.Fcutoff, 'String'));
 
-if Fcutoff == 0
-    wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
-    if get(handles.filter_type, 'Value') == 1
-        wnom = 1.4 * wnom;  % Rx
-    else
-        wnom = 1.6 * wnom;  % Tx
-    end
-else
+if Fcutoff
     wnom = value2Hz(handles, handles.freq_units, Fcutoff);
 end
 
-div = ceil((get_pll_rate(handles)/wnom)*(log(2)/(2*pi)));
+div = ceil((pll/wnom)*(log(2)/(2*pi)));
 caldiv = min(max(div,3),511);
 
 function set_caldiv(handles, value)
 wc = (get_pll_rate(handles) / value)*(log(2)/(2*pi));
-set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.clock_units, wc)));
+set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.freq_units, wc)));
 
-function converter_clk = get_converter_clk(handles)
-converter_clk = str2double(get(handles.converter_clk, 'String'));
-converter_clk = value2Hz(handles, get(handles.Clock_units, 'Value'), converter_clk);
-
-function set_converter_rate(handles, value)
-set(handles.converter_clk, 'String', [num2str(Hz2value(handles, get(handles.Clock_units, 'Value'), value)) ' ']);
-
-function set_pll_rate(handles, value)
-set(handles.Pll_rate, 'String', [num2str(Hz2value(handles, get(handles.Clock_units, 'Value'), value)) ' ']);
-if str2double(get(handles.Fcutoff, 'String')) ~= 0
-    set_caldiv(handles, get_caldiv(handles));
-end
 
 function pll = get_pll_rate(handles)
-pll = value2Hz(handles, handles.clock_units, str2double(get(handles.Pll_rate, 'String')));
+pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 
 function Fcutoff_Callback(hObject, eventdata, handles)
 % hObject    handle to Fcutoff (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set_caldiv(handles, get_caldiv(handles));
-handles.active_plot = 0;
-plot_buttons_off(handles);
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+caldiv = get_caldiv(handles);
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.caldiv = caldiv;
+else
+    handles.input_tx.caldiv = caldiv;
+end
+
+set_caldiv(handles, caldiv);
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
+
 guidata(hObject, handles)
 % Hints: get(hObject,'String') returns contents of Fcutoff as text
 %        str2double(get(hObject,'String')) returns contents of Fcutoff as a double
@@ -1933,12 +1994,14 @@ function FVTool_datarate_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-data_rate = get_data_rate(handles);
-converter_rate = value2Hz(handles, handles.clock_units, str2double(get(handles.converter_clk, 'String')));
-fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
-fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
-apass = str2double(get(handles.Apass, 'String'));
-astop = str2double(get(handles.Astop, 'String'));
+sel = get_current_rxtx(handles);
+    
+data_rate = sel.Rdata;
+converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
+fstop = sel.Fstop;
+fpass = sel.Fpass;
+apass = sel.dBripple;
+astop = sel.dBstop;
 
 if (get(handles.filter_type, 'Value') == 1)
     Hanalog = handles.filters.Stage(1).Stage(1);
@@ -1984,10 +2047,24 @@ if get(handles.phase_eq, 'Value')
     set(handles.target_delay_units, 'Visible', 'on');
 end
 set(handles.Fcutoff_label, 'Visible', 'on');
+set(handles.RFbw_label, 'Visible', 'on');
 set(handles.Fcutoff, 'Visible', 'on');
+set(handles.RFbw, 'Visible', 'on');
 set(handles.Use_FIR, 'Visible', 'on');
 set(handles.FIR_Astop, 'Visible', 'on');
 set(handles.FIR_Astop_label, 'Visible', 'on');
+
+set(handles.HB1_label, 'String', 'HB1');
+tmp = {'1 x', '2 x'};
+set(handles.HB1, 'String', tmp);
+set(handles.HB2_label, 'Visible', 'on');
+set(handles.HB2, 'Visible', 'on');
+set(handles.HB2_rate, 'Visible', 'on');
+
+set(handles.HB3_label, 'Visible', 'on');
+set(handles.HB3, 'Visible', 'on');
+set(handles.HB3_rate, 'Visible', 'on');
+
 
 if ~ str2double(get(handles.Fcutoff, 'String'))
     set_caldiv(handles, get_caldiv(handles));
@@ -2004,10 +2081,23 @@ set(handles.target_delay_label, 'Visible', 'off');
 set(handles.target_delay, 'Visible', 'off');
 set(handles.target_delay_units, 'Visible', 'off');
 set(handles.Fcutoff_label, 'Visible', 'off');
+set(handles.RFbw_label, 'Visible', 'off');
 set(handles.Fcutoff, 'Visible', 'off');
+set(handles.RFbw, 'Visible', 'off');
 set(handles.Use_FIR, 'Visible', 'off');
 set(handles.FIR_Astop, 'Visible', 'off');
 set(handles.FIR_Astop_label, 'Visible', 'off');
+
+set(handles.HB1_label, 'String', 'HBs');
+tmp = {'1 x', '2 x', '3 x', '4 x', '6 x', '8 x', '12 x'};
+set(handles.HB1, 'String', tmp);
+set(handles.HB2_label, 'Visible', 'off');
+set(handles.HB2, 'Visible', 'off');
+set(handles.HB2_rate, 'Visible', 'off');
+set(handles.HB3_label, 'Visible', 'off');
+set(handles.HB3, 'Visible', 'off');
+set(handles.HB3_rate, 'Visible', 'off');
+
 
 % --- Executes on button press in Advanced_options.
 function Advanced_options_Callback(hObject, eventdata, handles)
@@ -2019,6 +2109,7 @@ if get(hObject,'Value')
 else
     hide_advanced(handles)
 end
+
 % Hint: get(hObject,'Value') returns toggle state of Advanced_options
 
 % --------------------------------------------------------------------
@@ -2032,8 +2123,8 @@ filter.Fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fsto
 if get(handles.Advanced_options, 'Value')
     filter.caldiv = get_caldiv(handles);
 end
-filter.FIR_interp = fir_interp(handles);
-filter.HB_interp = HB_interp(handles);
+filter.FIR_interp = sel.FIR;
+filter.HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
 filter.PLL_mult = converter_interp(handles);
 filter.dBripple = str2double(get(handles.Apass, 'String'));
 filter.dBstop = str2double(get(handles.Astop, 'String'));
@@ -2043,7 +2134,7 @@ else
     filter.FIR_Astop = 0;
 end
 filter.Pheq = -1;
-filter.channels = get(handles.FIR_1, 'Value') + get(handles.FIR_2, 'Value') * 2;
+filter.channels = 3;
 filter.internal_FIR = get(handles.Use_FIR, 'Value');
 
 if get(handles.Advanced_options, 'Value')
@@ -2067,64 +2158,31 @@ function connect2target_Callback(hObject, eventdata, handles)
 % hObject    handle to connect2target (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-ip = get(handles.IP_num,'String');
-
-% Load the libiio library
-if(~libisloaded(handles.libname))
-    [notfound, warnings]= loadlibrary(handles.libname, handles.hname);
-end
-
-if(libisloaded(handles.libname))
-    % Create network context
-    handles.iio_ctx = calllib(handles.libname, 'iio_create_network_context', ip);
-
-    % Check if the network context is valid
-    ctx_valid = calllib(handles.libname, 'iio_context_valid', handles.iio_ctx);
-    if(ctx_valid < 0)
-        handles.iio_ctx = {};
-        unloadlibrary(handles.libname);
-        set(handles.target_get_clock, 'Visible', 'off');
-        msgbox('Could not connect to the IIO server!', 'Error','error');
-        return;
+tmp = get(handles.IP_num,'String');
+tmp = strsplit(tmp, ':');
+ip=char(tmp(1));
+if length(tmp) == 2
+    port = str2num(char(tmp(2)));
+    if ~ port
+        port = 1234;
     end
-    
-    % Get the number of devices
-    nb_devices = calllib(handles.libname, 'iio_context_get_devices_count', handles.iio_ctx);
-                
-    % If no devices are present unload the library and exit
-    if(nb_devices == 0)
-        handles.iio_ctx = {};
-        unloadlibrary(handles.libname);
-        msgbox('No devices were detected in the system!', 'Error','error');
-        return;
-    end
-                
-    % Detect if the targeted device is installed
-    iio_dev = {};
-    for i = 0 : nb_devices-1
-        iio_dev = calllib(handles.libname, 'iio_context_get_device', handles.iio_ctx, i);
-        name = calllib(handles.libname, 'iio_device_get_name', iio_dev);
-        if(strcmp(name, 'ad9361-phy'))
-            handles.iio_dev = iio_dev;
-            set(handles.target_get_clock, 'Visible', 'on');
-            % Update handles structure
-            guidata(hObject, handles);
-            return;
-        end
-        iio_dev = {};
-    end
-    iio_dev = {};
-    
-    % The target device was not detected
-    set(handles.target_get_clock, 'Visible', 'off');
-    msgbox('Could not find target device!', 'Error','error');
 else
-    % Could not load library
-    set(handles.target_get_clock, 'Visible', 'off');
-    msgbox('Could not load libiio library!', 'Error','error');
+    port = 1234;
 end
 
-
+obj = iio_cmdsrv;
+iio_cmdsrv_connect(obj, ip, port);
+[ret, rbuf] = iio_cmd_read(obj, 200, 'version\n');
+if(ret ~= -1)
+    set(handles.target_get_clock, 'Visible', 'on');
+    handles.iio_cmdsrv = obj;
+    if ~ isempty(handles.taps)
+        set(handles.save2target, 'Visible', 'on');
+    end
+else
+    set(handles.target_get_clock, 'Visible', 'off');
+    msgbox('Could not connect to target!', 'Error','error');
+end
 % Update handles structure
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of connect2target
@@ -2170,8 +2228,8 @@ function magnitude_plot_CreateFcn(hObject, eventdata, handles)
 % Hint: place code in OpeningFcn to populate magnitude_plot
 
 % --- Executes during object creation, after setting all properties.
-function FIR2HB_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to FIR2HB (see GCBO)
+function FIR_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to FIR (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -2187,7 +2245,20 @@ function DAC_by2_Callback(hObject, eventdata, handles)
 % hObject    handle to DAC_by2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fix_converter2pll(hObject, handles);
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+HB = cellstr(get(hObject,'String'));
+HB = HB{get(hObject,'Value')};
+HB = str2num(HB(1:2));
+
+handles.input_tx.DAC_div = HB;
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
+
+guidata(hObject, handles);
+
 % Hints: contents = cellstr(get(hObject,'String')) returns DAC_by2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from DAC_by2
 
@@ -2205,20 +2276,32 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in FIR2HB.
-function FIR2HB_Callback(hObject, eventdata, handles)
-% hObject    handle to FIR2HB (see GCBO)
+% --- Executes on selection change in FIR.
+function FIR_Callback(hObject, eventdata, handles)
+% hObject    handle to FIR (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+dirty(hObject, handles);
+handles = guidata(hObject);
 
-% Hints: contents = cellstr(get(hObject,'String')) returns FIR2HB contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from FIR2HB
-fix_FIR2HB(hObject, handles);
-fix_HB2converter(hObject, handles);
-converter_rate = get_data_rate(handles) * HB_interp(handles) * fir_interp(handles);
-set_converter_rate(handles, converter_rate);
+HB = cellstr(get(hObject,'String'));
+HB = HB{get(hObject,'Value')};
+HB = str2num(HB(1:2));
 
-fix_converter2pll(hObject, handles);
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.FIR = HB;
+else
+    handles.input_tx.FIR = HB;
+end
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
+
+guidata(hObject, handles);
+
+% Hints: contents = cellstr(get(hObject,'String')) returns FIR contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from FIR
+
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2242,11 +2325,6 @@ function AD9361_Filter_app_CloseRequestFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if(libisloaded(handles.libname))
-    handles.iio_dev = {};
-    handles.iio_ctx = {};   
-end
-
 if isequal(get(hObject, 'waitstatus'), 'waiting')
     % The GUI is still in UIWAIT, us UIRESUME
     uiresume(hObject);
@@ -2255,3 +2333,294 @@ else
     delete(hObject);
 end
 
+
+
+% --- Executes on button press in FVTool_deeper.
+function pushbutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to FVTool_deeper (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on selection change in which_device.
+function which_device_Callback(hObject, eventdata, handles)
+% hObject    handle to which_device (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns which_device contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from which_device
+
+
+% --- Executes during object creation, after setting all properties.
+function which_device_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to which_device (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in Saved_Filters.
+function Saved_Filters_Callback(hObject, eventdata, handles)
+% hObject    handle to Saved_Filters (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+load_settings(hObject, handles);
+
+% Hints: contents = cellstr(get(hObject,'String')) returns Saved_Filters contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from Saved_Filters
+
+
+% --- Executes during object creation, after setting all properties.
+function Saved_Filters_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Saved_Filters (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton6.
+function pushbutton6_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in store_filter.
+function store_filter_Callback(hObject, eventdata, handles)
+% hObject    handle to store_filter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+filename = 'ad9361_settings.mat';
+
+if ~ exist(filename)
+    errordlg('I can not find the required files, must be some sort of installation error', ...
+        'File Error');
+    set(handles.Saved_Filters, 'Visible', 'off');
+    return;
+end
+
+answer = char(inputdlg('Save As?'));
+
+options = load(filename);
+
+button = 'Replace';
+if isfield(options.ad9361_settings.rx, answer)
+    button = questdlg(strcat('Rx setting "', answer, '" exists, replace?'),...
+        'Replace', 'Replace', 'Cancel', 'Cancel');
+end
+if strcmp(button, 'Replace')
+        options.ad9361_settings.rx.(answer) = handles.input_rx;
+end
+
+button = 'Replace';
+if isfield(options.ad9361_settings.tx, answer)
+    button = questdlg(strcat('Tx setting "', answer, '" exists, replace?'),...
+        'Replace', 'Replace', 'Cancel', 'Cancel');end
+if strcmp(button, 'Replace')
+    options.ad9361_settings.tx.(answer) = handles.input_tx;
+end
+
+ad9361_settings = options.ad9361_settings;
+save(filename, 'ad9361_settings');
+reset_input(hObject, handles);
+
+str = get(handles.Saved_Filters, 'String');
+for i = 1:length(str);
+    if strcmp(strcat(answer, ' (Rx & Tx)'), str(i))
+        set(handles.Saved_Filters, 'Value', i);
+        break;
+    end
+end
+load_settings(hObject, handles);
+
+
+% --- Executes on button press in LockRxTx.
+function LockRxTx_Callback(hObject, eventdata, handles)
+% hObject    handle to LockRxTx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of LockRxTx
+
+
+% --- Executes on button press in togglebutton10.
+function togglebutton10_Callback(hObject, eventdata, handles)
+% hObject    handle to togglebutton10 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of togglebutton10
+
+
+% --- Executes on button press in pushbutton8.
+function pushbutton8_Callback(~, ~, handles)
+% hObject    handle to pushbutton8 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on selection change in HB2.
+function HB2_Callback(hObject, eventdata, handles)
+% hObject    handle to HB2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+HB = cellstr(get(hObject,'String'));
+HB = HB{get(hObject,'Value')};
+HB = str2num(HB(1:2));
+
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.HB2 = HB;
+else
+    handles.input_tx.HB2 = HB;
+end
+data2gui(hObject, handles);
+handles = guidata(hObject);
+guidata(hObject, handles);
+% Hints: contents = cellstr(get(hObject,'String')) returns HB2 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from HB2
+
+
+% --- Executes during object creation, after setting all properties.
+function HB2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to HB2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in HB3.
+function HB3_Callback(hObject, eventdata, handles)
+% hObject    handle to HB3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+HB = cellstr(get(hObject,'String'));
+HB = HB{get(hObject,'Value')};
+HB = str2num(HB(1:2));
+
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.HB3 = HB;
+else
+    handles.input_tx.HB3 = HB;
+end
+data2gui(hObject, handles);
+handles = guidata(hObject);
+guidata(hObject, handles);
+
+% Hints: contents = cellstr(get(hObject,'String')) returns HB3 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from HB3
+
+
+% --- Executes during object creation, after setting all properties.
+function HB3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to HB3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+% --- Executes when selected object is changed in Response_Type.
+function Response_Type_SelectionChangeFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in Response_Type 
+% eventdata  structure with the following fields (see UIBUTTONGROUP)
+%	EventName: string 'SelectionChanged' (read only)
+%	OldValue: handle of the previously selected object or empty if none was selected
+%	NewValue: handle of the currently selected object
+% handles    structure with handles and user data (see GUIDATA)
+h = get(eventdata.OldValue,'String');
+switch h
+    case 'Lowpass'
+        set(handles.LP_MagSpecs, 'Visible', 'off');
+    case 'Root Raised Cosine'
+        set(handles.RRC_MagSpecs, 'Visible', 'off');
+    case 'Bandpass'
+        set(handles.LP_MagSpecs, 'Visible', 'off');
+        set(handles.Fcenter_label, 'Visible', 'off');
+        set(handles.Fcenter, 'Visible', 'off');
+    case 'Equalize'
+        set(handles.Freq_Specs, 'Visible', 'on');
+end
+
+h = get(eventdata.NewValue,'String');
+switch h
+    case 'Lowpass'
+        set(handles.LP_MagSpecs, 'Visible', 'on');
+    case 'Root Raised Cosine'
+        set(handles.RRC_MagSpecs, 'Visible', 'on');
+    case 'Bandpass'
+        set(handles.LP_MagSpecs, 'Visible', 'on');
+        set(handles.Fcenter_label, 'Visible', 'on');
+        set(handles.Fcenter, 'Visible', 'on');
+    case 'Equalize'
+        set(handles.Freq_Specs, 'Visible', 'off');
+        
+end
+
+display_default_image(hObject);
+
+% --- Executes on button press in RRC_Normal.
+function RRC_Normal_Callback(hObject, eventdata, ~)
+% hObject    handle to RRC_Normal (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of RRC_Normal
+
+
+% --- Executes on button press in RRC_SR.
+function RRC_SR_Callback(hObject, eventdata, handles)
+% hObject    handle to RRC_SR (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of RRC_SR
+
+
+
+function Fcenter_Callback(hObject, eventdata, handles)
+% hObject    handle to Fcenter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Fcenter as text
+%        str2double(get(hObject,'String')) returns contents of Fcenter as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function Fcenter_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Fcenter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
