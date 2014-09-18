@@ -126,6 +126,8 @@ handles.MAX_TX.HB3     =  320000000;
 new = 0;
 handles.freq_units = 3;
 
+handles.callback = {};
+
 % inputs need to be name/value _pairs_
 if rem(length(varargin),2)
     error('myApp:argChk', 'Wrong number of input arguments')
@@ -1686,18 +1688,19 @@ function save2workspace_Callback(hObject, eventdata, handles)
 % hObject    handle to save2workspace (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if get(handles.filter_type, 'Value') == 1
-    assignin('base', 'AD9361_Rx_Filter_object', handles.filters);
-    assignin('base', 'FMCOMMS2_RX_Model_init', handles.simrfmodel);
-    assignin('base', 'FMCOMMS2_RX_Hardware', handles.supportpack);
+if(~isempty(handles.callback))
+    handles.callback(handles.callbackObj, handles.supportpack);
 else
-    assignin('base', 'AD9361_Tx_Filter_object', handles.filters);
-    assignin('base', 'FMCOMMS2_TX_Model_init', handles.simrfmodel);
-    assignin('base', 'FMCOMMS2_TX_Hardware', handles.supportpack);
+    if get(handles.filter_type, 'Value') == 1
+        assignin('base', 'AD9361_Rx_Filter_object', handles.filters);
+        assignin('base', 'FMCOMMS2_RX_Model_init', handles.simrfmodel);
+        assignin('base', 'FMCOMMS2_RX_Hardware', handles.supportpack);
+    else
+        assignin('base', 'AD9361_Tx_Filter_object', handles.filters);
+        assignin('base', 'FMCOMMS2_TX_Model_init', handles.simrfmodel);
+        assignin('base', 'FMCOMMS2_TX_Hardware', handles.supportpack);
+    end
 end
-%CALLBACK call
-handles.callback(handles.callbackObj, handles.supportpack);
-
 
 % Hint: get(hObject,'Value') returns toggle state of save2workspace
 
