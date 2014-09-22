@@ -379,6 +379,10 @@ end
 bTFIR = 16 - aTFIR;
 tfirtaps = Hmd.Numerator.*(2^bTFIR);
 
+if length(tfirtaps) < 128
+    tfirtaps = [tfirtaps,zeros(1,128-length(tfirtaps))];
+end
+
 webinar.Fin = Fin;
 webinar.FIR_interp = FIR_interp;
 webinar.HB_interp = HB_interp;
@@ -406,6 +410,7 @@ tohw.T2 = tohw.T1 * hb2;
 tohw.DAC = Fdac;
 tohw.BBPLL = clkPLL;
 tohw.Coefficient = tfirtaps;
+tohw.CoefficientSize = length(h);
 tohw.Interp = FIR_interp;
 tohw.Gain = gain;
 tohw.RFBandwidth = Fpass*2;
