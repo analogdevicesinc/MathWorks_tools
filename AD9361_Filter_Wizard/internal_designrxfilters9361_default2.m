@@ -316,18 +316,12 @@ while (1)
     
     if int_FIR == 0
         h = tap_store(1,1:M);
-        dBripple_actual = dBripple_actual_vecotr(1);
-        dBstop_actual = dBstop_actual_vector(1);
         break
     elseif dBripple_actual_vecotr(1) > dBripple || dBstop_actual_vector(1) < dBstop
         h = tap_store(1,1:N);
-        dBripple_actual = dBripple_actual_vecotr(1);
-        dBstop_actual = dBstop_actual_vector(1);
         break
     elseif dBripple_actual_vecotr(i) > dBripple || dBstop_actual_vector(i) < dBstop
         h = tap_store(i-1,1:N+16);
-        dBripple_actual = dBripple_actual_vecotr(i-1);
-        dBstop_actual = dBstop_actual_vector(i-1);
         break
     else
         N = N-16;
@@ -363,6 +357,10 @@ end
 bTFIR = 16 - aTFIR;
 rfirtaps = Hmd.Numerator.*(2^bTFIR);
 
+if length(rfirtaps) < 128
+    rfirtaps = [rfirtaps,zeros(1,128-length(rfirtaps))];
+end
+
 tohwRx.RXSAMP = Fout;
 tohwRx.RF = Fout * FIR_decim;
 tohwRx.R1 = tohwRx.RF * hb1;
@@ -370,6 +368,7 @@ tohwRx.R2 = tohwRx.R1 * hb2;
 tohwRx.ADC = Fadc;
 tohwRx.BBPLL = clkPLL;
 tohwRx.Coefficient = rfirtaps;
+tohwRx.CoefficientSize = length(h);
 tohwRx.Decimation = FIR_decim;
 tohwRx.Gain = gain;
 tohwRx.RFBandwidth = Fpass*2;
