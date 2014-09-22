@@ -777,7 +777,8 @@ set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
 %set(handles.save2coeffienients, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
-set(handles.save2workspace, 'Visible', 'off');
+set(handles.save2workspace, 'Visible', 'on');
+set(handles.save2workspace, 'Enable', 'off')
 set(handles.save2HDL, 'Visible', 'off');
 
 set(handles.results_Apass, 'Visible', 'off');
@@ -814,7 +815,7 @@ if ~ license('test','signal_blocks') || ~ license('checkout','signal_blocks')
     return
 end
 
-set(handles.design_filter, 'Visible', 'off');
+set(handles.design_filter, 'Enable', 'off');
 
 sel = get_current_rxtx(handles);
 
@@ -844,7 +845,7 @@ if fpass >= fstop || fpass <= 0 || fstop <= 0
     display_default_image(hObject);
     plot_buttons_off(handles);
     handles.active_plot = 0;
-    set(handles.design_filter, 'Visible', 'on');
+    set(handles.design_filter, 'Enable', 'on');
     guidata(hObject, handles);
     return;
 end
@@ -879,6 +880,7 @@ handles.gain = tohw.Gain;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
+set(handles.save2workspace, 'Enable', 'on')
 
 units = cellstr(get(handles.Freq_units, 'String'));
 units = char(units(get(handles.Freq_units, 'Value')));
@@ -888,7 +890,7 @@ set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get
 %if ~ isempty(handles.iio_cmdsrv)
 %    set(handles.save2target, 'Visible', 'on');
 %end
-set(handles.save2workspace, 'Visible', 'on');
+
 if ~ get(handles.Use_FIR, 'Value')
     set(handles.save2HDL, 'Visible', 'on');
 end
@@ -1098,7 +1100,7 @@ else
     set(handles.FIR_rate, 'ForegroundColor', [0 0 0]);
 end
 
-if ~advanced
+if advanced
     tmp = sel.HB1 * sel.HB2 * sel.HB3;
 else
     tmp = sel.HB1;
@@ -1190,6 +1192,11 @@ end
 set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
     handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+
+% handles.converter2PLL should be initialized to the show the correct option
+% here currently it defaults to show the 3rd option in the list even though
+% that may not be the value that's selected
+
 if (pll < handles.MAX_BBPLL_FREQ) && (pll > handles.MIN_BBPLL_FREQ)
     set(handles.Pll_rate, 'ForegroundColor', [0 0 0]);
 else
@@ -1206,7 +1213,6 @@ set(handles.FVTool_datarate, 'Visible', 'off');
 
 %set(handles.save2coeffienients, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
-set(handles.save2workspace, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
 set(handles.target_get_clock, 'Visible', 'off');
@@ -1701,8 +1707,9 @@ else
         assignin('base', 'FMCOMMS2_TX_Hardware', handles.supportpack);
     end
 end
+set(handles.save2workspace, 'Enable', 'off')
+guidata(hObject, handles);
 
-% Hint: get(hObject,'Value') returns toggle state of save2workspace
 
 % --- Executes on selection change in HB1.
 function HB1_Callback(hObject, eventdata, handles)
@@ -1879,11 +1886,11 @@ ret = caldiv;
 function caldiv = get_caldiv(handles)
 
 if (get(handles.filter_type, 'Value') == 1)
-    wnom = 1.4 * input.input_rx.Fstop;  % Rx
+    wnom = 1.4 * handles.input_rx.Fstop;  % Rx
     pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
         handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 else
-    wnom = 1.6 * input.input_rx.Fstop;  % Tx
+    wnom = 1.6 * handles.input_rx.Fstop;  % Tx
     pll = handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
         handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
         handles.input_tx.PLL_mult;
@@ -2067,7 +2074,6 @@ set(handles.HB2_rate, 'Visible', 'on');
 set(handles.HB3_label, 'Visible', 'on');
 set(handles.HB3, 'Visible', 'on');
 set(handles.HB3_rate, 'Visible', 'on');
-
 
 if ~ str2double(get(handles.Fcutoff, 'String'))
     set_caldiv(handles, get_caldiv(handles));
