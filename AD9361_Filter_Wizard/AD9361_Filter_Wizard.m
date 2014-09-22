@@ -1,7 +1,7 @@
 % Name-Value Pair Arguments
 %
 % Specify optional comma-separated pairs of Name,Value arguments. Name is
-% the argument name and Value is the corresponding value. Name must 
+% the argument name and Value is the corresponding value. Name must
 % appear inside single quotes (' '). You can specify several name and
 % value pair arguments in any order as Name1,Value1,...,NameN,ValueN.
 % Example: 'remote','192.168.0.1','MarkerFaceColor','red'
@@ -74,7 +74,7 @@ function varargout = AD9361_Filter_Wizard(varargin)
 
 % Edit the above text to modify the response to help AD9361_Filter_Wizard
 
-% Last Modified by GUIDE v2.5 09-Sep-2014 10:36:17
+% Last Modified by GUIDE v2.5 22-Sep-2014 14:41:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -144,8 +144,8 @@ for i = 1:2:length(varargin)
     elseif strcmpi(varargin{i}, 'PathConfig')
         % 'PathConfig'     'rx' | 'tx' | 'either'
         if (strcmpi(varargin{i + 1}, 'rx'))
-             set(handles.filter_type, 'Value', 1.0);
-             set(handles.filter_type, 'Enable', 'off');
+            set(handles.filter_type, 'Value', 1.0);
+            set(handles.filter_type, 'Enable', 'off');
         elseif (strcmpi(varargin{i + 1}, 'tx'))
             set(handles.filter_type, 'Value', 2.0);
             set(handles.filter_type, 'Enable', 'off');
@@ -158,7 +158,7 @@ for i = 1:2:length(varargin)
         %filter_type_Callback(handles.filter_type, eventdata, handles);
     elseif strcmpi(varargin{i}, 'ApplyString')
         % 'ApplyString'  'Save String'
-         set(handles.save2workspace, 'String', varargin{i + 1});
+        set(handles.save2workspace, 'String', varargin{i + 1});
     elseif strcmpi(varargin{i}, 'helpurl')
         % 'helpurl'  'http://help.com/url'
         set(handles.help_button, 'TooltipString', varargin{i + 1});
@@ -854,13 +854,13 @@ set(gcf,'Pointer','watch');
 drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
-    [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar,tohw] = internal_designrxfilters9361_fixed(...
+    [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designrxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = rxFilters;
     handles.taps = rfirtaps;
 else
     DAC_mult = get(handles.DAC_by2, 'Value');
-    [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar,tohw] = internal_designtxfilters9361_fixed(...
+    [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
     handles.taps = tfirtaps;
@@ -909,7 +909,7 @@ if handles.active_plot == 0
     axes(handles.magnitude_plot);
     cla(handles.magnitude_plot);
     if handles.arrows_1
-      delete(handles.arrows_1); handles.arrows_1 = 0;
+        delete(handles.arrows_1); handles.arrows_1 = 0;
     end
     if handles.arrows_2
         delete(handles.arrows_2); handles.arrows_2 = 0;
@@ -920,7 +920,7 @@ if handles.active_plot == 0
     if handles.arrows_4
         delete(handles.arrows_4); handles.arrows_4 = 0;
     end
-    handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+    handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
     xlim([0 data_rate/2]);
     ylim([-100 10]);
     zoom_axis(gca);
@@ -934,7 +934,7 @@ if handles.active_plot == 0
     line([fstop fstop], [apass/2 -astop], 'Color', 'Red');
     line([fstop data_rate], [-astop -astop], 'Color', 'Red');
 else
-    set(handles.active_plot,'ydata',mag2db(abs(freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))),'xdata',linspace(0,data_rate/2,G));
+    set(handles.active_plot,'ydata',mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))),'xdata',linspace(0,data_rate/2,G));
 end
 
 % add the quantitative values about actual passband, stopband, and group
@@ -1069,13 +1069,13 @@ else
 end
 
 if handles.input_rx.Rdata == handles.input_tx.Rdata
-   set(handles.data_clk, 'ForegroundColor', [0 0 0]);
+    set(handles.data_clk, 'ForegroundColor', [0 0 0]);
 else
-   set(handles.data_clk, 'ForegroundColor', [1 0 0]);
+    set(handles.data_clk, 'ForegroundColor', [1 0 0]);
     if OK
         warn = 'Rx and Tx data rates need to be the same';
     end
-    OK = 0;    
+    OK = 0;
 end
 
 opts = get(handles.FIR, 'String');
@@ -1093,7 +1093,7 @@ if (sel.Rdata * sel.FIR) > handles.MAX_FIR
     if OK
         warn = 'FIR rate too high';
     end
-    OK = 0; 
+    OK = 0;
 else
     set(handles.FIR_rate, 'ForegroundColor', [0 0 0]);
 end
@@ -1116,13 +1116,13 @@ end
 
 set(handles.HB1_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1));
 if (sel.Rdata * sel.FIR * sel.HB1) > max_HB.HB1
-   set(handles.HB1_rate, 'ForegroundColor', [1 0 0]);
+    set(handles.HB1_rate, 'ForegroundColor', [1 0 0]);
     if OK
         warn = 'HB1 rate too high';
     end
-    OK = 0; 
+    OK = 0;
 else
-   set(handles.HB1_rate, 'ForegroundColor', [0 0 0]);
+    set(handles.HB1_rate, 'ForegroundColor', [0 0 0]);
 end
 
 opts = get(handles.HB2, 'String');
@@ -1136,13 +1136,13 @@ for i = 1:length(opts)
 end
 set(handles.HB2_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1 * sel.HB2));
 if (sel.Rdata * sel.FIR * sel.HB1 * sel.HB2) > max_HB.HB2
-   set(handles.HB2_rate, 'ForegroundColor', [1 0 0]);
+    set(handles.HB2_rate, 'ForegroundColor', [1 0 0]);
     if OK
         warn = 'HB2 rate too high';
     end
-    OK = 0; 
+    OK = 0;
 else
-   set(handles.HB2_rate, 'ForegroundColor', [0 0 0]);
+    set(handles.HB2_rate, 'ForegroundColor', [0 0 0]);
 end
 
 opts = get(handles.HB3, 'String');
@@ -1156,13 +1156,13 @@ for i = 1:length(opts)
 end
 set(handles.HB3_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3));
 if (sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3) > max_HB.HB3
-   set(handles.HB3_rate, 'ForegroundColor', [1 0 0]);
+    set(handles.HB3_rate, 'ForegroundColor', [1 0 0]);
     if OK
         warn = 'HB3 rate too high';
     end
-    OK = 0; 
+    OK = 0;
 else
-   set(handles.HB3_rate, 'ForegroundColor', [0 0 0]);
+    set(handles.HB3_rate, 'ForegroundColor', [0 0 0]);
 end
 
 % PLL Settings
@@ -1182,13 +1182,13 @@ else
     if OK
         warn = '(DAC * multipler) and ADC rates do not match';
     end
-    OK = 0; 
+    OK = 0;
 end
 
 
 % Check the PLL, based on rx values...
 set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
-            handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
+    handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 if (pll < handles.MAX_BBPLL_FREQ) && (pll > handles.MIN_BBPLL_FREQ)
     set(handles.Pll_rate, 'ForegroundColor', [0 0 0]);
@@ -1197,9 +1197,9 @@ else
     if OK
         warn = 'PLL rate out of bounds';
     end
-    OK = 0; 
+    OK = 0;
 end
-        
+
 % don't have data - so don't display the FVTool button
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
@@ -1301,7 +1301,7 @@ handles.active_plot = 0;
 
 cla(handles.magnitude_plot);
 if handles.arrows_1
-  delete(handles.arrows_1); handles.arrows_1 = 0;
+    delete(handles.arrows_1); handles.arrows_1 = 0;
 end
 if handles.arrows_2
     delete(handles.arrows_2); handles.arrows_2 = 0;
@@ -1347,8 +1347,8 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([0 Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
         line([Fpass Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
         line([Fpass Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
-
-
+        
+        
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
         handles.arrows_1 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
@@ -1358,7 +1358,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         handles.arrows_2 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
         set(handles.arrows_2, 'Color', label_colour);
         text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
-
+        
         % Stop band
         line([Fstop max_x-10], [-80 -80], 'Color', 'Black');
         line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
@@ -1366,13 +1366,13 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
         line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
         line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
-
+        
         line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
         text(0, -108, '0');
         text(Fpass - 5, -108, 'F_{pass}');
         text(Fstop - 5, -108, 'F_{stop}');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
         % A(stop) label and arrows
         hTest = text(150, -40, 'A_{stop}');
         textExt = get(hTest,'Extent');
@@ -1391,7 +1391,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([0 Fpass], [ripple ripple], 'Color', 'Black');
         line([Fpass Fpass], [max_y ripple], 'Color', 'Black');
         line([Fpass Fpass], [-ripple -100], 'Color', 'Black');
-
+        
         % Stop band
         line([Fstop max_x-10], [-80 -80], 'Color', 'Black');
         line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
@@ -1399,12 +1399,12 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
         line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
         line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
-
+        
         text(0, -108, '0');
         text(Fpass - 5, -108, 'F_{pass}');
         text(Fstop - 5, -108, 'F_{stop}');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
     case 'Bandpass'
         Fpass = 20;
         Fcenter = 80;
@@ -1416,11 +1416,11 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fcenter+Fstop Fcenter+Fstop], [max_y ripple], 'Color', 'Black');
         line([Fcenter-Fpass Fcenter-Fpass], [-ripple -80], 'Color', 'Black');
         line([Fcenter+Fpass Fcenter+Fpass], [-ripple -80], 'Color', 'Black');
-      
+        
         line([0 Fcenter+Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter+Fstop Fcenter+Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter+Fstop Fcenter+Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
-           
+        
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
         handles.arrows_1 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
@@ -1430,20 +1430,20 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         handles.arrows_2 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
         set(handles.arrows_2, 'Color', label_colour);
         text(Fcenter + Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
-
+        
         % Stop band
         line([Fcenter+Fstop max_x-10], [-80 -80], 'Color', 'Black');
         line([0 Fcenter-Fstop], [-80 -80], 'Color', 'Black');
-   
+        
         line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
         line([Fcenter+Fstop Fcenter+Fstop], [-80+ripple -80], 'Color', 'Black');
         line([Fcenter-Fstop Fcenter-Fstop], [-80+ripple -80], 'Color', 'Black');
-
+        
         line([Fcenter-Fstop Fcenter-Fstop], [ripple -100], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter+Fstop Fcenter+Fstop], [ripple -100], 'Color', label_colour, 'LineStyle', ':');
         line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter Fcenter], [0 -100], 'Color', label_colour, 'LineStyle', ':');
-%        line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
+        %        line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
         
         % Labels "0" "Fcenter"
         text(0, -108, '0');
@@ -1453,7 +1453,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fcenter Fcenter+Fstop], [-60 -60], 'Color', label_colour, 'LineStyle', ':');
         text(Fcenter + Fstop +5, -60, 'F_{stop}');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
         % A(stop) label and arrows
         hTest = text(Fcenter/4, -40, 'A_{stop}');
         textExt = get(hTest,'Extent');
@@ -1472,7 +1472,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([max_x-10 max_x-10], [0 ripple], 'Color', 'Black');
         text(0, -108, '0');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
 end
 
 guidata(hObject, handles);
@@ -1875,7 +1875,7 @@ end
 div = ceil((pll/wnom)*(log(2)/(2*pi)));
 caldiv = min(max(div,3),511);
 ret = caldiv;
-    
+
 function caldiv = get_caldiv(handles)
 
 if (get(handles.filter_type, 'Value') == 1)
@@ -1889,7 +1889,7 @@ else
         handles.input_tx.PLL_mult;
 end
 
-    
+
 Fcutoff = str2double(get(handles.Fcutoff, 'String'));
 
 if Fcutoff
@@ -1998,7 +1998,7 @@ function FVTool_datarate_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 sel = get_current_rxtx(handles);
-    
+
 data_rate = sel.Rdata;
 converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
 fstop = sel.Fstop;
@@ -2423,7 +2423,7 @@ if isfield(options.ad9361_settings.rx, answer)
         'Replace', 'Replace', 'Cancel', 'Cancel');
 end
 if strcmp(button, 'Replace')
-        options.ad9361_settings.rx.(answer) = handles.input_rx;
+    options.ad9361_settings.rx.(answer) = handles.input_rx;
 end
 
 button = 'Replace';
@@ -2551,7 +2551,7 @@ end
 
 % --- Executes when selected object is changed in Response_Type.
 function Response_Type_SelectionChangeFcn(hObject, eventdata, handles)
-% hObject    handle to the selected object in Response_Type 
+% hObject    handle to the selected object in Response_Type
 % eventdata  structure with the following fields (see UIBUTTONGROUP)
 %	EventName: string 'SelectionChanged' (read only)
 %	OldValue: handle of the previously selected object or empty if none was selected
@@ -2627,3 +2627,10 @@ function Fcenter_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes during object creation, after setting all properties.
+function results_Apass_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to results_Apass (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
