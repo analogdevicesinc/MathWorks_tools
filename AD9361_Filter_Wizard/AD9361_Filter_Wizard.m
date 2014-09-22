@@ -1786,7 +1786,7 @@ function help_button_Callback(hObject, eventdata, handles)
 % hObject    handle to help_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-web(strcat('http://', get(hObject, 'TooltipString')));
+web(get(hObject, 'TooltipString'));
 % Hint: get(hObject,'Value') returns toggle state of help_button
 
 
