@@ -10,10 +10,10 @@
 %   'remote'          'hide' | 'IP_number' | 'IP_number:port'
 %   'PathConfig'      'rx' | 'tx' | 'either'
 %   'ApplyString'     'Save String'
-%   'ApplyCallback    'Callback for Apply button'
-%   'helpurl'         'http:\\help.com\'
-%   'DefaultRxVals'     Structure of default values (in Hz)
-%   'DefaultTxVals'     Structure of default values (in Hz)
+%   'ApplyCallback'   'Callback for Apply button'
+%   'HelpCallback'    'Callback for Help button'
+%   'DefaultRxVals'   Structure of default values (in Hz)
+%   'DefaultTxVals'   Structure of default values (in Hz)
 %
 %%
 % Copyright 2014(c) Analog Devices, Inc.
@@ -126,7 +126,7 @@ handles.MAX_TX.HB3     =  320000000;
 new = 0;
 handles.freq_units = 3;
 
-handles.callback = {};
+handles.applycallback = {};
 
 % inputs need to be name/value _pairs_
 if rem(length(varargin),2)
@@ -159,9 +159,6 @@ for i = 1:2:length(varargin)
     elseif strcmpi(varargin{i}, 'ApplyString')
         % 'ApplyString'  'Save String'
         set(handles.save2workspace, 'String', varargin{i + 1});
-    elseif strcmpi(varargin{i}, 'helpurl')
-        % 'helpurl'  'http://help.com/url'
-        set(handles.help_button, 'TooltipString', varargin{i + 1});
     elseif strcmpi(varargin{i}, 'DefaultRxVals')
         % 'DefaultRxVals'     'structure (in Hz)'
         handles.input_rx  = cook_input(varargin{i +1});
@@ -173,7 +170,9 @@ for i = 1:2:length(varargin)
         handles.input_tx.RxTx = 'Tx';
         new = 1;
     elseif strcmpi(varargin{i}, 'ApplyCallback')
-        handles.callback = str2func(varargin{i + 1});
+        handles.applycallback = str2func(varargin{i + 1});
+    elseif strcmpi(varargin{i}, 'HelpCallback')
+        handles.helpcallback = str2func(varargin{i + 1});
     elseif strcmpi(varargin{i}, 'CallbackObj')
         handles.callbackObj = varargin{i + 1};
     else
@@ -1704,8 +1703,8 @@ function save2workspace_Callback(hObject, eventdata, handles)
 set(handles.save2workspace, 'Enable', 'off');
 drawnow;
 
-if(~isempty(handles.callback))
-    handles.callback(handles.callbackObj, handles.supportpack);
+if(~isempty(handles.applycallback))
+    handles.applycallback(handles.callbackObj, handles.supportpack);
 else
     if get(handles.filter_type, 'Value') == 1
         assignin('base', 'AD9361_Rx_Filter_object', handles.filters);
@@ -1801,8 +1800,9 @@ function help_button_Callback(hObject, eventdata, handles)
 % hObject    handle to help_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-web(get(hObject, 'TooltipString'));
 % Hint: get(hObject,'Value') returns toggle state of help_button
+
+handles.helpcallback(handles.callbackObj);
 
 
 % --- Executes on button press in save2HDL.
