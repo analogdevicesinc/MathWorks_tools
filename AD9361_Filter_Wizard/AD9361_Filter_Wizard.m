@@ -222,10 +222,10 @@ axes(handles.magnitude_plot);
 handles.iio_cmdsrv = {};
 handles.taps = {};
 
-handles.arrows_1 = 0;
-handles.arrows_2 = 0;
-handles.arrows_3 = 0;
-handles.arrows_4 = 0;
+for i = 1:4
+    handles.arrows{i} = annotation('arrow');
+    set(handles.arrows{i}, 'Visible', 'off');
+end
 
 % Update handles structure
 guidata(hObject, handles);
@@ -921,18 +921,13 @@ G = 8192;
 if handles.active_plot == 0
     axes(handles.magnitude_plot);
     cla(handles.magnitude_plot);
-    if handles.arrows_1
-        delete(handles.arrows_1); handles.arrows_1 = 0;
+
+    for i = 1:4
+        if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
+            set(handles.arrows{i}, 'Visible', 'off');
+        end
     end
-    if handles.arrows_2
-        delete(handles.arrows_2); handles.arrows_2 = 0;
-    end
-    if handles.arrows_3
-        delete(handles.arrows_3); handles.arrows_3 = 0;
-    end
-    if handles.arrows_4
-        delete(handles.arrows_4); handles.arrows_4 = 0;
-    end
+
     handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
     xlim([0 data_rate/2]);
     ylim([-100 10]);
@@ -1313,19 +1308,12 @@ axes(handles.magnitude_plot);
 handles.active_plot = 0;
 
 cla(handles.magnitude_plot);
-if handles.arrows_1
-    delete(handles.arrows_1); handles.arrows_1 = 0;
-end
-if handles.arrows_2
-    delete(handles.arrows_2); handles.arrows_2 = 0;
-end
-if handles.arrows_3
-    delete(handles.arrows_3); handles.arrows_3 = 0;
-end
-if handles.arrows_4
-    delete(handles.arrows_4); handles.arrows_4 = 0;
-end
 
+for i = 1:4
+    if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
+        set(handles.arrows{i}, 'Visible', 'off');
+    end
+end
 
 max_y = 20;
 max_x = 200;
@@ -1364,12 +1352,12 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
-        handles.arrows_1 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_1, 'Color', label_colour);
+        handles.arrows{1} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{1}, 'Color', label_colour);
         [x1, y1] = xy2norm(130, -ripple, handles);
         [x2, y2] = xy2norm(130, -max_y, handles);
-        handles.arrows_2 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_2, 'Color', label_colour);
+        handles.arrows{2} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{2}, 'Color', label_colour);
         text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
         
         % Stop band
@@ -1392,12 +1380,12 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         w = textExt(1) + textExt(3)/2;
         [x1, y1] = xy2norm(w, 0, handles);
         [x2, y2] = xy2norm(w, -35, handles);
-        handles.arrows_3 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_3, 'Color', label_colour);
+        handles.arrows{3} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{3}, 'Color', label_colour);
         [x1, y1] = xy2norm(w, -80, handles);
         [x2, y2] = xy2norm(w, -45, handles);
-        handles.arrows_4 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_4, 'Color', label_colour);
+        handles.arrows{4} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{4}, 'Color', label_colour);
     case 'Root Raised Cosine'
         % Pass band
         line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
@@ -1436,12 +1424,12 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
-        handles.arrows_1 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_1, 'Color', label_colour);
+        handles.arrows{1} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{1}, 'Color', label_colour);
         [x1, y1] = xy2norm(130, -ripple, handles);
         [x2, y2] = xy2norm(130, -max_y, handles);
-        handles.arrows_2 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_2, 'Color', label_colour);
+        handles.arrows{2} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{2}, 'Color', label_colour);
         text(Fcenter + Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
         
         % Stop band
@@ -1473,12 +1461,12 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         w = textExt(1) + textExt(3)/2;
         [x1, y1] = xy2norm(w, 0, handles);
         [x2, y2] = xy2norm(w, -35, handles);
-        handles.arrows_3 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_3, 'Color', label_colour);
+        handles.arrows{3} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{3}, 'Color', label_colour);
         [x1, y1] = xy2norm(w, -80, handles);
         [x2, y2] = xy2norm(w, -45, handles);
-        handles.arrows_4 = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
-        set(handles.arrows_4, 'Color', label_colour);
+        handles.arrows{4} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        set(handles.arrows{4}, 'Color', label_colour);
         
     case 'Equalize'
         line([0 max_x-10], [0 0], 'Color', 'Black');
