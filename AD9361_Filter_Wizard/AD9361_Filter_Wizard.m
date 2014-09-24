@@ -1701,6 +1701,10 @@ function save2workspace_Callback(hObject, eventdata, handles)
 % hObject    handle to save2workspace (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+set(handles.save2workspace, 'Enable', 'off');
+drawnow;
+
 if(~isempty(handles.callback))
     handles.callback(handles.callbackObj, handles.supportpack);
 else
@@ -1714,8 +1718,6 @@ else
         assignin('base', 'FMCOMMS2_TX_Hardware', handles.supportpack);
     end
 end
-set(handles.save2workspace, 'Enable', 'off')
-guidata(hObject, handles);
 
 
 % --- Executes on selection change in HB1.
