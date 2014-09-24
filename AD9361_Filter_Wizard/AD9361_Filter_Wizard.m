@@ -1011,6 +1011,17 @@ end
 handles.input_rx = cook_input(getfield(options.ad9361_settings.rx, Rx{matchRx}));
 handles.input_tx = cook_input(getfield(options.ad9361_settings.tx, Tx{matchTx}));
 
+% show correct PLL div option to match settings
+opts = get(handles.converter2PLL, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == handles.input_rx.PLL_mult
+        set(handles.converter2PLL, 'Value', i);
+        break;
+    end
+end
+
 set(handles.store_filter, 'Visible', 'off');
 guidata(hObject, handles);
 data2gui(hObject, handles);
