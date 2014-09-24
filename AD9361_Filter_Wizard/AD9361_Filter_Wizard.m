@@ -206,6 +206,17 @@ set(handles.ADI_logo, 'YTick', []);
 set(handles.ADI_logo, 'Box', 'off');
 set(handles.ADI_logo, 'HandleVisibility', 'off');
 
+% initialize PLL div option to show the correct value
+opts = get(handles.converter2PLL, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == handles.input_rx.PLL_mult
+        set(handles.converter2PLL, 'Value', i);
+        break;
+    end
+end
+
 axes(handles.magnitude_plot);
 
 handles.iio_cmdsrv = {};
@@ -1192,10 +1203,6 @@ end
 set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
     handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
-
-% handles.converter2PLL should be initialized to the show the correct option
-% here currently it defaults to show the 3rd option in the list even though
-% that may not be the value that's selected
 
 if (pll < handles.MAX_BBPLL_FREQ) && (pll > handles.MIN_BBPLL_FREQ)
     set(handles.Pll_rate, 'ForegroundColor', [0 0 0]);
