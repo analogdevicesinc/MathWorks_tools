@@ -70,9 +70,9 @@ Fin = tohwRx.RXSAMP;
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * DAC_mult * PLL_mult;
 
-Fstop = Fin/2;
-Fpass = Fstop/1.2;
-dBripple = 0.1;
+Fpass = Fout/3;
+Fstop = Fpass*1.25;
+dBripple = 0.5;
 dBstop = 80;
 dBstop_FIR = 0;
 phEQ = -1;

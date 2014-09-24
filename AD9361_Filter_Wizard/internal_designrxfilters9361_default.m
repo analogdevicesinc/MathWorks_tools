@@ -42,16 +42,23 @@
 %
 function tohwrx = internal_designrxfilters9361_default(Fout)
 
-[Fout,~,~,~,~,FIR_decim,HB_decim,PLL_multr] = settxrxclock(Fout);
+a.Rdata = Fout;
+a = cook_input(a);
+
+Fout = a.Rdata;
+FIR_decim = a.FIR;
+HB_decim = a.HB1*a.HB2*a.HB3;
+PLL_multr = a.PLL_mult;
+
 Fadc = Fout * FIR_decim * HB_decim;
 clkPLL = Fadc * PLL_multr;
 
-Fstop = Fout/2;
-Fpass = Fstop/1.2;
-dBripple = 0.1;
-dBstop = 80;
-dBstop_FIR = 0;
-phEQ = -1;
+Fstop = a.Fstop;
+Fpass = a.Fpass;
+dBripple = a.dBripple;
+dBstop = a.dBstop;
+dBstop_FIR = a.FIRdBmin;
+phEQ = a.phEQ;
 int_FIR = 1;
 wnom = 0;
 
@@ -118,7 +125,18 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     
 end
 
-[hb1, hb2, hb3, dec3] = setrxhb9361(HB_decim);
+hb1 = a.HB1;
+hb2 = a.HB2;
+if a.HB3 == 2
+    hb3 = 2;
+    dec3 = 1;
+elseif a.HB3 == 3
+    hb3 = 1;
+    dec3 = 3;
+else
+    hb3=1;
+    dec3=1;
+end
 
 % convert the enables into a string
 enables = strrep(num2str([hb1 hb2 hb3 dec3]), ' ', '');
@@ -127,8 +145,14 @@ switch enables
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
+    case '1211' % Hb2
+        Filter1 = Hm1;
+    case '1121' % Hb3
+        Filter1 = Hm1;
     case '2211' % Hb2,Hb1
         Filter1 = cascade(Hm2,Hm1);
+    case '2121' % Hb3,Hb1
+        Filter1 = cascade(Hm3,Hm1);
     case '2221' % Hb3,Hb2,Hb1
         Filter1 = cascade(Hm3,Hm2,Hm1);
     case '1113' % Dec3

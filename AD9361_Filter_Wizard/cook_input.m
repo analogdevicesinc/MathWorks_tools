@@ -57,12 +57,12 @@
 %   struct.PLL_rate = the PLL rate in Hz
 %
 % Description of the FIR
-%   struct.Fpass    = Passband Frequency in Hz 
+%   struct.Fpass    = Passband Frequency in Hz
 %   struct.Fstop    = Stopband Frequency in Hz
 %   struct.Fcenter  = Center Frequency in Hz (only used for Bandpass),
 %                     otherwise 0
 %   struct.dBripple = Passband ripple (Apass) in dB (peak to peak)
-%   struct.dBstop   = Cascaded (FIR + HB + Analog) stop band attenuation (in dB) 
+%   struct.dBstop   = Cascaded (FIR + HB + Analog) stop band attenuation (in dB)
 %   struct.FIRdBmin = Minimum stop band attentuation of the FIR (in dB)
 %                     un-cascaded. 0 if not used.
 %
@@ -72,10 +72,10 @@
 %   struct.Fcutoff  = the -3dB point of the Analog Filters expressed in
 %                     baseband frequency (Hz)
 %   struct.RFbw     = the RF bandwidth of the Analog Filters
-%   struct.phEQ     = the target for phase equalization in nanoseconds 
+%   struct.phEQ     = the target for phase equalization in nanoseconds
 %                     (-1 for none).
-%   struct. 
-        
+%   struct.
+
 function cooked = cook_input(input)
 
 % AD9361/AD9364 specific max/min clock rates
@@ -125,10 +125,10 @@ end
 
 if ~isfield(input, 'Rdata')
     if isfield(input, 'PLL_rate')
-        input.Rdata = input.PLL_rate
+        input.Rdata = input.PLL_rate;
         while input.Rdata > max.MAX_DATA_RATE / 2
             input.Rdata = input.Rdata / 2;
-        end   
+        end
     else
         % Assume LTE5
         input.Rdata = 7680000;
@@ -142,7 +142,7 @@ if input.Rdata < max.MIN_DATA_RATE
     input.Rdata = max.MIN_DATA_RATE;
 end
 
-if ~isfield(input, 'FIR') 
+if ~isfield(input, 'FIR')
     if ~isfield(input, 'HB1') && ~isfield(input, 'HB2') && ~isfield(input, 'HB3') && ~isfield(input, 'PLL_mult') && ~isfield(input, 'PLL_rate')
         % Everything is blank, run as fast as possible
         input.FIR = fastest_FIR([4 2 1], max.MAX_FIR, 0, input.Rdata);
@@ -152,11 +152,10 @@ if ~isfield(input, 'FIR')
         if strcmp(input.RxTx, 'Tx')
             input.DAC_div = 2;
         end
-        input.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], max.MAX_BBPLL_FREQ, max.MIN_BBPLL_FREQ, input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * input.DAC_div);        
+        input.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], max.MAX_BBPLL_FREQ, max.MIN_BBPLL_FREQ, input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * input.DAC_div);
         input.PLL_rate = input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * input.DAC_div * input.PLL_mult;
-        
     elseif ~isfield(input, 'HB1') && ~isfield(input, 'HB2') && ~isfield(input, 'HB3') && ~isfield(input, 'PLL_mult') && isfield('PLL_rate')
-    elseif ~isfield(input, 'HB1') 
+    elseif ~isfield(input, 'HB1')
     end
 end
 
@@ -165,8 +164,8 @@ if strcmp(input.Type, 'Lowpass')
         % Asssume that Fpass is 1/3 datarate, which is about right for LTE5
         % works out to 2560000. Actual number is 2250000
         input.Fpass = input.Rdata / 3;
-    end 
-
+    end
+    
     if ~isfield(input, 'Fstop')
         % Asssume that Fstop is 1.25 Fpass, again close to LTE5
         input.Fstop = input.Fpass * 1.25;
@@ -181,13 +180,13 @@ end
 
 
 %   struct.dBripple = Passband ripple (Apass) in dB (peak to peak)
-%   struct.dBstop   = Cascaded (FIR + HB + Analog) stop band attenuation (in dB) 
+%   struct.dBstop   = Cascaded (FIR + HB + Analog) stop band attenuation (in dB)
 if ~isfield(input, 'dBripple')
     input.dBripple = .5;
 end
 
 if ~isfield(input, 'dBstop')
-    input.dBstop = -80;
+    input.dBstop = 80;
 end
 
 
@@ -200,22 +199,17 @@ if ~isfield(input, 'caldiv')
     input.caldiv = 0;
 end
 
-if ~isfield(input, 'dBripple')
-    input.dBripple = 0;
-end
-
 %Assume no dBmin
 if ~isfield(input, 'FIRdBmin')
     input.FIRdBmin = 0;
 end
 
 cooked = input;
-  
-function rate = fastest_FIR(rates, max, min, mult)
-    for i = 1:length(rates)
-        if max > mult * rates(i) && min < mult * rates(i)
-            break;
-        end
-    end
-    rate = rates(i);
 
+function rate = fastest_FIR(rates, max, min, mult)
+for i = 1:length(rates)
+    if max > mult * rates(i) && min < mult * rates(i)
+        break;
+    end
+end
+rate = rates(i);

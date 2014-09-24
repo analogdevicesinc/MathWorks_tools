@@ -42,16 +42,25 @@
 %
 function tohwtx = internal_designtxfilters9361_default(Fin)
 
-[Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,~,~,~] = settxrxclock(Fin);
+a.Rdata = Fin;
+a.RxTx = 'Tx';
+a = cook_input(a);
+
+Fin = a.Rdata;
+FIR_interp = a.FIR;
+HB_interp = a.HB1*a.HB2*a.HB3;
+DAC_mult = a.DAC_div;
+PLL_mult = a.PLL_mult;
+
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * DAC_mult * PLL_mult;
 
-Fstop = Fin/2;
-Fpass = Fstop/1.2;
-dBripple = 0.1;
-dBstop = 80;
-dBstop_FIR = 0;
-phEQ = -1;
+Fstop = a.Fstop;
+Fpass = a.Fpass;
+dBripple = a.dBripple;
+dBstop = a.dBstop;
+dBstop_FIR = a.FIRdBmin;
+phEQ = a.phEQ;
 int_FIR = 1;
 wnom = 0;
 
@@ -118,8 +127,18 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     
 end
 
-% pick up the right combination
-[hb1, hb2, hb3, int3] = settxhb9361(HB_interp);
+hb1 = a.HB1;
+hb2 = a.HB2;
+if a.HB3 == 2
+    hb3 = 2;
+    int3 = 1;
+elseif a.HB3 == 3
+    hb3 = 1;
+    int3 = 3;
+else
+    hb3=1;
+    int3=1;
+end
 
 % convert the enables into a string
 enables = strrep(num2str([hb1 hb2 hb3 int3]), ' ', '');
@@ -128,8 +147,14 @@ switch enables
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
+    case '1211' % Hb2
+        Filter1 = Hm2;
+    case '1121' % Hb3
+        Filter1 = Hm3;
     case '2211' % Hb1,Hb2
         Filter1 = cascade(Hm1,Hm2);
+    case '2121' % Hb1,Hb3
+        Filter1 = cascade(Hm1,Hm3);
     case '2221' % Hb1,Hb2,Hb3
         Filter1 = cascade(Hm1,Hm2,Hm3);
     case '1113' % Int3
