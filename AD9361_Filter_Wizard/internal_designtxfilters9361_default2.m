@@ -403,4 +403,4 @@ tohwTx.Coefficient = tfirtaps;
 tohwTx.CoefficientSize = length(h);
 tohwTx.Interp = FIR_interp;
 tohwTx.Gain = gain;
-tohwTx.RFBandwidth = Fpass*2;
+tohwTx.RFBandwidth = round(Fpass*2);

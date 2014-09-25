@@ -372,4 +372,4 @@ tohwrx.Coefficient = rfirtaps;
 tohwrx.CoefficientSize = length(h);
 tohwrx.Decimation = FIR_decim;
 tohwrx.Gain = gain;
-tohwrx.RFBandwidth = Fpass*2;
+tohwrx.RFBandwidth = round(Fpass*2);
