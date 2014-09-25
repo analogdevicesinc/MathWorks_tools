@@ -206,14 +206,22 @@ set(handles.ADI_logo, 'Box', 'off');
 set(handles.ADI_logo, 'HandleVisibility', 'off');
 
 % initialize PLL div option to show the correct value
-opts = get(handles.converter2PLL, 'String');
-for i = 1:length(opts)
-    j = char(opts(i));
-    j = str2num(j(1:2));
-    if j == handles.input_rx.PLL_mult
-        set(handles.converter2PLL, 'Value', i);
-        break;
-    end
+if isstruct(handles.input_rx) || isstruct(handles.input_tx)
+	if get(handles.filter_type, 'Value') == 1
+		pll_mult = handles.input_rx.PLL_mult;
+	else
+		pll_mult = handles.input_tx.PLL_mult;
+	end
+
+	opts = get(handles.converter2PLL, 'String');
+	for i = 1:length(opts)
+		j = char(opts(i));
+		j = str2num(j(1:2));
+		if j == pll_mult
+			set(handles.converter2PLL, 'Value', i);
+			break;
+		end
+	end
 end
 
 axes(handles.magnitude_plot);
