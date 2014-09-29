@@ -46,22 +46,31 @@ tohwRx = internal_designrxfilters9361_default(tohwTx.TXSAMP);
 if tohwRx.BBPLL == tohwTx.BBPLL
     return;
 else
-    FIR_int = tohwTx.TF/tohwTx.TXSAMP;
-    HB_int = tohwTx.DAC/tohwTx.TF;
-    PLL_multt = tohwTx.BBPLL/tohwTx.DAC;
-    if PLL_multt <= 64
-        FIR_decim = FIR_int;
-        HB_decim = HB_int;
-        PLL_multr = PLL_multt;
-    elseif FIR_int <=2
-        FIR_decim = FIR_int*2;
-        HB_decim = HB_int;
-        PLL_multr = PLL_multt/2;
-    elseif HB_int <=6
-        FIR_decim = FIR_int;
-        HB_decim = HB_int*2;
-        PLL_multr = PLL_multt/2;
-    else error('Error: Invalid Tx Clock Settings.')
+    FIR = tohwTx.TF/tohwTx.TXSAMP;
+    THB1 = tohwTx.T1/tohwTx.TF;
+    THB2 = tohwTx.T2/tohwTx.T1;
+    THB3 = tohwTx.DAC/tohwTx.T2;
+    PLL_total = tohwTx.BBPLL/tohwTx.DAC;
+    
+    FIR_decim = FIR;
+    rhb1 = THB1;
+    rhb2 = THB2;
+    if THB3 == 3
+        rhb3 = 1;
+        rdec3 = 3;
+    elseif THB3 == 2
+        rhb3 = 2;
+        rdec3 = 1;
+    else
+        rhb3 = 1;
+        rdec3 = 1;
+    end
+    HB_decim = rhb1*rhb2*rhb3*rdec3;
+    
+    if PLL_total<=64
+        PLL_multr = PLL_total;
+    else
+        error('Invalid Tx BBPLL.');
     end
 end
 
@@ -141,17 +150,21 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     
 end
 
-[hb1, hb2, hb3, dec3] = setrxhb9361(HB_decim);
-
 % convert the enables into a string
-enables = strrep(num2str([hb1 hb2 hb3 dec3]), ' ', '');
+enables = strrep(num2str([rhb1 rhb2 rhb3 rdec3]), ' ', '');
 switch enables
     case '1111' % only RFIR
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
+    case '1211' % Hb2
+        Filter1 = Hm1;
+    case '1121' % Hb3
+        Filter1 = Hm1;
     case '2211' % Hb2,Hb1
         Filter1 = cascade(Hm2,Hm1);
+    case '2121' % Hb3,Hb1
+        Filter1 = cascade(Hm3,Hm1);
     case '2221' % Hb3,Hb2,Hb1
         Filter1 = cascade(Hm3,Hm2,Hm1);
     case '1113' % Dec3
@@ -160,6 +173,10 @@ switch enables
         Filter1 = cascade(Hm4,Hm1);
     case '2213' % Dec3,Hb2,Hb1
         Filter1 = cascade(Hm4,Hm2,Hm1);
+    case '1221' % Hb3,Hb2
+        Filter1 = cascade(Hm3,Hm2);
+    case '1213' % Dec3,Hb2
+        Filter1 = cascade(Hm4,Hm2);
     otherwise
         error('ddcresponse:IllegalOption', 'At least one of the stages must be there.')
 end
@@ -363,8 +380,8 @@ end
 
 tohwRx.RXSAMP = Fout;
 tohwRx.RF = Fout * FIR_decim;
-tohwRx.R1 = tohwRx.RF * hb1;
-tohwRx.R2 = tohwRx.R1 * hb2;
+tohwRx.R1 = tohwRx.RF * rhb1;
+tohwRx.R2 = tohwRx.R1 * rhb2;
 tohwRx.ADC = Fadc;
 tohwRx.BBPLL = clkPLL;
 tohwRx.Coefficient = rfirtaps;

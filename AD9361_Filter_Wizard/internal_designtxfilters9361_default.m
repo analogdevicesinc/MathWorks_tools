@@ -149,8 +149,12 @@ switch enables
         Filter1 = Hm1;
     case '1211' % Hb2
         Filter1 = Hm2;
+    case '1213' % Hb2,Int3
+        Filter1 = cascade(Hm2,Hm4);
     case '1121' % Hb3
         Filter1 = Hm3;
+    case '1221' % Hb2,Hb3
+        Filter1 = cascade(Hm2,Hm3);
     case '2211' % Hb1,Hb2
         Filter1 = cascade(Hm1,Hm2);
     case '2121' % Hb1,Hb3

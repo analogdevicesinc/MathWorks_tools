@@ -46,38 +46,47 @@ tohwTx = internal_designtxfilters9361_default(tohwRx.RXSAMP);
 if tohwTx.BBPLL == tohwRx.BBPLL
     return;
 else
-    FIR_decim = tohwRx.RF/tohwRx.RXSAMP;
-    HB_decim = tohwRx.ADC/tohwRx.RF;
-    PLL_multr = tohwRx.BBPLL/tohwRx.ADC;
+    FIR = tohwRx.RF/tohwRx.RXSAMP;
+    RHB1 = tohwRx.R1/tohwRx.RF;
+    RHB2 = tohwRx.R2/tohwRx.R1;
+    RHB3 = tohwRx.ADC/tohwRx.R2;
+    PLL_total = tohwRx.BBPLL/tohwRx.ADC;
     DAC_mult = 2;
-    if FIR_decim ==4
-        FIR_interp = FIR_decim/2;
-        HB_interp = HB_decim;
-        PLL_mult = PLL_multr;
-    elseif rem(HB_decim,2)== 0
-        FIR_interp = FIR_decim;
-        HB_interp = HB_decim/2;
-        PLL_mult = PLL_multr;
-    elseif PLL_multr>=4
-        FIR_interp = FIR_decim;
-        HB_interp = HB_decim;
-        PLL_mult = PLL_multr/2;
-    else error('Error: Invalid Rx Clock Settings.')
+    FIR_interp = FIR;
+    thb1 = 1;
+    thb2 = RHB2;
+    if RHB3==3
+        thb3 = 1;
+        tint3 = 3;
+    elseif RHB3==2
+        thb3 = 2;
+        tint3 = 1;
+    else
+        thb3 = 1;
+        tint3 = 1;
     end
+    
+    HB_interp = thb1*thb2*thb3*tint3;
+    
+    if RHB1 == 2
+        PLL_mult = PLL_total;
+    else
+        PLL_mult = PLL_total/2;
+    end
+    
+    Fin = tohwRx.RXSAMP;
+    Fdac = Fin * FIR_interp * HB_interp;
+    clkPLL = Fdac * DAC_mult * PLL_mult;
+    
+    Fpass = Fin/3;
+    Fstop = Fpass*1.25;
+    dBripple = 0.5;
+    dBstop = 80;
+    dBstop_FIR = 0;
+    phEQ = -1;
+    int_FIR = 1;
+    wnom = 0;
 end
-
-Fin = tohwRx.RXSAMP;
-Fdac = Fin * FIR_interp * HB_interp;
-clkPLL = Fdac * DAC_mult * PLL_mult;
-
-Fpass = Fin/3;
-Fstop = Fpass*1.25;
-dBripple = 0.5;
-dBstop = 80;
-dBstop_FIR = 0;
-phEQ = -1;
-int_FIR = 1;
-wnom = 0;
 
 % Define the analog filters
 if ~wnom
@@ -142,18 +151,25 @@ if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_too
     
 end
 
-% pick up the right combination
-[hb1, hb2, hb3, int3] = settxhb9361(HB_interp);
-
 % convert the enables into a string
-enables = strrep(num2str([hb1 hb2 hb3 int3]), ' ', '');
+enables = strrep(num2str([thb1 thb2 thb3 tint3]), ' ', '');
 switch enables
     case '1111' % only TFIR
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
+    case '1211' % Hb2
+        Filter1 = Hm2;
+    case '1213' % Hb2,Int3
+        Filter1 = cascade(Hm2,Hm4);
+    case '1121' % Hb3
+        Filter1 = Hm3;
+    case '1221' % Hb2,Hb3
+        Filter1 = cascade(Hm2,Hm3);
     case '2211' % Hb1,Hb2
         Filter1 = cascade(Hm1,Hm2);
+    case '2121' % Hb1,Hb3
+        Filter1 = cascade(Hm1,Hm3);
     case '2221' % Hb1,Hb2,Hb3
         Filter1 = cascade(Hm1,Hm2,Hm3);
     case '1113' % Int3
@@ -165,6 +181,7 @@ switch enables
     otherwise
         error('ddcresponse:IllegalOption', 'At least one of the stages must be there.')
 end
+
 
 % Find out the best fit delay on passband
 Nw = 2048;
@@ -395,8 +412,8 @@ end
 
 tohwTx.TXSAMP = Fin;
 tohwTx.TF = Fin * FIR_interp;
-tohwTx.T1 = tohwTx.TF * hb1;
-tohwTx.T2 = tohwTx.T1 * hb2;
+tohwTx.T1 = tohwTx.TF * thb1;
+tohwTx.T2 = tohwTx.T1 * thb2;
 tohwTx.DAC = Fdac;
 tohwTx.BBPLL = clkPLL;
 tohwTx.Coefficient = tfirtaps;

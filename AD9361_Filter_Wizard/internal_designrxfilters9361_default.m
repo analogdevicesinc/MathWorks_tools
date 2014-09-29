@@ -161,6 +161,10 @@ switch enables
         Filter1 = cascade(Hm4,Hm1);
     case '2213' % Dec3,Hb2,Hb1
         Filter1 = cascade(Hm4,Hm2,Hm1);
+    case '1221' % Hb3,Hb2
+        Filter1 = cascade(Hm3,Hm2);
+    case '1213' % Dec3,Hb2
+        Filter1 = cascade(Hm4,Hm2);
     otherwise
         error('ddcresponse:IllegalOption', 'At least one of the stages must be there.')
 end
