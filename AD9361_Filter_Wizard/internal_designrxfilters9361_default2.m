@@ -70,7 +70,8 @@ else
     if PLL_total<=64
         PLL_multr = PLL_total;
     else
-        error('Invalid Tx BBPLL.');
+        PLL_multr = PLL_total;
+        warning('Tx BBPLL is too high.');
     end
 end
 
