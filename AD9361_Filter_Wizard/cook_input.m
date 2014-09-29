@@ -208,7 +208,7 @@ cooked = input;
 
 function rate = fastest_FIR(rates, max, min, mult)
 for i = 1:length(rates)
-    if max > mult * rates(i) && min < mult * rates(i)
+    if max >= mult * rates(i) && min <= mult * rates(i)
         break;
     end
 end
