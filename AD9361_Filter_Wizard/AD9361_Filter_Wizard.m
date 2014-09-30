@@ -205,6 +205,10 @@ set(handles.ADI_logo, 'YTick', []);
 set(handles.ADI_logo, 'Box', 'off');
 set(handles.ADI_logo, 'HandleVisibility', 'off');
 
+% Set the defaults
+set(handles.Use_FIR, 'Value', 1);
+set(handles.Advanced_options, 'Value', 0);
+
 % initialize PLL div option to show the correct value
 if isstruct(handles.input_rx) || isstruct(handles.input_tx)
 	if get(handles.filter_type, 'Value') == 1
@@ -1047,10 +1051,6 @@ else
     max_HB = handles.MAX_TX;
 end
 
-% Set the defaults
-set(handles.Advanced_options, 'Value', 0);
-set(handles.Use_FIR, 'Value', 1);
-
 % set things from the file.
 advanced = 0;
 if sel.phEQ == -1
@@ -1066,12 +1066,6 @@ if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
     set(handles.Advanced_options, 'Value', 1);
     set_caldiv(handles, sel.caldiv);
     advanced = 1;
-end
-
-if advanced
-    show_advanced(handles);
-else
-    hide_advanced(handles);
 end
 
 set(handles.Fpass, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fpass)));
