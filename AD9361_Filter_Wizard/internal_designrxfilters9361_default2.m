@@ -68,8 +68,9 @@ else
     HB_decim = rhb1*rhb2*rhb3*rdec3;
     PLL_multr = PLL_total;
     
-    if PLL_total > 64
-        disp('Tx BBPLL is too high.');
+    if PLL_multr > 64
+        X = ['Date rate = ', num2str(tohwTx.TXSAMP), ' Hz. Tx BBPLL is too high for Rx to match.'];
+        disp(X);
     end
 end
 
