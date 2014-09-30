@@ -1046,7 +1046,7 @@ if get(handles.filter_type, 'Value') == 1
     sel = handles.input_rx;
     max_HB = handles.MAX_RX;
 else
-    % Transmitt
+    % Transmit
     sel = handles.input_tx;
     max_HB = handles.MAX_TX;
 end
