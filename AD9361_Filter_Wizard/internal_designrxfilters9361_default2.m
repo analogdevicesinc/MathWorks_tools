@@ -66,12 +66,10 @@ else
         rdec3 = 1;
     end
     HB_decim = rhb1*rhb2*rhb3*rdec3;
+    PLL_multr = PLL_total;
     
-    if PLL_total<=64
-        PLL_multr = PLL_total;
-    else
-        PLL_multr = PLL_total;
-        warning('Tx BBPLL is too high.');
+    if PLL_total > 64
+        disp('Tx BBPLL is too high.');
     end
 end
 

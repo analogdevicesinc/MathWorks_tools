@@ -74,6 +74,10 @@ else
         PLL_mult = PLL_total/2;
     end
     
+    if PLL_mult > 64
+        disp('Rx BBPLL is too high.');
+    end
+    
     Fin = tohwRx.RXSAMP;
     Fdac = Fin * FIR_interp * HB_interp;
     clkPLL = Fdac * DAC_mult * PLL_mult;
