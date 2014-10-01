@@ -436,7 +436,7 @@ if (get(handles.filter_type, 'Value') == 1)
     % receive
     sel = handles.input_rx;
 else
-    %transmitt
+    % transmit
     sel = handles.input_tx;
 end
 
