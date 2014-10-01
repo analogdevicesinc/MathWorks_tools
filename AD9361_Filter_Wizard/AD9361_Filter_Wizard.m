@@ -2076,6 +2076,11 @@ set(handles.FIR_Astop_label, 'Visible', 'on');
 
 set(handles.HB1_label, 'String', 'HB1');
 tmp = {'1 x', '2 x'};
+
+if get(handles.HB1, 'Value') > 2
+	set(handles.HB1, 'Value', 2);
+end
+
 set(handles.HB1, 'String', tmp);
 set(handles.HB2_label, 'Visible', 'on');
 set(handles.HB2, 'Visible', 'on');
