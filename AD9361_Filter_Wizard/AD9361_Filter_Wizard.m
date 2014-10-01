@@ -921,6 +921,7 @@ set(handles.results_taps, 'Visible', 'on');
 set(handles.results_group_delay, 'Visible', 'on');
 
 set(handles.results_taps, 'String', [num2str(handles.taps) ' ']);
+set(handles.RFbw, 'String', num2str(tohw.RFBandwidth));
 
 converter_rate = data_rate * FIR_interp * HB_interp;
 
