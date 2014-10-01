@@ -212,21 +212,21 @@ hide_advanced(handles);
 
 % initialize PLL div option to show the correct value
 if isstruct(handles.input_rx) || isstruct(handles.input_tx)
-	if get(handles.filter_type, 'Value') == 1
-		pll_mult = handles.input_rx.PLL_mult;
-	else
-		pll_mult = handles.input_tx.PLL_mult;
-	end
+    if get(handles.filter_type, 'Value') == 1
+        pll_mult = handles.input_rx.PLL_mult;
+    else
+        pll_mult = handles.input_tx.PLL_mult;
+    end
 
-	opts = get(handles.converter2PLL, 'String');
-	for i = 1:length(opts)
-		j = char(opts(i));
-		j = str2num(j(1:2));
-		if j == pll_mult
-			set(handles.converter2PLL, 'Value', i);
-			break;
-		end
-	end
+    opts = get(handles.converter2PLL, 'String');
+    for i = 1:length(opts)
+        j = char(opts(i));
+        j = str2num(j(1:2));
+        if j == pll_mult
+            set(handles.converter2PLL, 'Value', i);
+            break;
+        end
+    end
 end
 
 axes(handles.magnitude_plot);
@@ -2077,7 +2077,7 @@ set(handles.HB1_label, 'String', 'HB1');
 tmp = {'1 x', '2 x'};
 
 if get(handles.HB1, 'Value') > 2
-	set(handles.HB1, 'Value', 2);
+    set(handles.HB1, 'Value', 2);
 end
 
 set(handles.HB1, 'String', tmp);
