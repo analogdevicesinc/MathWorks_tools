@@ -208,6 +208,7 @@ set(handles.ADI_logo, 'HandleVisibility', 'off');
 % Set the defaults
 set(handles.Use_FIR, 'Value', 1);
 set(handles.Advanced_options, 'Value', 0);
+hide_advanced(handles);
 
 % initialize PLL div option to show the correct value
 if isstruct(handles.input_rx) || isstruct(handles.input_tx)
