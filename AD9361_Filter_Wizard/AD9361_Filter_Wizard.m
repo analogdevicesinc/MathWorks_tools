@@ -926,34 +926,28 @@ set(handles.RFbw, 'String', num2str(tohw.RFBandwidth));
 converter_rate = data_rate * FIR_interp * HB_interp;
 
 G = 8192;
-% if this is a new plot, make a new plot, if we are just tweaking
-% things, then redraw in the same zoom window.
-if handles.active_plot == 0
-    axes(handles.magnitude_plot);
-    cla(handles.magnitude_plot);
+axes(handles.magnitude_plot);
+cla(handles.magnitude_plot);
 
-    for i = 1:4
-        if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
-            set(handles.arrows{i}, 'Visible', 'off');
-        end
+for i = 1:4
+    if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
+        set(handles.arrows{i}, 'Visible', 'off');
     end
-
-    handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
-    xlim([0 data_rate/2]);
-    ylim([-100 10]);
-    zoom_axis(gca);
-    xlabel('Frequency (MHz)');
-    ylabel('Magnitude (dB)');
-
-    % plot the mask that we are interested in
-    line([fpass fpass], [-(apass/2) -100], 'Color', 'Red');
-    line([0 fpass], [-(apass/2) -(apass/2)], 'Color', 'Red');
-    line([0 fstop], [apass/2 apass/2], 'Color', 'Red');
-    line([fstop fstop], [apass/2 -astop], 'Color', 'Red');
-    line([fstop data_rate], [-astop -astop], 'Color', 'Red');
-else
-    set(handles.active_plot,'ydata',mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))),'xdata',linspace(0,data_rate/2,G));
 end
+
+handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+xlim([0 data_rate/2]);
+ylim([-100 10]);
+zoom_axis(gca);
+xlabel('Frequency (MHz)');
+ylabel('Magnitude (dB)');
+
+% plot the mask that we are interested in
+line([fpass fpass], [-(apass/2) -100], 'Color', 'Red');
+line([0 fpass], [-(apass/2) -(apass/2)], 'Color', 'Red');
+line([0 fstop], [apass/2 apass/2], 'Color', 'Red');
+line([fstop fstop], [apass/2 -astop], 'Color', 'Red');
+line([fstop data_rate], [-astop -astop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
