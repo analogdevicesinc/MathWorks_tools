@@ -776,15 +776,6 @@ text(0.1,(mean(gd2))*1e6,...
     'BackgroundColor','white',...
     'EdgeColor','red');
 
-hfvt2 = fvtool(...
-    Hmd,...
-    'FrequencyRange','Specify freq. vector', ...
-    'FrequencyVector',linspace(0,data_rate/2,2048),'Fs',...
-    data_rate*handles.int, ...
-    'ShowReference','off','Color','White');
-set(hfvt2.CurrentAxes, 'YLim', [-100 20]);
-legend(hfvt2, 'FIR Filter');
-
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over FIR_Astop.
 function FIR_Astop_ButtonDownFcn(hObject, eventdata, handles)
@@ -2023,12 +2014,10 @@ apass = sel.dBripple;
 astop = sel.dBstop;
 
 if (get(handles.filter_type, 'Value') == 1)
-    Hanalog = handles.filters.Stage(1).Stage(1);
     Hmiddle = handles.filters.Stage(1);
     Hmd = handles.filters.Stage(2);
     tmp = 'Rx';
-else
-    Hanalog = handles.filters.Stage(2).Stage(end);
+else 
     Hmiddle = handles.filters.Stage(2);
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
