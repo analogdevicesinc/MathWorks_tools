@@ -287,11 +287,13 @@ if (handles.freq_units ~= units)
     fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
     fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
     data_rate = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
+    rf_bandwidth = value2Hz(handles, handles.freq_units, str2double(get(handles.RFbw, 'String')));
 
     handles.freq_units = units;
     set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, fstop)));
     set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, fpass)));
     set(handles.data_clk, 'String', num2str(Hz2value(handles, handles.freq_units, data_rate)));
+    set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, rf_bandwidth)));
     % Update handles structure
     guidata(hObject, handles);
 end
@@ -923,7 +925,7 @@ set(handles.results_taps, 'Visible', 'on');
 set(handles.results_group_delay, 'Visible', 'on');
 
 set(handles.results_taps, 'String', [num2str(handles.taps_length) ' ']);
-set(handles.RFbw, 'String', num2str(tohw.RFBandwidth));
+set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, tohw.RFBandwidth)));
 
 converter_rate = data_rate * FIR_interp * HB_interp;
 
