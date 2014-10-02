@@ -286,12 +286,14 @@ units = get(hObject, 'Value');
 if (handles.freq_units ~= units)
     fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
     fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
+    fcutoff = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
     data_rate = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
     rf_bandwidth = value2Hz(handles, handles.freq_units, str2double(get(handles.RFbw, 'String')));
 
     handles.freq_units = units;
     set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, fstop)));
     set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, fpass)));
+    set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.freq_units, fcutoff)));
     set(handles.data_clk, 'String', num2str(Hz2value(handles, handles.freq_units, data_rate)));
     set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, rf_bandwidth)));
     % Update handles structure
