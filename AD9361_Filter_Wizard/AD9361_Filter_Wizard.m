@@ -879,12 +879,15 @@ if (get(handles.filter_type, 'Value') == 1)
     [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designrxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = rxFilters;
+    handles.taps = rfirtaps;
 else
     DAC_mult = get(handles.DAC_by2, 'Value');
     [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
+    handles.taps = tfirtaps;
 end
+handles.taps_length = tohw.CoefficientSize;
 
 set(gcf,'Pointer',oldpointer);
 
@@ -896,7 +899,6 @@ end
 handles.simrfmodel = webinar;
 handles.supportpack = tohw;
 handles.gain = tohw.Gain;
-handles.taps = tohw.CoefficientSize;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
@@ -920,7 +922,7 @@ set(handles.results_Astop, 'Visible', 'on');
 set(handles.results_taps, 'Visible', 'on');
 set(handles.results_group_delay, 'Visible', 'on');
 
-set(handles.results_taps, 'String', [num2str(handles.taps) ' ']);
+set(handles.results_taps, 'String', [num2str(handles.taps_length) ' ']);
 set(handles.RFbw, 'String', num2str(tohw.RFBandwidth));
 
 converter_rate = data_rate * FIR_interp * HB_interp;
