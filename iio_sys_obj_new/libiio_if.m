@@ -5,7 +5,6 @@ classdef libiio_if < handle
     %% Protected properties
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 	properties (Access = protected)
-        % Private class properties.
 		libname 		= 'libiio';
         hname 			= 'iio.h'; 
 		dev_name 		= '';
@@ -24,10 +23,8 @@ classdef libiio_if < handle
     %% Static private methods
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    	
 	methods (Static, Access = private)
-		%% Static functions
         function out = modInstanceCnt(val)
-            % Manages the number of object instances to hadle proper DLL
-            % unloading
+            % Manages the number of object instances to handle proper DLL unloading
             persistent instance_cnt;
             if isempty(instance_cnt)
                 instance_cnt = 0;
@@ -40,8 +37,7 @@ classdef libiio_if < handle
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
     %% Protected methods
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	methods (Access = protected)
-		
+	methods (Access = protected)		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% Creates the network context
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
@@ -515,9 +511,9 @@ classdef libiio_if < handle
 		end
 		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		%% Read an attribute value
+		%% Read an attribute as a double value
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		function [ret, val] = readAttribute(obj, attr_name)					
+		function [ret, val] = readAttributeDouble(obj, attr_name)					
 			% Find the attribute
 			[ret, ch, attr] = findAttribute(obj, attr_name);			
 			if(ret < 0)
@@ -540,9 +536,53 @@ classdef libiio_if < handle
 		end
 		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%% Read an attribute as a string value
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		function [ret, val] = readAttributeString(obj, attr_name)					
+			% Find the attribute
+			[ret, ch, attr] = findAttribute(obj, attr_name);			
+			if(ret < 0)
+				return;
+			end
+			
+			% Create a pointer to be used for data read                
+			data = char(ones(1,512));
+			pData = libpointer('stringPtr', data);
+			
+			% Read the attribute value                
+            if(ret > 0)
+				[~,~,~,val] = calllib(obj.libname, 'iio_channel_attr_read', ch, attr, pData, 512);
+				clear ch;
+				clear attr;
+			else
+				[~,~,~,val] = calllib(obj.libname, 'iio_device_attr_read', obj.iio_dev, attr_name, pData, 512); 
+            end
+		end
+		
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%% Write a string double value
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		function ret = writeAttributeDouble(obj, attr_name, val)		
+			% Find the attribute
+			[ret, ch, attr] = findAttribute(obj, attr_name);			
+			if(ret < 0)
+				return;
+			end
+			
+			% Write the attribute
+			if(ret > 0)                            
+				calllib(obj.libname, 'iio_channel_attr_write_double', ch, attr, val);
+				clear ch;
+				clear attr;				
+			else
+				calllib(obj.libname, 'iio_device_attr_write_double', obj.iio_dev, attr_name, val); 
+			end
+		end		
+		
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		%% Write a string attribute value
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		function ret = writeAttribute(obj, attr_name, str)		
+		function ret = writeAttributeString(obj, attr_name, str)		
 			% Find the attribute
 			[ret, ch, attr] = findAttribute(obj, attr_name);			
 			if(ret < 0)

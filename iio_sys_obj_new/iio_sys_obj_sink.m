@@ -2,14 +2,10 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
 						  & matlab.system.mixin.CustomIcon
     % iio_sys_obj_sink Sink System Object block for IIO devices
     
-    properties
-        % Public, tunable properties.
-    end
-    
     properties (Nontunable)
         % Public, non-tunable properties.
         
-        % ip_address IP address
+        %ip_address IP address
         ip_address = '';
         
         %dev_name Device name
@@ -31,18 +27,26 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
     
     properties (Access = private)
         % Private class properties.
-        libiio_data_dev = {};
+        
+		%libiio_data_dev libiio interface for the data device
+		libiio_data_dev = {};
+		
+		%libiio_ctrl_dev libiio interface for the control device
 		libiio_ctrl_dev  = {};
     end
     
     properties (DiscreteState)
         % Discrete state properties.
-        num_cfg_in;
-        str_cfg_in;
+        
+		%num_cfg_in Numeric type input control channels data
+		num_cfg_in;
+        
+		%str_cfg_in String type input control channels data
+		str_cfg_in;
     end
     
     methods
-        % Constructor
+        %% Constructor
         function obj = iio_sys_obj_sink(varargin)
 			% Support name-value pair arguments when constructing the object.
             setProperties(obj,nargin,varargin{:});
@@ -166,11 +170,11 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
 			varargout = cell(1, out_data_ch_no + length(obj.iio_dev_cfg.mon_ch));
 			
             % Implement the data transmit flow
-            ret = writeData(obj.libiio_data_dev, varargin);				
+            writeData(obj.libiio_data_dev, varargin);				
               
 			% Implement the parameters monitoring flow
 			for i = 1 : length(obj.iio_dev_cfg.mon_ch)
-				[ret, val] = readAttribute(obj.libiio_ctrl_dev, obj.iio_dev_cfg.mon_ch(i).port_attr);
+				[~, val] = readAttributeDouble(obj.libiio_ctrl_dev, obj.iio_dev_cfg.mon_ch(i).port_attr);
 				varargout{out_data_ch_no + i} = val;
 			end
 
@@ -193,7 +197,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
 							obj.str_cfg_in(i,j+1) = 0;
 							str = char(obj.str_cfg_in(i,:));
 						end
-						ret = writeAttribute(obj.libiio_ctrl_dev, obj.iio_dev_cfg.cfg_ch(i).port_attr, str);						
+						writeAttributeString(obj.libiio_ctrl_dev, obj.iio_dev_cfg.cfg_ch(i).port_attr, str);						
 					end
 				end
 			end
@@ -325,7 +329,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
             % features, such as SimState.
         end
         
-        function loadObjectImpl(obj,s,wasLocked)
+        function loadObjectImpl(obj, s, wasLocked)
             % Read private, protected, or state properties from
             % the structure s and assign it to the object obj.
         end
