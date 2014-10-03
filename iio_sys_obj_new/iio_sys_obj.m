@@ -161,23 +161,27 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
             obj.str_cfg_in = zeros(length(obj.iio_dev_cfg.cfg_ch), 64);
            
 			% Initialize the libiio data input device						
-            [ret, err_msg, msg_log] = init(obj.libiio_data_in_dev, obj.ip_address, ...
-										   obj.iio_dev_cfg.data_in_device, 'OUT', ...
-										   obj.in_ch_no, obj.in_ch_size);
-			fprintf('%s', msg_log);
-            if(ret < 0)
-				msgbox(err_msg, 'Error','error');
-                return;
+            if(obj.in_ch_no ~= 0)
+                [ret, err_msg, msg_log] = init(obj.libiio_data_in_dev, obj.ip_address, ...
+                                               obj.iio_dev_cfg.data_in_device, 'OUT', ...
+                                               obj.in_ch_no, obj.in_ch_size);
+                fprintf('%s', msg_log);
+                if(ret < 0)
+                    msgbox(err_msg, 'Error','error');
+                    return;
+                end
             end
 				
             % Initialize the libiio data output device					
-            [ret, err_msg, msg_log] = init(obj.libiio_data_out_dev, obj.ip_address, ...
-										   obj.iio_dev_cfg.data_out_device, 'IN', ...
-										   obj.out_ch_no, obj.out_ch_size);
-			fprintf('%s', msg_log);
-            if(ret < 0)
-				msgbox(err_msg, 'Error','error');
-                return;
+            if(obj.out_ch_no ~= 0)
+                [ret, err_msg, msg_log] = init(obj.libiio_data_out_dev, obj.ip_address, ...
+                                               obj.iio_dev_cfg.data_out_device, 'IN', ...
+                                               obj.out_ch_no, obj.out_ch_size);
+                fprintf('%s', msg_log);
+                if(ret < 0)
+                    msgbox(err_msg, 'Error','error');
+                    return;
+                end
             end
 
 			% Initialize the libiio control device            

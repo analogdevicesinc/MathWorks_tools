@@ -320,11 +320,13 @@ classdef libiio_if < handle
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 	
 		function delete(obj)
             % Release any resources used by the system object.            
-            if(libisloaded(obj.libname))
+            if((obj.if_initialized == 1) && libisloaded(obj.libname))
                 if(~isempty(obj.iio_buffer))
                     calllib(obj.libname, 'iio_buffer_destroy', obj.iio_buffer);
                 end
-                calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
+                if(~isempty(obj.iio_ctx))
+                    calllib(obj.libname, 'iio_context_destroy', obj.iio_ctx);
+                end
                 obj.iio_buffer = {};
                 obj.iio_channel = {};
                 obj.iio_dev = {};
