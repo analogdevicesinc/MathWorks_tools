@@ -1,6 +1,6 @@
-classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
-						  & matlab.system.mixin.CustomIcon
-    % iio_sys_obj_sink Sink System Object block for IIO devices
+classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
+        & matlab.system.mixin.CustomIcon
+    % iio_sys_obj System Object block for IIO devices
     
     properties (Nontunable)
         % Public, non-tunable properties.
@@ -11,11 +11,17 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
         %dev_name Device name
         dev_name = '';
         
-        %ch_size Channel size [samples]
-        ch_size = 8192;
+		%in_ch_no Number of input data channels
+        in_ch_no = 0;
+		
+        %in_ch_size Input data channel size [samples]
+        in_ch_size = 8192;
         
-        %ch_no Number of active channels
-        ch_no = 1;
+        %out_ch_no Number of output data channels
+        out_ch_no = 0;
+		
+        %out_ch_size Output data channel size [samples]
+        out_ch_size = 8192;
     end
     
     properties (Access = protected)
@@ -28,11 +34,17 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
     properties (Access = private)
         % Private class properties.
         
-		%libiio_data_dev libiio interface for the data device
-		libiio_data_dev = {};
+		%libiio_data_in_dev libiio IIO interface object for the input data device
+		libiio_data_in_dev = {};
 		
-		%libiio_ctrl_dev libiio interface for the control device
+		%libiio_data_out_dev libiio IIO interface object for the output data device
+		libiio_data_out_dev = {};
+		
+		%libiio_ctrl_dev libiio IIO interface object for the control device
 		libiio_ctrl_dev  = {};
+		
+		%sys_obj_initialized Holds the initialization status of the system object
+		sys_obj_initialized = 0;
     end
     
     properties (DiscreteState)
@@ -47,7 +59,12 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
     
     methods
         %% Constructor
-        function obj = iio_sys_obj_sink(varargin)
+        function obj = iio_sys_obj(varargin)
+			% Construct the libiio interface objects
+			obj.libiio_data_in_dev = libiio_if();
+			obj.libiio_data_out_dev = libiio_if();
+			obj.libiio_ctrl_dev = libiio_if();
+			
 			% Support name-value pair arguments when constructing the object.
             setProperties(obj,nargin,varargin{:});
         end
@@ -57,10 +74,10 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
         %% Utility functions
         
         function config = getObjConfig(obj)
-			% Read the selected device's configuration
+			% Read the selected device configuration
 			
             % Open the configuration file
-            fname = sprintf('%s_sink.cfg', obj.dev_name);
+            fname = sprintf('%s.cfg', obj.dev_name);
             fp_cfg = fopen(fname);
             if(fp_cfg < 0)
                 config = {};
@@ -68,12 +85,13 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
             end
             
             % Build the object configuration structure
-            config = struct('data_device', '',... % Pointer to the data device 
-                            'ctrl_device', '',... % Pointer to the control device
-                            'cfg_ch', [],...      % Configuration channels list 
-                            'mon_ch', []);        % Monitoring channels list
+            config = struct('data_in_device', '',... 	% Pointer to the data input device
+							'data_out_device', '',...	% Pointer to the data output device 			
+                            'ctrl_device', '',... 	 	% Pointer to the control device
+                            'cfg_ch', [],...      	 	% Configuration channels list 
+                            'mon_ch', []);        	 	% Monitoring channels list
             
-            % Build the configuration/monitoring channel configuration structure
+            % Build the configuration/monitoring channels structure
             ch_cfg = struct('port_name', '',...   % Name of the port to be displayed on the object block    
                             'port_attr', '',...   % Associated device attribute name
                             'dev', 0,...          % Pointer to the control device
@@ -86,12 +104,18 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
                 if(strfind(line,'#'))
                     continue;
                 end				
-                if(~isempty(strfind(line, 'data_device')))
-                    % Get the associated data device
+                if(~isempty(strfind(line, 'data_in_device')))
+                    % Get the associated data input device
                     idx = strfind(line, '=');
                     tmp = line(idx+1:end);
                     tmp = strtrim(tmp);
-                    config.data_device = tmp;
+                    config.data_in_device = tmp;
+				elseif(~isempty(strfind(line, 'data_out_device')))
+                    % Get the associated data output device
+                    idx = strfind(line, '=');
+                    tmp = line(idx+1:end);
+                    tmp = strtrim(tmp);
+                    config.data_out_device = tmp;	
                 elseif(~isempty(strfind(line, 'ctrl_device')))
                     % Get the associated control device
                     idx = strfind(line, '=');
@@ -121,7 +145,10 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
         %% Common functions
 		function setupImpl(obj)
             % Implement tasks that need to be performed only once.
-                        
+
+			% Set the initialization status to fail
+			obj.sys_obj_initialized = 0;			
+			 
             % Read the object's configuration from the associated configuration file
             obj.iio_dev_cfg = getObjConfig(obj);
             if(isempty(obj.iio_dev_cfg))
@@ -133,19 +160,27 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
             obj.num_cfg_in = zeros(1, length(obj.iio_dev_cfg.cfg_ch));
             obj.str_cfg_in = zeros(length(obj.iio_dev_cfg.cfg_ch), 64);
            
-            % Initialize the libiio data device
-			obj.libiio_data_dev = libiio_if();			
-            [ret, err_msg, msg_log] = init(obj.libiio_data_dev, obj.ip_address, ...
-										   obj.iio_dev_cfg.data_device, 'OUT', ...
-										   obj.ch_no, obj.ch_size);
+			% Initialize the libiio data input device						
+            [ret, err_msg, msg_log] = init(obj.libiio_data_in_dev, obj.ip_address, ...
+										   obj.iio_dev_cfg.data_in_device, 'OUT', ...
+										   obj.in_ch_no, obj.in_ch_size);
+			fprintf('%s', msg_log);
+            if(ret < 0)
+				msgbox(err_msg, 'Error','error');
+                return;
+            end
+				
+            % Initialize the libiio data output device					
+            [ret, err_msg, msg_log] = init(obj.libiio_data_out_dev, obj.ip_address, ...
+										   obj.iio_dev_cfg.data_out_device, 'IN', ...
+										   obj.out_ch_no, obj.out_ch_size);
 			fprintf('%s', msg_log);
             if(ret < 0)
 				msgbox(err_msg, 'Error','error');
                 return;
             end
 
-			% Initialize the libiio control device
-            obj.libiio_ctrl_dev = libiio_if();
+			% Initialize the libiio control device            
 			[ret, err_msg, msg_log] = init(obj.libiio_ctrl_dev, obj.ip_address, ...
 										   obj.iio_dev_cfg.ctrl_device, '', ...
 										   0, 0);
@@ -153,46 +188,57 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
             if(ret < 0)
 				msgbox(err_msg, 'Error','error');
                 return;
-            end						
+            end
+
+			% Set the initialization status to success
+			obj.sys_obj_initialized = 1;			
         end
         
         function releaseImpl(obj)
             % Release any resources used by the system object.            
             obj.iio_dev_cfg = {};
-			delete(obj.libiio_data_dev);
+			delete(obj.libiio_data_in_dev);
+			delete(obj.libiio_data_out_dev);
 			delete(obj.libiio_ctrl_dev);			
         end        
         
         function varargout = stepImpl(obj, varargin)
             % Implement the system object's processing flow.
-            in_data_ch_no = obj.ch_no;
-            out_data_ch_no = 0;
-			varargout = cell(1, out_data_ch_no + length(obj.iio_dev_cfg.mon_ch));
+			varargout = cell(1, obj.out_ch_no + length(obj.iio_dev_cfg.mon_ch));
+			if(obj.sys_obj_initialized == 0)
+				return;
+			end
 			
-            % Implement the data transmit flow
-            writeData(obj.libiio_data_dev, varargin);				
+            % Implement the data capture flow
+			[~, data] = readData(obj.libiio_data_out_dev);
+            for i = 1 : obj.out_ch_no 
+                varargout{i} = data{i};
+            end
+			
+			% Implement the data transmit flow
+            writeData(obj.libiio_data_in_dev, varargin);	
               
 			% Implement the parameters monitoring flow
 			for i = 1 : length(obj.iio_dev_cfg.mon_ch)
 				[~, val] = readAttributeDouble(obj.libiio_ctrl_dev, obj.iio_dev_cfg.mon_ch(i).port_attr);
-				varargout{out_data_ch_no + i} = val;
+				varargout{obj.out_ch_no + i} = val;
 			end
 
 			% Implement the device configuration flow
 			for i = 1 : length(obj.iio_dev_cfg.cfg_ch)
-				if(~isempty(varargin{i + in_data_ch_no}))
-					if(length(varargin{i + in_data_ch_no}) == 1)
-						new_data = (varargin{i + in_data_ch_no} ~= obj.num_cfg_in(i));
+				if(~isempty(varargin{i + obj.in_ch_no}))
+					if(length(varargin{i + obj.in_ch_no}) == 1)
+						new_data = (varargin{i + obj.in_ch_no} ~= obj.num_cfg_in(i));
 					else
-						new_data = ~strncmp(char(varargin{i + in_data_ch_no}'), char(obj.str_cfg_in(i,:)), length(varargin{i + in_data_ch_no}));
+						new_data = ~strncmp(char(varargin{i + obj.in_ch_no}'), char(obj.str_cfg_in(i,:)), length(varargin{i + obj.in_ch_no}));
 					end
 					if(new_data == 1)
-						if(length(varargin{i + in_data_ch_no}) == 1)
-							obj.num_cfg_in(i) = varargin{i + in_data_ch_no};
+						if(length(varargin{i + obj.in_ch_no}) == 1)
+							obj.num_cfg_in(i) = varargin{i + obj.in_ch_no};
 							str = num2str(obj.num_cfg_in(i));
 						else
-							for j = 1:length(varargin{i + in_data_ch_no})
-								obj.str_cfg_in(i,j) = varargin{i + in_data_ch_no}(j);
+							for j = 1:length(varargin{i + obj.in_ch_no})
+								obj.str_cfg_in(i,j) = varargin{i + obj.in_ch_no}(j);
 							end
 							obj.str_cfg_in(i,j+1) = 0;
 							str = char(obj.str_cfg_in(i,:));
@@ -211,7 +257,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
         
         function num = getNumInputsImpl(obj)
             % Get number of inputs.            
-            num = obj.ch_no;
+            num = obj.in_ch_no;
 			
 			config = getObjConfig(obj);
             if(~isempty(config))
@@ -223,7 +269,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
 			% Get input names
 
             % Get the number of input data channels
-            data_ch_no = obj.ch_no;
+            data_ch_no = obj.in_ch_no;
             
             % Get number of control channels
             cfg_ch_no = 0;
@@ -235,7 +281,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
             if(data_ch_no + cgf_ch_no ~= 0)
                 varargout = cell(1, data_ch_no + cgf_ch_no);
                 for i = 1 : data_ch_no
-                    varargout{i} = sprintf('In%d', i);
+                    varargout{i} = sprintf('DATA_IN%d', i);
                 end
                 for i = data_ch_no + 1 : data_ch_no + cgf_ch_no
                     varargout{i} = config.cfg_ch(i - data_ch_no).port_name;
@@ -247,7 +293,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
         
         function num = getNumOutputsImpl(obj)
             % Get number of outputs.
-            num = 0;
+            num = obj.out_ch_no;
 
             config = getObjConfig(obj);
             if(~isempty(config))
@@ -259,7 +305,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
 			% Get output names
             
             % Get the number of output data channels
-            data_ch_no = 0;
+            data_ch_no = obj.out_ch_no;
             
             % Get number of monitoring channels
             mon_ch_no = 0;
@@ -271,7 +317,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
             if(data_ch_no + mon_ch_no ~= 0)
                 varargout = cell(1, data_ch_no + mon_ch_no);
                 for i = 1 : data_ch_no
-                    varargout{i} = sprintf('Out%d', i);
+                    varargout{i} = sprintf('DATA_OUT%d', i);
                 end
                 for i = data_ch_no + 1 : data_ch_no + mon_ch_no
                     varargout{i} = config.mon_ch(i - data_ch_no).port_name;
@@ -308,7 +354,10 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
 		function varargout = getOutputSizeImpl(obj)
             % Implement if input size does not match with output size.
             varargout = cell(1, getNumOutputs(obj));
-            for i = 1 : length(varargout)
+            for i = 1:obj.out_ch_no
+                varargout{i} = [obj.out_ch_size 1];
+            end
+            for i = obj.out_ch_no + 1 : length(varargout)
                 varargout{i} = [1 1];
             end
         end
@@ -316,7 +365,7 @@ classdef iio_sys_obj_sink < matlab.System & matlab.system.mixin.Propagates ...
         function icon = getIconImpl(obj)
             % Define a string as the icon for the System block in Simulink.
             if(~isempty(obj.dev_name))               
-                icon = strcat(obj.dev_name, ' sink');                
+                icon = obj.dev_name;                
             else
                 icon = mfilename('class');
             end

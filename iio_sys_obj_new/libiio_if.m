@@ -17,6 +17,7 @@ classdef libiio_if < handle
         iio_channel 	= {};
         iio_buf_size 	= 8192;
         iio_scan_elm_no = 0;
+		if_initialized = 0;
     end
     
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -311,6 +312,7 @@ classdef libiio_if < handle
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 		function obj = libiio_if()
             % Constructor
+			obj.if_initialized = 0;
         end
 		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
@@ -347,6 +349,9 @@ classdef libiio_if < handle
 			
 			% Save the device type
 			obj.dev_type = dev_type;
+			
+			% Set the initialization status to fail
+			obj.if_initialized = 0;
 			
 			% Load the libiio library
             [notfound, warnings] = loadlibrary(obj.libname, obj.hname);
@@ -396,7 +401,10 @@ classdef libiio_if < handle
 					releaseContext(obj);
 					return;
 				end
-			end		   
+			end
+
+			% Set the initialization status to success
+			obj.if_initialized = 1;			
         end
 		
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -410,8 +418,8 @@ classdef libiio_if < handle
 				data{i} = zeros(obj.data_ch_size, 1);
             end
 			
-			% Check if the library is loaded
-			if(~libisloaded(obj.libname))
+			% Check if the interface is initialized
+			if(obj.if_initialized == 0)
 				return;
 			end
 			
@@ -439,8 +447,8 @@ classdef libiio_if < handle
 			% Initialize the return values
 			ret = -1;
 			
-			% Check if the library is loaded
-			if(~libisloaded(obj.libname))
+			% Check if the interface is initialized
+			if(obj.if_initialized == 0)
 				return;
 			end
 			
@@ -473,8 +481,8 @@ classdef libiio_if < handle
 			ch = 0;
 			attr = '';			
 			
-			% Check if the library is loaded
-			if(~libisloaded(obj.libname))
+			% Check if the interface is initialized
+			if(obj.if_initialized == 0)
 				return;
 			end
 			
@@ -517,7 +525,8 @@ classdef libiio_if < handle
 			% Find the attribute
 			[ret, ch, attr] = findAttribute(obj, attr_name);			
 			if(ret < 0)
-				return;
+				val = 0;
+                return;
 			end
 			
 			% Create a double pointer to be used for data read                
@@ -542,7 +551,8 @@ classdef libiio_if < handle
 			% Find the attribute
 			[ret, ch, attr] = findAttribute(obj, attr_name);			
 			if(ret < 0)
-				return;
+				val = '';
+                return;
 			end
 			
 			% Create a pointer to be used for data read                
