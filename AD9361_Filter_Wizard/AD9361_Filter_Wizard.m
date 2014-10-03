@@ -1046,16 +1046,12 @@ advanced = 0;
 if sel.phEQ == -1
     set(handles.phase_eq, 'Value', 0);
 else
-    set(handles.Advanced_options, 'Value', 1);
-    advanced = 1;
     set(handles.phase_eq, 'Value', 1);
     set(handles.target_delay, 'Value', num2str(sel.phEQ));
 end
 
 if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
-    set(handles.Advanced_options, 'Value', 1);
     set_caldiv(handles, sel.caldiv);
-    advanced = 1;
 end
 
 set(handles.Fpass, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fpass)));
@@ -1108,7 +1104,7 @@ else
     set(handles.FIR_rate, 'ForegroundColor', [0 0 0]);
 end
 
-if advanced
+if get(handles.Advanced_options, 'Value')
     tmp = sel.HB1 * sel.HB2 * sel.HB3;
 else
     tmp = sel.HB1;
