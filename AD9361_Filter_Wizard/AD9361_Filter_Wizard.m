@@ -473,20 +473,29 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function Astop_Callback(hObject, eventdata, handles)
 % hObject    handle to Astop (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of Astop as text
-%        str2double(get(hObject,'String')) returns contents of Astop as a double
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+Astop = str2double(get(hObject, 'String'));
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.dBstop = Astop;
+else
+    handles.input_tx.dBstop = Astop;
+end
+
 if get(handles.FIR_Astop, 'Value') >= str2double(get(hObject,'String'))
     set(handles.FIR_Astop, 'Value', str2double(get(hObject,'String')));
 end
-handles.active_plot = 0;
-plot_buttons_off(handles);
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
 guidata(hObject, handles)
+
 
 % --- Executes during object creation, after setting all properties.
 function Astop_CreateFcn(hObject, eventdata, handles)
@@ -504,13 +513,24 @@ function Apass_Callback(hObject, eventdata, handles)
 % hObject    handle to Apass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if str2double(get(hObject,'String')) == 0
-    set(hObject,'String', '0.00001');
+% if str2double(get(hObject,'String')) == 0
+%     set(hObject,'String', '0.00001');
+% end
+
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+Apass = str2double(get(hObject, 'String'));
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.dBripple = Apass;
+else
+    handles.input_tx.dBripple = Apass;
 end
 
-handles.active_plot = 0;
-plot_buttons_off(handles);
+data2gui(hObject, handles);
+handles = guidata(hObject);
 guidata(hObject, handles)
+
 
 % --- Executes during object creation, after setting all properties.
 function Apass_CreateFcn(hObject, eventdata, handles)
