@@ -54,6 +54,7 @@ classdef libiio_if < handle
             % Check if the network context is valid
             ctx_valid = calllib(obj.libname, 'iio_context_valid', obj.iio_ctx);
             if(ctx_valid < 0)
+                obj.iio_ctx = {};
                 err_msg = 'Could not connect to the IIO server!';
                 return;
             end
@@ -365,7 +366,6 @@ classdef libiio_if < handle
             % Create the network context
             [ret, err_msg, msg_log] = createNetworkContext(obj, ip_address);
             if(ret < 0)
-                releaseContext(obj);
                 return;
             end
 
