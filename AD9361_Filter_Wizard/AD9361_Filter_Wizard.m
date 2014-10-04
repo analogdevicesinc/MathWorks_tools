@@ -231,7 +231,7 @@ end
 
 axes(handles.magnitude_plot);
 
-handles.iio_cmdsrv = {};
+handles.libiio_ctrl_dev = {};
 handles.taps = {};
 
 for i = 1:4
@@ -713,26 +713,43 @@ function target_get_clock_Callback(hObject, eventdata, handles)
 % hObject    handle to target_get_clock (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if ~ isempty(handles.iio_cmdsrv)
-    [ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy in_voltage_sampling_frequency\n');
-    if(ret == -1)
+if ~ isempty(handles.libiio_ctrl_dev)
+    % Read the data clock
+    [ret, data_clk] = readAttributeDouble(handles.libiio_ctrl_dev, 'in_voltage_sampling_frequency');
+    if(ret < 0)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    [ret, rbuf1] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy rx_path_rates\n');
-    if(ret == -1)
+    
+    % Read the rx path clocks
+    [ret, rbuf] = readAttributeString(handles.libiio_ctrl_dev, 'rx_path_rates');
+    if(ret < 0)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    data_clk = str2num(rbuf);
-    clocks = sscanf(rbuf1, 'BBPLL:%d ADC:%d');
+    
+    % Compute the decimation factors
+    clocks = sscanf(rbuf, 'BBPLL:%d ADC:%d');
     div_adc = num2str(clocks(2) / data_clk);
-    interpolate = cellstr(get(handles.HB1, 'String'))';
-    idx = find(strncmp(interpolate, div_adc, length(div_adc)) == 1);
+    decimate = cellstr(get(handles.HB1, 'String'))';
+    idx = find(strncmp(decimate, div_adc, length(div_adc)) == 1);
     if(~isempty(idx))
         set(handles.HB1, 'Value', idx(1));
     end
-    put_data_clk(handles, data_clk);
+    
+    % Set the BPLL div
+    opts = get(handles.converter2PLL, 'String');
+    for i = 1:length(opts)
+        j = char(opts(i));
+        j = str2num(j(1:2));
+        if j == clocks(1) / clocks(2)
+            set(handles.converter2PLL, 'Value', i);
+            break;
+        end
+    end
+    
+    % Update the data clock
+    put_data_clk(handles, data_clk);    
     data_clk_Callback(handles.data_clk, eventdata, handles);
 end
 % Hint: get(hObject,'Value') returns toggle state of target_get_clock
@@ -924,9 +941,9 @@ units = char(units(get(handles.Freq_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
 %set(handles.save2coeffienients, 'Visible', 'on');
-%if ~ isempty(handles.iio_cmdsrv)
-%    set(handles.save2target, 'Visible', 'on');
-%end
+if ~ isempty(handles.libiio_ctrl_dev)
+    set(handles.save2target, 'Visible', 'on');
+end
 
 if ~ get(handles.Use_FIR, 'Value')
     set(handles.save2HDL, 'Visible', 'on');
@@ -1235,7 +1252,7 @@ set(handles.FVTool_datarate, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
-set(handles.target_get_clock, 'Visible', 'off');
+%set(handles.target_get_clock, 'Visible', 'off');
 
 if OK
     set(handles.design_filter, 'Enable', 'on');
@@ -2186,30 +2203,29 @@ function connect2target_Callback(hObject, eventdata, handles)
 % hObject    handle to connect2target (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-tmp = get(handles.IP_num,'String');
-tmp = strsplit(tmp, ':');
-ip=char(tmp(1));
-if length(tmp) == 2
-    port = str2num(char(tmp(2)));
-    if ~ port
-        port = 1234;
-    end
-else
-    port = 1234;
+ip_address = get(handles.IP_num,'String');
+
+% If the libiio is already initialized delete the libiio_if object
+if(~isempty(handles.libiio_ctrl_dev))
+    delete(handles.libiio_ctrl_dev);
 end
 
-obj = iio_cmdsrv;
-iio_cmdsrv_connect(obj, ip, port);
-[ret, rbuf] = iio_cmd_read(obj, 200, 'version\n');
-if(ret ~= -1)
+% Initialize the libiio_if object
+handles.libiio_ctrl_dev = libiio_if();
+[ret, err_msg, msg_log] = init(handles.libiio_ctrl_dev, ip_address, ...
+                               'ad9361-phy', '', ...
+                               0, 0);
+fprintf('%s', msg_log);
+if(ret < 0)
+    set(handles.target_get_clock, 'Visible', 'off');
+    delete(handles.libiio_ctrl_dev);
+    handles.libiio_ctrl_dev = {};
+    msgbox(err_msg, 'Error','error');
+else
     set(handles.target_get_clock, 'Visible', 'on');
-    handles.iio_cmdsrv = obj;
     if ~ isempty(handles.taps)
         set(handles.save2target, 'Visible', 'on');
     end
-else
-    set(handles.target_get_clock, 'Visible', 'off');
-    msgbox('Could not connect to target!', 'Error','error');
 end
 % Update handles structure
 guidata(hObject, handles);
