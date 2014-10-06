@@ -212,26 +212,26 @@ hide_advanced(handles);
 
 % initialize PLL div option to show the correct value
 if isstruct(handles.input_rx) || isstruct(handles.input_tx)
-	if get(handles.filter_type, 'Value') == 1
-		pll_mult = handles.input_rx.PLL_mult;
-	else
-		pll_mult = handles.input_tx.PLL_mult;
-	end
+    if get(handles.filter_type, 'Value') == 1
+        pll_mult = handles.input_rx.PLL_mult;
+    else
+        pll_mult = handles.input_tx.PLL_mult;
+    end
 
-	opts = get(handles.converter2PLL, 'String');
-	for i = 1:length(opts)
-		j = char(opts(i));
-		j = str2num(j(1:2));
-		if j == pll_mult
-			set(handles.converter2PLL, 'Value', i);
-			break;
-		end
-	end
+    opts = get(handles.converter2PLL, 'String');
+    for i = 1:length(opts)
+        j = char(opts(i));
+        j = str2num(j(1:2));
+        if j == pll_mult
+            set(handles.converter2PLL, 'Value', i);
+            break;
+        end
+    end
 end
 
 axes(handles.magnitude_plot);
 
-handles.iio_cmdsrv = {};
+handles.libiio_ctrl_dev = {};
 handles.taps = {};
 
 for i = 1:4
@@ -286,12 +286,16 @@ units = get(hObject, 'Value');
 if (handles.freq_units ~= units)
     fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String')));
     fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String')));
+    fcutoff = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
     data_rate = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
+    rf_bandwidth = value2Hz(handles, handles.freq_units, str2double(get(handles.RFbw, 'String')));
 
     handles.freq_units = units;
     set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, fstop)));
     set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, fpass)));
+    set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.freq_units, fcutoff)));
     set(handles.data_clk, 'String', num2str(Hz2value(handles, handles.freq_units, data_rate)));
+    set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, rf_bandwidth)));
     % Update handles structure
     guidata(hObject, handles);
 end
@@ -436,7 +440,7 @@ if (get(handles.filter_type, 'Value') == 1)
     % receive
     sel = handles.input_rx;
 else
-    %transmitt
+    % transmit
     sel = handles.input_tx;
 end
 
@@ -469,20 +473,29 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function Astop_Callback(hObject, eventdata, handles)
 % hObject    handle to Astop (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of Astop as text
-%        str2double(get(hObject,'String')) returns contents of Astop as a double
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+Astop = str2double(get(hObject, 'String'));
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.dBstop = Astop;
+else
+    handles.input_tx.dBstop = Astop;
+end
+
 if get(handles.FIR_Astop, 'Value') >= str2double(get(hObject,'String'))
     set(handles.FIR_Astop, 'Value', str2double(get(hObject,'String')));
 end
-handles.active_plot = 0;
-plot_buttons_off(handles);
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
 guidata(hObject, handles)
+
 
 % --- Executes during object creation, after setting all properties.
 function Astop_CreateFcn(hObject, eventdata, handles)
@@ -500,13 +513,24 @@ function Apass_Callback(hObject, eventdata, handles)
 % hObject    handle to Apass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if str2double(get(hObject,'String')) == 0
-    set(hObject,'String', '0.00001');
+% if str2double(get(hObject,'String')) == 0
+%     set(hObject,'String', '0.00001');
+% end
+
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+Apass = str2double(get(hObject, 'String'));
+if get(handles.filter_type, 'Value') == 1
+    handles.input_rx.dBripple = Apass;
+else
+    handles.input_tx.dBripple = Apass;
 end
 
-handles.active_plot = 0;
-plot_buttons_off(handles);
+data2gui(hObject, handles);
+handles = guidata(hObject);
 guidata(hObject, handles)
+
 
 % --- Executes during object creation, after setting all properties.
 function Apass_CreateFcn(hObject, eventdata, handles)
@@ -689,26 +713,43 @@ function target_get_clock_Callback(hObject, eventdata, handles)
 % hObject    handle to target_get_clock (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if ~ isempty(handles.iio_cmdsrv)
-    [ret, rbuf] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy in_voltage_sampling_frequency\n');
-    if(ret == -1)
+if ~ isempty(handles.libiio_ctrl_dev)
+    % Read the data clock
+    [ret, data_clk] = readAttributeDouble(handles.libiio_ctrl_dev, 'in_voltage_sampling_frequency');
+    if(ret < 0)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    [ret, rbuf1] = iio_cmd_read(handles.iio_cmdsrv, 200, 'read ad9361-phy rx_path_rates\n');
-    if(ret == -1)
+    
+    % Read the rx path clocks
+    [ret, rbuf] = readAttributeString(handles.libiio_ctrl_dev, 'rx_path_rates');
+    if(ret < 0)
         msgbox('Could not read clocks!', 'Error','error');
         return;
     end
-    data_clk = str2num(rbuf);
-    clocks = sscanf(rbuf1, 'BBPLL:%d ADC:%d');
+    
+    % Compute the decimation factors
+    clocks = sscanf(rbuf, 'BBPLL:%d ADC:%d');
     div_adc = num2str(clocks(2) / data_clk);
-    interpolate = cellstr(get(handles.HB1, 'String'))';
-    idx = find(strncmp(interpolate, div_adc, length(div_adc)) == 1);
+    decimate = cellstr(get(handles.HB1, 'String'))';
+    idx = find(strncmp(decimate, div_adc, length(div_adc)) == 1);
     if(~isempty(idx))
         set(handles.HB1, 'Value', idx(1));
     end
-    put_data_clk(handles, data_clk);
+    
+    % Set the BPLL div
+    opts = get(handles.converter2PLL, 'String');
+    for i = 1:length(opts)
+        j = char(opts(i));
+        j = str2num(j(1:2));
+        if j == clocks(1) / clocks(2)
+            set(handles.converter2PLL, 'Value', i);
+            break;
+        end
+    end
+    
+    % Update the data clock
+    put_data_clk(handles, data_clk);    
     data_clk_Callback(handles.data_clk, eventdata, handles);
 end
 % Hint: get(hObject,'Value') returns toggle state of target_get_clock
@@ -771,15 +812,6 @@ text(0.1,(mean(gd2))*1e6,...
     str2,...
     'BackgroundColor','white',...
     'EdgeColor','red');
-
-hfvt2 = fvtool(...
-    Hmd,...
-    'FrequencyRange','Specify freq. vector', ...
-    'FrequencyVector',linspace(0,data_rate/2,2048),'Fs',...
-    data_rate*handles.int, ...
-    'ShowReference','off','Color','White');
-set(hfvt2.CurrentAxes, 'YLim', [-100 20]);
-legend(hfvt2, 'FIR Filter');
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over FIR_Astop.
@@ -887,7 +919,7 @@ else
     handles.filters = txFilters;
     handles.taps = tfirtaps;
 end
-handles.length = tohw.CoefficientSize;
+handles.taps_length = tohw.CoefficientSize;
 
 set(gcf,'Pointer',oldpointer);
 
@@ -909,9 +941,9 @@ units = char(units(get(handles.Freq_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
 %set(handles.save2coeffienients, 'Visible', 'on');
-%if ~ isempty(handles.iio_cmdsrv)
-%    set(handles.save2target, 'Visible', 'on');
-%end
+if ~ isempty(handles.libiio_ctrl_dev)
+    set(handles.save2target, 'Visible', 'on');
+end
 
 if ~ get(handles.Use_FIR, 'Value')
     set(handles.save2HDL, 'Visible', 'on');
@@ -922,39 +954,34 @@ set(handles.results_Astop, 'Visible', 'on');
 set(handles.results_taps, 'Visible', 'on');
 set(handles.results_group_delay, 'Visible', 'on');
 
-set(handles.results_taps, 'String', [num2str(handles.length) ' ']);
+set(handles.results_taps, 'String', [num2str(handles.taps_length) ' ']);
+set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, tohw.RFBandwidth)));
 
 converter_rate = data_rate * FIR_interp * HB_interp;
 
 G = 8192;
-% if this is a new plot, make a new plot, if we are just tweaking
-% things, then redraw in the same zoom window.
-if handles.active_plot == 0
-    axes(handles.magnitude_plot);
-    cla(handles.magnitude_plot);
+axes(handles.magnitude_plot);
+cla(handles.magnitude_plot);
 
-    for i = 1:4
-        if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
-            set(handles.arrows{i}, 'Visible', 'off');
-        end
+for i = 1:4
+    if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
+        set(handles.arrows{i}, 'Visible', 'off');
     end
-
-    handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
-    xlim([0 data_rate/2]);
-    ylim([-100 10]);
-    zoom_axis(gca);
-    xlabel('Frequency (MHz)');
-    ylabel('Magnitude (dB)');
-
-    % plot the mask that we are interested in
-    line([fpass fpass], [-(apass/2) -100], 'Color', 'Red');
-    line([0 fpass], [-(apass/2) -(apass/2)], 'Color', 'Red');
-    line([0 fstop], [apass/2 apass/2], 'Color', 'Red');
-    line([fstop fstop], [apass/2 -astop], 'Color', 'Red');
-    line([fstop data_rate], [-astop -astop], 'Color', 'Red');
-else
-    set(handles.active_plot,'ydata',mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))),'xdata',linspace(0,data_rate/2,G));
 end
+
+handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+xlim([0 data_rate/2]);
+ylim([-100 10]);
+zoom_axis(gca);
+xlabel('Frequency (MHz)');
+ylabel('Magnitude (dB)');
+
+% plot the mask that we are interested in
+line([fpass fpass], [-(apass/2) -100], 'Color', 'Red');
+line([0 fpass], [-(apass/2) -(apass/2)], 'Color', 'Red');
+line([0 fstop], [apass/2 apass/2], 'Color', 'Red');
+line([fstop fstop], [apass/2 -astop], 'Color', 'Red');
+line([fstop data_rate], [-astop -astop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
@@ -1056,16 +1083,12 @@ advanced = 0;
 if sel.phEQ == -1
     set(handles.phase_eq, 'Value', 0);
 else
-    set(handles.Advanced_options, 'Value', 1);
-    advanced = 1;
     set(handles.phase_eq, 'Value', 1);
     set(handles.target_delay, 'Value', num2str(sel.phEQ));
 end
 
 if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
-    set(handles.Advanced_options, 'Value', 1);
     set_caldiv(handles, sel.caldiv);
-    advanced = 1;
 end
 
 set(handles.Fpass, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fpass)));
@@ -1118,7 +1141,7 @@ else
     set(handles.FIR_rate, 'ForegroundColor', [0 0 0]);
 end
 
-if advanced
+if get(handles.Advanced_options, 'Value')
     tmp = sel.HB1 * sel.HB2 * sel.HB3;
 else
     tmp = sel.HB1;
@@ -1229,7 +1252,7 @@ set(handles.FVTool_datarate, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
-set(handles.target_get_clock, 'Visible', 'off');
+%set(handles.target_get_clock, 'Visible', 'off');
 
 if OK
     set(handles.design_filter, 'Enable', 'on');
@@ -2024,12 +2047,10 @@ apass = sel.dBripple;
 astop = sel.dBstop;
 
 if (get(handles.filter_type, 'Value') == 1)
-    Hanalog = handles.filters.Stage(1).Stage(1);
     Hmiddle = handles.filters.Stage(1);
     Hmd = handles.filters.Stage(2);
     tmp = 'Rx';
-else
-    Hanalog = handles.filters.Stage(2).Stage(end);
+else 
     Hmiddle = handles.filters.Stage(2);
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
@@ -2078,7 +2099,7 @@ set(handles.HB1_label, 'String', 'HB1');
 tmp = {'1 x', '2 x'};
 
 if get(handles.HB1, 'Value') > 2
-	set(handles.HB1, 'Value', 2);
+    set(handles.HB1, 'Value', 2);
 end
 
 set(handles.HB1, 'String', tmp);
@@ -2182,30 +2203,29 @@ function connect2target_Callback(hObject, eventdata, handles)
 % hObject    handle to connect2target (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-tmp = get(handles.IP_num,'String');
-tmp = strsplit(tmp, ':');
-ip=char(tmp(1));
-if length(tmp) == 2
-    port = str2num(char(tmp(2)));
-    if ~ port
-        port = 1234;
-    end
-else
-    port = 1234;
+ip_address = get(handles.IP_num,'String');
+
+% If the libiio is already initialized delete the libiio_if object
+if(~isempty(handles.libiio_ctrl_dev))
+    delete(handles.libiio_ctrl_dev);
 end
 
-obj = iio_cmdsrv;
-iio_cmdsrv_connect(obj, ip, port);
-[ret, rbuf] = iio_cmd_read(obj, 200, 'version\n');
-if(ret ~= -1)
+% Initialize the libiio_if object
+handles.libiio_ctrl_dev = libiio_if();
+[ret, err_msg, msg_log] = init(handles.libiio_ctrl_dev, ip_address, ...
+                               'ad9361-phy', '', ...
+                               0, 0);
+fprintf('%s', msg_log);
+if(ret < 0)
+    set(handles.target_get_clock, 'Visible', 'off');
+    delete(handles.libiio_ctrl_dev);
+    handles.libiio_ctrl_dev = {};
+    msgbox(err_msg, 'Error','error');
+else
     set(handles.target_get_clock, 'Visible', 'on');
-    handles.iio_cmdsrv = obj;
     if ~ isempty(handles.taps)
         set(handles.save2target, 'Visible', 'on');
     end
-else
-    set(handles.target_get_clock, 'Visible', 'off');
-    msgbox('Could not connect to target!', 'Error','error');
 end
 % Update handles structure
 guidata(hObject, handles);
