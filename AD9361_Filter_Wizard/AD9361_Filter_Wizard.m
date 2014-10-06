@@ -74,7 +74,7 @@ function varargout = AD9361_Filter_Wizard(varargin)
 
 % Edit the above text to modify the response to help AD9361_Filter_Wizard
 
-% Last Modified by GUIDE v2.5 22-Sep-2014 14:41:59
+% Last Modified by GUIDE v2.5 06-Oct-2014 16:43:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -590,17 +590,17 @@ fprintf(fid, '# Inputs:\n');
 data_rate = get_data_rate(handles);
 %FIXME
 %converter_rate = get_converter_clk(handles);
-converter_rate = get_ADC_clk(handles);
+%converter_rate = get_ADC_clk(handles);
 
-pll_rate = get_pll_rate(handles);
+%pll_rate = get_pll_rate(handles);
 
-fprintf(fid, '# PLL CLK Frequecy = %f Hz\n', pll_rate);
-fprintf(fid, '# Converter Sample Frequecy = %f Hz\n', converter_rate);
+%fprintf(fid, '# PLL CLK Frequecy = %f Hz\n', pll_rate);
+%fprintf(fid, '# Converter Sample Frequecy = %f Hz\n', converter_rate);
 fprintf(fid, '# Data Sample Frequecy = %f Hz\n', data_rate);
 if get(handles.filter_type, 'Value') == 1
-    fprintf(fid, 'R');
+    fprintf(fid, 'RX ');
 else
-    fprintf(fid, 'T');
+    fprintf(fid, 'TX ');
 end
 fprintf(fid, 'GAIN %d ', handles.gain);
 
@@ -828,7 +828,7 @@ set(ax, 'XTickLabel', A);
 function plot_buttons_off(handles)
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
-%set(handles.save2coeffienients, 'Visible', 'off');
+set(handles.save2coeffienients, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2workspace, 'Visible', 'on');
 set(handles.save2workspace, 'Enable', 'off')
@@ -940,7 +940,7 @@ units = cellstr(get(handles.Freq_units, 'String'));
 units = char(units(get(handles.Freq_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
-%set(handles.save2coeffienients, 'Visible', 'on');
+set(handles.save2coeffienients, 'Visible', 'on');
 if ~ isempty(handles.libiio_ctrl_dev)
     set(handles.save2target, 'Visible', 'on');
 end
@@ -1248,7 +1248,7 @@ end
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
 
-%set(handles.save2coeffienients, 'Visible', 'off');
+set(handles.save2coeffienients, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
