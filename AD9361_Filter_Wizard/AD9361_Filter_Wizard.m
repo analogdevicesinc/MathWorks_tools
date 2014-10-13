@@ -1716,7 +1716,10 @@ if (handles.active_plot ~= 0)
     handles.active_plot = 0;
 end
 plot_buttons_off(handles);
-% Hint: get(hObject,'Value') returns toggle state of Use_FIR
+
+data2gui(hObject, handles);
+handles = guidata(hObject);
+guidata(hObject, handles);
 
 
 % --- Executes on button press in save2workspace.
