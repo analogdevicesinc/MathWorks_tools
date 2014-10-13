@@ -74,7 +74,7 @@ function varargout = AD9361_Filter_Wizard(varargin)
 
 % Edit the above text to modify the response to help AD9361_Filter_Wizard
 
-% Last Modified by GUIDE v2.5 06-Oct-2014 16:43:05
+% Last Modified by GUIDE v2.5 13-Oct-2014 13:37:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -569,9 +569,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in save2coeffienients.
-function save2coeffienients_Callback(hObject, eventdata, handles)
-% hObject    handle to save2coeffienients (see GCBO)
+% --- Executes on button press in save2coefficients.
+function save2coefficients_Callback(hObject, eventdata, handles)
+% hObject    handle to save2coefficients (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [filename,path] = uiputfile('*.ftr', 'Save coefficients as');
@@ -615,9 +615,6 @@ end
 fclose(fid);
 
 dlmwrite(newpath, handles.taps, '-append','delimiter', '\n','newline', 'pc');
-
-
-% Hint: get(hObject,'Value') returns toggle state of save2coeffienients
 
 
 % --- Executes on button press in togglebutton1.
@@ -828,10 +825,11 @@ set(ax, 'XTickLabel', A);
 function plot_buttons_off(handles)
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
-set(handles.save2coeffienients, 'Visible', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2workspace, 'Visible', 'on');
 set(handles.save2workspace, 'Enable', 'off')
+set(handles.save2coefficients, 'Visible', 'on');
+set(handles.save2coefficients, 'Enable', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
 set(handles.results_Apass, 'Visible', 'off');
@@ -935,12 +933,12 @@ handles.gain = tohw.Gain;
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
 set(handles.save2workspace, 'Enable', 'on')
+set(handles.save2coefficients, 'Enable', 'on');
 
 units = cellstr(get(handles.Freq_units, 'String'));
 units = char(units(get(handles.Freq_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
 
-set(handles.save2coeffienients, 'Visible', 'on');
 if ~ isempty(handles.libiio_ctrl_dev)
     set(handles.save2target, 'Visible', 'on');
 end
@@ -1248,7 +1246,7 @@ end
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
 
-set(handles.save2coeffienients, 'Visible', 'off');
+set(handles.save2coefficients, 'Enable', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
