@@ -1246,9 +1246,11 @@ end
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
 
-set(handles.save2coefficients, 'Enable', 'off');
 set(handles.save2target, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
+
+set(handles.save2workspace, 'Enable', 'off');
+set(handles.save2coefficients, 'Enable', 'off');
 
 %set(handles.target_get_clock, 'Visible', 'off');
 
