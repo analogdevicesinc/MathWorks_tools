@@ -1704,7 +1704,8 @@ if (handles.active_plot ~= 0)
     handles.active_plot = 0;
 end
 plot_buttons_off(handles);
-% Hint: get(hObject,'Value') returns toggle state of phase_eq
+
+set(handles.design_filter, 'Enable', 'on');
 
 
 % --- Executes on button press in Use_FIR.
@@ -1717,9 +1718,7 @@ if (handles.active_plot ~= 0)
 end
 plot_buttons_off(handles);
 
-data2gui(hObject, handles);
-handles = guidata(hObject);
-guidata(hObject, handles);
+set(handles.design_filter, 'Enable', 'on');
 
 
 % --- Executes on button press in save2workspace.
