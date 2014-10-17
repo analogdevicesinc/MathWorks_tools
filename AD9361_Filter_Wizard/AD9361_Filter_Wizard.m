@@ -1082,7 +1082,7 @@ if sel.phEQ == -1
     set(handles.phase_eq, 'Value', 0);
 else
     set(handles.phase_eq, 'Value', 1);
-    set(handles.target_delay, 'Value', num2str(sel.phEQ));
+    set(handles.target_delay, 'Value', sel.phEQ);
 end
 
 if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
@@ -1689,15 +1689,23 @@ function phase_eq_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if get(hObject,'Value')
+    phEQ = 0;
     set(handles.target_delay_label, 'Visible', 'on');
     set(handles.target_delay, 'Visible', 'on');
     set(handles.target_delay, 'String', '0');
     set(handles.target_delay_units, 'Visible', 'on');
 else
+    phEQ = -1;
     set(handles.target_delay_label, 'Visible', 'off');
     set(handles.target_delay, 'Visible', 'off');
     set(handles.target_delay_units, 'Visible', 'off');
     set(handles.target_delay, 'String', '-1');
+end
+
+if (get(handles.filter_type, 'Value') == 1)
+    handles.input_rx.phEQ = phEQ;
+else
+    handles.input_tx.phEQ = phEQ;
 end
 
 if (handles.active_plot ~= 0)
@@ -1706,6 +1714,8 @@ end
 plot_buttons_off(handles);
 
 set(handles.design_filter, 'Enable', 'on');
+
+guidata(hObject, handles);
 
 
 % --- Executes on button press in Use_FIR.
@@ -1986,16 +1996,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function target_delay_Callback(hObject, eventdata, handles)
 % hObject    handle to target_delay (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%set(handles.target_delay, 'String', num2str(handles.actualdelay));
-
-% Hints: get(hObject,'String') returns contents of target_delay as text
-%        str2double(get(hObject,'String')) returns contents of target_delay as a double
+if (get(handles.filter_type, 'Value') == 1)
+    handles.input_rx.phEQ = str2double(get(hObject, 'String'));
+else
+    handles.input_tx.phEQ = str2double(get(hObject, 'String'));
+end
+data2gui(hObject, handles);
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
