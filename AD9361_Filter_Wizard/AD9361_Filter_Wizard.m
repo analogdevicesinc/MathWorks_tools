@@ -1139,23 +1139,17 @@ else
     set(handles.FIR_rate, 'ForegroundColor', [0 0 0]);
 end
 
-if get(handles.Advanced_options, 'Value')
-    tmp = sel.HB1 * sel.HB2 * sel.HB3;
-else
-    tmp = sel.HB1;
-end
-
 opts = get(handles.HB1, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
     j = str2num(j(1:2));
-    if j == tmp
+    if j == sel.HB1
         set(handles.HB1, 'Value', i);
         break;
     end
 end
 
-set(handles.HB1_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1));
+set(handles.HB1_rate, 'String', num2str(sel.Rdata / 1e6 * sel.FIR * sel.HB1))
 if (sel.Rdata * sel.FIR * sel.HB1) > max_HB.HB1
     set(handles.HB1_rate, 'ForegroundColor', [1 0 0]);
     if OK
@@ -1204,6 +1198,18 @@ if (sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3) > max_HB.HB3
     OK = 0;
 else
     set(handles.HB3_rate, 'ForegroundColor', [0 0 0]);
+end
+
+HBs = sel.HB1 * sel.HB2 * sel.HB3;
+set(handles.HBs_rate, 'String', get(handles.HB3_rate, 'String'));
+opts = get(handles.HBs, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2num(j(1:2));
+    if j == HBs
+        set(handles.HBs, 'Value', i);
+        break;
+    end
 end
 
 % PLL Settings
@@ -1770,22 +1776,77 @@ HB = str2num(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.HB1 = HB;
+    handles.input_rx.HBs = HB * handles.input_rx.HB2 * handles.input_rx.HB3;
 else
     handles.input_tx.HB1 = HB;
+    handles.input_tx.HBs = HB * handles.input_tx.HB2 * handles.input_tx.HB3;
 end
 
-data2gui(hObject, handles);
-handles = guidata(hObject);
 % Update handles structure
+data2gui(hObject, handles);
 guidata(hObject, handles);
-
-% Hints: contents = cellstr(get(hObject,'String')) returns HB1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from HB1
 
 
 % --- Executes during object creation, after setting all properties.
 function HB1_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to HB1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes on selection change in HBs.
+function HBs_Callback(hObject, eventdata, handles)
+% hObject    handle to HB1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+dirty(hObject, handles);
+handles = guidata(hObject);
+
+HBs = cellstr(get(hObject,'String'));
+HBs = HBs{get(hObject,'Value')};
+HBs = str2num(HBs(1:2));
+% handles.HBs = HBs;
+
+
+HBs = factor(HBs);
+for i = 1:3;
+    if i > length(HBs);
+        HBs(i) = 1;
+    end
+end
+
+sel = get_current_rxtx(handles);
+HBs = num2cell(sort(HBs));
+
+[HB1, HB2, HB3] = HBs{:};
+if (get(handles.filter_type, 'Value') == 1)
+    handles.input_rx.HB1 = HB1;
+    handles.input_rx.HB2 = HB2;
+    handles.input_rx.HB3 = HB3;
+else
+    handles.input_tx.HB1 = HB1;
+    handles.input_tx.HB2 = HB2;
+    handles.input_tx.HB3 = HB3;
+end
+
+% set(handles.HB1, 'Value', sel.HB1);
+% set(handles.HB2, 'Value', sel.HB2);
+% set(handles.HB3, 'Value', sel.HB3);
+
+% Update handles structure
+data2gui(hObject, handles);
+guidata(hObject, handles);
+
+
+% --- Executes during object creation, after setting all properties.
+function HBs_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to HBs (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -2109,18 +2170,16 @@ set(handles.Use_FIR, 'Visible', 'on');
 set(handles.FIR_Astop, 'Visible', 'on');
 set(handles.FIR_Astop_label, 'Visible', 'on');
 
-set(handles.HB1_label, 'String', 'HB1');
-tmp = {'1 x', '2 x'};
+set(handles.HBs_label, 'Visible', 'off');
+set(handles.HBs, 'Visible', 'off');
+set(handles.HBs_rate, 'Visible', 'off');
 
-if get(handles.HB1, 'Value') > 2
-    set(handles.HB1, 'Value', 2);
-end
-
-set(handles.HB1, 'String', tmp);
+set(handles.HB1_label, 'Visible', 'on');
+set(handles.HB1, 'Visible', 'on');
+set(handles.HB1_rate, 'Visible', 'on');
 set(handles.HB2_label, 'Visible', 'on');
 set(handles.HB2, 'Visible', 'on');
 set(handles.HB2_rate, 'Visible', 'on');
-
 set(handles.HB3_label, 'Visible', 'on');
 set(handles.HB3, 'Visible', 'on');
 set(handles.HB3_rate, 'Visible', 'on');
@@ -2128,6 +2187,7 @@ set(handles.HB3_rate, 'Visible', 'on');
 if ~ str2double(get(handles.Fcutoff, 'String'))
     set_caldiv(handles, get_caldiv(handles));
 end
+
 
 function hide_advanced(handles)
 set(handles.phase_eq, 'Value', 0);
@@ -2147,9 +2207,13 @@ set(handles.Use_FIR, 'Visible', 'off');
 set(handles.FIR_Astop, 'Visible', 'off');
 set(handles.FIR_Astop_label, 'Visible', 'off');
 
-set(handles.HB1_label, 'String', 'HBs');
-tmp = {'1 x', '2 x', '3 x', '4 x', '6 x', '8 x', '12 x'};
-set(handles.HB1, 'String', tmp);
+set(handles.HBs_label, 'Visible', 'on');
+set(handles.HBs, 'Visible', 'on');
+set(handles.HBs_rate, 'Visible', 'on');
+
+set(handles.HB1_label, 'Visible', 'off');
+set(handles.HB1, 'Visible', 'off');
+set(handles.HB1_rate, 'Visible', 'off');
 set(handles.HB2_label, 'Visible', 'off');
 set(handles.HB2, 'Visible', 'off');
 set(handles.HB2_rate, 'Visible', 'off');
@@ -2168,6 +2232,7 @@ if get(hObject,'Value')
 else
     hide_advanced(handles)
 end
+data2gui(hObject, handles);
 
 % Hint: get(hObject,'Value') returns toggle state of Advanced_options
 
@@ -2542,12 +2607,14 @@ HB = str2num(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.HB2 = HB;
+    handles.input_rx.HBs = handles.input_rx.HB1 * HB * handles.input_rx.HB3;
 else
     handles.input_tx.HB2 = HB;
+    handles.input_tx.HBs = handles.input_tx.HB1 * HB * handles.input_tx.HB3;
 end
-data2gui(hObject, handles);
-handles = guidata(hObject);
+
 guidata(hObject, handles);
+data2gui(hObject, handles);
 % Hints: contents = cellstr(get(hObject,'String')) returns HB2 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from HB2
 
@@ -2579,15 +2646,14 @@ HB = str2num(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.HB3 = HB;
+    handles.input_rx.HBs = handles.input_rx.HB1 * handles.input_rx.HB2 * HB;
 else
     handles.input_tx.HB3 = HB;
+    handles.input_tx.HBs = handles.input_tx.HB1 * handles.input_tx.HB2 * HB;
 end
-data2gui(hObject, handles);
-handles = guidata(hObject);
-guidata(hObject, handles);
 
-% Hints: contents = cellstr(get(hObject,'String')) returns HB3 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from HB3
+data2gui(hObject, handles);
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
