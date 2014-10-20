@@ -104,3 +104,4 @@ sudo uio /dev/uio0 w 260 40000 # command sfix18.8
 # Configure the controller for closed loop mode
 echo "Running in FOC closed loop mode"
 sudo uio /dev/uio0 w 256 2     # ctrl mode: open loop=3, closed loop=2, standby=1
+sudo uio /dev/uio0 w 288 $((15000 - OFFSET_DEC)) # encoder offset sfix18.14
