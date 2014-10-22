@@ -1821,7 +1821,10 @@ for i = 1:3;
     end
 end
 
-sel = get_current_rxtx(handles);
+% The matrix is sorted since '3' isn't a valid value for HB1 or HB2 so if it
+% exists in the set of factors it should be placed last in order to be assigned
+% to HB3. Note that this should be changed to check for valid values per field
+% if the options for each field changes a lot.
 HBs = num2cell(sort(HBs));
 
 [HB1, HB2, HB3] = HBs{:};
@@ -1834,10 +1837,6 @@ else
     handles.input_tx.HB2 = HB2;
     handles.input_tx.HB3 = HB3;
 end
-
-% set(handles.HB1, 'Value', sel.HB1);
-% set(handles.HB2, 'Value', sel.HB2);
-% set(handles.HB3, 'Value', sel.HB3);
 
 % Update handles structure
 data2gui(hObject, handles);
