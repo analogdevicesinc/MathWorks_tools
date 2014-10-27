@@ -583,9 +583,9 @@ end
 
 fid = fopen(newpath,'w');
 
-fprintf(fid, '# Generated with the MATLAB AD9361 Filter Design Wizard\n');
-fprintf(fid, '%s\n', strcat('# Generated', 32, datestr(now())));
-fprintf(fid, '# Inputs:\n');
+fprintf(fid, '# Generated with the MATLAB AD9361 Filter Design Wizard\r\n');
+fprintf(fid, '%s\r\n', strcat('# Generated', 32, datestr(now())));
+fprintf(fid, '# Inputs:\r\n');
 
 data_rate = get_data_rate(handles);
 %FIXME
@@ -594,9 +594,9 @@ data_rate = get_data_rate(handles);
 
 %pll_rate = get_pll_rate(handles);
 
-%fprintf(fid, '# PLL CLK Frequecy = %f Hz\n', pll_rate);
-%fprintf(fid, '# Converter Sample Frequecy = %f Hz\n', converter_rate);
-fprintf(fid, '# Data Sample Frequecy = %f Hz\n', data_rate);
+%fprintf(fid, '# PLL CLK Frequecy = %f Hz\r\n', pll_rate);
+%fprintf(fid, '# Converter Sample Frequecy = %f Hz\r\n', converter_rate);
+fprintf(fid, '# Data Sample Frequecy = %f Hz\r\n', data_rate);
 if get(handles.filter_type, 'Value') == 1
     fprintf(fid, 'RX ');
 else
@@ -606,10 +606,10 @@ fprintf(fid, 'GAIN %d ', handles.gain);
 
 if get(handles.filter_type, 'Value') == 1
     % Receive
-    fprintf(fid, 'DEC %d\n', handles.int);
+    fprintf(fid, 'DEC %d\r\n', handles.int);
 else
     % Transmit
-    fprintf(fid, 'INT %d\n', handles.int);
+    fprintf(fid, 'INT %d\r\n', handles.int);
 end
 
 fclose(fid);
