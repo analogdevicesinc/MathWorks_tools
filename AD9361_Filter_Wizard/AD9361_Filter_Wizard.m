@@ -614,7 +614,9 @@ end
 
 fclose(fid);
 
-dlmwrite(newpath, handles.taps, '-append','delimiter', '\n','newline', 'pc');
+% concat and transform Rx and Tx coefficient matrices for outputting
+output = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
+dlmwrite(newpath, output, '-append', 'newline', 'pc');
 
 
 % --- Executes on button press in togglebutton1.
@@ -909,13 +911,13 @@ if (get(handles.filter_type, 'Value') == 1)
     [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designrxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = rxFilters;
-    handles.taps = rfirtaps;
+    handles.rfirtaps = rfirtaps;
 else
     DAC_mult = get(handles.DAC_by2, 'Value');
     [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
-    handles.taps = tfirtaps;
+    handles.tfirtaps = tfirtaps;
 end
 handles.taps_length = tohw.CoefficientSize;
 
