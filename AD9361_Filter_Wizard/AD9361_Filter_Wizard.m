@@ -934,8 +934,11 @@ handles.gain = tohw.Gain;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
+
 set(handles.save2workspace, 'Enable', 'on')
-set(handles.save2coefficients, 'Enable', 'on');
+if isfield(handles, 'rfirtaps') && isfield(handles, 'tfirtaps')
+    set(handles.save2coefficients, 'Enable', 'on');
+end
 
 units = cellstr(get(handles.Freq_units, 'String'));
 units = char(units(get(handles.Freq_units, 'Value')));
