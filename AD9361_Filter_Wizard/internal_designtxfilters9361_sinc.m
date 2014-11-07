@@ -57,7 +57,7 @@
 % delay            = actual delay used in phase equalization
 % webinar          = initialzation for SimRF FMCOMMS2 Tx model
 %
-function [tfirtaps,txFilters,dBripple_actual,dBstop_actual,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
+function [tfirtaps,txFilters,Hanalog,dBripple_actual,dBstop_actual,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
 
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * DAC_mult * PLL_mult;
@@ -76,6 +76,15 @@ wreal = wc*(5.0/1.6);
 
 [b1,a1] = butter(3,2*pi*wc,'s');     % 3rd order
 [b2,a2] = butter(1,2*pi*wreal,'s');  % 1st order
+
+% Digital representation of the analog filters (for group delay calculation)
+[z1,p1,k1] = butter(3,wc/(Fdac/2),'low');
+[sos1,g1] = zp2sos(z1,p1,k1);
+Hd1 = dfilt.df2tsos(sos1,g1);
+[z2,p2,k2] = butter(1,wreal/(Fdac/2),'low');
+[sos2,g2] = zp2sos(z2,p2,k2);
+Hd2 = dfilt.df2tsos(sos2,g2);
+Hanalog = cascade(Hd1,Hd2);
 
 % Define the digital filters with fixed coefficients
 hb1 = 2^(-14)*[-53 0 313 0 -1155 0 4989 8192 4989 0 -1155 0 313 0 -53];

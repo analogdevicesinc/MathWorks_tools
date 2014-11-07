@@ -217,7 +217,7 @@ if isstruct(handles.input_rx) || isstruct(handles.input_tx)
     else
         pll_mult = handles.input_tx.PLL_mult;
     end
-
+    
     opts = get(handles.converter2PLL, 'String');
     for i = 1:length(opts)
         j = char(opts(i));
@@ -289,7 +289,7 @@ if (handles.freq_units ~= units)
     fcutoff = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
     data_rate = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
     rf_bandwidth = value2Hz(handles, handles.freq_units, str2double(get(handles.RFbw, 'String')));
-
+    
     handles.freq_units = units;
     set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, fstop)));
     set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, fpass)));
@@ -735,7 +735,7 @@ if ~ isempty(handles.libiio_ctrl_dev)
     end
     
     % Update the data clock
-    put_data_clk(handles, data_clk);    
+    put_data_clk(handles, data_clk);
     data_clk_Callback(handles.data_clk, eventdata, handles);
 end
 % Hint: get(hObject,'Value') returns toggle state of target_get_clock
@@ -780,22 +780,6 @@ set(hfvt1.CurrentAxes, 'YLim', [-100 20]);
 legend(hfvt1, 'Half Band','HB + FIR');
 text(1, 10,...
     str,...
-    'BackgroundColor','white',...
-    'EdgeColor','red');
-
-[gd,~] = grpdelay(handles.filters,1024);
-I = round(fpass/(converter_rate/2)*1024);
-gd2 = gd(1:I).*(1/converter_rate);
-gd_diff = max(gd2)-min(gd2);
-str2 = sprintf('Delay Variance = %g ns', gd_diff*1e9);
-
-hfvt0 = fvtool(handles.filters,...
-    'FrequencyRange','Specify freq. vector', ...
-    'FrequencyVector',linspace(0,fpass,2048),...
-    'Fs',converter_rate,'Analysis','grpdelay');
-hfvt0.GroupDelayUnits = 'Time';
-text(0.1,(mean(gd2))*1e6,...
-    str2,...
     'BackgroundColor','white',...
     'EdgeColor','red');
 
@@ -895,16 +879,18 @@ set(gcf,'Pointer','watch');
 drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
-    [rfirtaps,rxFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designrxfilters9361_sinc(...
+    [rfirtaps,rxFilters,Hanalog,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designrxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = rxFilters;
     handles.rfirtaps = rfirtaps;
+    handles.grpdelaycal = cascade(Hanalog,rxFilters);
 else
     DAC_mult = get(handles.DAC_by2, 'Value');
-    [tfirtaps,txFilters,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
+    [tfirtaps,txFilters,Hanalog,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
         data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
     handles.tfirtaps = tfirtaps;
+    handles.grpdelaycal = cascade(txFilters,Hanalog);
 end
 handles.taps_length = tohw.CoefficientSize;
 
@@ -982,7 +968,7 @@ line([fstop data_rate], [-astop -astop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
-[gd,~] = grpdelay(handles.filters,1024);
+[gd,~] = grpdelay(handles.grpdelaycal,1024);
 I = round(fpass/(converter_rate/2)*1024);
 gd2 = gd(1:I).*(1/converter_rate);
 gd_diff = max(gd2)-min(gd2);
@@ -1378,7 +1364,7 @@ ylim([-100 max_y]);
 
 
 switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
-
+    
     case 'Lowpass'
         % Low part of the low pass
         line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
@@ -1388,8 +1374,8 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([0 Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
         line([Fpass Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
         line([Fpass Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
-
-
+        
+        
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
         handles.arrows{1} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
@@ -1399,7 +1385,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         handles.arrows{2} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
         set(handles.arrows{2}, 'Color', label_colour);
         text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
-
+        
         % Stop band
         line([Fstop max_x-10], [-80 -80], 'Color', 'Black');
         line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
@@ -1407,13 +1393,13 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
         line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
         line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
-
+        
         line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
         text(0, -108, '0');
         text(Fpass - 5, -108, 'F_{pass}');
         text(Fstop - 5, -108, 'F_{stop}');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
         % A(stop) label and arrows
         hTest = text(150, -40, 'A_{stop}');
         textExt = get(hTest,'Extent');
@@ -1432,7 +1418,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([0 Fpass], [ripple ripple], 'Color', 'Black');
         line([Fpass Fpass], [max_y ripple], 'Color', 'Black');
         line([Fpass Fpass], [-ripple -100], 'Color', 'Black');
-
+        
         % Stop band
         line([Fstop max_x-10], [-80 -80], 'Color', 'Black');
         line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
@@ -1440,12 +1426,12 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fstop Fstop], [-80+ripple -80], 'Color', 'Black');
         line([Fstop Fstop], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
         line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
-
+        
         text(0, -108, '0');
         text(Fpass - 5, -108, 'F_{pass}');
         text(Fstop - 5, -108, 'F_{stop}');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
     case 'Bandpass'
         Fpass = 20;
         Fcenter = 80;
@@ -1457,11 +1443,11 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fcenter+Fstop Fcenter+Fstop], [max_y ripple], 'Color', 'Black');
         line([Fcenter-Fpass Fcenter-Fpass], [-ripple -80], 'Color', 'Black');
         line([Fcenter+Fpass Fcenter+Fpass], [-ripple -80], 'Color', 'Black');
-
+        
         line([0 Fcenter+Fstop], [0 0], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter+Fstop Fcenter+Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter+Fstop Fcenter+Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
-
+        
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
         handles.arrows{1} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
@@ -1471,21 +1457,21 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         handles.arrows{2} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
         set(handles.arrows{2}, 'Color', label_colour);
         text(Fcenter + Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
-
+        
         % Stop band
         line([Fcenter+Fstop max_x-10], [-80 -80], 'Color', 'Black');
         line([0 Fcenter-Fstop], [-80 -80], 'Color', 'Black');
-
+        
         line([max_x-10 max_x-10], [-80+ripple -80], 'Color', 'Black');
         line([Fcenter+Fstop Fcenter+Fstop], [-80+ripple -80], 'Color', 'Black');
         line([Fcenter-Fstop Fcenter-Fstop], [-80+ripple -80], 'Color', 'Black');
-
+        
         line([Fcenter-Fstop Fcenter-Fstop], [ripple -100], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter+Fstop Fcenter+Fstop], [ripple -100], 'Color', label_colour, 'LineStyle', ':');
         line([max_x-10 max_x-10], [-80 -100], 'Color', label_colour, 'LineStyle', ':');
         line([Fcenter Fcenter], [0 -100], 'Color', label_colour, 'LineStyle', ':');
         %        line([150 170], [0 0], 'Color', label_colour, 'LineStyle', ':');
-
+        
         % Labels "0" "Fcenter"
         text(0, -108, '0');
         text(Fcenter - 5, -108, 'F_{center}');
@@ -1494,7 +1480,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fcenter Fcenter+Fstop], [-60 -60], 'Color', label_colour, 'LineStyle', ':');
         text(Fcenter + Fstop +5, -60, 'F_{stop}');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
         % A(stop) label and arrows
         hTest = text(Fcenter/4, -40, 'A_{stop}');
         textExt = get(hTest,'Extent');
@@ -1507,13 +1493,13 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         [x2, y2] = xy2norm(w, -45, handles);
         handles.arrows{4} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
         set(handles.arrows{4}, 'Color', label_colour);
-
+        
     case 'Equalize'
         line([0 max_x-10], [0 0], 'Color', 'Black');
         line([max_x-10 max_x-10], [0 ripple], 'Color', 'Black');
         text(0, -108, '0');
         text(max_x - 15, -108, 'Fs_{/2}');
-
+        
 end
 
 guidata(hObject, handles);
@@ -1917,7 +1903,7 @@ if ~ license('test','fixed_point_toolbox') || ~ license('checkout','fixed_point_
         case 'OK'
     end
     return
-
+    
 end
 
 if get(handles.filter_type, 'Value') == 1
@@ -2123,7 +2109,7 @@ if (get(handles.filter_type, 'Value') == 1)
     Hmiddle = handles.filters.Stage(1);
     Hmd = handles.filters.Stage(2);
     tmp = 'Rx';
-else 
+else
     Hmiddle = handles.filters.Stage(2);
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
@@ -2152,6 +2138,22 @@ hfvt4 = fvtool(...
     'ShowReference','off','Color','White');
 set(hfvt4.CurrentAxes, 'YLim', [-100 20]);
 legend(hfvt4, 'FIR Filter');
+
+[gd,~] = grpdelay(handles.grpdelaycal,1024);
+I = round(fpass/(converter_rate/2)*1024);
+gd2 = gd(1:I).*(1/converter_rate);
+gd_diff = max(gd2)-min(gd2);
+str2 = sprintf('Delay Variance = %g ns', gd_diff*1e9);
+ 
+hfvt0 = fvtool(handles.grpdelaycal,...
+    'FrequencyRange','Specify freq. vector', ...
+    'FrequencyVector',linspace(0,fpass,2048),...
+    'Fs',converter_rate,'Analysis','grpdelay');
+hfvt0.GroupDelayUnits = 'Time';
+text(0.1,(mean(gd2))*1e6,...
+    str2,...
+    'BackgroundColor','white',...
+    'EdgeColor','red');
 
 function show_advanced(handles)
 set(handles.phase_eq, 'Visible', 'on');
@@ -2290,8 +2292,8 @@ end
 % Initialize the libiio_if object
 handles.libiio_ctrl_dev = libiio_if();
 [ret, err_msg, msg_log] = init(handles.libiio_ctrl_dev, ip_address, ...
-                               'ad9361-phy', '', ...
-                               0, 0);
+    'ad9361-phy', '', ...
+    0, 0);
 fprintf('%s', msg_log);
 if(ret < 0)
     set(handles.target_get_clock, 'Visible', 'off');
@@ -2702,7 +2704,7 @@ switch h
         set(handles.Fcenter, 'Visible', 'on');
     case 'Equalize'
         set(handles.Freq_Specs, 'Visible', 'off');
-
+        
 end
 
 display_default_image(hObject);
