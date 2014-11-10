@@ -19,6 +19,6 @@
 % tfirtaps         = fixed point coefficients for AD9361
 % txFilters        = system object for visualization
 %
-function [tfirtaps,txFilters] = designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
+function [tfirtaps,txFilters] = designtxfilters9361(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
 
-[tfirtaps,txFilters,~,~,~,~,~] = internal_designtxfilters9361_fixed(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom);
+[tfirtaps,txFilters,~,~,~,~,~,~,~,~,~,~] = internal_designtxfilters9361_sinc(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom);
