@@ -62,7 +62,6 @@ function [tfirtaps,txFilters,Hanalog,dBripple_actual,dBstop_actual,delay,webinar
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * DAC_mult * PLL_mult;
 
-% Define the analog filters
 if ~wnom
     wnom = 1.6*Fpass;
     div = ceil((clkPLL/wnom)*(log(2)/(2*pi)));
@@ -74,10 +73,11 @@ end
 
 wreal = wc*(5.0/1.6);
 
+% Define the analog filters (for design purpose)
 [b1,a1] = butter(3,2*pi*wc,'s');     % 3rd order
 [b2,a2] = butter(1,2*pi*wreal,'s');  % 1st order
 
-% Digital representation of the analog filters (for group delay calculation only, not for design purpose)
+% Digital representation of the analog filters (It is an approximation for group delay calculation only)
 [z1,p1,k1] = butter(3,wc/(Fdac/2),'low');
 [sos1,g1] = zp2sos(z1,p1,k1);
 Hd1 = dfilt.df2tsos(sos1,g1);
