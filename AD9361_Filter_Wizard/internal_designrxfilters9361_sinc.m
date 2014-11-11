@@ -76,7 +76,7 @@ wTIA = wc*(2.5/1.4);
 [b1,a1] = butter(1,2*pi*wTIA,'s');  % 1st order
 [b2,a2] = butter(3,2*pi*wc,'s');    % 3rd order
 
-% Digital representation of the analog filters (for group delay calculation)
+% Digital representation of the analog filters (for group delay calculation only, not for design purpose)
 [z1,p1,k1] = butter(3,wc/(Fadc/2),'low');
 [sos1,g1] = zp2sos(z1,p1,k1);
 Hd1 = dfilt.df2tsos(sos1,g1);
