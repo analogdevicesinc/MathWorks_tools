@@ -2302,6 +2302,9 @@ function connect2target_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 ip_address = get(handles.IP_num,'String');
+set(handles.connect2target, 'Enable', 'off');
+set(handles.connect2target, 'String', 'Connecting to Target');
+drawnow;
 
 % If the libiio is already initialized delete the libiio_if object
 if(~isempty(handles.libiio_ctrl_dev))
@@ -2316,10 +2319,13 @@ handles.libiio_ctrl_dev = libiio_if();
 fprintf('%s', msg_log);
 if(ret < 0)
     set(handles.target_get_clock, 'Visible', 'off');
+    set(handles.connect2target, 'Enable', 'on');
+    set(handles.connect2target, 'String', 'Connect to Target');
     delete(handles.libiio_ctrl_dev);
     handles.libiio_ctrl_dev = {};
     msgbox(err_msg, 'Error','error');
 else
+    set(handles.connect2target, 'String', 'Connected to Target');
     set(handles.target_get_clock, 'Visible', 'on');
     if ~ isempty(handles.taps)
         set(handles.save2target, 'Visible', 'on');
@@ -2327,7 +2333,6 @@ else
 end
 % Update handles structure
 guidata(hObject, handles);
-% Hint: get(hObject,'Value') returns toggle state of connect2target
 
 
 % --- Executes on button press in design_filter.
