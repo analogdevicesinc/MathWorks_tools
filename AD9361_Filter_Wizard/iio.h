@@ -26,7 +26,11 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <stddef.h>
 
 #ifdef _MSC_BUILD
 /* Come on Microsoft, time to get some C99... */
@@ -62,6 +66,20 @@ struct iio_buffer;
 
 
 /* ---------------------------------------------------------------------------*/
+/* ------------------------- Top-level functions -----------------------------*/
+/** @defgroup TopLevel Top-level functions
+ * @{ */
+
+
+/** @brief Get the version of the libiio library
+ * @param major A pointer to an unsigned integer (NULL accepted)
+ * @param minor A pointer to an unsigned integer (NULL accepted)
+ * @param git_tag A pointer to a 8-characters buffer (NULL accepted) */
+__api void iio_library_get_version(unsigned int *major,
+		unsigned int *minor, char git_tag[8]);
+
+
+/** @} *//* ------------------------------------------------------------------*/
 /* ------------------------- Context functions -------------------------------*/
 /** @defgroup Context Context
  * @{
@@ -69,7 +87,19 @@ struct iio_buffer;
  * @brief Contains the representation of an IIO context */
 
 
-/** @brief Create a context from local IIO devices (Linux only).
+/** @brief Create a context from local or remote IIO devices
+ * @return On success, A pointer to an iio_context structure
+ * @return On failure, NULL is returned
+ *
+ * <b>NOTE:</b> This function will create a network context if the IIOD_REMOTE
+ * environment variable is set to the hostname where the IIOD server runs. If
+ * set to an empty string, the server will be discovered using ZeroConf.
+ * If the environment variable is not set, a local context will be created
+ * instead. */
+__api struct iio_context * iio_create_default_context(void);
+
+
+/** @brief Create a context from local IIO devices (Linux only)
  * @return On success, A pointer to an iio_context structure
  * @return On failure, NULL is returned */
 __api struct iio_context * iio_create_local_context(void);
@@ -104,16 +134,19 @@ __api struct iio_context * iio_create_xml_context_mem(
 __api struct iio_context * iio_create_network_context(const char *host);
 
 
+/** @brief Duplicate a pre-existing IIO context
+ * @param ctx A pointer to an iio_context structure
+ * @return On success, A pointer to an iio_context structure
+ * @return On failure, NULL is returned */
+__api struct iio_context * iio_context_clone(const struct iio_context *ctx);
+
+
 /** @brief Destroy the given context
  * @param ctx A pointer to an iio_context structure
  *
  * <b>NOTE:</b> After that function, the iio_context pointer shall be invalid. */
 __api void iio_context_destroy(struct iio_context *ctx);
 
-/** @brief Check if the given context is valid
- * @param ctx A pointer to an iio_context structure
- * @return if the context is not valid a negative error code is returned */
-__api int iio_context_valid(struct iio_context *ctx);
 
 /** @brief Get the version of the backend in use
  * @param ctx A pointer to an iio_context structure
@@ -903,6 +936,9 @@ struct iio_data_format {
 
 	/** @brief Contains True if the sample is signed */
 	bool is_signed;
+
+	/** @brief Contains True if the sample is fully defined, sign extended, etc. */
+	bool is_fully_defined;
 
 	/** @brief Contains True if the sample is in big-endian format */
 	bool is_be;
