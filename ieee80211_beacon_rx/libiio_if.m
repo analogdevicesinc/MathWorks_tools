@@ -54,6 +54,7 @@ classdef libiio_if < handle
             % Check if the network context is valid
             ctx_valid = calllib(obj.libname, 'iio_context_valid', obj.iio_ctx);
             if(ctx_valid < 0)
+                obj.iio_ctx = {};
                 err_msg = 'Could not connect to the IIO server!';
                 return;
             end
@@ -220,12 +221,22 @@ classdef libiio_if < handle
 				% Check if the number of channels in the device
 				% is greater or equal to the system object
 				% input channels
-				if(obj.iio_scan_elm_no < ch_no)
+                if(obj.iio_scan_elm_no < ch_no)
 					obj.iio_channel = {};
 					err_msg = 'The selected device does not have enough output channels!';
 					return;
-				end
-
+                end
+                
+                % Enable the DAC buffer output
+                obj.if_initialized = 1;	
+                ret = writeAttributeString(obj, 'out_altvoltage0_TX1_I_F1_raw', '0');
+                obj.if_initialized = 0;	
+                if(ret < 0)
+					obj.iio_channel = {};
+					err_msg = 'Could not enable the DAC buffer output!';
+					return;
+                end
+                
 				% Create the IIO buffer used to write data
 				obj.iio_buf_size = obj.data_ch_size * obj.iio_scan_elm_no;
 				obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', obj.iio_dev,...
@@ -365,7 +376,6 @@ classdef libiio_if < handle
             % Create the network context
             [ret, err_msg, msg_log] = createNetworkContext(obj, ip_address);
             if(ret < 0)
-                releaseContext(obj);
                 return;
             end
 
@@ -457,7 +467,24 @@ classdef libiio_if < handle
 			% Check if the device type is input
 			if(~strcmp(obj.dev_type, 'OUT'))
 				return;
-			end		
+            end
+            
+            % Destroy the buffer
+            calllib(obj.libname, 'iio_buffer_destroy', obj.iio_buffer);
+            obj.iio_buffer = {};
+            
+            % Enable the DAC buffer output
+            ret = writeAttributeString(obj, 'out_altvoltage0_TX1_I_F1_raw', '0');
+            if(ret < 0)
+                obj.iio_channel = {};
+                err_msg = 'Could not enable the DAC buffer output!';
+                return;
+            end
+
+            % Create the IIO buffer used to write data
+            obj.iio_buf_size = obj.data_ch_size * obj.iio_scan_elm_no;
+            obj.iio_buffer = calllib(obj.libname, 'iio_device_create_buffer', obj.iio_dev,...
+                                     obj.data_ch_size, 1);
 			
 			% Transmit the data
 			buffer = calllib(obj.libname, 'iio_buffer_start', obj.iio_buffer);
