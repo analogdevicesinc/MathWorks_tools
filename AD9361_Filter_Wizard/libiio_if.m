@@ -92,17 +92,14 @@ classdef libiio_if < handle
             pMajor = libpointer('uint32Ptr',data(1));
             pMinor = libpointer('uint32Ptr',data(2));
             pGitTag = libpointer('int8Ptr',[int8(data(3:end)) 0]);
-            pNull = libpointer('iio_contextPtr'); 
 
             % Check if the libiio version running on the device is
             % compatible with this version of the system object                
             calllib(obj.libname, 'iio_context_get_version', obj.iio_ctx, pMajor, pMinor, pGitTag);
             if(pMajor.Value == 0 && pMinor.Value < 1)
-                pNull = {};
                 err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
                 return;
             elseif(pMajor.Value > 0 || pMinor.Value > 1)
-                pNull = {};
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
@@ -111,13 +108,11 @@ classdef libiio_if < handle
 
             % Check if the libiio dll is compatible with this version
             % of the system object 
-            calllib(obj.libname, 'iio_context_get_version', pNull, pMajor, pMinor, pGitTag);
+            calllib(obj.libname, 'iio_library_get_version', pMajor, pMinor, pGitTag);
             if(pMajor.Value == 0 && pMinor.Value < 1)
-                pNull = {};
                 err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
                 return;
             elseif(pMajor.Value > 0 || pMinor.Value > 1)
-                pNull = {};
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
