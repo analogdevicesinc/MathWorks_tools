@@ -938,15 +938,14 @@ set(handles.FVTool_datarate, 'Visible', 'on');
 set(handles.save2workspace, 'Enable', 'on')
 if isfield(handles, 'rfirtaps') && isfield(handles, 'tfirtaps')
     set(handles.save2coefficients, 'Enable', 'on');
+    if ~ isempty(handles.libiio_ctrl_dev)
+        set(handles.save2target, 'Visible', 'on');
+    end
 end
 
 units = cellstr(get(handles.Freq_units, 'String'));
 units = char(units(get(handles.Freq_units, 'Value')));
 set(handles.FVTool_datarate, 'String', sprintf('FVTool to %g %s', str2double(get(handles.data_clk, 'String'))/2, units));
-
-if ~ isempty(handles.libiio_ctrl_dev)
-    set(handles.save2target, 'Visible', 'on');
-end
 
 if ~ get(handles.Use_FIR, 'Value')
     set(handles.save2HDL, 'Visible', 'on');
