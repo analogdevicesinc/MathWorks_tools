@@ -633,10 +633,8 @@ function IP_num_Callback(hObject, eventdata, handles)
 % hObject    handle to IP_num (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of IP_num as text
-%        str2double(get(hObject,'String')) returns contents of IP_num as a double
-
+set(handles.connect2target, 'Enable', 'on');
+set(handles.connect2target, 'String', 'Connect to Target');
 
 % --- Executes during object creation, after setting all properties.
 function IP_num_CreateFcn(hObject, eventdata, handles)
