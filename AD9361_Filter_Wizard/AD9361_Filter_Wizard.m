@@ -816,7 +816,7 @@ set(handles.results_group_delay, 'Visible', 'off');
 
 
 function create_filter(hObject, handles)
-handles= guidata(hObject);
+handles = guidata(hObject);
 v = version('-release');
 v = str2num(v(1:4));
 if (v < 2012)
@@ -1309,7 +1309,7 @@ end
 for rowRx = 1:Rx_numRows;
     needle = Rx{rowRx, end};
     if ~ strmatch(needle, choices)
-        rowTx=+1;
+        rowTx =+ 1;
         choices{rowTx} = strcat(needle, ' (Rx only)');
     end
 end
@@ -1930,7 +1930,7 @@ if get(handles.filter_type, 'Value') == 1
 else
     Hd = handles.filters.Stage(1);
 end
-Hd.arithmetic='fixed';
+Hd.arithmetic = 'fixed';
 fdhdltool(Hd);
 
 % Hint: get(hObject,'Value') returns toggle state of save2HDL
