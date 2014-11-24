@@ -52,8 +52,7 @@ classdef libiio_if < handle
             obj.iio_ctx = calllib(obj.libname, 'iio_create_network_context', ip_address);                
             
             % Check if the network context is valid
-            ctx_valid = calllib(obj.libname, 'iio_context_valid', obj.iio_ctx);
-            if(ctx_valid < 0)
+            if (isNull(obj.iio_ctx))
                 obj.iio_ctx = {};
                 err_msg = 'Could not connect to the IIO server!';
                 return;
@@ -93,17 +92,14 @@ classdef libiio_if < handle
             pMajor = libpointer('uint32Ptr',data(1));
             pMinor = libpointer('uint32Ptr',data(2));
             pGitTag = libpointer('int8Ptr',[int8(data(3:end)) 0]);
-            pNull = libpointer('iio_contextPtr'); 
 
             % Check if the libiio version running on the device is
             % compatible with this version of the system object                
             calllib(obj.libname, 'iio_context_get_version', obj.iio_ctx, pMajor, pMinor, pGitTag);
-            if(pMajor.Value == 0 && pMinor.Value < 1)
-                pNull = {};
+            if(pMajor.Value == 0 && pMinor.Value < 2)
                 err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
                 return;
-            elseif(pMajor.Value > 0 || pMinor.Value > 1)
-                pNull = {};
+            elseif(pMajor.Value > 0 || pMinor.Value > 2)
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
@@ -112,13 +108,11 @@ classdef libiio_if < handle
 
             % Check if the libiio dll is compatible with this version
             % of the system object 
-            calllib(obj.libname, 'iio_context_get_version', pNull, pMajor, pMinor, pGitTag);
-            if(pMajor.Value == 0 && pMinor.Value < 1)
-                pNull = {};
+            calllib(obj.libname, 'iio_library_get_version', pMajor, pMinor, pGitTag);
+            if(pMajor.Value == 0 && pMinor.Value < 2)
                 err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
                 return;
-            elseif(pMajor.Value > 0 || pMinor.Value > 1)
-                pNull = {};
+            elseif(pMajor.Value > 0 || pMinor.Value > 2)
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
@@ -221,7 +215,7 @@ classdef libiio_if < handle
 				% Check if the number of channels in the device
 				% is greater or equal to the system object
 				% input channels
-                if(obj.iio_scan_elm_no < ch_no)
+				if(obj.iio_scan_elm_no < ch_no)
 					obj.iio_channel = {};
 					err_msg = 'The selected device does not have enough output channels!';
 					return;
