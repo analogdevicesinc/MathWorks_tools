@@ -596,7 +596,7 @@ data_rate = get_data_rate(handles);
 
 %fprintf(fid, '# PLL CLK Frequecy = %f Hz\r\n', pll_rate);
 %fprintf(fid, '# Converter Sample Frequecy = %f Hz\r\n', converter_rate);
-fprintf(fid, '# Data Sample Frequecy = %f Hz\r\n', data_rate);
+fprintf(fid, '# Data Sample Frequency = %f Hz\r\n', data_rate);
 fprintf(fid, 'TX 3 GAIN %d INT %d\r\n', handles.tx_gain, handles.tx_int);
 fprintf(fid, 'RX 3 GAIN %d DEC %d\r\n', handles.rx_gain, handles.rx_int);
 fprintf(fid, 'RTX %d %d %d %d %d %d\r\n', handles.tx_PLL, handles.tx_HB3, handles.tx_HB2, handles.tx_HB1, handles.tx_FIR, handles.tx_DATA);
