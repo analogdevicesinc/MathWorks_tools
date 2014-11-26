@@ -2309,6 +2309,13 @@ if(~isempty(handles.libiio_ctrl_dev))
     delete(handles.libiio_ctrl_dev);
 end
 
+% Add libiio sys object library to search path
+% (assumes we're running in the full repo checkout)
+[pathstr, name, ext] = fileparts(mfilename('fullpath'));
+if exist(fullfile(pathstr, '..', 'iio_sys_obj'))
+    addpath(fullfile(pathstr, '..', 'iio_sys_obj'));
+end
+
 % Initialize the libiio_if object
 handles.libiio_ctrl_dev = libiio_if();
 [ret, err_msg, msg_log] = init(handles.libiio_ctrl_dev, ip_address, ...
