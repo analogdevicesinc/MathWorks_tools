@@ -2314,19 +2314,24 @@ end
 [pathstr, name, ext] = fileparts(mfilename('fullpath'));
 if exist(fullfile(pathstr, '..', 'iio_sys_obj'))
     addpath(fullfile(pathstr, '..', 'iio_sys_obj'));
+
+    % Initialize the libiio_if object
+    handles.libiio_ctrl_dev = libiio_if();
+    [ret, err_msg, msg_log] = init(handles.libiio_ctrl_dev, ip_address, ...
+        'ad9361-phy', '', 0, 0);
+    fprintf('%s', msg_log);
+else
+    err_msg = 'The libiio_if object was not found. Make sure the ''iio_sys_obj'' directory is in the root of the repository.';
+    ret = -1;
 end
 
-% Initialize the libiio_if object
-handles.libiio_ctrl_dev = libiio_if();
-[ret, err_msg, msg_log] = init(handles.libiio_ctrl_dev, ip_address, ...
-    'ad9361-phy', '', ...
-    0, 0);
-fprintf('%s', msg_log);
 if(ret < 0)
     set(handles.target_get_clock, 'Visible', 'off');
     set(handles.connect2target, 'Enable', 'on');
     set(handles.connect2target, 'String', 'Connect to Target');
-    delete(handles.libiio_ctrl_dev);
+    if(~isempty(handles.libiio_ctrl_dev))
+        delete(handles.libiio_ctrl_dev);
+    end
     handles.libiio_ctrl_dev = {};
     msgbox(err_msg, 'Error','error');
 else
