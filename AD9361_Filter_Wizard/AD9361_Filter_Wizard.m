@@ -800,10 +800,11 @@ set(ax, 'XTickLabel', A);
 function plot_buttons_off(handles)
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
-set(handles.save2target, 'Visible', 'off');
 set(handles.save2workspace, 'Visible', 'on');
 set(handles.save2workspace, 'Enable', 'off')
 set(handles.save2coefficients, 'Visible', 'on');
+set(handles.save2coefficients, 'Enable', 'off');
+set(handles.save2target, 'Visible', 'on');
 set(handles.save2coefficients, 'Enable', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
@@ -937,7 +938,7 @@ set(handles.save2workspace, 'Enable', 'on')
 if isfield(handles, 'rfirtaps') && isfield(handles, 'tfirtaps')
     set(handles.save2coefficients, 'Enable', 'on');
     if ~ isempty(handles.libiio_ctrl_dev)
-        set(handles.save2target, 'Visible', 'on');
+        set(handles.save2target, 'Enable', 'on');
     end
 end
 
@@ -1254,11 +1255,11 @@ end
 set(handles.FVTool_deeper, 'Visible', 'off');
 set(handles.FVTool_datarate, 'Visible', 'off');
 
-set(handles.save2target, 'Visible', 'off');
 set(handles.save2HDL, 'Visible', 'off');
 
 set(handles.save2workspace, 'Enable', 'off');
 set(handles.save2coefficients, 'Enable', 'off');
+set(handles.save2target, 'Enable', 'off');
 
 %set(handles.target_get_clock, 'Visible', 'off');
 
@@ -2326,7 +2327,7 @@ else
 end
 
 if(ret < 0)
-    set(handles.target_get_clock, 'Visible', 'off');
+    set(handles.target_get_clock, 'Enable', 'off');
     set(handles.connect2target, 'Enable', 'on');
     set(handles.connect2target, 'String', 'Connect to Target');
     if(~isempty(handles.libiio_ctrl_dev))
@@ -2336,9 +2337,9 @@ if(ret < 0)
     msgbox(err_msg, 'Error','error');
 else
     set(handles.connect2target, 'String', 'Connected to Target');
-    set(handles.target_get_clock, 'Visible', 'on');
+    set(handles.target_get_clock, 'Enable', 'on');
     if ~ isempty(handles.taps)
-        set(handles.save2target, 'Visible', 'on');
+        set(handles.save2target, 'Enable', 'on');
     end
 end
 % Update handles structure
