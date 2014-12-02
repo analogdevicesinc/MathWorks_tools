@@ -717,8 +717,9 @@ if ~ isempty(handles.libiio_ctrl_dev)
     end
     
     % Compute the decimation factors
-    clocks = sscanf(rbuf, 'BBPLL:%d ADC:%d');
-    div_adc = num2str(clocks(2) / data_clk);
+    clocks = num2cell(sscanf(rbuf, 'BBPLL:%d ADC:%d'));
+    [bbpll, adc] = clocks{:};
+    div_adc = num2str(adc / data_clk);
     decimate = cellstr(get(handles.HB1, 'String'))';
     idx = find(strncmp(decimate, div_adc, length(div_adc)) == 1);
     if(~isempty(idx))
@@ -730,7 +731,7 @@ if ~ isempty(handles.libiio_ctrl_dev)
     for i = 1:length(opts)
         j = char(opts(i));
         j = str2num(j(1:2));
-        if j == clocks(1) / clocks(2)
+        if j == bbpll / adc
             set(handles.converter2PLL, 'Value', i);
             break;
         end
