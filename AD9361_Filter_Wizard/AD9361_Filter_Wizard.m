@@ -610,15 +610,6 @@ output = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
 dlmwrite(newpath, output, '-append', 'newline', 'pc');
 
 
-% --- Executes on button press in togglebutton1.
-function togglebutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to togglebutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of togglebutton1
-
-
 % --- Executes on button press in save2target.
 function save2target_Callback(hObject, eventdata, handles)
 % hObject    handle to save2target (see GCBO)
@@ -626,7 +617,6 @@ function save2target_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of save2target
-
 
 
 function IP_num_Callback(hObject, eventdata, handles)
@@ -670,29 +660,6 @@ function FIR_Astop_CreateFcn(hObject, eventdata, handles)
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
-end
-
-
-
-function edit12_Callback(hObject, eventdata, handles)
-% hObject    handle to edit12 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit12 as text
-%        str2double(get(hObject,'String')) returns contents of edit12 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit12_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit12 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
 end
 
 
@@ -2087,28 +2054,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function edit17_Callback(hObject, eventdata, handles)
-% hObject    handle to FIR_Astop (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of FIR_Astop as text
-%        str2double(get(hObject,'String')) returns contents of FIR_Astop as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit17_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to FIR_Astop (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 % --- Executes on button press in FVTool_datarate.
 function FVTool_datarate_Callback(hObject, eventdata, handles)
 % hObject    handle to FVTool_datarate (see GCBO)
@@ -2493,14 +2438,6 @@ else
 end
 
 
-
-% --- Executes on button press in FVTool_deeper.
-function pushbutton5_Callback(hObject, eventdata, handles)
-% hObject    handle to FVTool_deeper (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
 % --- Executes on selection change in which_device.
 function which_device_Callback(hObject, eventdata, handles)
 % hObject    handle to which_device (see GCBO)
@@ -2546,13 +2483,6 @@ function Saved_Filters_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% --- Executes on button press in pushbutton6.
-function pushbutton6_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton6 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 % --- Executes on button press in store_filter.
@@ -2611,22 +2541,6 @@ function LockRxTx_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of LockRxTx
-
-
-% --- Executes on button press in togglebutton10.
-function togglebutton10_Callback(hObject, eventdata, handles)
-% hObject    handle to togglebutton10 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of togglebutton10
-
-
-% --- Executes on button press in pushbutton8.
-function pushbutton8_Callback(~, ~, handles)
-% hObject    handle to pushbutton8 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 % --- Executes on selection change in HB2.
@@ -2744,25 +2658,6 @@ switch h
 end
 
 display_default_image(hObject);
-
-% --- Executes on button press in RRC_Normal.
-function RRC_Normal_Callback(hObject, eventdata, ~)
-% hObject    handle to RRC_Normal (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of RRC_Normal
-
-
-% --- Executes on button press in RRC_SR.
-function RRC_SR_Callback(hObject, eventdata, handles)
-% hObject    handle to RRC_SR (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of RRC_SR
-
-
 
 function Fcenter_Callback(hObject, eventdata, handles)
 % hObject    handle to Fcenter (see GCBO)
