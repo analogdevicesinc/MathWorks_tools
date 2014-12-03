@@ -623,10 +623,22 @@ if(ret < 0)
     return;
 end
 
+% explicitly write Rx/Tx RF bandwidth
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_voltage_rf_bandwidth', num2str(handles.rx_BW));
+if(ret < 0)
+    msgbox('Could not write Rx RF bandwidth!', 'Error', 'error');
+    return;
+end
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'out_voltage_rf_bandwidth', num2str(handles.tx_BW));
+if(ret < 0)
+    msgbox('Could not write Tx RF bandwidth!', 'Error', 'error');
+    return;
+end
+
 % enable both Rx/Tx FIR filters on the target
 ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_out_voltage_filter_fir_en', '1');
 if(ret < 0)
-    msgbox('Could not enable Rx/Tx FIR filters', 'Error', 'error');
+    msgbox('Could not enable Rx/Tx FIR filters on target!', 'Error', 'error');
     return;
 end
 
