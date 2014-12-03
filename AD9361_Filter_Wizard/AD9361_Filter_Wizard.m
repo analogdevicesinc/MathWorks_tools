@@ -616,7 +616,33 @@ function save2target_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of save2target
+str = sprintf('TX 3 GAIN %d INT %d\r\n', handles.tx_gain, handles.tx_int);
+str = strcat(str, sprintf('RX 3 GAIN %d DEC %d\r\n', handles.rx_gain, handles.rx_int));
+str = strcat(str, sprintf('RTX %d %d %d %d %d %d\r\n', handles.tx_PLL, handles.tx_HB3, handles.tx_HB2, handles.tx_HB1, handles.tx_FIR, handles.tx_DATA));
+str = strcat(str, sprintf('RRX %d %d %d %d %d %d\r\n', handles.rx_PLL, handles.rx_HB3, handles.rx_HB2, handles.rx_HB1, handles.rx_FIR, handles.rx_DATA));
+str = strcat(str, sprintf('BWTX %d\r\n', handles.tx_BW));
+str = strcat(str, sprintf('BWRX %d\r\n', handles.rx_BW));
+
+% concat and transform Rx and Tx coefficient matrices for outputting
+coefficients = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
+
+for i = 1:length(coefficients)
+    str = strcat(str, sprintf('%d,%d\r\n', coefficients(i,:)));
+end
+
+% write FIR filter to target
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'filter_fir_config', str);
+if(ret < 0)
+    msgbox('Could not write FIR filter to target!', 'Error', 'error');
+    return;
+end
+
+% enable both Rx/Tx FIR filters on the target
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_out_voltage_filter_fir_en', '1');
+if(ret < 0)
+    msgbox('Could not enable Rx/Tx FIR filters', 'Error', 'error');
+    return;
+end
 
 
 function IP_num_Callback(hObject, eventdata, handles)
