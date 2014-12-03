@@ -638,12 +638,12 @@ end
 % explicitly write Rx/Tx RF bandwidth to target
 ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_voltage_rf_bandwidth', num2str(handles.rx_BW));
 if(ret < 0)
-    msgbox('Could not write Rx RF bandwidth!', 'Error', 'error');
+    msgbox('Could not write Rx RF bandwidth to target!', 'Error', 'error');
     return;
 end
 ret = writeAttributeString(handles.libiio_ctrl_dev, 'out_voltage_rf_bandwidth', num2str(handles.tx_BW));
 if(ret < 0)
-    msgbox('Could not write Tx RF bandwidth!', 'Error', 'error');
+    msgbox('Could not write Tx RF bandwidth to target!', 'Error', 'error');
     return;
 end
 
