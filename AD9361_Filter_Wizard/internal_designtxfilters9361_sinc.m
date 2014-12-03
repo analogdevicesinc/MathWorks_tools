@@ -253,7 +253,7 @@ end
 
 N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
 tap_store = zeros(N/16,N);
-dBripple_actual_vecotr = zeros(N/16,1);
+dBripple_actual_vector = zeros(N/16,1);
 dBstop_actual_vector = zeros(N/16,1);
 i = 1;
 
@@ -314,22 +314,22 @@ while (1)
     % quantitative values about actual passband and stopband
     rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),Fdac).*analogresp('Tx',omega(1:Gpass+1),Fdac,b1,a1,b2,a2));
     rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
-    dBripple_actual_vecotr(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
+    dBripple_actual_vector(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
     dBstop_actual_vector(i) = -mag2db(max(rg_stop));
     
     if int_FIR == 0
         h = tap_store(1,1:M);
-        dBripple_actual = dBripple_actual_vecotr(1);
+        dBripple_actual = dBripple_actual_vector(1);
         dBstop_actual = dBstop_actual_vector(1);
         break
-    elseif dBripple_actual_vecotr(1) > dBripple || dBstop_actual_vector(1) < dBstop
+    elseif dBripple_actual_vector(1) > dBripple || dBstop_actual_vector(1) < dBstop
         h = tap_store(1,1:N);
-        dBripple_actual = dBripple_actual_vecotr(1);
+        dBripple_actual = dBripple_actual_vector(1);
         dBstop_actual = dBstop_actual_vector(1);
         break
-    elseif dBripple_actual_vecotr(i) > dBripple || dBstop_actual_vector(i) < dBstop
+    elseif dBripple_actual_vector(i) > dBripple || dBstop_actual_vector(i) < dBstop
         h = tap_store(i-1,1:N+16);
-        dBripple_actual = dBripple_actual_vecotr(i-1);
+        dBripple_actual = dBripple_actual_vector(i-1);
         dBstop_actual = dBstop_actual_vector(i-1);
         break
     else
