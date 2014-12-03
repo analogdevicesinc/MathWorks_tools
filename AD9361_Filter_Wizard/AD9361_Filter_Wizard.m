@@ -603,18 +603,18 @@ function save2target_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-str = sprintf('TX 3 GAIN %d INT %d\r\n', handles.tx_gain, handles.tx_int);
-str = strcat(str, sprintf('RX 3 GAIN %d DEC %d\r\n', handles.rx_gain, handles.rx_int));
-str = strcat(str, sprintf('RTX %d %d %d %d %d %d\r\n', handles.tx_PLL, handles.tx_HB3, handles.tx_HB2, handles.tx_HB1, handles.tx_FIR, handles.tx_DATA));
-str = strcat(str, sprintf('RRX %d %d %d %d %d %d\r\n', handles.rx_PLL, handles.rx_HB3, handles.rx_HB2, handles.rx_HB1, handles.rx_FIR, handles.rx_DATA));
-str = strcat(str, sprintf('BWTX %d\r\n', handles.tx_BW));
-str = strcat(str, sprintf('BWRX %d\r\n', handles.rx_BW));
+str = sprintf('TX 3 GAIN %d INT %d', handles.tx_gain, handles.tx_int);
+str = strcat(str, sprintf('\nRX 3 GAIN %d DEC %d', handles.rx_gain, handles.rx_int));
+str = strcat(str, sprintf('\nRTX %d %d %d %d %d %d', handles.tx_PLL, handles.tx_HB3, handles.tx_HB2, handles.tx_HB1, handles.tx_FIR, handles.tx_DATA));
+str = strcat(str, sprintf('\nRRX %d %d %d %d %d %d', handles.rx_PLL, handles.rx_HB3, handles.rx_HB2, handles.rx_HB1, handles.rx_FIR, handles.rx_DATA));
+str = strcat(str, sprintf('\nBWTX %d', handles.tx_BW));
+str = strcat(str, sprintf('\nBWRX %d', handles.rx_BW));
 
 % concat and transform Rx and Tx coefficient matrices for outputting
 coefficients = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
 
 for i = 1:length(coefficients)
-    str = strcat(str, sprintf('%d,%d\r\n', coefficients(i,:)));
+    str = strcat(str, sprintf('\n%d,%d', coefficients(i,:)));
 end
 
 % write FIR filter to target
