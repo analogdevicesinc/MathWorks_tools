@@ -301,10 +301,6 @@ if (handles.freq_units ~= units)
 end
 
 
-% Hints: contents = cellstr(get(hObject,'String')) returns Freq_units contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from Freq_units
-
-
 % --- Executes during object creation, after setting all properties.
 function Freq_units_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Freq_units (see GCBO)
@@ -347,8 +343,6 @@ data2gui(hObject, handles);
 handles = guidata(hObject);
 
 guidata(hObject, handles)
-% Hints: get(hObject,'String') returns contents of Fpass as text
-%        str2double(get(hObject,'String')) returns contents of Fpass as a double
 
 
 % --- Executes during object creation, after setting all properties.
@@ -383,8 +377,6 @@ data2gui(hObject, handles);
 handles = guidata(hObject);
 
 guidata(hObject, handles)
-% Hints: get(hObject,'String') returns contents of Fstop as text
-%        str2double(get(hObject,'String')) returns contents of Fstop as a double
 
 
 % --- Executes during object creation, after setting all properties.
@@ -406,8 +398,6 @@ function Pll_rate_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of Pll_rate as text
-%        str2double(get(hObject,'String')) returns contents of Pll_rate as a double
 if (handles.active_plot ~= 0)
     handles.active_plot = 0;
 end
@@ -551,9 +541,6 @@ function filter_type_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 data2gui(hObject, handles);
-
-% Hints: contents = cellstr(get(hObject,'String')) returns filter_type contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from filter_type
 
 
 % --- Executes during object creation, after setting all properties.
@@ -734,7 +721,6 @@ if ~ isempty(handles.libiio_ctrl_dev)
     put_data_clk(handles, data_clk);
     data_clk_Callback(handles.data_clk, eventdata, handles);
 end
-% Hint: get(hObject,'Value') returns toggle state of target_get_clock
 
 
 % --- Executes on button press in FVTool_deeper.
@@ -1872,9 +1858,6 @@ handles = guidata(hObject);
 % Update handles structure
 guidata(hObject, handles);
 
-% Hints: contents = cellstr(get(hObject,'String')) returns converter2PLL contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from converter2PLL
-
 
 % --- Executes during object creation, after setting all properties.
 function converter2PLL_CreateFcn(hObject, eventdata, handles)
@@ -1894,7 +1877,6 @@ function help_button_Callback(hObject, eventdata, handles)
 % hObject    handle to help_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% Hint: get(hObject,'Value') returns toggle state of help_button
 
 handles.helpcallback(handles.callbackObj);
 
@@ -1925,8 +1907,6 @@ else
 end
 Hd.arithmetic = 'fixed';
 fdhdltool(Hd);
-
-% Hint: get(hObject,'Value') returns toggle state of save2HDL
 
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
@@ -2036,8 +2016,6 @@ data2gui(hObject, handles);
 handles = guidata(hObject);
 
 guidata(hObject, handles)
-% Hints: get(hObject,'String') returns contents of Fcutoff as text
-%        str2double(get(hObject,'String')) returns contents of Fcutoff as a double
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2224,7 +2202,6 @@ else
 end
 data2gui(hObject, handles);
 
-% Hint: get(hObject,'Value') returns toggle state of Advanced_options
 
 % --------------------------------------------------------------------
 function save_filter2workspace_ClickedCallback(hObject, eventdata, handles)
@@ -2332,9 +2309,6 @@ function Port_num_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of Port_num as text
-%        str2double(get(hObject,'String')) returns contents of Port_num as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function Port_num_CreateFcn(hObject, eventdata, handles)
@@ -2389,9 +2363,6 @@ handles = guidata(hObject);
 
 guidata(hObject, handles);
 
-% Hints: contents = cellstr(get(hObject,'String')) returns DAC_by2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from DAC_by2
-
 
 % --- Executes during object creation, after setting all properties.
 function DAC_by2_CreateFcn(hObject, eventdata, handles)
@@ -2428,10 +2399,6 @@ data2gui(hObject, handles);
 handles = guidata(hObject);
 
 guidata(hObject, handles);
-
-% Hints: contents = cellstr(get(hObject,'String')) returns FIR contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from FIR
-
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2470,9 +2437,6 @@ function which_device_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns which_device contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from which_device
-
 
 % --- Executes during object creation, after setting all properties.
 function which_device_CreateFcn(hObject, eventdata, handles)
@@ -2493,9 +2457,6 @@ function Saved_Filters_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 load_settings(hObject, handles);
-
-% Hints: contents = cellstr(get(hObject,'String')) returns Saved_Filters contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from Saved_Filters
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2566,8 +2527,6 @@ function LockRxTx_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of LockRxTx
-
 
 % --- Executes on selection change in HB2.
 function HB2_Callback(hObject, eventdata, handles)
@@ -2591,8 +2550,6 @@ end
 
 guidata(hObject, handles);
 data2gui(hObject, handles);
-% Hints: contents = cellstr(get(hObject,'String')) returns HB2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from HB2
 
 
 % --- Executes during object creation, after setting all properties.
@@ -2689,9 +2646,6 @@ function Fcenter_Callback(hObject, eventdata, handles)
 % hObject    handle to Fcenter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of Fcenter as text
-%        str2double(get(hObject,'String')) returns contents of Fcenter as a double
 
 
 % --- Executes during object creation, after setting all properties.
