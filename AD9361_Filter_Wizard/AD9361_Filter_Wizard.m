@@ -2287,7 +2287,8 @@ if(ret < 0)
 else
     set(handles.connect2target, 'String', 'Connected to Target');
     set(handles.target_get_clock, 'Enable', 'on');
-    if ~ isempty(handles.taps)
+
+    if isfield(handles, 'rfirtaps') && isfield(handles, 'tfirtaps')
         set(handles.save2target, 'Enable', 'on');
     end
 end
