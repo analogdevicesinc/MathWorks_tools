@@ -211,7 +211,7 @@ set(handles.Advanced_options, 'Value', 0);
 hide_advanced(handles);
 
 % restore previously used IP address
-[pathstr, name, ext] = fileparts(mfilename('fullpath'));
+[pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
 if exist(cached_ip_file)
     fd = fopen(cached_ip_file, 'rt');
@@ -672,7 +672,7 @@ set(handles.connect2target, 'Enable', 'on');
 set(handles.connect2target, 'String', 'Connect to Target');
 
 % save IP address to restore on next startup
-[pathstr, name, ext] = fileparts(mfilename('fullpath'));
+[pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
 fd = fopen(cached_ip_file, 'wt');
 fprintf(fd, get(handles.IP_num, 'String'));
