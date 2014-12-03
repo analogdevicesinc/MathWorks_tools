@@ -232,7 +232,6 @@ end
 axes(handles.magnitude_plot);
 
 handles.libiio_ctrl_dev = {};
-handles.taps = {};
 
 for i = 1:4
     handles.arrows{i} = annotation('arrow');
