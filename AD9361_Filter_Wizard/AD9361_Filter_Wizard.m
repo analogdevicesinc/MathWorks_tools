@@ -623,7 +623,19 @@ if(ret < 0)
     return;
 end
 
-% explicitly write Rx/Tx RF bandwidth
+% write Rx/Tx data rates to target
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_voltage_sampling_frequency', num2str(handles.input_rx.Rdata));
+if(ret < 0)
+    msgbox('Could not write Rx data rate to target!', 'Error', 'error');
+    return;
+end
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'out_voltage_sampling_frequency', num2str(handles.input_tx.Rdata));
+if(ret < 0)
+    msgbox('Could not write Tx data rate to target!', 'Error', 'error');
+    return;
+end
+
+% explicitly write Rx/Tx RF bandwidth to target
 ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_voltage_rf_bandwidth', num2str(handles.rx_BW));
 if(ret < 0)
     msgbox('Could not write Rx RF bandwidth!', 'Error', 'error');
