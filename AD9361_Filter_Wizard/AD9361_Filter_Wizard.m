@@ -210,6 +210,15 @@ set(handles.Use_FIR, 'Value', 1);
 set(handles.Advanced_options, 'Value', 0);
 hide_advanced(handles);
 
+% restore previously used IP address
+[pathstr, name, ext] = fileparts(mfilename('fullpath'));
+cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
+if exist(cached_ip_file)
+    fd = fopen(cached_ip_file, 'rt');
+    set(handles.IP_num, 'String', fgets(fd));
+    fclose(fd);
+end
+
 % initialize PLL div option to show the correct value
 if isstruct(handles.input_rx) || isstruct(handles.input_tx)
     if get(handles.filter_type, 'Value') == 1
@@ -661,6 +670,14 @@ function IP_num_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.connect2target, 'Enable', 'on');
 set(handles.connect2target, 'String', 'Connect to Target');
+
+% save IP address to restore on next startup
+[pathstr, name, ext] = fileparts(mfilename('fullpath'));
+cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
+fd = fopen(cached_ip_file, 'wt');
+fprintf(fd, get(handles.IP_num, 'String'));
+fclose(fd);
+
 
 % --- Executes during object creation, after setting all properties.
 function IP_num_CreateFcn(hObject, eventdata, handles)
