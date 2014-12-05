@@ -340,7 +340,7 @@ function Fpass_Callback(hObject, eventdata, handles)
 dirty(hObject, handles);
 handles = guidata(hObject);
 
-Fpass = value2Hz(handles, get(handles.Freq_units, 'Value'),str2double(get(hObject,'String')));
+Fpass = value2Hz(handles, handles.freq_units, str2double(get(hObject,'String')));
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.Fpass = Fpass;
 else
@@ -374,7 +374,7 @@ function Fstop_Callback(hObject, eventdata, handles)
 dirty(hObject, handles);
 handles = guidata(hObject);
 
-Fstop = value2Hz(handles, get(handles.Freq_units, 'Value'),str2double(get(hObject,'String')));
+Fstop = value2Hz(handles, handles.freq_units, str2double(get(hObject,'String')));
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.Fstop = Fstop;
 else
@@ -449,7 +449,7 @@ function data_clk_Callback(hObject, eventdata, handles)
 dirty(hObject, handles);
 handles = guidata(hObject);
 
-data_rate = value2Hz(handles, get(handles.Freq_units, 'Value'),str2double(get(hObject,'String')));
+data_rate = value2Hz(handles, handles.freq_units, str2double(get(hObject,'String')));
 handles.input_rx.Rdata = data_rate;
 handles.input_tx.Rdata = data_rate;
 
@@ -1106,16 +1106,16 @@ if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
     set_caldiv(handles, sel.caldiv);
 end
 
-set(handles.Fpass, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fpass)));
-set(handles.Fstop, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fstop)));
+set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fpass)));
+set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fstop)));
 set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, round(sel.Fpass * 2))));
 
-set(handles.Fcenter, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fcenter)));
+set(handles.Fcenter, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fcenter)));
 
 set(handles.Apass, 'String', num2str(sel.dBripple));
 set(handles.Astop, 'String', num2str(sel.dBstop));
 
-set(handles.data_clk, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'),sel.Rdata)));
+set(handles.data_clk, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Rdata)));
 
 if handles.input_rx.Fstop <= handles.input_rx.Rdata / 2
     set(handles.Fstop, 'ForegroundColor', [0 0 0]);
@@ -1977,7 +1977,7 @@ switch pulldown
 end
 
 function put_data_clk(handles, data_clk)
-data_clk = Hz2value(handles, get(handles.Freq_units, 'Value'), data_clk);
+data_clk = Hz2value(handles, handles.freq_units, data_clk);
 set(handles.data_clk, 'String', num2str(data_clk, 10));
 
 function data_clk = get_data_rate(handles)
