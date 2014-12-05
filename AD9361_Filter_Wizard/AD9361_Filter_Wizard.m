@@ -866,6 +866,7 @@ apass = sel.dBripple;
 astop = sel.dBstop;
 dbstop_min = sel.FIRdBmin;
 
+RFbw = round(fpass * 2);
 data_rate = sel.Rdata;
 FIR_interp = sel.FIR;
 HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
@@ -901,7 +902,7 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.rfirtaps = rfirtaps;
     handles.grpdelaycal = cascade(Hanalog,rxFilters);
 
-    handles.rx_BW = tohw.RFBandwidth;
+    handles.rx_BW = RFbw;
     handles.rx_PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
     handles.rx_HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
     handles.rx_HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
@@ -916,7 +917,7 @@ else
     handles.tfirtaps = tfirtaps;
     handles.grpdelaycal = cascade(txFilters,Hanalog);
 
-    handles.tx_BW = tohw.RFBandwidth;
+    handles.tx_BW = RFbw;
     handles.tx_PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
     handles.tx_HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
     handles.tx_HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
@@ -969,7 +970,7 @@ set(handles.results_taps, 'Visible', 'on');
 set(handles.results_group_delay, 'Visible', 'on');
 
 set(handles.results_taps, 'String', [num2str(handles.taps_length) ' ']);
-set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, tohw.RFBandwidth)));
+set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, RFbw)));
 
 converter_rate = data_rate * FIR_interp * HB_interp;
 
@@ -1107,6 +1108,7 @@ end
 
 set(handles.Fpass, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fpass)));
 set(handles.Fstop, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fstop)));
+set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, round(sel.Fpass * 2))));
 
 set(handles.Fcenter, 'String', num2str(Hz2value(handles, get(handles.Freq_units, 'Value'), sel.Fcenter)));
 
