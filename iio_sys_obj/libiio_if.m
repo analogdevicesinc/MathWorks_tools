@@ -361,7 +361,13 @@ classdef libiio_if < handle
 			obj.if_initialized = 0;
 			
 			% Load the libiio library
-            [notfound, warnings] = loadlibrary(obj.libname, obj.hname);
+            try
+                [notfound, warnings] = loadlibrary(obj.libname, obj.hname);
+            catch exception
+                err_msg = exception.message;
+                return;
+            end
+
             if(~libisloaded(obj.libname))
                 err_msg = 'Could not load the libiio library!';
                 return;
