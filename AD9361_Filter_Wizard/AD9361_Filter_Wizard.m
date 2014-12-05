@@ -671,13 +671,6 @@ function IP_num_Callback(hObject, eventdata, handles)
 set(handles.connect2target, 'Enable', 'on');
 set(handles.connect2target, 'String', 'Connect to Target');
 
-% save IP address to restore on next startup
-[pathstr, ~, ~] = fileparts(mfilename('fullpath'));
-cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
-fd = fopen(cached_ip_file, 'wt');
-fprintf(fd, get(handles.IP_num, 'String'));
-fclose(fd);
-
 
 % --- Executes during object creation, after setting all properties.
 function IP_num_CreateFcn(hObject, eventdata, handles)
@@ -2331,6 +2324,13 @@ else
     if isfield(handles, 'rfirtaps') && isfield(handles, 'tfirtaps')
         set(handles.save2target, 'Enable', 'on');
     end
+
+    % save IP address to restore on next startup
+    [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
+    cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
+    fd = fopen(cached_ip_file, 'wt');
+    fprintf(fd, get(handles.IP_num, 'String'));
+    fclose(fd);
 end
 % Update handles structure
 guidata(hObject, handles);
