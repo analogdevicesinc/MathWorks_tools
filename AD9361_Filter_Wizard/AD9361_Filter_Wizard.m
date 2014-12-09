@@ -708,6 +708,33 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 
+function [data_clk, bbpll, converter_rate] = get_path_rates(libiio, path)
+    if strcmp(path, 'rx')
+        path = 'rx_path_rates';
+        sampling_freq = 'in_voltage_sampling_frequency';
+        scan_str = 'BBPLL:%d ADC:%d';
+    else
+        path = 'tx_path_rates';
+        sampling_freq = 'out_voltage_sampling_frequency';
+        scan_str = 'BBPLL:%d DAC:%d';
+    end
+
+    % Read the data clock
+    [ret, data_clk] = readAttributeDouble(libiio, sampling_freq);
+    if(ret < 0)
+        msgbox('Could not read clocks!', 'Error', 'error');
+        return;
+    end
+
+    % Read clocks
+    [ret, rbuf] = readAttributeString(libiio, path);
+    if(ret < 0)
+        msgbox('Could not read clocks!', 'Error', 'error');
+        return;
+    end
+
+    clocks = num2cell(sscanf(rbuf, scan_str));
+    [bbpll, converter_rate] = clocks{:};
 
 % --- Executes on button press in target_get_clock.
 function target_get_clock_Callback(hObject, eventdata, handles)
@@ -715,26 +742,16 @@ function target_get_clock_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 if ~ isempty(handles.libiio_ctrl_dev)
-    % Read the data clock
-    [ret, data_clk] = readAttributeDouble(handles.libiio_ctrl_dev, 'in_voltage_sampling_frequency');
-    if(ret < 0)
-        msgbox('Could not read clocks!', 'Error','error');
-        return;
+    % Read rx/tx clocks
+    if (get(handles.filter_type, 'Value') == 1)
+        [data_clk, bbpll, converter_rate] = get_path_rates(handles.libiio_ctrl_dev, 'rx');
+    else
+        [data_clk, bbpll, converter_rate] = get_path_rates(handles.libiio_ctrl_dev, 'tx');
     end
 
-    % Read the rx path clocks
-    [ret, rbuf] = readAttributeString(handles.libiio_ctrl_dev, 'rx_path_rates');
-    if(ret < 0)
-        msgbox('Could not read clocks!', 'Error','error');
-        return;
-    end
-
-    % Compute the decimation factors
-    clocks = num2cell(sscanf(rbuf, 'BBPLL:%d ADC:%d'));
-    [bbpll, adc] = clocks{:};
-    div_adc = num2str(adc / data_clk);
+    div = num2str(converter_rate / data_clk);
     decimate = cellstr(get(handles.HB1, 'String'))';
-    idx = find(strncmp(decimate, div_adc, length(div_adc)) == 1);
+    idx = find(strncmp(decimate, div, length(div)) == 1);
     if(~isempty(idx))
         set(handles.HB1, 'Value', idx(1));
     end
@@ -744,7 +761,7 @@ if ~ isempty(handles.libiio_ctrl_dev)
     for i = 1:length(opts)
         j = char(opts(i));
         j = str2num(j(1:2));
-        if j == bbpll / adc
+        if j == bbpll / converter_rate
             set(handles.converter2PLL, 'Value', i);
             break;
         end
