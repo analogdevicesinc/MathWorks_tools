@@ -1111,15 +1111,18 @@ else
 end
 
 % set things from the file.
-advanced = 0;
 if sel.phEQ == -1
     set(handles.phase_eq, 'Value', 0);
 else
+    set(handles.Advanced_options, 'Value', 1);
+    show_advanced(handles);
     set(handles.phase_eq, 'Value', 1);
     set(handles.target_delay, 'Value', sel.phEQ);
 end
 
 if sel.caldiv && sel.caldiv ~= default_caldiv(handles)
+    set(handles.Advanced_options, 'Value', 1);
+    show_advanced(handles);
     set_caldiv(handles, sel.caldiv);
 end
 
@@ -2207,10 +2210,6 @@ set(handles.HB3_label, 'Visible', 'on');
 set(handles.HB3, 'Visible', 'on');
 set(handles.HB3_rate, 'Visible', 'on');
 
-if ~ str2double(get(handles.Fcutoff, 'String'))
-    set_caldiv(handles, get_caldiv(handles));
-end
-
 
 function hide_advanced(handles)
 set(handles.phase_eq, 'Value', 0);
@@ -2250,11 +2249,27 @@ function Advanced_options_Callback(hObject, eventdata, handles)
 % hObject    handle to Advanced_options (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+handles = guidata(hObject);
 if get(hObject,'Value')
-    show_advanced(handles)
+    show_advanced(handles);
+    if ~ str2double(get(handles.Fcutoff, 'String'))
+        caldiv = get_caldiv(handles)
+        set_caldiv(handles, caldiv);
+    end
 else
-    hide_advanced(handles)
+    hide_advanced(handles);
+    caldiv = default_caldiv(handles);
 end
+
+if isstruct(get_current_rxtx(handles))
+    if get(handles.filter_type, 'Value') == 1
+        handles.input_rx.caldiv = caldiv;
+    else
+        handles.input_tx.caldiv = caldiv;
+    end
+end
+
+guidata(hObject, handles);
 data2gui(hObject, handles);
 
 
