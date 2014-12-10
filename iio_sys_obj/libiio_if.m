@@ -360,12 +360,14 @@ classdef libiio_if < handle
 			% Set the initialization status to fail
 			obj.if_initialized = 0;
 			
-			% Load the libiio library
-            try
-                [notfound, warnings] = loadlibrary(obj.libname, obj.hname);
-            catch exception
-                err_msg = exception.message;
-                return;
+            % Load the libiio library
+            if(~libisloaded(obj.libname))
+                try
+                    [notfound, warnings] = loadlibrary(obj.libname, obj.hname);
+                catch exception
+                    err_msg = exception.message;
+                    return;
+                end
             end
 
             if(~libisloaded(obj.libname))
