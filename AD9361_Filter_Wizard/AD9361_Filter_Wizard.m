@@ -2270,27 +2270,24 @@ function save_filter2workspace_ClickedCallback(hObject, eventdata, handles)
 filter.Rdata = get_data_rate(handles)/1e6;
 filter.Fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String'))) / 1e6;
 filter.Fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String'))) / 1e6;
-if get(handles.Advanced_options, 'Value')
-    filter.caldiv = get_caldiv(handles);
-end
 filter.FIR_interp = sel.FIR;
 filter.HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
 filter.PLL_mult = converter_interp(handles);
 filter.dBripple = str2double(get(handles.Apass, 'String'));
 filter.dBstop = str2double(get(handles.Astop, 'String'));
-if get(handles.Advanced_options, 'Value')
-    filter.FIR_Astop = str2double(get(handles.FIR_Astop, 'String'));
-else
-    filter.FIR_Astop = 0;
-end
 filter.Pheq = -1;
 filter.channels = 3;
 filter.internal_FIR = get(handles.Use_FIR, 'Value');
 
 if get(handles.Advanced_options, 'Value')
+    filter.caldiv = get_caldiv(handles);
+    filter.FIR_Astop = str2double(get(handles.FIR_Astop, 'String'));
+
     if get(handles.phase_eq, 'Value')
         filter.Phase_EQ = str2double(get(handles.target_delay, 'String'));
     end
+else
+    filter.FIR_Astop = 0;
 end
 
 name = inputdlg('Save filter as', 'AD9361 Filter Designer');
