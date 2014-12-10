@@ -1996,8 +1996,7 @@ switch pulldown
     case 2
         ret = value / 1e3;
     case 3
-        ret = value / 1000.0;
-        ret = ret / 1000.0;
+        ret = value / 1e6;
 end
 
 function put_data_clk(handles, data_clk)
@@ -2008,7 +2007,7 @@ function data_clk = get_data_rate(handles)
 sel = get_current_rxtx(handles)
 data_clk = sel.Rdata;
 
-function ret = default_caldiv(handles)
+function caldiv = default_caldiv(handles)
 if (get(handles.filter_type, 'Value') == 1)
     wnom = 1.4 * handles.input_rx.Fstop;  % Rx
     pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
@@ -2022,10 +2021,8 @@ end
 
 div = ceil((pll/wnom)*(log(2)/(2*pi)));
 caldiv = min(max(div,3),511);
-ret = caldiv;
 
 function caldiv = get_caldiv(handles)
-
 if (get(handles.filter_type, 'Value') == 1)
     wnom = 1.4 * handles.input_rx.Fstop;  % Rx
     pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
@@ -2036,7 +2033,6 @@ else
         handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
         handles.input_tx.PLL_mult;
 end
-
 
 Fcutoff = str2double(get(handles.Fcutoff, 'String'));
 
