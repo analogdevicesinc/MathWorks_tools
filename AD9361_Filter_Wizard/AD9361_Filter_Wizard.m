@@ -2269,6 +2269,7 @@ if isstruct(get_current_rxtx(handles))
     end
 end
 
+dirty(hObject, handles);
 guidata(hObject, handles);
 data2gui(hObject, handles);
 
