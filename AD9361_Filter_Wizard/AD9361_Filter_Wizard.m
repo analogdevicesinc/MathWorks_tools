@@ -1078,6 +1078,14 @@ for matchTx = 1:Tx_numRows;
     end
 end
 
+% remove generated filter taps if they exist
+if isfield(handles, 'rfirtaps')
+    handles = rmfield(handles, 'rfirtaps');
+end
+if isfield(handles, 'tfirtaps')
+    handles = rmfield(handles, 'tfirtaps');
+end
+
 handles.input_rx = cook_input(getfield(options.ad9361_settings.rx, Rx{matchRx}));
 handles.input_tx = cook_input(getfield(options.ad9361_settings.tx, Tx{matchTx}));
 
@@ -1316,14 +1324,6 @@ display_default_image(hObject);
 handles = guidata(hObject);
 filename = 'ad9361_settings.mat';
 
-% remove generated filter taps if they exist
-if isfield(handles, 'rfirtaps')
-    handles = rmfield(handles, 'rfirtaps');
-end
-if isfield(handles, 'tfirtaps')
-    handles = rmfield(handles, 'tfirtaps');
-end
-
 if ~ exist(filename)
     errordlg('I can not find the required files, must be some sort of installation error', ...
         'File Error');
@@ -1379,8 +1379,8 @@ function new_tooltip_ClickedCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 reset_input(hObject, handles);
-handles = guidata(hObject);
 load_settings(hObject, handles);
+handles = guidata(hObject);
 handles.freq_units = get(handles.Freq_units, 'Value');
 handles.active_plot = 0;
 
