@@ -2258,15 +2258,19 @@ if get(hObject,'Value')
     end
 else
     hide_advanced(handles);
-    caldiv = default_caldiv(handles);
 end
 
 if isstruct(get_current_rxtx(handles))
-    if get(handles.filter_type, 'Value') == 1
-        handles.input_rx.caldiv = caldiv;
-    else
-        handles.input_tx.caldiv = caldiv;
-    end
+    filter_type = get(handles.filter_type, 'Value');
+
+    set(handles.filter_type, 'Value', 1);
+    caldiv = default_caldiv(handles);
+    handles.input_rx.caldiv = caldiv;
+    set(handles.filter_type, 'Value', 0);
+    caldiv = default_caldiv(handles);
+    handles.input_tx.caldiv = caldiv;
+
+    set(handles.filter_type, 'Value', filter_type);
 end
 
 dirty(hObject, handles);
