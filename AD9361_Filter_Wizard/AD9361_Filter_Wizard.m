@@ -1394,12 +1394,7 @@ axes(handles.magnitude_plot);
 handles.active_plot = 0;
 
 cla(handles.magnitude_plot);
-
-for i = 1:4
-    if strcmp(get(handles.arrows{i}, 'Visible'), 'on')
-        set(handles.arrows{i}, 'Visible', 'off');
-    end
-end
+set(handles.magnitude_plot, 'Tag', 'magnitude_plot');
 
 max_y = 20;
 max_x = 200;
@@ -1438,11 +1433,11 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
 
         [x1, y1] = xy2norm(130, ripple, handles);
         [x2, y2] = xy2norm(130, max_y, handles);
-        handles.arrows{1} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        handles.arrows{1} = annotation('arrow', 'Y',[max_y ripple], 'X',[130 130]);
         set(handles.arrows{1}, 'Color', label_colour);
         [x1, y1] = xy2norm(130, -ripple, handles);
         [x2, y2] = xy2norm(130, -max_y, handles);
-        handles.arrows{2} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        handles.arrows{2} = annotation('arrow', 'Y',[-max_y -ripple], 'X',[130 130]);
         set(handles.arrows{2}, 'Color', label_colour);
         text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
 
@@ -1466,12 +1461,18 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         w = textExt(1) + textExt(3)/2;
         [x1, y1] = xy2norm(w, 0, handles);
         [x2, y2] = xy2norm(w, -35, handles);
-        handles.arrows{3} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        handles.arrows{3} = annotation('arrow', 'Y',[-35 0], 'X',[w w]);
         set(handles.arrows{3}, 'Color', label_colour);
         [x1, y1] = xy2norm(w, -80, handles);
         [x2, y2] = xy2norm(w, -45, handles);
-        handles.arrows{4} = annotation('arrow', 'Y',[y2 y1], 'X',[x1 x2]);
+        handles.arrows{4} = annotation('arrow', 'Y',[-45 -80], 'X',[w w]);
         set(handles.arrows{4}, 'Color', label_colour);
+
+        % reparent arrows within the filter plot so they're displayed properly
+        plot = findall(gcf, 'type', 'axes', 'Tag', 'magnitude_plot');
+        for i = 1:4
+            set(handles.arrows{i}, 'Parent', plot);
+        end
     case 'Root Raised Cosine'
         % Pass band
         line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
