@@ -2273,6 +2273,14 @@ if isstruct(get_current_rxtx(handles))
     set(handles.filter_type, 'Value', filter_type);
 end
 
+% remove generated filter taps if they exist
+if isfield(handles, 'rfirtaps')
+    handles = rmfield(handles, 'rfirtaps');
+end
+if isfield(handles, 'tfirtaps')
+    handles = rmfield(handles, 'tfirtaps');
+end
+
 dirty(hObject, handles);
 guidata(hObject, handles);
 data2gui(hObject, handles);
