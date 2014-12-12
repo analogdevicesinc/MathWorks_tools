@@ -2253,7 +2253,7 @@ handles = guidata(hObject);
 if get(hObject,'Value')
     show_advanced(handles);
     if ~ str2double(get(handles.Fcutoff, 'String'))
-        caldiv = get_caldiv(handles)
+        caldiv = get_caldiv(handles);
         set_caldiv(handles, caldiv);
     end
 else
