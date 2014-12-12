@@ -213,7 +213,7 @@ hide_advanced(handles);
 % restore previously used IP address
 [pathstr, ~, ~] = fileparts(mfilename('fullpath'));
 cached_ip_file = fullfile(pathstr, '.previous_ip_addr');
-if exist(cached_ip_file)
+if exist(cached_ip_file, 'file')
     fd = fopen(cached_ip_file, 'rt');
     set(handles.IP_num, 'String', fgets(fd));
     fclose(fd);
@@ -1044,7 +1044,7 @@ function load_settings(hObject, handles)
 
 filename = 'ad9361_settings.mat';
 
-if ~ exist(filename)
+if ~ exist(filename, 'file')
     errordlg('I can not find the required files, must be some sort of installation error', ...
         'File Error');
     set(handles.Saved_Filters, 'Visible', 'off');
@@ -1324,7 +1324,7 @@ display_default_image(hObject);
 handles = guidata(hObject);
 filename = 'ad9361_settings.mat';
 
-if ~ exist(filename)
+if ~ exist(filename, 'file')
     errordlg('I can not find the required files, must be some sort of installation error', ...
         'File Error');
     set(handles.Saved_Filters, 'Visible', 'off');
@@ -2330,7 +2330,7 @@ end
 % Add libiio sys object library to search path
 % (assumes we're running in the full repo checkout)
 [pathstr, name, ext] = fileparts(mfilename('fullpath'));
-if exist(fullfile(pathstr, '..', 'iio_sys_obj'))
+if exist(fullfile(pathstr, '..', 'iio_sys_obj'), 'dir')
     addpath(fullfile(pathstr, '..', 'iio_sys_obj'));
 
     % Initialize the libiio_if object
@@ -2555,7 +2555,7 @@ function store_filter_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 filename = 'ad9361_settings.mat';
 
-if ~ exist(filename)
+if ~ exist(filename, 'file')
     errordlg('I can not find the required files, must be some sort of installation error', ...
         'File Error');
     set(handles.Saved_Filters, 'Visible', 'off');
