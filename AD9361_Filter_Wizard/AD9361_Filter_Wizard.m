@@ -2252,14 +2252,12 @@ function Advanced_options_Callback(hObject, eventdata, handles)
 handles = guidata(hObject);
 if get(hObject,'Value')
     show_advanced(handles);
-    if ~ str2double(get(handles.Fcutoff, 'String'))
-        caldiv = get_caldiv(handles);
-        set_caldiv(handles, caldiv);
-    end
 else
     hide_advanced(handles);
 end
 
+% reset caldiv for Rx/Tx to defaults, forces advanced state to be respected for
+% both channels when data2gui is run
 if isstruct(get_current_rxtx(handles))
     filter_type = get(handles.filter_type, 'Value');
 
@@ -2273,7 +2271,8 @@ if isstruct(get_current_rxtx(handles))
     set(handles.filter_type, 'Value', filter_type);
 end
 
-% remove generated filter taps if they exist
+% remove generated filter taps if they exist, forces both Rx/Tx filters to be
+% redesigned when advanced is toggled
 if isfield(handles, 'rfirtaps')
     handles = rmfield(handles, 'rfirtaps');
 end
