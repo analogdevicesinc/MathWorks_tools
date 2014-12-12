@@ -1430,13 +1430,8 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([Fpass Fstop+30], [-ripple -ripple], 'Color', label_colour, 'LineStyle', ':');
         line([Fpass Fstop+30], [ripple ripple], 'Color', label_colour, 'LineStyle', ':');
 
-
-        [x1, y1] = xy2norm(130, ripple, handles);
-        [x2, y2] = xy2norm(130, max_y, handles);
         handles.arrows{1} = annotation('arrow', 'Y',[max_y ripple], 'X',[130 130]);
         set(handles.arrows{1}, 'Color', label_colour);
-        [x1, y1] = xy2norm(130, -ripple, handles);
-        [x2, y2] = xy2norm(130, -max_y, handles);
         handles.arrows{2} = annotation('arrow', 'Y',[-max_y -ripple], 'X',[130 130]);
         set(handles.arrows{2}, 'Color', label_colour);
         text(Fstop + 12, 0, 'A_{pass}', 'BackgroundColor','white', 'EdgeColor','white');
@@ -1459,12 +1454,8 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         hTest = text(150, -40, 'A_{stop}');
         textExt = get(hTest,'Extent');
         w = textExt(1) + textExt(3)/2;
-        [x1, y1] = xy2norm(w, 0, handles);
-        [x2, y2] = xy2norm(w, -35, handles);
         handles.arrows{3} = annotation('arrow', 'Y',[-35 0], 'X',[w w]);
         set(handles.arrows{3}, 'Color', label_colour);
-        [x1, y1] = xy2norm(w, -80, handles);
-        [x2, y2] = xy2norm(w, -45, handles);
         handles.arrows{4} = annotation('arrow', 'Y',[-45 -80], 'X',[w w]);
         set(handles.arrows{4}, 'Color', label_colour);
 
