@@ -230,7 +230,7 @@ if isstruct(handles.input_rx) || isstruct(handles.input_tx)
     opts = get(handles.converter2PLL, 'String');
     for i = 1:length(opts)
         j = char(opts(i));
-        j = str2num(j(1:2));
+        j = str2double(j(1:2));
         if j == pll_mult
             set(handles.converter2PLL, 'Value', i);
             break;
@@ -430,7 +430,7 @@ if isempty(interpolate{1})
     dbstack('-completenames');
 end
 interpolate = char(interpolate(get(handles.converter2PLL, 'Value')));
-interpolate = str2num(interpolate(1:2));
+interpolate = str2double(interpolate(1:2));
 
 
 function sel = get_current_rxtx(handles)
@@ -760,7 +760,7 @@ if ~ isempty(handles.libiio_ctrl_dev)
     opts = get(handles.converter2PLL, 'String');
     for i = 1:length(opts)
         j = char(opts(i));
-        j = str2num(j(1:2));
+        j = str2double(j(1:2));
         if j == bbpll / converter_rate
             set(handles.converter2PLL, 'Value', i);
             break;
@@ -847,7 +847,7 @@ set(handles.results_group_delay, 'Visible', 'off');
 function create_filter(hObject, handles)
 handles = guidata(hObject);
 v = version('-release');
-v = str2num(v(1:4));
+v = str2double(v(1:4));
 if (v < 2012)
     choice = questdlg('Sorry. The AD9361/AD9364 Filter Design Wizard requires at least the R2012 version of MATLAB. You do not seem to have it installed.', ...
         'Error Message', ...
@@ -1093,7 +1093,7 @@ handles.input_tx = cook_input(getfield(options.ad9361_settings.tx, Tx{matchTx}))
 opts = get(handles.converter2PLL, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
-    j = str2num(j(1:2));
+    j = str2double(j(1:2));
     if j == handles.input_rx.PLL_mult
         set(handles.converter2PLL, 'Value', i);
         break;
@@ -1168,7 +1168,7 @@ end
 opts = get(handles.FIR, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
-    j = str2num(j(1:2));
+    j = str2double(j(1:2));
     if j == sel.FIR
         set(handles.FIR, 'Value', i);
         break;
@@ -1188,7 +1188,7 @@ end
 opts = get(handles.HB1, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
-    j = str2num(j(1:2));
+    j = str2double(j(1:2));
     if j == sel.HB1
         set(handles.HB1, 'Value', i);
         break;
@@ -1209,7 +1209,7 @@ end
 opts = get(handles.HB2, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
-    j = str2num(j(1:2));
+    j = str2double(j(1:2));
     if j == sel.HB2
         set(handles.HB2, 'Value', i);
         break;
@@ -1229,7 +1229,7 @@ end
 opts = get(handles.HB3, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
-    j = str2num(j(1:2));
+    j = str2double(j(1:2));
     if j == sel.HB3
         set(handles.HB3, 'Value', i);
         break;
@@ -1251,7 +1251,7 @@ set(handles.HBs_rate, 'String', get(handles.HB3_rate, 'String'));
 opts = get(handles.HBs, 'String');
 for i = 1:length(opts)
     j = char(opts(i));
-    j = str2num(j(1:2));
+    j = str2double(j(1:2));
     if j == HBs
         set(handles.HBs, 'Value', i);
         break;
@@ -1817,7 +1817,7 @@ handles = guidata(hObject);
 
 HB = cellstr(get(hObject,'String'));
 HB = HB{get(hObject,'Value')};
-HB = str2num(HB(1:2));
+HB = str2double(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.HB1 = HB;
@@ -1855,7 +1855,7 @@ handles = guidata(hObject);
 
 HBs = cellstr(get(hObject,'String'));
 HBs = HBs{get(hObject,'Value')};
-HBs = str2num(HBs(1:2));
+HBs = str2double(HBs(1:2));
 % handles.HBs = HBs;
 
 
@@ -1910,7 +1910,7 @@ handles = guidata(hObject);
 
 HB = cellstr(get(hObject,'String'));
 HB = HB{get(hObject,'Value')};
-HB = str2num(HB(1:2));
+HB = str2double(HB(1:2));
 
 handles.input_tx.PLL_mult = HB;
 handles.input_rx.PLL_mult = HB;
@@ -2430,7 +2430,7 @@ handles = guidata(hObject);
 
 HB = cellstr(get(hObject,'String'));
 HB = HB{get(hObject,'Value')};
-HB = str2num(HB(1:2));
+HB = str2double(HB(1:2));
 
 handles.input_tx.DAC_div = HB;
 
@@ -2463,7 +2463,7 @@ handles = guidata(hObject);
 
 HB = cellstr(get(hObject,'String'));
 HB = HB{get(hObject,'Value')};
-HB = str2num(HB(1:2));
+HB = str2double(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.FIR = HB;
@@ -2614,7 +2614,7 @@ handles = guidata(hObject);
 
 HB = cellstr(get(hObject,'String'));
 HB = HB{get(hObject,'Value')};
-HB = str2num(HB(1:2));
+HB = str2double(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.HB2 = HB;
@@ -2651,7 +2651,7 @@ handles = guidata(hObject);
 
 HB = cellstr(get(hObject,'String'));
 HB = HB{get(hObject,'Value')};
-HB = str2num(HB(1:2));
+HB = str2double(HB(1:2));
 
 if get(handles.filter_type, 'Value') == 1
     handles.input_rx.HB3 = HB;
