@@ -2739,3 +2739,5 @@ function results_Apass_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to results_Apass (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
+
+% vim: set et sw=4 ts=4 ft=matlab:
