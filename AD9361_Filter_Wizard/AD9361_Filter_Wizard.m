@@ -1060,14 +1060,14 @@ needle = deblank(needle{1});
 
 for matchRx = 1:Rx_numRows;
     match = Rx{matchRx, end};
-    if strmatch(needle, match)
+    if find(strncmp(needle, match, length(needle)))
         break
     end
 end
 
 for matchTx = 1:Tx_numRows;
     match = Tx{matchTx, end};
-    if strmatch(needle, match)
+    if find(strncmp(needle, match, length(needle)))
         break
     end
 end
@@ -1335,7 +1335,7 @@ choices = cell(1, Tx_numRows);
 
 for rowTx = 1:Tx_numRows;
     needle = Tx{rowTx, end};
-    if strmatch(needle, Rx)
+    if find(strncmp(needle, Rx, length(needle)))
         choices{rowTx} = strcat(needle, ' (Rx & Tx)');
     else
         choices{rowTx} = strcat(needle, ' (Tx only)');
@@ -1343,7 +1343,7 @@ for rowTx = 1:Tx_numRows;
 end
 for rowRx = 1:Rx_numRows;
     needle = Rx{rowRx, end};
-    if ~ strmatch(needle, choices)
+    if ~ find(strncmp(needle, choices, length(needle)))
         rowTx =+ 1;
         choices{rowTx} = strcat(needle, ' (Rx only)');
     end
