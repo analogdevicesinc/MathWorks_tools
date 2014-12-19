@@ -212,17 +212,17 @@ classdef iio_sys_obj < matlab.System & matlab.system.mixin.Propagates ...
 			if(obj.sys_obj_initialized == 0)
 				return;
 			end
-			
+					
+			% Implement the data transmit flow
+            writeData(obj.libiio_data_in_dev, varargin);	
+              
             % Implement the data capture flow
 			[~, data] = readData(obj.libiio_data_out_dev);
             for i = 1 : obj.out_ch_no 
                 varargout{i} = data{i};
             end
-			
-			% Implement the data transmit flow
-            writeData(obj.libiio_data_in_dev, varargin);	
-              
-			% Implement the parameters monitoring flow
+            
+            % Implement the parameters monitoring flow
 			for i = 1 : length(obj.iio_dev_cfg.mon_ch)
 				[~, val] = readAttributeDouble(obj.libiio_ctrl_dev, obj.iio_dev_cfg.mon_ch(i).port_attr);
 				varargout{obj.out_ch_no + i} = val;
