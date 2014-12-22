@@ -1102,17 +1102,17 @@ function data2gui(hObject, handles)
 
 OK = 1;
 
-rates_uipanel = findall(gcf, 'type', 'uipanel', 'Tag', 'uipanel5');
+rates_uipanel = findall(gcf, 'type', 'uipanel', 'Tag', 'rates_uipanel');
 if get(handles.filter_type, 'Value') == 1
     % Receive
     sel = handles.input_rx;
     max_HB = handles.MAX_RX;
-    set(rates_uipanel, 'Tag', 'uipanel5', 'Title', 'AD936x Decimation Rates');
+    set(rates_uipanel, 'Tag', 'rates_uipanel', 'Title', 'AD936x Decimation Rates');
 else
     % Transmit
     sel = handles.input_tx;
     max_HB = handles.MAX_TX;
-    set(rates_uipanel, 'Tag', 'uipanel5', 'Title', 'AD936x Interpolation Rates');
+    set(rates_uipanel, 'Tag', 'rates_uipanel', 'Title', 'AD936x Interpolation Rates');
 end
 
 % set things from the file.
