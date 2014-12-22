@@ -189,3 +189,16 @@ for frame = 0:(numFullFrames-1)
     zlabel('Magnitude');
     title('Estimate of Channel Magnitude Frequency Repsonse');
 end
+
+%%
+% EVM Calculation
+rmc = lteRMCDL('R.4');
+rmc.NCellID = 17;
+rmc.NFrame = 700;
+rmc.TotSubframes = 8*10; % 10 subframes per frame
+rmc.OCNG = 'On'; % Add noise to unallocated PDSCH resource elements
+
+% Generate RMC waveform
+trData = [1;0;0;1]; % Transport data
+[eNodeBOutput,txGrid,rmc] = lteRMCDLTool(rmc,trData);
+evmmeas = PDSCHEVM(rmc,cec,rxWaveform);
