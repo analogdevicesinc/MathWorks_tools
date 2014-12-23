@@ -1,11 +1,3 @@
-%hPDSCHEVM EVM calculation
-%   FINALEVM = hPDSCHEVM(RMC,CEC,RXWAVEFORM)
-%   is the error vector magnitude of a received waveform RXWAVEFORM given a
-%   reference measurement channel RMC and channel estimation configuration
-%   structure CEC.
-
-%   Copyright 2011-2014 The MathWorks, Inc.
-
 function finalEVM = PDSCHEVM(rmc,cec,rxWaveform)
    
     % Compute some parameters.
@@ -184,15 +176,6 @@ function finalEVM = PDSCHEVM(rmc,cec,rxWaveform)
     fprintf('Averaged overall EVM: %0.3f%%\n', finalEVM.RMS*100); 
     
 end
-
-% getEVMWindow EVM window
-%   W = getEVMWindow(RMC) is the error vector magnitude window, W, for a
-%   reference measurement channel, RMC. 
-%   
-%   NOTE: W for bandwidth 15MHz has been scaled because the LTE System
-%   Toolbox(TM) uses 2048-point FFT for 15MHz rather than 1536-point.
-
-%   Copyright 2011-2014 The MathWorks, Inc.
 
 function W = getEVMWindow(RMC)
     
