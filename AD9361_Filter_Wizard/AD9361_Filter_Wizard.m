@@ -795,6 +795,7 @@ else
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
 end
+Hmiddle = cascade(handles.analogfilter,Hmiddle);
 
 apass = str2double(get(handles.Apass, 'String'));
 astop = str2double(get(handles.Astop, 'String'));
@@ -802,14 +803,14 @@ astop = str2double(get(handles.Astop, 'String'));
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
-hfvt1 = fvtool(Hmiddle,handles.filters,...
+hfvt1 = fvtool(handles.analogfilter,Hmiddle,handles.grpdelaycal,...
     'FrequencyRange','Specify freq. vector', ...
     'FrequencyVector',linspace(0,converter_rate/2,2048),'Fs',...
     converter_rate, ...
     'ShowReference','off','Color','White');
 set(hfvt1, 'Color', [1 1 1]);
 set(hfvt1.CurrentAxes, 'YLim', [-100 20]);
-legend(hfvt1, 'Half Band','HB + FIR');
+legend(hfvt1, 'Analog','Analog + Half Band','Analog + HB + FIR');
 text(1, 10,...
     str,...
     'BackgroundColor','white',...
@@ -917,6 +918,7 @@ if (get(handles.filter_type, 'Value') == 1)
         data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = rxFilters;
     handles.rfirtaps = rfirtaps;
+    handles.analogfilter = Hanalog;
     handles.grpdelaycal = cascade(Hanalog,rxFilters);
 
     handles.rx_BW = RFbw;
@@ -932,6 +934,7 @@ else
         data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
     handles.filters = txFilters;
     handles.tfirtaps = tfirtaps;
+    handles.analogfilter = Hanalog;
     handles.grpdelaycal = cascade(txFilters,Hanalog);
 
     handles.tx_BW = RFbw;
@@ -2132,14 +2135,14 @@ end
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
-hfvt3 = fvtool(Hmiddle,handles.filters,...
+hfvt3 = fvtool(handles.analogfilter,Hmiddle,handles.grpdelaycal,...
     'FrequencyRange','Specify freq. vector', ...
     'FrequencyVector',linspace(0,data_rate/2,2048),'Fs',...
     converter_rate, ...
     'ShowReference','off','Color','White');
 set(hfvt3, 'Color', [1 1 1]);
 set(hfvt3.CurrentAxes, 'YLim', [-100 20]);
-legend(hfvt3, 'Half Band','HB + FIR');
+legend(hfvt3, 'Analog','Analog + Half Band','Analog + HB + FIR');
 text(0.5, 10,...
     str,...
     'BackgroundColor','white',...
