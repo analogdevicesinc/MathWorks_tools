@@ -7,4 +7,3 @@ switch type
     case 'Rx'
         abc = freqs(b1,a1,2*pi*f).*freqs(b2,a2,2*pi*f).*(sinc(f/Fconverter).^3);    
 end
-

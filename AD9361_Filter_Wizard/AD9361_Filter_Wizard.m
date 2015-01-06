@@ -786,16 +786,30 @@ converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div
 fstop = sel.Fstop;
 fpass = sel.Fpass;
 
+
+N = 500;
+Fs = converter_rate; % sampling frequency
+F = linspace(0,converter_rate/2,2048);
+
+
+
 if (get(handles.filter_type, 'Value') == 1)
     Hmiddle = handles.filters.Stage(1);
+    Hmiddle = cascade(handles.analogfilter,Hmiddle);
     Hmd = handles.filters.Stage(2);
     tmp = 'Rx';
+    A = sinc(F/Fs).^3;
 else
     Hmiddle = handles.filters.Stage(2);
+    Hmiddle = cascade(Hmiddle,handles.analogfilter);
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
+    A = sinc(F/Fs);
 end
-Hmiddle = cascade(handles.analogfilter,Hmiddle);
+
+d = fdesign.arbmag('N,F,A',N,F,A,Fs);
+Hcon = design(d,'SystemObject',false);
+Hall = cascade(handles.grpdelaycal,Hcon);
 
 apass = str2double(get(handles.Apass, 'String'));
 astop = str2double(get(handles.Astop, 'String'));
@@ -803,14 +817,14 @@ astop = str2double(get(handles.Astop, 'String'));
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
-hfvt1 = fvtool(handles.analogfilter,Hmiddle,handles.grpdelaycal,...
+hfvt1 = fvtool(Hcon,handles.analogfilter,Hmiddle,Hall,...
     'FrequencyRange','Specify freq. vector', ...
     'FrequencyVector',linspace(0,converter_rate/2,2048),'Fs',...
     converter_rate, ...
     'ShowReference','off','Color','White');
 set(hfvt1, 'Color', [1 1 1]);
 set(hfvt1.CurrentAxes, 'YLim', [-100 20]);
-legend(hfvt1, 'Analog','Analog + Half Band','Analog + HB + FIR');
+legend(hfvt1, 'Converter','Analog','Analog + Half Band','Analog + HB + FIR');
 text(1, 10,...
     str,...
     'BackgroundColor','white',...
@@ -2125,13 +2139,16 @@ astop = sel.dBstop;
 
 if (get(handles.filter_type, 'Value') == 1)
     Hmiddle = handles.filters.Stage(1);
+    Hmiddle = cascade(handles.analogfilter,Hmiddle);
     Hmd = handles.filters.Stage(2);
     tmp = 'Rx';
 else
     Hmiddle = handles.filters.Stage(2);
+    Hmiddle = cascade(Hmiddle,handles.analogfilter);
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
 end
+Hmiddle = cascade(handles.analogfilter,Hmiddle);
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
@@ -2156,6 +2173,10 @@ hfvt4 = fvtool(...
     'ShowReference','off','Color','White');
 set(hfvt4.CurrentAxes, 'YLim', [-100 20]);
 legend(hfvt4, 'FIR Filter');
+
+% add the quantitative values about FIR magnitude
+[h,~] = freqz(Hmd,1024); 
+maxmag = max(20*log10(abs(h)));
 
 [gd,~] = grpdelay(handles.grpdelaycal,1024);
 I = round(fpass/(converter_rate/2)*1024);
