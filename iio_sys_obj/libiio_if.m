@@ -223,7 +223,7 @@ classdef libiio_if < handle
                 
                 % Enable the DAC buffer output
                 obj.if_initialized = 1;	
-                ret = writeAttributeString(obj, 'out_altvoltage0_TX1_I_F1_raw', '0');
+                ret = writeAttributeString(obj, 'altvoltage0*raw', '0');
                 obj.if_initialized = 0;	
                 if(ret < 0)
 					obj.iio_channel = {};
@@ -476,7 +476,7 @@ classdef libiio_if < handle
             obj.iio_buffer = {};
             
             % Enable the DAC buffer output
-            ret = writeAttributeString(obj, 'out_altvoltage0_TX1_I_F1_raw', '0');
+            ret = writeAttributeString(obj, 'altvoltage0*raw', '0');
             if(ret < 0)
                 obj.iio_channel = {};
                 err_msg = 'Could not enable the DAC buffer output!';
@@ -504,7 +504,7 @@ classdef libiio_if < handle
 		end
 
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		%% Find an attribute based on the name
+		%% Find an attribute based on the name. The name can contain wildcard '*' characters
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		function [ret, ch, attr] = findAttribute(obj, attr_name)
 			% Initialize the return values
@@ -533,10 +533,20 @@ classdef libiio_if < handle
 				for l = 0 : attr_no - 1
 					attr = calllib(obj.libname, 'iio_channel_get_attr', ch, l);
 					name = calllib(obj.libname, 'iio_channel_attr_get_filename', ch, attr);
-					if(strcmp(name, attr_name))
-						attr_found = 1;
+					% The attribute to find can contain wildcard '*' characters, 
+                    % search for all the substrings in the attribute name   
+                    str_find = strsplit(attr_name, '*');
+                    attr_found = 1;
+                    for i = 1 : length(str_find)
+                        ret = strfind(name, str_find{i});
+                        if(isempty(ret))
+                            attr_found = 0;
+                            break;
+                        end
+                    end
+                    if(attr_found == 1)
 						break;
-					end
+                    end
 					clear attr;
 				end                        
 				% Check if the attribute was found
