@@ -1012,7 +1012,13 @@ G = 8192;
 axes(handles.magnitude_plot);
 cla(handles.magnitude_plot);
 
-handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp('Rx',linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+if get(handles.filter_type, 'Value') == 1
+    channel = 'Rx';
+else
+    channel = 'Tx';
+end
+handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp(channel,linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+
 xlim([0 data_rate/2]);
 ylim([-100 10]);
 zoom_axis(gca);
