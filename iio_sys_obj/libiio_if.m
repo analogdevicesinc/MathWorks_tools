@@ -96,6 +96,10 @@ classdef libiio_if < handle
             % Check if the libiio version running on the device is
             % compatible with this version of the system object
             calllib(obj.libname, 'iio_context_get_version', obj.iio_ctx, pMajor, pMinor, pGitTag);
+
+            % extract git hash without trailing null char
+            githash = pGitTag.Value(1:7);
+
             if(pMajor.Value == 0 && pMinor.Value < 1)
                 err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
                 return;
@@ -103,12 +107,13 @@ classdef libiio_if < handle
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
-                msg_log = [msg_log sprintf('%s: Remote libiio version is %d.%d, %s\n', class(obj), pMajor.Value, pMinor.Value, pGitTag.Value)];
+                msg_log = [msg_log sprintf('%s: Remote libiio version is %d.%d (git-%s)\n', class(obj), pMajor.Value, pMinor.Value, githash)];
             end
 
             % Check if the libiio dll is compatible with this version
             % of the system object
             calllib(obj.libname, 'iio_library_get_version', pMajor, pMinor, pGitTag);
+            githash = pGitTag.Value(1:7);
             if(pMajor.Value == 0 && pMinor.Value < 2)
                 err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
                 return;
@@ -116,7 +121,7 @@ classdef libiio_if < handle
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
-                msg_log = [msg_log sprintf('%s: libiio dll version is %d.%d, %s\n', class(obj), pMajor.Value, pMinor.Value, pGitTag.Value)];
+                msg_log = [msg_log sprintf('%s: libiio dll version is %d.%d (git-%s)\n', class(obj), pMajor.Value, pMinor.Value, githash)];
             end
 
             % Set the return code to success
