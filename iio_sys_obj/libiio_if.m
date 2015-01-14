@@ -89,9 +89,9 @@ classdef libiio_if < handle
 
             % Create a set of pointers to read the iiod and dll versions
             data = zeros(1, 10);
-            pMajor = libpointer('uint32Ptr',data(1));
-            pMinor = libpointer('uint32Ptr',data(2));
-            pGitTag = libpointer('int8Ptr',[int8(data(3:end)) 0]);
+            pMajor = libpointer('uint32Ptr', data(1));
+            pMinor = libpointer('uint32Ptr', data(2));
+            pGitTag = libpointer('int8Ptr', [int8(data(3:end)) 0]);
 
             % Check if the libiio version running on the device is
             % compatible with this version of the system object
@@ -572,7 +572,7 @@ classdef libiio_if < handle
 
             % Create a double pointer to be used for data read
             data = zeros(1, 10);
-            pData = libpointer('doublePtr',data(1));
+            pData = libpointer('doublePtr', data(1));
 
             % Read the attribute value
             if(ret > 0)
@@ -597,16 +597,16 @@ classdef libiio_if < handle
             end
 
             % Create a pointer to be used for data read
-            data = char(ones(1,512));
+            data = char(ones(1, 512));
             pData = libpointer('stringPtr', data);
 
             % Read the attribute value
             if(ret > 0)
-                [~,~,~,val] = calllib(obj.libname, 'iio_channel_attr_read', ch, attr, pData, 512);
+                [~, ~, ~, val] = calllib(obj.libname, 'iio_channel_attr_read', ch, attr, pData, 512);
                 clear ch;
                 clear attr;
             else
-                [~,~,~,val] = calllib(obj.libname, 'iio_device_attr_read', obj.iio_dev, attr_name, pData, 512);
+                [~, ~, ~, val] = calllib(obj.libname, 'iio_device_attr_read', obj.iio_dev, attr_name, pData, 512);
             end
         end
 
