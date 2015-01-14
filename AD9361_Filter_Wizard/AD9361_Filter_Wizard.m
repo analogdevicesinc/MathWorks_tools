@@ -663,6 +663,8 @@ if(ret < 0)
     return;
 end
 
+msgbox('FIR coefficients successfully written and enabled on target.', 'Filter enabled on target');
+
 
 function IP_num_Callback(hObject, eventdata, handles)
 % hObject    handle to IP_num (see GCBO)
