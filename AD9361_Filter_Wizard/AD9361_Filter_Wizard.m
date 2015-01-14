@@ -592,12 +592,12 @@ data_rate = get_data_rate(handles);
 %fprintf(fid, '# PLL CLK Frequecy = %f Hz\r\n', pll_rate);
 %fprintf(fid, '# Converter Sample Frequecy = %f Hz\r\n', converter_rate);
 fprintf(fid, '# Data Sample Frequency = %f Hz\r\n', data_rate);
-fprintf(fid, 'TX 3 GAIN %d INT %d\r\n', handles.tx_gain, handles.tx_int);
-fprintf(fid, 'RX 3 GAIN %d DEC %d\r\n', handles.rx_gain, handles.rx_int);
-fprintf(fid, 'RTX %d %d %d %d %d %d\r\n', handles.tx_PLL, handles.tx_HB3, handles.tx_HB2, handles.tx_HB1, handles.tx_FIR, handles.tx_DATA);
-fprintf(fid, 'RRX %d %d %d %d %d %d\r\n', handles.rx_PLL, handles.rx_HB3, handles.rx_HB2, handles.rx_HB1, handles.rx_FIR, handles.rx_DATA);
-fprintf(fid, 'BWTX %d\r\n', handles.tx_BW);
-fprintf(fid, 'BWRX %d\r\n', handles.rx_BW);
+fprintf(fid, 'TX 3 GAIN %d INT %d\r\n', handles.tx.gain, handles.tx.int);
+fprintf(fid, 'RX 3 GAIN %d DEC %d\r\n', handles.rx.gain, handles.rx.int);
+fprintf(fid, 'RTX %d %d %d %d %d %d\r\n', handles.tx.PLL, handles.tx.HB3, handles.tx.HB2, handles.tx.HB1, handles.tx.FIR, handles.tx.DATA);
+fprintf(fid, 'RRX %d %d %d %d %d %d\r\n', handles.rx.PLL, handles.rx.HB3, handles.rx.HB2, handles.rx.HB1, handles.rx.FIR, handles.rx.DATA);
+fprintf(fid, 'BWTX %d\r\n', handles.tx.BW);
+fprintf(fid, 'BWRX %d\r\n', handles.rx.BW);
 fclose(fid);
 
 % concat and transform Rx and Tx coefficient matrices for outputting
@@ -611,12 +611,12 @@ function save2target_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-fir_filter_str = sprintf('TX 3 GAIN %d INT %d', handles.tx_gain, handles.tx_int);
-fir_filter_str = strcat(fir_filter_str, sprintf('\nRX 3 GAIN %d DEC %d', handles.rx_gain, handles.rx_int));
-fir_filter_str = strcat(fir_filter_str, sprintf('\nRTX %d %d %d %d %d %d', handles.tx_PLL, handles.tx_HB3, handles.tx_HB2, handles.tx_HB1, handles.tx_FIR, handles.tx_DATA));
-fir_filter_str = strcat(fir_filter_str, sprintf('\nRRX %d %d %d %d %d %d', handles.rx_PLL, handles.rx_HB3, handles.rx_HB2, handles.rx_HB1, handles.rx_FIR, handles.rx_DATA));
-fir_filter_str = strcat(fir_filter_str, sprintf('\nBWTX %d', handles.tx_BW));
-fir_filter_str = strcat(fir_filter_str, sprintf('\nBWRX %d', handles.rx_BW));
+fir_filter_str = sprintf('TX 3 GAIN %d INT %d', handles.tx.gain, handles.tx.int);
+fir_filter_str = strcat(fir_filter_str, sprintf('\nRX 3 GAIN %d DEC %d', handles.rx.gain, handles.rx.int));
+fir_filter_str = strcat(fir_filter_str, sprintf('\nRTX %d %d %d %d %d %d', handles.tx.PLL, handles.tx.HB3, handles.tx.HB2, handles.tx.HB1, handles.tx.FIR, handles.tx.DATA));
+fir_filter_str = strcat(fir_filter_str, sprintf('\nRRX %d %d %d %d %d %d', handles.rx.PLL, handles.rx.HB3, handles.rx.HB2, handles.rx.HB1, handles.rx.FIR, handles.rx.DATA));
+fir_filter_str = strcat(fir_filter_str, sprintf('\nBWTX %d', handles.tx.BW));
+fir_filter_str = strcat(fir_filter_str, sprintf('\nBWRX %d', handles.rx.BW));
 
 % concat and transform Rx and Tx coefficient matrices for outputting
 coefficients = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
@@ -645,12 +645,12 @@ if(ret < 0)
 end
 
 % explicitly write Rx/Tx RF bandwidth to target
-ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_voltage_rf_bandwidth', num2str(handles.rx_BW));
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'in_voltage_rf_bandwidth', num2str(handles.rx.BW));
 if(ret < 0)
     msgbox('Could not write Rx RF bandwidth to target!', 'Error', 'error');
     return;
 end
-ret = writeAttributeString(handles.libiio_ctrl_dev, 'out_voltage_rf_bandwidth', num2str(handles.tx_BW));
+ret = writeAttributeString(handles.libiio_ctrl_dev, 'out_voltage_rf_bandwidth', num2str(handles.tx.BW));
 if(ret < 0)
     msgbox('Could not write Tx RF bandwidth to target!', 'Error', 'error');
     return;
@@ -937,13 +937,14 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.analogfilter = Hanalog;
     handles.grpdelaycal = cascade(Hanalog,rxFilters);
 
-    handles.rx_BW = RFbw;
-    handles.rx_PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
-    handles.rx_HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
-    handles.rx_HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
-    handles.rx_HB1 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB1_rate, 'String')));
-    handles.rx_FIR = value2Hz(handles, handles.freq_units, str2double(get(handles.FIR_rate, 'String')));
-    handles.rx_DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
+    % values used for saving to a filter file or pushing to the target directly
+    handles.rx.BW = RFbw;
+    handles.rx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
+    handles.rx.HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
+    handles.rx.HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
+    handles.rx.HB1 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB1_rate, 'String')));
+    handles.rx.FIR = value2Hz(handles, handles.freq_units, str2double(get(handles.FIR_rate, 'String')));
+    handles.rx.DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
 else
     DAC_mult = get(handles.DAC_by2, 'Value');
     [tfirtaps,txFilters,Hanalog,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
@@ -953,24 +954,25 @@ else
     handles.analogfilter = Hanalog;
     handles.grpdelaycal = cascade(txFilters,Hanalog);
 
-    handles.tx_BW = RFbw;
-    handles.tx_PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
-    handles.tx_HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
-    handles.tx_HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
-    handles.tx_HB1 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB1_rate, 'String')));
-    handles.tx_FIR = value2Hz(handles, handles.freq_units, str2double(get(handles.FIR_rate, 'String')));
-    handles.tx_DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
 end
 handles.taps_length = tohw.CoefficientSize;
 
 set(gcf,'Pointer',oldpointer);
+    % values used for saving to a filter file or pushing to the target directly
+    handles.tx.BW = RFbw;
+    handles.tx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
+    handles.tx.HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
+    handles.tx.HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
+    handles.tx.HB1 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB1_rate, 'String')));
+    handles.tx.FIR = value2Hz(handles, handles.freq_units, str2double(get(handles.FIR_rate, 'String')));
+    handles.tx.DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
 
 if get(handles.filter_type, 'Value') == 1
-    handles.rx_int = FIR_interp;
-    handles.rx_gain = tohw.Gain;
+    handles.rx.int = sel.FIR;
+    handles.rx.gain = tohw.Gain;
 else
-    handles.tx_int = FIR_interp;
-    handles.tx_gain = tohw.Gain;
+    handles.tx.int = sel.FIR;
+    handles.tx.gain = tohw.Gain;
 end
 handles.int = FIR_interp;
 
