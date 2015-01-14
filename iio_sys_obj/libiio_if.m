@@ -121,7 +121,7 @@ classdef libiio_if < handle
                 err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
                 return;
             else
-                msg_log = [msg_log sprintf('%s: libiio dll version is %d.%d (git-%s)\n', class(obj), pMajor.Value, pMinor.Value, githash)];
+                msg_log = [msg_log sprintf('%s: Local libiio version is %d.%d (git-%s)\n', class(obj), pMajor.Value, pMinor.Value, githash)];
             end
 
             % Set the return code to success
