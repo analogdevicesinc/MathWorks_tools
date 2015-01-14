@@ -99,29 +99,33 @@ classdef libiio_if < handle
 
             % extract git hash without trailing null char
             githash = pGitTag.Value(1:7);
+            remote_version_str = sprintf('Remote libiio version: %d.%d, (git-%s)', pMajor.Value, pMinor.Value, githash);
 
             if(pMajor.Value == 0 && pMinor.Value < 1)
                 err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
                 return;
             elseif(pMajor.Value > 0 || pMinor.Value > 2)
-                err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
+                err_msg = sprintf('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.\n\n%s\n', ...
+                                  remote_version_str);
                 return;
             else
-                msg_log = [msg_log sprintf('%s: Remote libiio version is %d.%d (git-%s)\n', class(obj), pMajor.Value, pMinor.Value, githash)];
+                msg_log = [msg_log sprintf('%s: %s\n', class(obj), remote_version_str)];
             end
 
             % Check if the libiio dll is compatible with this version
             % of the system object
             calllib(obj.libname, 'iio_library_get_version', pMajor, pMinor, pGitTag);
             githash = pGitTag.Value(1:7);
+            local_version_str = sprintf('Local libiio version: %d.%d, (git-%s)', pMajor.Value, pMinor.Value, githash);
             if(pMajor.Value == 0 && pMinor.Value < 2)
                 err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
                 return;
             elseif(pMajor.Value > 0 || pMinor.Value > 2)
-                err_msg = 'The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.';
+                err_msg = sprintf('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.\n\n%s\n', ...
+                                  local_version_str);
                 return;
             else
-                msg_log = [msg_log sprintf('%s: Local libiio version is %d.%d (git-%s)\n', class(obj), pMajor.Value, pMinor.Value, githash)];
+                msg_log = [msg_log sprintf('%s: %s\n', class(obj), local_version_str)];
             end
 
             % Set the return code to success
