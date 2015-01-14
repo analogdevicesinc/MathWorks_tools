@@ -1076,7 +1076,6 @@ options = load(filename);
 Tx = fieldnames(options.ad9361_settings.tx);
 Rx = fieldnames(options.ad9361_settings.rx);
 
-
 Tx_numRows = size(Tx, 1);
 Rx_numRows = size(Rx, 1);
 
@@ -1302,7 +1301,6 @@ else
     OK = 0;
 end
 
-
 % Check the PLL, based on rx values...
 set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
     handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
@@ -1395,7 +1393,6 @@ guidata(hObject, handles);
 % PLL = [1 2 4 8 16 32 64];     715|1430          715|1430
 
 
-
 % --------------------------------------------------------------------
 function new_tooltip_ClickedCallback(hObject, eventdata, handles)
 % hObject    handle to new_tooltip (see GCBO)
@@ -1440,10 +1437,7 @@ ylabel('Mag (dB)');
 set(gca,'YTickLabel',{});
 ylim([-100 max_y]);
 
-
-
 switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
-
     case 'Lowpass'
         % Low part of the low pass
         line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
@@ -1488,6 +1482,7 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         for i = 1:4
             set(handles.arrows{i}, 'Parent', plot);
         end
+
     case 'Root Raised Cosine'
         % Pass band
         line([0 Fpass], [-ripple -ripple], 'Color', 'Black');
@@ -1575,7 +1570,6 @@ switch get(get(handles.Response_Type, 'SelectedObject'), 'String')
         line([max_x-10 max_x-10], [0 ripple], 'Color', 'Black');
         text(0, -108, '0');
         text(max_x - 15, -108, 'Fs_{/2}');
-
 end
 
 guidata(hObject, handles);
@@ -2185,7 +2179,7 @@ set(hfvt4.CurrentAxes, 'YLim', [-100 20]);
 legend(hfvt4, 'FIR Filter');
 
 % add the quantitative values about FIR magnitude
-[h,~] = freqz(Hmd,1024); 
+[h,~] = freqz(Hmd,1024);
 maxmag = max(20*log10(abs(h)));
 
 [gd,~] = grpdelay(handles.grpdelaycal,1024);
