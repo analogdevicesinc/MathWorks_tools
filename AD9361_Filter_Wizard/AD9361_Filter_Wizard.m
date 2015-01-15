@@ -1311,7 +1311,13 @@ if (pll < handles.MAX_BBPLL_FREQ) && (pll > handles.MIN_BBPLL_FREQ)
 else
     set(handles.Pll_rate, 'ForegroundColor', [1 0 0]);
     if OK
-        warn = 'PLL rate out of bounds';
+        if (pll > handles.MAX_BBPLL_FREQ)
+            max_bbpll = num2str(Hz2value(handles, 3, handles.MAX_BBPLL_FREQ));
+            warn = sprintf('PLL rate above maximum (%s %s)', max_bbpll, 'MHz');
+        else
+            min_bbpll = num2str(Hz2value(handles, 3, handles.MIN_BBPLL_FREQ));
+            warn = sprintf('PLL rate below minimum (%s %s)', min_bbpll, 'MHz');
+        end
     end
     OK = 0;
 end
