@@ -3,3 +3,4 @@
 *.mexw64
 **/slprj/**
 AD9361_Filter_Wizard/TestFiltWiz.m
+AD9361_Filter_Wizard/.previous_ip_addr
