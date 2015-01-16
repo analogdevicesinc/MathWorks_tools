@@ -32,9 +32,9 @@
 %  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 %  THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-% Inputs
+% Inputs (structure containing the following fields)
 % ============================================
-% Fin        = Input sample data rate (in Hz)
+% data_rate  = Input sample data rate (in Hz)
 % FIR_interp = FIR interpolation factor
 % HB_interp  = half band filters interpolation factor
 % DAC_mult   = DAC to ADC ratio
@@ -48,27 +48,27 @@
 % int_FIR    = Use AD9361 FIR on (1)/off (0)
 % wnom       = analog cutoff frequency (in Hz)
 %
-% Outputs
-%===============================================
+% Outputs (structure containing the following fields)
+% ===============================================
 % tfirtaps         = fixed point coefficients for PROG TX FIR
 % txFilters        = system object for visualization (does not include analog filters)
 % dBripple_actual  = actual passband ripple
 % dBstop_actual    = actual stopband attentuation
 % delay            = actual delay used in phase equalization
-% webinar          = initialzation for SimRF FMCOMMS2 Tx model
-%
-function [tfirtaps,txFilters,Hanalog,dBripple_actual,dBstop_actual,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(Fin,FIR_interp,HB_interp,DAC_mult,PLL_mult,Fpass,Fstop,dBripple,dBstop,dBstop_FIR,phEQ,int_FIR, wnom)
+% webinar          = initialization for SimRF FMCOMMS2 Tx model
 
-Fdac = Fin * FIR_interp * HB_interp;
-clkPLL = Fdac * DAC_mult * PLL_mult;
+function result = internal_designtxfilters9361_sinc(input)
 
-if ~wnom
-    wnom = 1.6*Fpass;
-    div = ceil((clkPLL/wnom)*(log(2)/(2*pi)));
+Fdac = input.data_rate * input.FIR_interp * input.HB_interp;
+clkPLL = Fdac * input.DAC_mult * input.PLL_mult;
+
+if ~input.wnom
+    input.wnom = 1.6*input.Fpass;
+    div = ceil((clkPLL/input.wnom)*(log(2)/(2*pi)));
     caldiv = min(max(div,3),511);
     wc = (clkPLL/caldiv)*(log(2)/(2*pi));
 else
-    wc = wnom;
+    wc = input.wnom;
 end
 
 wreal = wc*(5.0/1.6);
@@ -138,7 +138,7 @@ end
 [hb1, hb2, hb3, int3] = settxhb9361(HB_interp);
 
 % convert the enables into a string
-enables = strrep(num2str([hb1 hb2 hb3 int3]), ' ', '');
+enables = strrep(num2str([input.HB1 input.HB2 input.HB3]), ' ', '');
 switch enables
     case '1111' % only TFIR
         Filter1 = 1;
@@ -164,7 +164,7 @@ w = zeros(1,Nw);
 phi = zeros(1,Nw);
 invariance = zeros(1,Nw);
 
-w(1) = -Fpass;
+w(1) = -input.Fpass;
 for i = 2:(Nw)
     w(i) = w(1)-2*w(1)*i/(Nw);
 end
@@ -186,17 +186,17 @@ sigmaxx = sum(w.*w.*invariance);
 sigmaxy = sum(w.*phi.*invariance);
 delta = sigma*sigmaxx-sigmax^2;
 b = (sigma*sigmaxy-sigmax*sigmay)/delta;
-if phEQ == 0 || phEQ == -1
+if input.phEQ == 0 || input.phEQ == -1
     delay = -b/(2*pi);
 else
-    delay = phEQ*(1e-9);
+    delay = input.phEQ*(1e-9);
 end
 
 % Design the PROG TX FIR
 G = 16384;
-clkTFIR = Fin*FIR_interp;
-Gpass = floor(G*Fpass/clkTFIR);
-Gstop=ceil(G*Fstop/clkTFIR);
+clkTFIR = input.data_rate*input.FIR_interp;
+Gpass = floor(G*input.Fpass/clkTFIR);
+Gstop=ceil(G*input.Fstop/clkTFIR);
 Gpass = min(Gpass,Gstop-1);
 fg = zeros(1,Gpass);
 omega = zeros(1,Gpass);
@@ -209,7 +209,7 @@ end
 rg1 = freqz(Filter1,omega,Fdac).*analogresp('Tx',omega,Fdac,b1,a1,b2,a2);
 rg2 = exp(-1i*2*pi*omega*delay);
 rg = rg2./rg1;
-w = abs(rg1)/(dBinv(dBripple/2)-1);
+w = abs(rg1)/(dBinv(input.dBripple/2)-1);
 
 g = Gpass+1;
 % stop band
@@ -220,11 +220,11 @@ for m = Gstop:(G/2)
     rg(g) = 0;
 end
 wg1 = abs(freqz(Filter1,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
-wg2 = (sqrt(FIR_interp)*wg1)/(dBinv(-dBstop));
-wg3 = dBinv(dBstop_FIR);
+wg2 = (sqrt(input.FIR_interp)*wg1)/(dBinv(-input.dBstop));
+wg3 = dBinv(input.dBstop_FIR);
 wg = max(wg2,wg3);
 grid = fg;
-if phEQ == -1
+if input.phEQ == -1
     resp = abs(rg);
 else resp = rg;
 end
@@ -242,7 +242,7 @@ W1 = weight(1:Gpass+1);
 W2 = weight(Gpass+2:end);
 
 % Determine the number of taps for TFIR
-switch FIR_interp
+switch input.FIR_interp
     case 1
         Nmax = 64;
     case 2
@@ -251,30 +251,30 @@ switch FIR_interp
         Nmax = 128;
 end
 
-N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
+N = min(16*floor(Fdac*input.DAC_mult/(2*input.data_rate)),Nmax);
 tap_store = zeros(N/16,N);
 dBripple_actual_vector = zeros(N/16,1);
 dBstop_actual_vector = zeros(N/16,1);
 i = 1;
 
 while (1)
-    if int_FIR
+    if input.int_FIR
         d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
     else
         d = fdesign.arbmag('B,F,A,R');
         d.NBands = 2;
         d.B1Frequencies = F1;
         d.B1Amplitudes = A1;
-        d.B1Ripple = db2mag(-dBstop);
+        d.B1Ripple = db2mag(-input.dBstop);
         d.B2Frequencies = F2;
         d.B2Amplitudes = A2;
-        d.B2Ripple = db2mag(-dBstop);
+        d.B2Ripple = db2mag(-input.dBstop);
     end
     Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
     ccoef = Hd.Numerator;
     M = length(ccoef);
-    
-    if phEQ ~= -1
+
+    if input.phEQ ~= -1
         sg = 0.5-grid(end:-1:1);
         sr = imag(resp(end:-1:1));
         sw = weight(end:-1:1);
@@ -284,7 +284,7 @@ while (1)
         A4 = sr(G/2-Gstop+2:end);
         W3 = sw(1:G/2-Gstop+1);
         W4 = sw(G/2-Gstop+2:end);
-        if int_FIR
+        if input.int_FIR
             d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
         else
             d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
@@ -298,8 +298,8 @@ while (1)
         scoef = 0;
     end
     tap_store(i,1:M)=ccoef+scoef;
-    
-    Hmd = mfilt.firinterp(FIR_interp,tap_store(i,1:M));
+
+    Hmd = mfilt.firinterp(input.FIR_interp,tap_store(i,1:M));
     if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
         set(Hmd,'arithmetic','fixed');
         Hmd.InputWordLength = 16;
@@ -316,18 +316,18 @@ while (1)
     rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
     dBripple_actual_vector(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
     dBstop_actual_vector(i) = -mag2db(max(rg_stop));
-    
-    if int_FIR == 0
+
+    if input.int_FIR == 0
         h = tap_store(1,1:M);
         dBripple_actual = dBripple_actual_vector(1);
         dBstop_actual = dBstop_actual_vector(1);
         break
-    elseif dBripple_actual_vector(1) > dBripple || dBstop_actual_vector(1) < dBstop
+    elseif dBripple_actual_vector(1) > input.dBripple || dBstop_actual_vector(1) < input.dBstop
         h = tap_store(1,1:N);
         dBripple_actual = dBripple_actual_vector(1);
         dBstop_actual = dBstop_actual_vector(1);
         break
-    elseif dBripple_actual_vector(i) > dBripple || dBstop_actual_vector(i) < dBstop
+    elseif dBripple_actual_vector(i) > input.dBripple || dBstop_actual_vector(i) < input.dBstop
         h = tap_store(i-1,1:N+16);
         dBripple_actual = dBripple_actual_vector(i-1);
         dBstop_actual = dBstop_actual_vector(i-1);
@@ -338,12 +338,12 @@ while (1)
     end
 end
 
-if int_FIR == 1 && FIR_interp == 2
+if input.int_FIR == 1 && input.FIR_interp == 2
     R = rem(length(h),32);
     if R ~= 0
         h = [zeros(1,8),h,zeros(1,8)];
     end
-elseif int_FIR == 1 && FIR_interp == 4
+elseif input.int_FIR == 1 && input.FIR_interp == 4
     R = rem(length(h),64);
     if R ~= 0
         newlength = ceil(length(h)/64)*64;
@@ -352,7 +352,7 @@ elseif int_FIR == 1 && FIR_interp == 4
     end
 end
 
-Hmd = mfilt.firinterp(FIR_interp,h);
+Hmd = mfilt.firinterp(input.FIR_interp,h);
 if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
     set(Hmd,'arithmetic','fixed');
     Hmd.InputWordLength = 16;
@@ -375,9 +375,9 @@ switch aTFIR
     otherwise
         gain = -12;
 end
-if FIR_interp == 2
+if input.FIR_interp == 2
     gain = gain+6;
-elseif FIR_interp == 4
+elseif input.FIR_interp == 4
     gain = gain+12;
 end
 if gain > 0
@@ -392,19 +392,19 @@ if length(tfirtaps) < 128
     tfirtaps = [tfirtaps,zeros(1,128-length(tfirtaps))];
 end
 
-webinar.Fin = Fin;
-webinar.FIR_interp = FIR_interp;
-webinar.HB_interp = HB_interp;
-webinar.DAC_mult = DAC_mult;
-webinar.PLL_mult = PLL_mult;
-webinar.Fpass = Fpass;
-webinar.Fstop = Fstop;
-webinar.dBripple = dBripple;
-webinar.dBstop = dBstop;
-webinar.dBstop_FIR = dBstop_FIR;
-webinar.phEQ = phEQ;
-webinar.int_FIR = int_FIR;
-webinar.wnom = wnom;
+webinar.Fin = input.data_rate;
+webinar.FIR_interp = input.FIR_interp;
+webinar.HB_interp = input.HB_interp;
+webinar.DAC_mult = input.DAC_mult;
+webinar.PLL_mult = input.PLL_mult;
+webinar.Fpass = input.Fpass;
+webinar.Fstop = input.Fstop;
+webinar.dBripple = input.dBripple;
+webinar.dBstop = input.dBstop;
+webinar.dBstop_FIR = input.dBstop_FIR;
+webinar.phEQ = input.phEQ;
+webinar.int_FIR = input.int_FIR;
+webinar.wnom = input.wnom;
 webinar.Hm1_tx = Hm1;
 webinar.Hm2_tx = Hm2;
 webinar.Hm3_tx = Hm3;
@@ -412,14 +412,27 @@ webinar.Hm4_tx = Hm4;
 webinar.Hmd_tx = Hmd;
 webinar.enable_tx = enables;
 
-tohw.TXSAMP = Fin;
-tohw.TF = Fin * FIR_interp;
-tohw.T1 = tohw.TF * hb1;
-tohw.T2 = tohw.T1 * hb2;
+tohw.TXSAMP = input.data_rate;
+tohw.TF = input.data_rate * input.FIR_interp;
+tohw.T1 = tohw.TF * input.HB1;
+tohw.T2 = tohw.T1 * input.HB2;
 tohw.DAC = Fdac;
 tohw.BBPLL = clkPLL;
 tohw.Coefficient = tfirtaps;
 tohw.CoefficientSize = length(h);
-tohw.Interp = FIR_interp;
+tohw.Interp = input.FIR_interp;
 tohw.Gain = gain;
-tohw.RFBandwidth = round(Fpass*2);
+tohw.RFBandwidth = input.RFbw;
+
+result.tfirtaps = tfirtaps;
+result.txFilters = txFilters;
+result.Hanalog = Hanalog;
+result.dBripple_actual = dBripple_actual;
+result.dBstop_actual = dBstop_actual;
+result.delay = delay;
+result.webinar = webinar;
+result.tohw = tohw;
+result.b1 = b1;
+result.a1 = a1;
+result.b2 = b2;
+result.a2 = a2;

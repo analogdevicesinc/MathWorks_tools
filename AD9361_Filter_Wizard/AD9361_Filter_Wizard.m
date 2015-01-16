@@ -893,30 +893,34 @@ set(handles.design_filter, 'Enable', 'off');
 
 sel = get_current_rxtx(handles);
 
-fstop = sel.Fstop;
-fpass = sel.Fpass;
-
-apass = sel.dBripple;
-astop = sel.dBstop;
-dbstop_min = sel.FIRdBmin;
 
 RFbw = round(fpass * 2);
 data_rate = sel.Rdata;
 FIR_interp = sel.FIR;
 HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
-PLL_mult = sel.PLL_mult;
 
-Ph_eq = sel.phEQ;
-
-wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
-
-Use_9361 = get(handles.Use_FIR, 'Value');
-
+% filter design input structure
+filter_input.Fstop = sel.Fstop;
+filter_input.Fpass = sel.Fpass;
+filter_input.dBripple = sel.dBripple;
+filter_input.dBstop = sel.dBstop;
+filter_input.dBstop_FIR = sel.FIRdBmin;
+filter_input.data_rate = sel.Rdata;
+filter_input.FIR_interp = FIR_interp;
+filter_input.HB_interp = HB_interp;
+filter_input.HB1 = sel.HB1;
+filter_input.HB2 = sel.HB2;
+filter_input.HB3 = sel.HB3;
+filter_input.PLL_mult = sel.PLL_mult;
+filter_input.phEQ = sel.phEQ;
+filter_input.wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
+filter_input.int_FIR = get(handles.Use_FIR, 'Value');
+filter_input.RFbw = RFbw;
 
 plot_buttons_off(handles);
 
 % make sure things are sane before drawing
-if fpass >= fstop || fpass <= 0 || fstop <= 0
+if sel.Fpass >= sel.Fstop || sel.Fpass <= 0 || sel.Fstop <= 0
     display_default_image(hObject);
     plot_buttons_off(handles);
     handles.active_plot = 0;
@@ -930,12 +934,12 @@ set(gcf,'Pointer','watch');
 drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
-    [rfirtaps,rxFilters,Hanalog,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designrxfilters9361_sinc(...
-        data_rate, FIR_interp, HB_interp, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
-    handles.filters = rxFilters;
-    handles.rfirtaps = rfirtaps;
-    handles.analogfilter = Hanalog;
-    handles.grpdelaycal = cascade(Hanalog,rxFilters);
+    filter_result = internal_designrxfilters9361_sinc(filter_input);
+
+    handles.filters = filter_result.rxFilters;
+    handles.rfirtaps = filter_result.rfirtaps;
+    handles.analogfilter = filter_result.Hanalog;
+    handles.grpdelaycal = cascade(filter_result.Hanalog, filter_result.rxFilters);
 
     % values used for saving to a filter file or pushing to the target directly
     handles.rx.BW = RFbw;
@@ -946,18 +950,14 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.rx.FIR = value2Hz(handles, handles.freq_units, str2double(get(handles.FIR_rate, 'String')));
     handles.rx.DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
 else
-    DAC_mult = get(handles.DAC_by2, 'Value');
-    [tfirtaps,txFilters,Hanalog,dBripple_actual,dBstop_max,delay,webinar,tohw,b1,a1,b2,a2] = internal_designtxfilters9361_sinc(...
-        data_rate, FIR_interp, HB_interp, DAC_mult, PLL_mult, fpass, fstop, apass, astop, dbstop_min, Ph_eq, Use_9361, wnom);
-    handles.filters = txFilters;
-    handles.tfirtaps = tfirtaps;
-    handles.analogfilter = Hanalog;
-    handles.grpdelaycal = cascade(txFilters,Hanalog);
+    filter_input.DAC_mult = get(handles.DAC_by2, 'Value');
+    filter_result = internal_designtxfilters9361_sinc(filter_input);
 
-end
-handles.taps_length = tohw.CoefficientSize;
+    handles.filters = filter_result.txFilters;
+    handles.tfirtaps = filter_result.tfirtaps;
+    handles.analogfilter = filter_result.Hanalog;
+    handles.grpdelaycal = cascade(filter_result.txFilters, filter_result.Hanalog);
 
-set(gcf,'Pointer',oldpointer);
     % values used for saving to a filter file or pushing to the target directly
     handles.tx.BW = RFbw;
     handles.tx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
@@ -966,22 +966,26 @@ set(gcf,'Pointer',oldpointer);
     handles.tx.HB1 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB1_rate, 'String')));
     handles.tx.FIR = value2Hz(handles, handles.freq_units, str2double(get(handles.FIR_rate, 'String')));
     handles.tx.DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
+end
+handles.taps_length = filter_result.tohw.CoefficientSize;
+
+set(gcf, 'Pointer', oldpointer);
 
 if get(handles.filter_type, 'Value') == 1
     handles.rx.int = sel.FIR;
-    handles.rx.gain = tohw.Gain;
+    handles.rx.gain = filter_result.tohw.Gain;
 else
     handles.tx.int = sel.FIR;
-    handles.tx.gain = tohw.Gain;
+    handles.tx.gain = filter_result.tohw.Gain;
 end
 handles.int = FIR_interp;
 
 if (str2double(get(handles.target_delay, 'String'))) == 0
-    set(handles.target_delay, 'String', num2str(delay * 1e9, 4));
+    set(handles.target_delay, 'String', num2str(filter_result.delay * 1e9, 4));
 end
 
-handles.simrfmodel = webinar;
-handles.supportpack = tohw;
+handles.simrfmodel = filter_result.webinar;
+handles.supportpack = filter_result.tohw;
 
 set(handles.FVTool_deeper, 'Visible', 'on');
 set(handles.FVTool_datarate, 'Visible', 'on');
@@ -1010,7 +1014,7 @@ set(handles.results_group_delay, 'Visible', 'on');
 set(handles.results_taps, 'String', [num2str(handles.taps_length) ' ']);
 set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, RFbw)));
 
-converter_rate = data_rate * FIR_interp * HB_interp;
+converter_rate = data_rate * sel.FIR * HB_interp;
 
 G = 8192;
 axes(handles.magnitude_plot);
@@ -1021,7 +1025,9 @@ if get(handles.filter_type, 'Value') == 1
 else
     channel = 'Tx';
 end
-handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(abs(analogresp(channel,linspace(0,data_rate/2,G),converter_rate,b1,a1,b2,a2).*freqz(handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(...
+    abs(analogresp(channel,linspace(0,data_rate/2,G),converter_rate,filter_result.b1,filter_result.a1,filter_result.b2,filter_result.a2).*freqz(...
+    handles.filters,linspace(0,data_rate/2,G),converter_rate))));
 
 xlim([0 data_rate/2]);
 ylim([-100 10]);
@@ -1030,21 +1036,21 @@ xlabel('Frequency (MHz)');
 ylabel('Magnitude (dB)');
 
 % plot the mask that we are interested in
-line([fpass fpass], [-(apass/2) -100], 'Color', 'Red');
-line([0 fpass], [-(apass/2) -(apass/2)], 'Color', 'Red');
-line([0 fstop], [apass/2 apass/2], 'Color', 'Red');
-line([fstop fstop], [apass/2 -astop], 'Color', 'Red');
-line([fstop data_rate], [-astop -astop], 'Color', 'Red');
+line([sel.Fpass sel.Fpass], [-(sel.dBripple/2) -100], 'Color', 'Red');
+line([0 sel.Fpass], [-(sel.dBripple/2) -(sel.dBripple/2)], 'Color', 'Red');
+line([0 sel.Fstop], [sel.dBripple/2 sel.dBripple/2], 'Color', 'Red');
+line([sel.Fstop sel.Fstop], [sel.dBripple/2 -sel.dBstop], 'Color', 'Red');
+line([sel.Fstop data_rate], [-sel.dBstop -sel.dBstop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
 [gd,~] = grpdelay(handles.grpdelaycal,1024);
-I = round(fpass/(converter_rate/2)*1024);
+I = round(sel.Fpass/(converter_rate/2)*1024);
 gd2 = gd(1:I).*(1/converter_rate);
 gd_diff = max(gd2)-min(gd2);
 
-set(handles.results_Astop, 'String', [num2str(dBstop_max) ' dB ']);
-set(handles.results_Apass, 'String', [num2str(dBripple_actual) ' dB ']);
+set(handles.results_Astop, 'String', [num2str(filter_result.dBstop_actual) ' dB ']);
+set(handles.results_Apass, 'String', [num2str(filter_result.dBripple_actual) ' dB ']);
 set(handles.results_group_delay, 'String', [num2str(gd_diff * 1e9, 3) ' ns ']);
 
 if get(handles.filter_type, 'Value') == 1
@@ -2411,7 +2417,6 @@ function design_filter_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 create_filter(hObject, handles);
-
 
 
 function Port_num_Callback(hObject, eventdata, handles)
