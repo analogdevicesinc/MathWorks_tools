@@ -97,41 +97,39 @@ Hm2 = mfilt.firinterp(2,hb2);
 Hm3 = mfilt.firinterp(2,hb3);
 Hm4 = mfilt.firinterp(3,int3);
 
-if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
-    
+if license('test','fixed_point_toolbox') && license('checkout','fixed_point_toolbox')
     set(Hm1,'arithmetic','fixed');
     set(Hm2,'arithmetic','fixed');
     set(Hm3,'arithmetic','fixed');
     set(Hm4,'arithmetic','fixed');
-    
+
     Hm1.InputWordLength = 16;
     Hm1.InputFracLength = 14;
     Hm1.FilterInternals = 'SpecifyPrecision';
     Hm1.OutputWordLength = 16;
     Hm1.OutputFracLength = 14;
     Hm1.CoeffWordLength = 16;
-    
+
     Hm2.InputWordLength = 16;
     Hm2.InputFracLength = 14;
     Hm2.FilterInternals = 'SpecifyPrecision';
     Hm2.OutputWordLength = 16;
     Hm2.OutputFracLength = 14;
     Hm2.CoeffWordLength = 16;
-    
+
     Hm3.InputWordLength = 4;
     Hm3.InputFracLength = 2;
     Hm3.FilterInternals = 'SpecifyPrecision';
     Hm3.OutputWordLength = 8;
     Hm3.OutputFracLength = 6;
     Hm3.CoeffWordLength = 16;
-    
+
     Hm4.InputWordLength = 4;
     Hm4.InputFracLength = 2;
     Hm4.FilterInternals = 'SpecifyPrecision';
     Hm4.OutputWordLength = 16;
     Hm4.OutputFracLength = 14;
     Hm4.CoeffWordLength = 16;
-    
 end
 
 % pick up the right combination
@@ -300,7 +298,7 @@ while (1)
     tap_store(i,1:M)=ccoef+scoef;
 
     Hmd = mfilt.firinterp(input.FIR_interp,tap_store(i,1:M));
-    if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
+    if license('test','fixed_point_toolbox') && license('checkout','fixed_point_toolbox')
         set(Hmd,'arithmetic','fixed');
         Hmd.InputWordLength = 16;
         Hmd.InputFracLength = 14;
@@ -310,7 +308,7 @@ while (1)
         Hmd.CoeffWordLength = 16;
     end
     txFilters=cascade(Hmd,Filter1);
-    
+
     % quantitative values about actual passband and stopband
     rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),Fdac).*analogresp('Tx',omega(1:Gpass+1),Fdac,b1,a1,b2,a2));
     rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
@@ -353,7 +351,7 @@ elseif input.int_FIR == 1 && input.FIR_interp == 4
 end
 
 Hmd = mfilt.firinterp(input.FIR_interp,h);
-if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
+if license('test','fixed_point_toolbox') && license('checkout','fixed_point_toolbox')
     set(Hmd,'arithmetic','fixed');
     Hmd.InputWordLength = 16;
     Hmd.InputFracLength = 14;
