@@ -46,6 +46,7 @@
 % phEQ       = Phase Equalization on (not -1)/off (-1)
 % int_FIR    = Use AD9361 FIR on (1)/off (0)
 % wnom       = analog cutoff frequency (in Hz)
+% converter_rate = converter (DAC/ADC) sampling rate (in Hz)
 %
 % Outputs (structure containing the following fields)
 % ===============================================
@@ -58,8 +59,7 @@
 
 function result = internal_designrxfilters9361_sinc(input)
 
-Fadc = input.data_rate * input.FIR_interp * input.HB_interp;
-clkPLL = Fadc * input.PLL_mult;
+clkPLL = input.converter_rate * input.PLL_mult;
 
 if ~input.wnom
     input.wnom = 1.4 * input.Fpass;
@@ -77,10 +77,10 @@ wTIA = wc*(2.5/1.4);
 [b2,a2] = butter(3,2*pi*wc,'s');    % 3rd order
 
 % Digital representation of the analog filters (It is an approximation for group delay calculation only)
-[z1,p1,k1] = butter(3,wc/(Fadc/2),'low');
+[z1,p1,k1] = butter(3,wc/(input.converter_rate/2),'low');
 [sos1,g1] = zp2sos(z1,p1,k1);
 Hd1 = dfilt.df2tsos(sos1,g1);
-[z2,p2,k2] = butter(1,wTIA/(Fadc/2),'low');
+[z2,p2,k2] = butter(1,wTIA/(input.converter_rate/2),'low');
 [sos2,g2] = zp2sos(z2,p2,k2);
 Hd2 = dfilt.df2tsos(sos2,g2);
 Hanalog = cascade(Hd2,Hd1);
@@ -173,7 +173,7 @@ for i = 2:(Nw)
     w(i) = w(1)-2*w(1)*i/(Nw);
 end
 
-response = analogresp('Rx',w,Fadc,b1,a1,b2,a2).*freqz(Filter1,w,Fadc);
+response = analogresp('Rx',w,input.converter_rate,b1,a1,b2,a2).*freqz(Filter1,w,input.converter_rate);
 for i = 1:(Nw)
     invariance(i) = real(response(i))^2+imag(response(i))^2;
 end
@@ -210,7 +210,7 @@ for i = 1:(Gpass+1)
     fg(i) = (i-1)/G;
     omega(i) = fg(i)*clkRFIR;
 end
-rg1 = analogresp('Rx',omega,Fadc,b1,a1,b2,a2).*freqz(Filter1,omega,Fadc);
+rg1 = analogresp('Rx',omega,input.converter_rate,b1,a1,b2,a2).*freqz(Filter1,omega,input.converter_rate);
 rg2 = exp(-1i*2*pi*omega*delay);
 rg = rg2./rg1;
 w = abs(rg1)/(dBinv(input.dBripple/2)-1);
@@ -223,7 +223,7 @@ for m = Gstop:(G/2)
     omega(g) = fg(g)*clkRFIR;
     rg(g) = 0;
 end
-wg1 = abs(analogresp('Rx',omega(Gpass+2:end),Fadc,b1,a1,b2,a2).*freqz(Filter1,omega(Gpass+2:end),Fadc));
+wg1 = abs(analogresp('Rx',omega(Gpass+2:end),input.converter_rate,b1,a1,b2,a2).*freqz(Filter1,omega(Gpass+2:end),input.converter_rate));
 wg2 = (wg1)/(dBinv(-input.dBstop));
 wg3 = dBinv(input.dBstop_FIR);
 wg = max(wg2,wg3);
@@ -246,7 +246,7 @@ W1 = weight(1:Gpass+1);
 W2 = weight(Gpass+2:end);
 
 % Determine the number of taps for RFIR
-N = min(16*floor(Fadc/(2*input.data_rate)),128);
+N = min(16*floor(input.converter_rate/(2*input.data_rate)),128);
 tap_store = zeros(N/16,N);
 dBripple_actual_vector = zeros(N/16,1);
 dBstop_actual_vector = zeros(N/16,1);
@@ -307,8 +307,8 @@ while (1)
     rxFilters=cascade(Filter1,Hmd);
 
     % quantitative values about actual passband and stopband
-    rg_pass = abs(analogresp('Rx',omega(1:Gpass+1),Fadc,b1,a1,b2,a2).*freqz(rxFilters,omega(1:Gpass+1),Fadc));
-    rg_stop = abs(analogresp('Rx',omega(Gpass+2:end),Fadc,b1,a1,b2,a2).*freqz(rxFilters,omega(Gpass+2:end),Fadc));
+    rg_pass = abs(analogresp('Rx',omega(1:Gpass+1),input.converter_rate,b1,a1,b2,a2).*freqz(rxFilters,omega(1:Gpass+1),input.converter_rate));
+    rg_stop = abs(analogresp('Rx',omega(Gpass+2:end),input.converter_rate,b1,a1,b2,a2).*freqz(rxFilters,omega(Gpass+2:end),input.converter_rate));
     dBripple_actual_vector(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
     dBstop_actual_vector(i) = -mag2db(max(rg_stop));
 
@@ -389,7 +389,7 @@ tohw.RXSAMP = input.data_rate;
 tohw.RF = input.data_rate * input.FIR_interp;
 tohw.R1 = tohw.RF * input.HB1;
 tohw.R2 = tohw.R1 * input.HB2;
-tohw.ADC = Fadc;
+tohw.ADC = input.converter_rate;
 tohw.BBPLL = clkPLL;
 tohw.Coefficient = rfirtaps;
 tohw.CoefficientSize = length(h);

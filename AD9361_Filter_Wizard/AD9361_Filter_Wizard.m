@@ -897,6 +897,7 @@ sel = get_current_rxtx(handles);
 RFbw = round(fpass * 2);
 data_rate = sel.Rdata;
 HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
+converter_rate = data_rate * sel.FIR * HB_interp;
 
 % filter design input structure
 filter_input.Fstop = sel.Fstop;
@@ -915,6 +916,7 @@ filter_input.phEQ = sel.phEQ;
 filter_input.wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
 filter_input.int_FIR = get(handles.Use_FIR, 'Value');
 filter_input.RFbw = RFbw;
+filter_input.converter_rate = converter_rate;
 
 plot_buttons_off(handles);
 
@@ -1012,8 +1014,6 @@ set(handles.results_group_delay, 'Visible', 'on');
 
 set(handles.results_taps, 'String', [num2str(handles.taps_length) ' ']);
 set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, RFbw)));
-
-converter_rate = data_rate * sel.FIR * HB_interp;
 
 G = 8192;
 axes(handles.magnitude_plot);
