@@ -2312,45 +2312,6 @@ dirty(hObject, handles);
 guidata(hObject, handles);
 data2gui(hObject, handles);
 
-
-% --------------------------------------------------------------------
-function save_filter2workspace_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to save_filter2workspace (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-filter.Rdata = get_data_rate(handles)/1e6;
-filter.Fpass = value2Hz(handles, handles.freq_units, str2double(get(handles.Fpass, 'String'))) / 1e6;
-filter.Fstop = value2Hz(handles, handles.freq_units, str2double(get(handles.Fstop, 'String'))) / 1e6;
-filter.FIR_interp = sel.FIR;
-filter.HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
-filter.PLL_mult = converter_interp(handles);
-filter.dBripple = str2double(get(handles.Apass, 'String'));
-filter.dBstop = str2double(get(handles.Astop, 'String'));
-filter.Pheq = -1;
-filter.channels = 3;
-filter.internal_FIR = get(handles.Use_FIR, 'Value');
-
-if get(handles.Advanced_options, 'Value')
-    filter.caldiv = get_caldiv(handles);
-    filter.FIR_Astop = str2double(get(handles.FIR_Astop, 'String'));
-
-    if get(handles.phase_eq, 'Value')
-        filter.Phase_EQ = str2double(get(handles.target_delay, 'String'));
-    end
-else
-    filter.FIR_Astop = 0;
-end
-
-name = inputdlg('Save filter as', 'AD9361 Filter Designer');
-
-if get(handles.filter_type, 'Value') == 1
-    ad9361.rx.(name{1}) = filter;
-else
-    filter.DAC_div = get(handles.DAC_by2, 'Value');
-    ad9361.tx.(name{1}) = filter;
-end
-assignin('base', 'AD9361', ad9361);
-
 % --- Executes on button press in connect2target.
 function connect2target_Callback(hObject, eventdata, handles)
 % hObject    handle to connect2target (see GCBO)
