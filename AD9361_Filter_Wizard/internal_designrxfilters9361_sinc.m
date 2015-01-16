@@ -131,27 +131,35 @@ if license('test','fixed_point_toolbox') && license('checkout','fixed_point_tool
     Hm4.CoeffWordLength = 16;
 end
 
-[hb1, hb2, hb3, dec3] = setrxhb9361(HB_interp);
-
 % convert the enables into a string
-enables = strrep(num2str([hb1 hb2 hb3 dec3]), ' ', '');
+enables = strrep(num2str([input.HB1 input.HB2 input.HB3]), ' ', '');
 switch enables
-    case '1111' % only RFIR
+    case '111' % only RFIR
         Filter1 = 1;
-    case '2111' % Hb1
+    case '211' % Hb1
         Filter1 = Hm1;
-    case '2211' % Hb2,Hb1
+    case '221' % Hb2,Hb1
         Filter1 = cascade(Hm2,Hm1);
-    case '2221' % Hb3,Hb2,Hb1
+    case '222' % Hb3,Hb2,Hb1
         Filter1 = cascade(Hm3,Hm2,Hm1);
-    case '1113' % Dec3
+    case '113' % Dec3
         Filter1 = Hm4;
-    case '2113' % Dec3,Hb1
+    case '213' % Dec3,Hb1
         Filter1 = cascade(Hm4,Hm1);
-    case '2213' % Dec3,Hb2,Hb1
+    case '223' % Dec3,Hb2,Hb1
         Filter1 = cascade(Hm4,Hm2,Hm1);
     otherwise
         error('ddcresponse:IllegalOption', 'At least one of the stages must be there.')
+end
+
+% Modify the enables string to maintain old webinar struct compat.
+% This should be removed once the SimRF model doesn't rely on the four
+% character string and instead can use the straight halfband values.
+if input.HB3 == 3
+    enables(end) = '1';
+    enables(end+1) = '3';
+else
+    enables(end+1) = '1';
 end
 
 % Find out the best fit delay on passband
