@@ -893,11 +893,30 @@ set(handles.design_filter, 'Enable', 'off');
 
 sel = get_current_rxtx(handles);
 
-
-RFbw = round(fpass * 2);
 data_rate = sel.Rdata;
 HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
 converter_rate = data_rate * sel.FIR * HB_interp;
+
+if (get(handles.filter_type, 'Value') == 1)
+    % rx
+    channel_factor = 1.4;
+
+    % (1.4 * 2 * pi)/log(2) rounded to be the same as what the driver uses
+    rounded_factor = 12.6906;
+else
+    % tx
+    channel_factor = 1.6;
+
+    % (1.6 * 2 * pi)/log(2) rounded to be the same as what the driver uses
+    rounded_factor = 14.5036;
+end
+
+% determine the RF bandwidth from the current caldiv
+pll_rate = get_pll_rate(handles);
+% used to reproduce the divider value (caldiv) we expect on the driver
+RFbw_hw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/rounded_factor));
+% full precision RFbw
+RFbw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
 
 % filter design input structure
 filter_input.Fstop = sel.Fstop;
@@ -944,7 +963,7 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.grpdelaycal = cascade(filter_result.Hanalog, filter_result.rxFilters);
 
     % values used for saving to a filter file or pushing to the target directly
-    handles.rx.BW = RFbw;
+    handles.rx.BW = RFbw_hw;
     handles.rx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
     handles.rx.HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
     handles.rx.HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
@@ -962,7 +981,7 @@ else
     handles.grpdelaycal = cascade(filter_result.txFilters, filter_result.Hanalog);
 
     % values used for saving to a filter file or pushing to the target directly
-    handles.tx.BW = RFbw;
+    handles.tx.BW = RFbw_hw;
     handles.tx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
     handles.tx.HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
     handles.tx.HB2 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB2_rate, 'String')));
