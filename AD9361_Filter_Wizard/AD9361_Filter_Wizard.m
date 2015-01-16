@@ -896,7 +896,6 @@ sel = get_current_rxtx(handles);
 
 RFbw = round(fpass * 2);
 data_rate = sel.Rdata;
-FIR_interp = sel.FIR;
 HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
 
 % filter design input structure
@@ -906,7 +905,7 @@ filter_input.dBripple = sel.dBripple;
 filter_input.dBstop = sel.dBstop;
 filter_input.dBstop_FIR = sel.FIRdBmin;
 filter_input.data_rate = sel.Rdata;
-filter_input.FIR_interp = FIR_interp;
+filter_input.FIR_interp = sel.FIR;
 filter_input.HB_interp = HB_interp;
 filter_input.HB1 = sel.HB1;
 filter_input.HB2 = sel.HB2;
@@ -978,7 +977,7 @@ else
     handles.tx.int = sel.FIR;
     handles.tx.gain = filter_result.tohw.Gain;
 end
-handles.int = FIR_interp;
+handles.int = sel.FIR;
 
 if (str2double(get(handles.target_delay, 'String'))) == 0
     set(handles.target_delay, 'String', num2str(filter_result.delay * 1e9, 4));
