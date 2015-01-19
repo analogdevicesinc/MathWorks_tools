@@ -935,6 +935,7 @@ set(gcf,'Pointer','watch');
 drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
+    filter_input.clkPLL = filter_input.converter_rate * filter_input.PLL_mult;
     filter_result = internal_designrxfilters9361_sinc(filter_input);
 
     handles.filters = filter_result.rxFilters;
@@ -952,6 +953,7 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.rx.DATA = value2Hz(handles, handles.freq_units, str2double(get(handles.data_clk, 'String')));
 else
     filter_input.DAC_mult = get(handles.DAC_by2, 'Value');
+    filter_input.clkPLL = filter_input.converter_rate * filter_input.DAC_mult * filter_input.PLL_mult;
     filter_result = internal_designtxfilters9361_sinc(filter_input);
 
     handles.filters = filter_result.txFilters;

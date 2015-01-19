@@ -48,6 +48,7 @@
 % int_FIR    = Use AD9361 FIR on (1)/off (0)
 % wnom       = analog cutoff frequency (in Hz)
 % converter_rate = converter (DAC/ADC) sampling rate (in Hz)
+% clkPLL     = PLL frequency (in HZ)
 %
 % Outputs (structure containing the following fields)
 % ===============================================
@@ -60,13 +61,11 @@
 
 function result = internal_designtxfilters9361_sinc(input)
 
-clkPLL = input.converter_rate * input.DAC_mult * input.PLL_mult;
-
 if ~input.wnom
     input.wnom = 1.6*input.Fpass;
-    div = ceil((clkPLL/input.wnom)*(log(2)/(2*pi)));
+    div = ceil((input.clkPLL/input.wnom)*(log(2)/(2*pi)));
     caldiv = min(max(div,3),511);
-    wc = (clkPLL/caldiv)*(log(2)/(2*pi));
+    wc = (input.clkPLL/caldiv)*(log(2)/(2*pi));
 else
     wc = input.wnom;
 end
@@ -422,7 +421,7 @@ tohw.TF = input.data_rate * input.FIR_interp;
 tohw.T1 = tohw.TF * input.HB1;
 tohw.T2 = tohw.T1 * input.HB2;
 tohw.DAC = input.converter_rate;
-tohw.BBPLL = clkPLL;
+tohw.BBPLL = input.clkPLL;
 tohw.Coefficient = tfirtaps;
 tohw.CoefficientSize = length(h);
 tohw.Interp = input.FIR_interp;
