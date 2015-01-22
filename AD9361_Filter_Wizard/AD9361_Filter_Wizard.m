@@ -916,7 +916,7 @@ pll_rate = get_pll_rate(handles);
 % used to reproduce the divider value (caldiv) we expect on the driver
 RFbw_hw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/rounded_factor));
 % full precision RFbw
-RFbw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
+RFbw = get_rfbw(handles);
 
 % filter design input structure
 filter_input.Fstop = sel.Fstop;
@@ -1185,7 +1185,7 @@ end
 
 set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fpass)));
 set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fstop)));
-set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, round(sel.Fpass * 2))));
+set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, get_rfbw(handles))));
 
 set(handles.Fcenter, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fcenter)));
 
@@ -2095,6 +2095,20 @@ set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.freq_units, wc)
 
 function pll = get_pll_rate(handles)
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+
+function rfbw = get_rfbw(handles)
+% determine a channel's complex bandwidth related to the current divider value
+if (get(handles.filter_type, 'Value') == 1)
+    % Rx
+    channel_factor = 1.4;
+else
+    % Tx
+    channel_factor = 1.6;
+end
+
+sel = get_current_rxtx(handles);
+pll_rate = get_pll_rate(handles);
+rfbw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
 
 function Fcutoff_Callback(hObject, eventdata, handles)
 % hObject    handle to Fcutoff (see GCBO)
