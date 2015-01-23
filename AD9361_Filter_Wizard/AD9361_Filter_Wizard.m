@@ -898,15 +898,11 @@ HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
 converter_rate = data_rate * sel.FIR * HB_interp;
 
 if (get(handles.filter_type, 'Value') == 1)
-    % rx
-    channel_factor = 1.4;
-
+    % Rx
     % (1.4 * 2 * pi)/log(2) rounded to be the same as what the driver uses
     rounded_factor = 12.6906;
 else
-    % tx
-    channel_factor = 1.6;
-
+    % Tx
     % (1.6 * 2 * pi)/log(2) rounded to be the same as what the driver uses
     rounded_factor = 14.5036;
 end
@@ -914,7 +910,7 @@ end
 % determine the RF bandwidth from the current caldiv
 pll_rate = get_pll_rate(handles);
 % used to reproduce the divider value (caldiv) we expect on the driver
-RFbw_hw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/rounded_factor));
+RFbw_hw = uint32(fix(((pll_rate - 1)/(sel.caldiv - 1))*(2/rounded_factor)));
 % full precision RFbw
 RFbw = get_rfbw(handles);
 
