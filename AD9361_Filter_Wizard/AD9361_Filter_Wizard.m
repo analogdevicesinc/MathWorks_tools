@@ -784,16 +784,13 @@ function FVTool_deeper_Callback(hObject, eventdata, handles)
 sel = get_current_rxtx(handles);
 
 data_rate = sel.Rdata;
-converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
+converter_rate = get_converter_rate(handles);
 fstop = sel.Fstop;
 fpass = sel.Fpass;
-
 
 N = 500;
 Fs = converter_rate; % sampling frequency
 F = linspace(0,converter_rate/2,2048);
-
-
 
 if (get(handles.filter_type, 'Value') == 1)
     Hmiddle = handles.filters.Stage(1);
@@ -815,7 +812,6 @@ Hall = cascade(handles.grpdelaycal,Hcon);
 
 apass = str2double(get(handles.Apass, 'String'));
 astop = str2double(get(handles.Astop, 'String'));
-
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
@@ -892,10 +888,7 @@ end
 set(handles.design_filter, 'Enable', 'off');
 
 sel = get_current_rxtx(handles);
-
-data_rate = sel.Rdata;
-HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
-converter_rate = data_rate * sel.FIR * HB_interp;
+converter_rate = get_converter_rate(handles);
 
 if (get(handles.filter_type, 'Value') == 1)
     % Rx
@@ -922,7 +915,7 @@ filter_input.dBstop = sel.dBstop;
 filter_input.dBstop_FIR = sel.FIRdBmin;
 filter_input.data_rate = sel.Rdata;
 filter_input.FIR_interp = sel.FIR;
-filter_input.HB_interp = HB_interp;
+filter_input.HB_interp = sel.HB1 * sel.HB2 * sel.HB3;
 filter_input.HB1 = sel.HB1;
 filter_input.HB2 = sel.HB2;
 filter_input.HB3 = sel.HB3;
@@ -1041,11 +1034,11 @@ if get(handles.filter_type, 'Value') == 1
 else
     channel = 'Tx';
 end
-handles.active_plot = plot(handles.magnitude_plot, linspace(0,data_rate/2,G),mag2db(...
-    abs(analogresp(channel,linspace(0,data_rate/2,G),converter_rate,filter_result.b1,filter_result.a1,filter_result.b2,filter_result.a2).*freqz(...
-    handles.filters,linspace(0,data_rate/2,G),converter_rate))));
+handles.active_plot = plot(handles.magnitude_plot, linspace(0,sel.Rdata/2,G),mag2db(...
+    abs(analogresp(channel,linspace(0,sel.Rdata/2,G),converter_rate,filter_result.b1,filter_result.a1,filter_result.b2,filter_result.a2).*freqz(...
+    handles.filters,linspace(0,sel.Rdata/2,G),converter_rate))));
 
-xlim([0 data_rate/2]);
+xlim([0 sel.Rdata/2]);
 ylim([-100 10]);
 zoom_axis(gca);
 xlabel('Frequency (MHz)');
@@ -1056,7 +1049,7 @@ line([sel.Fpass sel.Fpass], [-(sel.dBripple/2) -100], 'Color', 'Red');
 line([0 sel.Fpass], [-(sel.dBripple/2) -(sel.dBripple/2)], 'Color', 'Red');
 line([0 sel.Fstop], [sel.dBripple/2 sel.dBripple/2], 'Color', 'Red');
 line([sel.Fstop sel.Fstop], [sel.dBripple/2 -sel.dBstop], 'Color', 'Red');
-line([sel.Fstop data_rate], [-sel.dBstop -sel.dBstop], 'Color', 'Red');
+line([sel.Fstop sel.Rdata], [-sel.dBstop -sel.dBstop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
@@ -2092,6 +2085,16 @@ function pll = get_pll_rate(handles)
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
     handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 
+function converter_rate = get_converter_rate(handles)
+sel = get_current_rxtx(handles);
+if (get(handles.filter_type, 'Value') == 1)
+    % Rx
+    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
+else
+    % Tx
+    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
+end
+
 function rfbw = get_rfbw(handles)
 % determine a channel's complex bandwidth related to the current divider value
 if (get(handles.filter_type, 'Value') == 1)
@@ -2177,7 +2180,7 @@ function FVTool_datarate_Callback(hObject, eventdata, handles)
 sel = get_current_rxtx(handles);
 
 data_rate = sel.Rdata;
-converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
+converter_rate = get_converter_rate(handles);
 fstop = sel.Fstop;
 fpass = sel.Fpass;
 apass = sel.dBripple;
