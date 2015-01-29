@@ -2061,7 +2061,7 @@ else
 end
 
 div = ceil((pll/wnom)*(log(2)/(2*pi)));
-caldiv = min(max(div,3),511);
+caldiv = min(max(div,1),511);
 
 function caldiv = get_caldiv(handles)
 if (get(handles.filter_type, 'Value') == 1)
@@ -2082,7 +2082,7 @@ if Fcutoff
 end
 
 div = ceil((pll/wnom)*(log(2)/(2*pi)));
-caldiv = min(max(div,3),511);
+caldiv = min(max(div,1),511);
 
 function set_caldiv(handles, value)
 wc = (get_pll_rate(handles) / value)*(log(2)/(2*pi));
