@@ -601,7 +601,7 @@ fprintf(fid, 'BWRX %d\r\n', handles.rx.BW);
 fclose(fid);
 
 % concat and transform Rx and Tx coefficient matrices for outputting
-output = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
+output = flip(rot90(vertcat(handles.tfirtaps, handles.rfirtaps)));
 dlmwrite(newpath, output, '-append', 'newline', 'pc');
 
 
@@ -619,7 +619,7 @@ fir_filter_str = strcat(fir_filter_str, sprintf('\nBWTX %d', handles.tx.BW));
 fir_filter_str = strcat(fir_filter_str, sprintf('\nBWRX %d', handles.rx.BW));
 
 % concat and transform Rx and Tx coefficient matrices for outputting
-coefficients = flip(rot90(vertcat(handles.rfirtaps, handles.tfirtaps)));
+coefficients = flip(rot90(vertcat(handles.tfirtaps, handles.rfirtaps)));
 
 for i = 1:length(coefficients)
     fir_filter_str = strcat(fir_filter_str, sprintf('\n%d,%d', coefficients(i,:)));
