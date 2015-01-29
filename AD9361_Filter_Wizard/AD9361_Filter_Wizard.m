@@ -890,22 +890,41 @@ set(handles.design_filter, 'Enable', 'off');
 sel = get_current_rxtx(handles);
 converter_rate = get_converter_rate(handles);
 
-if (get(handles.filter_type, 'Value') == 1)
-    % Rx
-    % (1.4 * 2 * pi)/log(2) rounded to be the same as what the driver uses
-    rounded_factor = 12.6906;
-else
-    % Tx
-    % (1.6 * 2 * pi)/log(2) rounded to be the same as what the driver uses
-    rounded_factor = 14.5036;
-end
-
 % determine the RF bandwidth from the current caldiv
 pll_rate = get_pll_rate(handles);
-% used to reproduce the divider value (caldiv) we expect on the driver
-RFbw_hw = uint32(fix(((pll_rate - 1)/(sel.caldiv - 1))*(2/rounded_factor)));
-% full precision RFbw
-RFbw = get_rfbw(handles);
+caldiv = sel.caldiv;
+RFbw = get_rfbw(handles, caldiv);
+RFbw_hw = get_rfbw_hw(handles, caldiv);
+
+% min/max possible values for the RF bandwidth (2x baseband bandwidth) from the
+% reference manual (values are in Hz since RFbw is in Hz)
+if (get(handles.filter_type, 'Value') == 1)
+    % Rx: 0.4 MHz < rfbw < 56 MHz
+    min_rfbw = 400000;
+    max_rfbw = 56000000;
+else
+    % Tx: 1.25 MHz < rfbw < 40 MHz
+    min_rfbw = 1250000;
+    max_rfbw = 40000000;
+end
+
+% If the RF bandwidth is outside the range of acceptable values we modify
+% the divider value until it falls into an acceptable range.
+while (RFbw < min_rfbw) || (RFbw > max_rfbw)
+    if (RFbw < min_rfbw)
+        caldiv = caldiv - 1;
+    else
+        caldiv = caldiv + 1;
+    end
+
+    if (caldiv < 1) || (caldiv > 511)
+        msgbox(sprintf('Calibration divider out of bounds (1 - 511): %i', caldiv), 'Error', 'error');
+        return;
+    end
+
+    RFbw = get_rfbw(handles, caldiv);
+    RFbw_hw = get_rfbw_hw(handles, caldiv);
+end
 
 % filter design input structure
 filter_input.Fstop = sel.Fstop;
@@ -1174,7 +1193,7 @@ end
 
 set(handles.Fpass, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fpass)));
 set(handles.Fstop, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fstop)));
-set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, get_rfbw(handles))));
+set(handles.RFbw, 'String', num2str(Hz2value(handles, handles.freq_units, get_rfbw(handles, sel.caldiv))));
 
 set(handles.Fcenter, 'String', num2str(Hz2value(handles, handles.freq_units, sel.Fcenter)));
 
@@ -2095,19 +2114,39 @@ else
     converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
 end
 
-function rfbw = get_rfbw(handles)
-% determine a channel's complex bandwidth related to the current divider value
+% calculate a channel's complex bandwidth related to the calibration divider value
+function rfbw = calculate_rfbw(handles, caldiv, hw)
 if (get(handles.filter_type, 'Value') == 1)
     % Rx
     channel_factor = 1.4;
+    % (1.4 * 2 * pi)/log(2) rounded to the same precision the driver uses
+    rounded_factor = 12.6906;
 else
     % Tx
     channel_factor = 1.6;
+    % (1.6 * 2 * pi)/log(2) rounded to the same precision the driver uses
+    rounded_factor = 14.5036;
 end
 
 sel = get_current_rxtx(handles);
 pll_rate = get_pll_rate(handles);
-rfbw = round(((pll_rate - 1)/(sel.caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
+
+if hw
+    % used to reproduce the divider value (caldiv) we expect on the driver
+    rfbw = uint32(fix(((pll_rate - 1)/(caldiv - 1))*(2/rounded_factor)));
+else
+    % full precision RFbw
+    rfbw = round(((pll_rate - 1)/(caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
+end
+
+% calculate a channel's complex bandwidth that matches 32 bit integer precision
+% on the driver
+function rfbw_hw = get_rfbw_hw(handles, caldiv)
+    rfbw_hw = calculate_rfbw(handles, caldiv, true);
+
+% calculate a channel's full precision complex bandwidth
+function rfbw = get_rfbw(handles, caldiv)
+    rfbw = calculate_rfbw(handles, caldiv, false);
 
 function Fcutoff_Callback(hObject, eventdata, handles)
 % hObject    handle to Fcutoff (see GCBO)
