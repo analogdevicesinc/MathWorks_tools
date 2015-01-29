@@ -899,11 +899,11 @@ RFbw_hw = get_rfbw_hw(handles, caldiv);
 % min/max possible values for the RF bandwidth (2x baseband bandwidth) from the
 % reference manual (values are in Hz since RFbw is in Hz)
 if (get(handles.filter_type, 'Value') == 1)
-    % Rx: 0.4 MHz < rfbw < 56 MHz
+    % Rx: 0.4 MHz <= rfbw <= 56 MHz
     min_rfbw = 400000;
     max_rfbw = 56000000;
 else
-    % Tx: 1.25 MHz < rfbw < 40 MHz
+    % Tx: 1.25 MHz <= rfbw <= 40 MHz
     min_rfbw = 1250000;
     max_rfbw = 40000000;
 end
