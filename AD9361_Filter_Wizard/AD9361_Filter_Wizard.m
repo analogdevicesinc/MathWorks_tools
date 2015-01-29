@@ -2088,15 +2088,9 @@ function set_caldiv(handles, value)
 wc = (get_pll_rate(handles) / value)*(log(2)/(2*pi));
 set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.freq_units, wc)));
 
-
 function pll = get_pll_rate(handles)
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
     handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
-
-if (get(handles.filter_type, 'Value') ~= 1)
-    % Tx
-    pll = pll * handles.input_tx.DAC_div;
-end
 
 function rfbw = get_rfbw(handles)
 % determine a channel's complex bandwidth related to the current divider value
