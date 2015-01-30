@@ -1072,8 +1072,8 @@ line([sel.Fstop sel.Rdata], [-sel.dBstop -sel.dBstop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
-[gd,~] = grpdelay(handles.grpdelaycal,1024);
-I = round(sel.Fpass/(converter_rate/2)*1024);
+[gd,~] = grpdelay(handles.grpdelaycal,2048);
+I = round(sel.Fpass/(converter_rate/2)*2048);
 gd2 = gd(1:I).*(1/converter_rate);
 gd_diff = max(gd2)-min(gd2);
 
@@ -2266,8 +2266,8 @@ legend(hfvt4, 'FIR Filter');
 [h,~] = freqz(Hmd,1024);
 maxmag = max(20*log10(abs(h)));
 
-[gd,~] = grpdelay(handles.grpdelaycal,1024);
-I = round(fpass/(converter_rate/2)*1024);
+[gd,~] = grpdelay(handles.grpdelaycal,2048);
+I = round(fpass/(converter_rate/2)*2048);
 gd2 = gd(1:I).*(1/converter_rate);
 gd_diff = max(gd2)-min(gd2);
 str2 = sprintf('Delay Variance = %g ns', gd_diff*1e9);
