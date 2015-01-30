@@ -2108,10 +2108,10 @@ function converter_rate = get_converter_rate(handles)
 sel = get_current_rxtx(handles);
 if (get(handles.filter_type, 'Value') == 1)
     % Rx
-    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
+    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3* sel.DAC_div;
 else
     % Tx
-    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
+    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
 end
 
 % calculate a channel's complex bandwidth related to the calibration divider value
