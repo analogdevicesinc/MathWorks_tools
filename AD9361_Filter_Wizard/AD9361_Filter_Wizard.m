@@ -2057,7 +2057,7 @@ data_clk = Hz2value(handles, handles.freq_units, data_clk);
 set(handles.data_clk, 'String', num2str(data_clk, 10));
 
 function data_clk = get_data_rate(handles)
-sel = get_current_rxtx(handles)
+sel = get_current_rxtx(handles);
 data_clk = sel.Rdata;
 
 function caldiv = default_caldiv(handles)
@@ -2108,7 +2108,7 @@ function converter_rate = get_converter_rate(handles)
 sel = get_current_rxtx(handles);
 if (get(handles.filter_type, 'Value') == 1)
     % Rx
-    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3* sel.DAC_div;
+    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
 else
     % Tx
     converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
