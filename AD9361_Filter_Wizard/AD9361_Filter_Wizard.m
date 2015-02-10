@@ -1344,7 +1344,7 @@ set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
     handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 
-if (pll < handles.MAX_BBPLL_FREQ) && (pll > handles.MIN_BBPLL_FREQ)
+if (pll <= handles.MAX_BBPLL_FREQ) && (pll >= handles.MIN_BBPLL_FREQ)
     set(handles.Pll_rate, 'ForegroundColor', [0 0 0]);
 else
     set(handles.Pll_rate, 'ForegroundColor', [1 0 0]);
