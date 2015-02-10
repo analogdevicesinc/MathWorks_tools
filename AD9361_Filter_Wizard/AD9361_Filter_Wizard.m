@@ -892,7 +892,11 @@ converter_rate = get_converter_rate(handles);
 
 % determine the RF bandwidth from the current caldiv
 pll_rate = get_pll_rate(handles);
-caldiv = sel.caldiv;
+if get(handles.Advanced_options, 'Value') == 0
+    caldiv = default_caldiv(handles);
+else
+    caldiv = get_caldiv(handles);
+end
 RFbw = get_rfbw(handles, caldiv);
 RFbw_hw = get_rfbw_hw(handles, caldiv);
 
