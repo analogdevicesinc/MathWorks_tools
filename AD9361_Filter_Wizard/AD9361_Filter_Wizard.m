@@ -161,13 +161,13 @@ for i = 1:2:length(varargin)
         set(handles.save2workspace, 'String', varargin{i + 1});
     elseif strcmpi(varargin{i}, 'DefaultRxVals')
         % 'DefaultRxVals'     'structure (in Hz)'
-        input = varargin{i +1};
+        input = varargin{i + 1};
         input.RxTx = 'Rx';
-        handles.input_rx  = cook_input(input);
+        handles.input_rx = cook_input(input);
         new = 1;
     elseif strcmpi(varargin{i}, 'DefaultTxVals')
         % 'DefaultTxVals'     'structure (in Hz)'
-        input = varargin{i +1};
+        input = varargin{i + 1};
         input.RxTx = 'Tx';
         handles.input_tx = cook_input(input);
         new = 1;

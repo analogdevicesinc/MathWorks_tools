@@ -166,12 +166,12 @@ if strcmp(input.Type, 'Lowpass')
         % works out to 2560000. Actual number is 2250000
         input.Fpass = input.Rdata / 3;
     end
-    
+
     if ~isfield(input, 'Fstop')
         % Asssume that Fstop is 1.25 Fpass, again close to LTE5
         input.Fstop = input.Fpass * 1.25;
     end
-    
+
     if ~isfield(input, 'Fcenter')
         input.Fcenter = 0;
     end
@@ -179,9 +179,8 @@ elseif strcmp(input.Type, 'Bandpass')
     error('Bandpass is not done yet');
 end
 
-
-%   struct.dBripple = Passband ripple (Apass) in dB (peak to peak)
-%   struct.dBstop   = Cascaded (FIR + HB + Analog) stop band attenuation (in dB)
+% struct.dBripple = Passband ripple (Apass) in dB (peak to peak)
+% struct.dBstop   = Cascaded (FIR + HB + Analog) stop band attenuation (in dB)
 if ~isfield(input, 'dBripple')
     input.dBripple = .5;
 end
@@ -189,7 +188,6 @@ end
 if ~isfield(input, 'dBstop')
     input.dBstop = 80;
 end
-
 
 % Assume no phase equalization
 if ~isfield(input, 'phEQ')
