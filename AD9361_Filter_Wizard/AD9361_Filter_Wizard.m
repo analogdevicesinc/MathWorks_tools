@@ -182,6 +182,27 @@ for i = 1:2:length(varargin)
     end
 end
 
+% sanity check the DAC divider value and alter it if necessary, note that if
+% it's altered then the PLL and calibration dividers must be updated as well
+if isfield(handles, 'input_tx') && isfield(handles, 'input_rx')
+    ADC_rate = handles.input_rx.Rdata * handles.input_rx.FIR * ...
+        handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3;
+    DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
+        handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
+    DAC_div = ADC_rate / DAC_rate;
+    if ~(handles.input_tx.DAC_div == DAC_div)
+        handles.input_tx.DAC_div = DAC_div;
+        handles.input_tx.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], ...
+            handles.MAX_BBPLL_FREQ, handles.MIN_BBPLL_FREQ, ...
+            handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
+            handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div);
+        filter_type = get(handles.filter_type, 'Value');
+        set(handles.filter_type, 'Value', 0);
+        handles.input_tx.caldiv = default_caldiv(handles);
+        set(handles.filter_type, 'Value', filter_type);
+    end
+end
+
 if isfield(handles, 'input_tx') || isfield(handles, 'input_rx')
     set(handles.store_filter, 'Visible', 'off');
     guidata(hObject, handles);

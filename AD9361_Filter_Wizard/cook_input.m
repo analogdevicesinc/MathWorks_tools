@@ -108,7 +108,6 @@ end
 
 if strcmp(input.RxTx, 'Rx')
     max_HB = max.MAX_RX;
-    input.DAC_div = 1;
 else
     max_HB = max.MAX_TX;
 end
@@ -149,7 +148,9 @@ if ~isfield(input, 'FIR')
         input.HB1 = fastest_FIR([2 1], max_HB.HB1, 0, input.Rdata * input.FIR);
         input.HB2 = fastest_FIR([2 1], max_HB.HB2, 0, input.Rdata * input.FIR * input.HB1);
         input.HB3 = fastest_FIR([3 2 1], max_HB.HB3, 0, input.Rdata * input.FIR * input.HB1 * input.HB2);
-        if strcmp(input.RxTx, 'Tx')
+        if strcmp(input.RxTx, 'Rx')
+            input.DAC_div = 1;
+        else
             input.DAC_div = 2;
         end
         input.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], max.MAX_BBPLL_FREQ, max.MIN_BBPLL_FREQ, input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * input.DAC_div);
@@ -205,14 +206,6 @@ if ~isfield(input, 'FIRdBmin')
 end
 
 cooked = input;
-
-function rate = fastest_FIR(rates, max, min, mult)
-for i = 1:length(rates)
-    if max >= mult * rates(i) && min <= mult * rates(i)
-        break;
-    end
-end
-rate = rates(i);
 
 function caldiv = default_caldiv(input)
 if strcmp(input.RxTx, 'Rx')
