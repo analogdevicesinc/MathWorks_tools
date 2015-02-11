@@ -786,7 +786,7 @@ function FVTool_deeper_Callback(hObject, eventdata, handles)
 sel = get_current_rxtx(handles);
 
 data_rate = sel.Rdata;
-converter_rate = get_converter_rate(handles);
+converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
 fstop = sel.Fstop;
 fpass = sel.Fpass;
 
@@ -890,7 +890,7 @@ end
 set(handles.design_filter, 'Enable', 'off');
 
 sel = get_current_rxtx(handles);
-converter_rate = get_converter_rate(handles);
+converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
 
 % determine the RF bandwidth from the current caldiv
 pll_rate = get_pll_rate(handles);
@@ -2106,16 +2106,6 @@ function pll = get_pll_rate(handles)
 pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
     handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 
-function converter_rate = get_converter_rate(handles)
-sel = get_current_rxtx(handles);
-if (get(handles.filter_type, 'Value') == 1)
-    % Rx
-    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3 * sel.DAC_div;
-else
-    % Tx
-    converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
-end
-
 % calculate a channel's complex bandwidth related to the calibration divider value
 function rfbw = calculate_rfbw(handles, caldiv, hw)
 if (get(handles.filter_type, 'Value') == 1)
@@ -2221,7 +2211,7 @@ function FVTool_datarate_Callback(hObject, eventdata, handles)
 sel = get_current_rxtx(handles);
 
 data_rate = sel.Rdata;
-converter_rate = get_converter_rate(handles);
+converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
 fstop = sel.Fstop;
 fpass = sel.Fpass;
 apass = sel.dBripple;
