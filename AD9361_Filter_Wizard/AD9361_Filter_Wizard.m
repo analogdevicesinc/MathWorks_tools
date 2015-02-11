@@ -893,7 +893,6 @@ sel = get_current_rxtx(handles);
 converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
 
 % determine the RF bandwidth from the current caldiv
-pll_rate = get_pll_rate(handles);
 caldiv = sel.caldiv;
 RFbw = get_rfbw(handles, caldiv);
 RFbw_hw = get_rfbw_hw(handles, caldiv);
@@ -1322,7 +1321,7 @@ set(handles.DAC_by2, 'Value', handles.input_tx.DAC_div);
 set(handles.ADC_clk, 'String', num2str(handles.input_rx.Rdata / 1e6 * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3));
 set(handles.DAC_clk, 'String', num2str(handles.input_tx.Rdata / 1e6 * handles.input_tx.FIR * handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3));
 
-% Make sure they are the same...
+% Make sure Rx and Tx PLL rates are equal
 if (handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3) == ...
         (handles.input_tx.FIR * handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div)
     set(handles.ADC_clk, 'ForegroundColor', [0 0 0]);
@@ -1337,10 +1336,9 @@ else
     OK = 0;
 end
 
-% Check the PLL, based on rx values...
-set(handles.Pll_rate, 'String', num2str(handles.input_rx.Rdata / 1e6 * ...
-    handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult));
-pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+% Make sure the PLL rate is within the allowed bounds
+pll = get_pll_rate(handles);
+set(handles.Pll_rate, 'String', num2str(pll / 1e6));
 
 if (pll <= handles.MAX_BBPLL_FREQ) && (pll >= handles.MIN_BBPLL_FREQ)
     set(handles.Pll_rate, 'ForegroundColor', [0 0 0]);
@@ -2065,28 +2063,19 @@ data_clk = sel.Rdata;
 function caldiv = default_caldiv(handles)
 if (get(handles.filter_type, 'Value') == 1)
     wnom = 1.4 * handles.input_rx.Fstop;  % Rx
-    pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
-        handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 else
     wnom = 1.6 * handles.input_tx.Fstop;  % Tx
-    pll = handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
-        handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
-        handles.input_tx.PLL_mult;
 end
 
+pll = get_pll_rate(handles);
 div = ceil((pll/wnom)*(log(2)/(2*pi)));
 caldiv = min(max(div,1),511);
 
 function caldiv = get_caldiv(handles)
 if (get(handles.filter_type, 'Value') == 1)
     wnom = 1.4 * handles.input_rx.Fstop;  % Rx
-    pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
-        handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
 else
     wnom = 1.6 * handles.input_rx.Fstop;  % Tx
-    pll = handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
-        handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
-        handles.input_tx.PLL_mult;
 end
 
 Fcutoff = str2double(get(handles.Fcutoff, 'String'));
@@ -2095,6 +2084,7 @@ if Fcutoff
     wnom = value2Hz(handles, handles.freq_units, Fcutoff);
 end
 
+pll = get_pll_rate(handles);
 div = ceil((pll/wnom)*(log(2)/(2*pi)));
 caldiv = min(max(div,1),511);
 
@@ -2103,8 +2093,16 @@ wc = (get_pll_rate(handles) / value)*(log(2)/(2*pi));
 set(handles.Fcutoff, 'String', num2str(Hz2value(handles, handles.freq_units, wc)));
 
 function pll = get_pll_rate(handles)
-pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
-    handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+if (get(handles.filter_type, 'Value') == 1)
+    % Rx
+    pll = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
+        handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+else
+    % Tx
+    pll = handles.input_tx.Rdata * handles.input_tx.FIR * handles.input_tx.HB1 * ...
+        handles.input_tx.HB2 * handles.input_tx.HB3 * handles.input_tx.DAC_div * ...
+        handles.input_tx.PLL_mult;
+end
 
 % calculate a channel's complex bandwidth related to the calibration divider value
 function rfbw = calculate_rfbw(handles, caldiv, hw)
