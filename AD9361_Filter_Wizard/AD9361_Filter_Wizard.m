@@ -161,13 +161,15 @@ for i = 1:2:length(varargin)
         set(handles.save2workspace, 'String', varargin{i + 1});
     elseif strcmpi(varargin{i}, 'DefaultRxVals')
         % 'DefaultRxVals'     'structure (in Hz)'
-        handles.input_rx  = cook_input(varargin{i +1});
-        handles.input_rx.RxTx = 'Rx';
+        input = varargin{i +1};
+        input.RxTx = 'Rx';
+        handles.input_rx  = cook_input(input);
         new = 1;
     elseif strcmpi(varargin{i}, 'DefaultTxVals')
         % 'DefaultTxVals'     'structure (in Hz)'
-        handles.input_tx = cook_input(varargin{i +1});
-        handles.input_tx.RxTx = 'Tx';
+        input = varargin{i +1};
+        input.RxTx = 'Tx';
+        handles.input_tx = cook_input(input);
         new = 1;
     elseif strcmpi(varargin{i}, 'ApplyCallback')
         handles.applycallback = str2func(varargin{i + 1});
