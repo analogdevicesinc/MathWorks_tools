@@ -196,7 +196,7 @@ if ~isfield(input, 'phEQ')
 end
 
 if ~isfield(input, 'caldiv')
-    input.caldiv = 0;
+    input.caldiv = default_caldiv(input);
 end
 
 %Assume no dBmin
@@ -213,3 +213,17 @@ for i = 1:length(rates)
     end
 end
 rate = rates(i);
+
+function caldiv = default_caldiv(input)
+if strcmp(input.RxTx, 'Rx')
+    wnom = 1.4 * input.Fstop; % Rx
+    pll = input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * ...
+        input.PLL_mult;
+else
+    wnom = 1.6 * input.Fstop; % Tx
+    pll = input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * ...
+        input.DAC_div * input.PLL_mult;
+end
+
+div = ceil((pll/wnom)*(log(2)/(2*pi)));
+caldiv = min(max(div,1),511);
