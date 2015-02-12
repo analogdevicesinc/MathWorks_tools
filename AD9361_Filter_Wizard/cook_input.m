@@ -205,14 +205,6 @@ end
 
 cooked = input;
 
-function rate = fastest_FIR(rates, max, min, mult)
-for i = 1:length(rates)
-    if max >= mult * rates(i) && min <= mult * rates(i)
-        break;
-    end
-end
-rate = rates(i);
-
 function caldiv = default_caldiv(input)
 if strcmp(input.RxTx, 'Rx')
     wnom = 1.4 * input.Fstop; % Rx
