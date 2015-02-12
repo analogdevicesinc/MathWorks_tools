@@ -182,8 +182,7 @@ for i = 1:2:length(varargin)
     end
 end
 
-% sanity check the DAC divider value and alter it if necessary, note that if
-% it's altered then the PLL and calibration dividers must be updated as well
+% sanity check the PLL rate and DAC divider values and alter them if necessary
 if isfield(handles, 'input_tx') && isfield(handles, 'input_rx')
     if (handles.input_rx.PLL_rate ~= handles.input_tx.PLL_rate)
         rhb1 = handles.input_tx.HB1;
@@ -204,7 +203,7 @@ if isfield(handles, 'input_tx') && isfield(handles, 'input_rx')
         DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
             handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
         DAC_div = ADC_rate / DAC_rate;
-        if ~(handles.input_tx.DAC_div == DAC_div)
+        if (handles.input_tx.DAC_div ~= DAC_div)
             if (DAC_div == 1 || DAC_div == 2)
                 handles.input_tx.DAC_div = DAC_div;
                 handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
@@ -232,7 +231,7 @@ if isfield(handles, 'input_tx') && isfield(handles, 'input_rx')
         DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
             handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
         DAC_div = ADC_rate / DAC_rate;
-        if ~(handles.input_tx.DAC_div == DAC_div)
+        if (handles.input_tx.DAC_div ~= DAC_div)
             if (DAC_div == 1 || DAC_div == 2)
                 handles.input_tx.DAC_div = DAC_div;
                 handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
