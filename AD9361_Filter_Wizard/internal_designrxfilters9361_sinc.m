@@ -130,7 +130,18 @@ if license('test','fixed_point_toolbox') && license('checkout','fixed_point_tool
     Hm4.CoeffWordLength = 16;
 end
 
-[hb1, hb2, hb3, dec3] = setrxhb9361(input.HB_interp);
+hb1 = input.HB1;
+hb2 = input.HB2;
+if input.HB3 == 2
+    hb3 = 2;
+    dec3 = 1;
+elseif input.HB3 == 3
+    hb3 = 1;
+    dec3 = 3;
+else
+    hb3=1;
+    dec3=1;
+end
 
 % convert the enables into a string
 enables = strrep(num2str([hb1 hb2 hb3 dec3]), ' ', '');
@@ -139,8 +150,14 @@ switch enables
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
+    case '1211' % Hb2
+        Filter1 = Hm1;
+    case '1121' % Hb3
+        Filter1 = Hm1;
     case '2211' % Hb2,Hb1
         Filter1 = cascade(Hm2,Hm1);
+    case '2121' % Hb3,Hb1
+        Filter1 = cascade(Hm3,Hm1);
     case '2221' % Hb3,Hb2,Hb1
         Filter1 = cascade(Hm3,Hm2,Hm1);
     case '1113' % Dec3
@@ -149,6 +166,10 @@ switch enables
         Filter1 = cascade(Hm4,Hm1);
     case '2213' % Dec3,Hb2,Hb1
         Filter1 = cascade(Hm4,Hm2,Hm1);
+    case '1221' % Hb3,Hb2
+        Filter1 = cascade(Hm3,Hm2);
+    case '1213' % Dec3,Hb2
+        Filter1 = cascade(Hm4,Hm2);
     otherwise
         error('ddcresponse:IllegalOption', 'At least one of the stages must be there.')
 end
@@ -378,8 +399,8 @@ webinar.enable_rx = enables;
 
 tohw.RXSAMP = input.data_rate;
 tohw.RF = input.data_rate * input.FIR_interp;
-tohw.R1 = tohw.RF * hb1;
-tohw.R2 = tohw.R1 * hb2;
+tohw.R1 = tohw.RF * input.HB1;
+tohw.R2 = tohw.R1 * input.HB2;
 tohw.ADC = input.converter_rate;
 tohw.BBPLL = input.clkPLL;
 tohw.Coefficient = rfirtaps;

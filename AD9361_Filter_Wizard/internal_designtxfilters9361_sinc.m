@@ -131,8 +131,18 @@ if license('test','fixed_point_toolbox') && license('checkout','fixed_point_tool
     Hm4.CoeffWordLength = 16;
 end
 
-% pick up the right combination
-[hb1, hb2, hb3, int3] = settxhb9361(input.HB_interp);
+hb1 = input.HB1;
+hb2 = input.HB2;
+if input.HB3 == 2
+    hb3 = 2;
+    int3 = 1;
+elseif input.HB3 == 3
+    hb3 = 1;
+    int3 = 3;
+else
+    hb3=1;
+    int3=1;
+end
 
 % convert the enables into a string
 enables = strrep(num2str([hb1 hb2 hb3 int3]), ' ', '');
@@ -141,8 +151,18 @@ switch enables
         Filter1 = 1;
     case '2111' % Hb1
         Filter1 = Hm1;
+    case '1211' % Hb2
+        Filter1 = Hm2;
+    case '1213' % Hb2,Int3
+        Filter1 = cascade(Hm2,Hm4);
+    case '1121' % Hb3
+        Filter1 = Hm3;
+    case '1221' % Hb2,Hb3
+        Filter1 = cascade(Hm2,Hm3);
     case '2211' % Hb1,Hb2
         Filter1 = cascade(Hm1,Hm2);
+    case '2121' % Hb1,Hb3
+        Filter1 = cascade(Hm1,Hm3);
     case '2221' % Hb1,Hb2,Hb3
         Filter1 = cascade(Hm1,Hm2,Hm3);
     case '1113' % Int3
@@ -411,8 +431,8 @@ webinar.enable_tx = enables;
 
 tohw.TXSAMP = input.data_rate;
 tohw.TF = input.data_rate * input.FIR_interp;
-tohw.T1 = tohw.TF * hb1;
-tohw.T2 = tohw.T1 * hb2;
+tohw.T1 = tohw.TF * input.HB1;
+tohw.T2 = tohw.T1 * input.HB2;
 tohw.DAC = input.converter_rate;
 tohw.BBPLL = input.clkPLL;
 tohw.Coefficient = tfirtaps;
