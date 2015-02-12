@@ -957,6 +957,7 @@ filter_input.HB3 = sel.HB3;
 filter_input.PLL_mult = sel.PLL_mult;
 filter_input.phEQ = sel.phEQ;
 filter_input.wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
+filter_input.caldiv = caldiv;
 filter_input.int_FIR = get(handles.Use_FIR, 'Value');
 filter_input.RFbw = RFbw;
 filter_input.converter_rate = converter_rate;
@@ -2811,7 +2812,6 @@ function Fcenter_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 % --- Executes during object creation, after setting all properties.
 function results_Apass_CreateFcn(hObject, eventdata, handles)

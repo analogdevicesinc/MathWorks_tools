@@ -61,10 +61,7 @@
 function result = internal_designrxfilters9361_sinc(input)
 
 if ~input.wnom
-    input.wnom = 1.4 * input.Fpass;
-    div = ceil((input.clkPLL/input.wnom)*(log(2)/(2*pi)));
-    caldiv = min(max(div,3),511);
-    wc = (input.clkPLL/caldiv)*(log(2)/(2*pi));
+    wc = (input.clkPLL/input.caldiv)*(log(2)/(2*pi));
 else
     wc = input.wnom;
 end

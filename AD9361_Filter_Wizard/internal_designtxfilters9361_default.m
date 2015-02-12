@@ -51,6 +51,7 @@ FIR_interp = a.FIR;
 HB_interp = a.HB1*a.HB2*a.HB3;
 DAC_mult = a.DAC_div;
 PLL_mult = a.PLL_mult;
+caldiv = a.caldiv;
 
 Fdac = Fin * FIR_interp * HB_interp;
 clkPLL = Fdac * DAC_mult * PLL_mult;
@@ -66,9 +67,6 @@ wnom = 0;
 
 % Define the analog filters
 if ~wnom
-    wnom = 1.6*Fpass;
-    div = ceil((clkPLL/wnom)*(log(2)/(2*pi)));
-    caldiv = min(max(div,3),511);
     wc = (clkPLL/caldiv)*(log(2)/(2*pi));
 else
     wc = wnom;

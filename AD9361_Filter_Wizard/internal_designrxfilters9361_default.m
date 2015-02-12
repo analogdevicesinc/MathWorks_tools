@@ -49,6 +49,7 @@ Fout = a.Rdata;
 FIR_decim = a.FIR;
 HB_decim = a.HB1*a.HB2*a.HB3;
 PLL_multr = a.PLL_mult;
+caldiv = a.caldiv;
 
 Fadc = Fout * FIR_decim * HB_decim;
 clkPLL = Fadc * PLL_multr;
@@ -64,9 +65,6 @@ wnom = 0;
 
 % Define the analog filters
 if ~wnom
-    wnom = 1.4*Fpass;
-    div = ceil((clkPLL/wnom)*(log(2)/(2*pi)));
-    caldiv = min(max(div,3),511);
     wc = (clkPLL/caldiv)*(log(2)/(2*pi));
 else
     wc = wnom;
