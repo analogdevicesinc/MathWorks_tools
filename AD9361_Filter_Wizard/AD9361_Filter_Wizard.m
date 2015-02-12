@@ -818,27 +818,24 @@ F = linspace(0,converter_rate/2,2048);
 if (get(handles.filter_type, 'Value') == 1)
     Hmiddle = handles.filters.Stage(1);
     Hmiddle = cascade(handles.analogfilter,Hmiddle);
-    Hmd = handles.filters.Stage(2);
     tmp = 'Rx';
     A = sinc(F/Fs).^3;
 else
     Hmiddle = handles.filters.Stage(2);
     Hmiddle = cascade(Hmiddle,handles.analogfilter);
-    Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
     A = sinc(F/Fs);
 end
 
 d = fdesign.arbmag('N,F,A',N,F,A,Fs);
 Hcon = design(d,'SystemObject',false);
-Hall = cascade(handles.grpdelaycal,Hcon);
 
 apass = str2double(get(handles.Apass, 'String'));
 astop = str2double(get(handles.Astop, 'String'));
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
-hfvt1 = fvtool(Hcon,handles.analogfilter,Hmiddle,Hall,...
+hfvt1 = fvtool(Hcon,handles.analogfilter,Hmiddle,handles.grpdelaycal,...
     'FrequencyRange','Specify freq. vector', ...
     'FrequencyVector',linspace(0,converter_rate/2,2048),'Fs',...
     converter_rate, ...
@@ -2247,7 +2244,6 @@ else
     Hmd = handles.filters.Stage(1);
     tmp = 'Tx';
 end
-Hmiddle = cascade(handles.analogfilter,Hmiddle);
 
 str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
 
