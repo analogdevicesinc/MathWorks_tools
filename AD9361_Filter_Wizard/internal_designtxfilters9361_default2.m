@@ -282,85 +282,47 @@ switch FIR_interp
 end
 
 N = min(16*floor(Fdac*DAC_mult/(2*Fin)),Nmax);
-tap_store = zeros(N/16,N);
-dBripple_actual_vecotr = zeros(N/16,1);
-dBstop_actual_vector = zeros(N/16,1);
-i = 1;
 
-while (1)
-    if int_FIR
-        d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
-    else
-        d = fdesign.arbmag('B,F,A,R');
-        d.NBands = 2;
-        d.B1Frequencies = F1;
-        d.B1Amplitudes = A1;
-        d.B1Ripple = db2mag(-dBstop);
-        d.B2Frequencies = F2;
-        d.B2Amplitudes = A2;
-        d.B2Ripple = db2mag(-dBstop);
-    end
-    Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
-    ccoef = Hd.Numerator;
-    M = length(ccoef);
-    
-    if phEQ ~= -1
-        sg = 0.5-grid(end:-1:1);
-        sr = imag(resp(end:-1:1));
-        sw = weight(end:-1:1);
-        F3 = sg(1:G/2-Gstop+1)*2;
-        F4 = sg(G/2-Gstop+2:end)*2;
-        A3 = sr(1:G/2-Gstop+1);
-        A4 = sr(G/2-Gstop+2:end);
-        W3 = sw(1:G/2-Gstop+1);
-        W4 = sw(G/2-Gstop+2:end);
-        if int_FIR
-            d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
-        else
-            d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
-        end
-        Hd2 = design(d2,'equiripple','B1Weights',W3,'B2Weights',W4,'SystemObject',false);
-        scoef = Hd2.Numerator;
-        for k = 1:length(scoef)
-            scoef(k) = -scoef(k)*(-1)^(k-1);
-        end
-    else
-        scoef = 0;
-    end
-    tap_store(i,1:M)=ccoef+scoef;
-    
-    Hmd = mfilt.firinterp(FIR_interp,tap_store(i,1:M));
-    if license('test','fixed_point_toolbox') &&  license('checkout','fixed_point_toolbox')
-        set(Hmd,'arithmetic','fixed');
-        Hmd.InputWordLength = 16;
-        Hmd.InputFracLength = 14;
-        Hmd.FilterInternals = 'SpecifyPrecision';
-        Hmd.OutputWordLength = 12;
-        Hmd.OutputFracLength = 10;
-        Hmd.CoeffWordLength = 16;
-    end
-    txFilters=cascade(Hmd,Filter1);
-    
-    % quantitative values about actual passband and stopband
-    rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),Fdac).*analogresp('Tx',omega(1:Gpass+1),Fdac,b1,a1,b2,a2));
-    rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),Fdac).*analogresp('Tx',omega(Gpass+2:end),Fdac,b1,a1,b2,a2));
-    dBripple_actual_vecotr(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
-    dBstop_actual_vector(i) = -mag2db(max(rg_stop));
-    
-    if int_FIR == 0
-        h = tap_store(1,1:M);
-        break
-    elseif dBripple_actual_vecotr(1) > dBripple || dBstop_actual_vector(1) < dBstop
-        h = tap_store(1,1:N);
-        break
-    elseif dBripple_actual_vecotr(i) > dBripple || dBstop_actual_vector(i) < dBstop
-        h = tap_store(i-1,1:N+16);
-        break
-    else
-        N = N-16;
-        i = i+1;
-    end
+if int_FIR
+    d = fdesign.arbmag('N,B,F,A',N-1,B,F1,A1,F2,A2);
+else
+    d = fdesign.arbmag('B,F,A,R');
+    d.NBands = 2;
+    d.B1Frequencies = F1;
+    d.B1Amplitudes = A1;
+    d.B1Ripple = db2mag(-dBstop);
+    d.B2Frequencies = F2;
+    d.B2Amplitudes = A2;
+    d.B2Ripple = db2mag(-dBstop);
 end
+Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
+ccoef = Hd.Numerator;
+M = length(ccoef);
+
+if phEQ ~= -1
+    sg = 0.5-grid(end:-1:1);
+    sr = imag(resp(end:-1:1));
+    sw = weight(end:-1:1);
+    F3 = sg(1:G/2-Gstop+1)*2;
+    F4 = sg(G/2-Gstop+2:end)*2;
+    A3 = sr(1:G/2-Gstop+1);
+    A4 = sr(G/2-Gstop+2:end);
+    W3 = sw(1:G/2-Gstop+1);
+    W4 = sw(G/2-Gstop+2:end);
+    if int_FIR
+        d2 = fdesign.arbmag('N,B,F,A',N-1,B,F3,A3,F4,A4);
+    else
+        d2 = fdesign.arbmag('N,B,F,A',M-1,B,F3,A3,F4,A4);
+    end
+    Hd2 = design(d2,'equiripple','B1Weights',W3,'B2Weights',W4,'SystemObject',false);
+    scoef = Hd2.Numerator;
+    for k = 1:length(scoef)
+        scoef(k) = -scoef(k)*(-1)^(k-1);
+    end
+else
+    scoef = 0;
+end
+h=ccoef+scoef;
 
 if int_FIR == 1 && FIR_interp == 2
     R = rem(length(h),32);
