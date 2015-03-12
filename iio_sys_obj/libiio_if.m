@@ -104,7 +104,7 @@ classdef libiio_if < handle
             if(pMajor.Value == 0 && pMinor.Value < 1)
                 err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
                 return;
-            elseif(pMajor.Value > 0 || pMinor.Value > 3)
+            elseif(pMajor.Value > 0 || pMinor.Value > 4)
                 err_msg = sprintf('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.\n\n%s\n', ...
                                   remote_version_str);
                 return;
