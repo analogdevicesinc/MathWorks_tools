@@ -516,13 +516,19 @@ dirty(hObject, handles);
 handles = guidata(hObject);
 
 data_rate = value2Hz(handles, handles.freq_units, str2double(get(hObject,'String')));
-handles.input_rx.Rdata = data_rate;
-handles.input_tx.Rdata = data_rate;
+input = {};
+input.Rdata = data_rate;
+
+input.RxTx = 'Rx';
+handles.input_rx = cook_input(input);
+input.RxTx = 'Tx';
+handles.input_tx = cook_input(input);
+handles = autoselect_rates(handles);
 
 data2gui(hObject, handles);
 handles = guidata(hObject);
 
-guidata(hObject, handles)
+guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
 function data_clk_CreateFcn(hObject, eventdata, handles)
