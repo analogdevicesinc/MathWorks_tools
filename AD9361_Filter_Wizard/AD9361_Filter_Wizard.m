@@ -182,67 +182,7 @@ for i = 1:2:length(varargin)
     end
 end
 
-% sanity check the PLL rate and DAC divider values and alter them if necessary
-if isfield(handles, 'input_tx') && isfield(handles, 'input_rx')
-    if (handles.input_rx.PLL_rate ~= handles.input_tx.PLL_rate)
-        rhb1 = handles.input_tx.HB1;
-        rhb2 = handles.input_tx.HB2;
-        if handles.input_tx.HB3 == 3
-            rhb3 = 3;
-        elseif handles.input_tx.HB3 == 2
-            rhb3 = 2;
-        else
-            rhb3 = 1;
-        end
-        handles.input_rx.HB1 = rhb1;
-        handles.input_rx.HB2 = rhb2;
-        handles.input_rx.HB3 = rhb3;
-
-        ADC_rate = handles.input_rx.Rdata * handles.input_rx.FIR * ...
-            handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3;
-        DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
-            handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
-        DAC_div = ADC_rate / DAC_rate;
-        if (handles.input_tx.DAC_div ~= DAC_div)
-            if (DAC_div == 1 || DAC_div == 2)
-                handles.input_tx.DAC_div = DAC_div;
-                handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
-                filter_type = get(handles.filter_type, 'Value');
-                set(handles.filter_type, 'Value', 0);
-                handles.input_tx.caldiv = default_caldiv(handles);
-                set(handles.filter_type, 'Value', filter_type);
-            end
-        end
-
-        handles.input_rx.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], handles.MAX_BBPLL_FREQ, handles.MIN_BBPLL_FREQ, ...
-            handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.DAC_div);
-        handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
-
-        if handles.input_rx.PLL_mult > 64
-            X = ['Date rate = ', num2str(tohwTx.TXSAMP), ' Hz. Tx BBPLL is too high for Rx to match.'];
-            disp(X);
-        end
-
-        handles.input_rx.PLL_rate = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
-            handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
-    else
-        ADC_rate = handles.input_rx.Rdata * handles.input_rx.FIR * ...
-            handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3;
-        DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
-            handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
-        DAC_div = ADC_rate / DAC_rate;
-        if (handles.input_tx.DAC_div ~= DAC_div)
-            if (DAC_div == 1 || DAC_div == 2)
-                handles.input_tx.DAC_div = DAC_div;
-                handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
-                filter_type = get(handles.filter_type, 'Value');
-                set(handles.filter_type, 'Value', 0);
-                handles.input_tx.caldiv = default_caldiv(handles);
-                set(handles.filter_type, 'Value', filter_type);
-            end
-        end
-    end
-end
+handles = autoselect_rates(handles);
 
 if isfield(handles, 'input_tx') || isfield(handles, 'input_rx')
     set(handles.store_filter, 'Visible', 'off');
@@ -496,6 +436,68 @@ end
 interpolate = char(interpolate(get(handles.converter2PLL, 'Value')));
 interpolate = str2double(interpolate(1:2));
 
+function handles = autoselect_rates(handles)
+% sanity check the PLL rate and DAC divider values and alter them if necessary
+if isfield(handles, 'input_tx') && isfield(handles, 'input_rx')
+    if (handles.input_rx.PLL_rate ~= handles.input_tx.PLL_rate)
+        hb1 = handles.input_tx.HB1;
+        hb2 = handles.input_tx.HB2;
+        if handles.input_tx.HB3 == 3
+            hb3 = 3;
+        elseif handles.input_tx.HB3 == 2
+            hb3 = 2;
+        else
+            hb3 = 1;
+        end
+        handles.input_rx.HB1 = hb1;
+        handles.input_rx.HB2 = hb2;
+        handles.input_rx.HB3 = hb3;
+
+        ADC_rate = handles.input_rx.Rdata * handles.input_rx.FIR * ...
+            handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3;
+        DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
+            handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
+        DAC_div = ADC_rate / DAC_rate;
+        if (handles.input_tx.DAC_div ~= DAC_div)
+            if (DAC_div == 1 || DAC_div == 2)
+                handles.input_tx.DAC_div = DAC_div;
+                handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
+                filter_type = get(handles.filter_type, 'Value');
+                set(handles.filter_type, 'Value', 0);
+                handles.input_tx.caldiv = default_caldiv(handles);
+                set(handles.filter_type, 'Value', filter_type);
+            end
+        end
+
+        handles.input_rx.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], handles.MAX_BBPLL_FREQ, handles.MIN_BBPLL_FREQ, ...
+            handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.DAC_div);
+        handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
+
+        if handles.input_rx.PLL_mult > 64
+            X = ['Date rate = ', num2str(tohwTx.TXSAMP), ' Hz. Tx BBPLL is too high for Rx to match.'];
+            disp(X);
+        end
+
+        handles.input_rx.PLL_rate = handles.input_rx.Rdata * handles.input_rx.FIR * handles.input_rx.HB1 * ...
+            handles.input_rx.HB2 * handles.input_rx.HB3 * handles.input_rx.PLL_mult;
+    else
+        ADC_rate = handles.input_rx.Rdata * handles.input_rx.FIR * ...
+            handles.input_rx.HB1 * handles.input_rx.HB2 * handles.input_rx.HB3;
+        DAC_rate = handles.input_tx.Rdata * handles.input_tx.FIR * ...
+            handles.input_tx.HB1 * handles.input_tx.HB2 * handles.input_tx.HB3;
+        DAC_div = ADC_rate / DAC_rate;
+        if (handles.input_tx.DAC_div ~= DAC_div)
+            if (DAC_div == 1 || DAC_div == 2)
+                handles.input_tx.DAC_div = DAC_div;
+                handles.input_tx.PLL_mult = handles.input_rx.PLL_mult;
+                filter_type = get(handles.filter_type, 'Value');
+                set(handles.filter_type, 'Value', 0);
+                handles.input_tx.caldiv = default_caldiv(handles);
+                set(handles.filter_type, 'Value', filter_type);
+            end
+        end
+    end
+end
 
 function sel = get_current_rxtx(handles)
 if (get(handles.filter_type, 'Value') == 1)
