@@ -1010,6 +1010,9 @@ drawnow;
 
 if (get(handles.filter_type, 'Value') == 1)
     filter_input.clkPLL = filter_input.converter_rate * filter_input.PLL_mult;
+    if (filter_input.phEQ == 0)
+        filter_input.phEQ = minimize_group_delay(handles, @internal_designrxfilters9361_sinc, filter_input);
+    end
     filter_result = internal_designrxfilters9361_sinc(filter_input);
 
     handles.filters = filter_result.rxFilters;
@@ -1028,6 +1031,9 @@ if (get(handles.filter_type, 'Value') == 1)
 else
     filter_input.DAC_mult = get(handles.DAC_by2, 'Value');
     filter_input.clkPLL = filter_input.converter_rate * filter_input.DAC_mult * filter_input.PLL_mult;
+    if (filter_input.phEQ == 0)
+        filter_input.phEQ = minimize_group_delay(handles, @internal_designtxfilters9361_sinc, filter_input);
+    end
     filter_result = internal_designtxfilters9361_sinc(filter_input);
 
     handles.filters = filter_result.txFilters;
@@ -1057,8 +1063,8 @@ else
 end
 handles.int = sel.FIR;
 
-if (str2double(get(handles.target_delay, 'String'))) == 0
-    set(handles.target_delay, 'String', num2str(filter_result.delay * 1e9, 4));
+if get(handles.phase_eq, 'Value')
+    set(handles.target_delay, 'String', num2str(filter_input.phEQ, 8));
 end
 
 handles.simrfmodel = filter_result.webinar;
@@ -1119,14 +1125,9 @@ line([sel.Fstop sel.Rdata], [-sel.dBstop -sel.dBstop], 'Color', 'Red');
 
 % add the quantitative values about actual passband, stopband, and group
 % delay
-[gd,~] = grpdelay(handles.grpdelaycal,2048);
-I = round(sel.Fpass/(converter_rate/2)*2048);
-gd2 = gd(1:I).*(1/converter_rate);
-gd_diff = max(gd2)-min(gd2);
-
 set(handles.results_Astop, 'String', [num2str(filter_result.dBstop_actual) ' dB ']);
 set(handles.results_Apass, 'String', [num2str(filter_result.dBripple_actual) ' dB ']);
-set(handles.results_group_delay, 'String', [num2str(gd_diff * 1e9, 3) ' ns ']);
+set(handles.results_group_delay, 'String', [num2str(filter_result.grpdelayvar * 1e9, 3) ' ns ']);
 
 if get(handles.filter_type, 'Value') == 1
     i = 2;
@@ -1141,6 +1142,80 @@ else
 end
 set(handles.design_filter, 'Visible', 'on');
 guidata(hObject, handles);
+
+function phEQ = minimize_group_delay(handles, design_filter, filter_input)
+set(handles.results_group_delay, 'Visible', 'on');
+filter_input.phEQ = 0;
+
+set(handles.target_delay, 'String', num2str(filter_input.phEQ, 4));
+drawnow;
+
+filter_result = design_filter(filter_input);
+nom = filter_result.delay * 1e9;
+
+results = [nom (filter_result.grpdelayvar * 1e9);];
+nom = round(nom);
+
+box on;
+axis on;
+axes(handles.magnitude_plot);
+cla(handles.magnitude_plot);
+plot(results(:,1), results(:,2) ,'r.');
+xlabel('Group Delay target (ns)');
+ylabel('Group Delay variance (ns)');
+drawnow;
+
+span = 20;
+initial_step = 1; % 1/(2^n)
+
+for j = initial_step:10
+    i = -(span * initial_step);
+    i_end = (span * initial_step);
+    while (i < i_end)
+        filter_input.phEQ = nom + i/(2^j);
+        i = i + 1;
+        idx = find(abs(results( :, 1 ) - filter_input.phEQ) < 1/(2^(1+j)));
+        if isempty(idx)
+            set(handles.target_delay, 'String', num2str(filter_input.phEQ, 8));
+            drawnow;
+
+            filter_result = design_filter(filter_input);
+            results = [results ; (filter_result.delay * 1e9) (filter_result.grpdelayvar * 1e9);];
+            results = sortrows(results, 1);
+
+            [minval, minidx] = min(results(:,2));
+            str = sprintf('%1.2f@%3.2f', minval, results(minidx));
+            set(handles.results_group_delay, 'String', str);
+            if (results(minidx) + span/(2^j) > nom + i_end/(2^j))
+                i_end = ceil(abs(results(minidx) + span/(2^j) - nom) * (2^j));
+            end
+
+            plot(results(:,1), results(:,2) ,'r.');
+            xlim([(nom - (span * initial_step)/(2^j)) (nom + (i_end/(2^j)))]);
+            xlabel('Group Delay target (ns)');
+            ylabel('Group Delay variance (ns)');
+            drawnow;
+        end
+    end
+
+    [minval, minidx] = min(results(:,2));
+    nom = round(results(minidx) * (2^j)) / (2^j);
+
+    if (j > initial_step )
+            sub = results(minidx - (span * initial_step):minidx + i_end,:);
+            [sub_minval, sub_minidx] = min(sub(:,2));
+            [sub_maxval, sub_maxidx] = max(sub(:,2));
+            x = std(sub(find(sub(:,2) <= (sub_maxval + sub_minval)/2),2));
+            y = std(sub(find(sub(:,2) >= (sub_maxval + sub_minval)/2),2));
+            if (x < 0.05) && (y < 0.05)
+                break;
+            end
+    end
+end
+
+% Best result found
+phEQ = results(minidx);
+
 
 function load_settings(hObject, handles)
 
