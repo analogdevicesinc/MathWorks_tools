@@ -956,36 +956,6 @@ caldiv = sel.caldiv;
 RFbw = get_rfbw(handles, caldiv);
 RFbw_hw = get_rfbw_hw(handles, caldiv);
 
-% min/max possible values for the RF bandwidth (2x baseband bandwidth) from the
-% reference manual (values are in Hz since RFbw is in Hz)
-if (get(handles.filter_type, 'Value') == 1)
-    % Rx: 0.4 MHz <= rfbw <= 56 MHz
-    min_rfbw = 400000;
-    max_rfbw = 56000000;
-else
-    % Tx: 1.25 MHz <= rfbw <= 40 MHz
-    min_rfbw = 1250000;
-    max_rfbw = 40000000;
-end
-
-% If the RF bandwidth is outside the range of acceptable values we modify
-% the divider value until it falls into an acceptable range.
-while (RFbw < min_rfbw) || (RFbw > max_rfbw)
-    if (RFbw < min_rfbw)
-        caldiv = caldiv - 1;
-    else
-        caldiv = caldiv + 1;
-    end
-
-    if (caldiv < 1) || (caldiv > 511)
-        msgbox(sprintf('Calibration divider out of bounds (1 - 511): %i', caldiv), 'Error', 'error');
-        return;
-    end
-
-    RFbw = get_rfbw(handles, caldiv);
-    RFbw_hw = get_rfbw_hw(handles, caldiv);
-end
-
 % filter design input structure
 filter_input.Fstop = sel.Fstop;
 filter_input.Fpass = sel.Fpass;
@@ -2187,6 +2157,41 @@ if hw
 else
     % full precision RFbw
     rfbw = round(((pll_rate - 1)/(caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
+end
+
+% min/max possible values for the RF bandwidth (2x baseband bandwidth) from the
+% reference manual (values are in Hz since RFbw is in Hz)
+if (get(handles.filter_type, 'Value') == 1)
+    % Rx: 0.4 MHz <= RF bandwidth <= 56 MHz
+    min_rfbw = 400000;
+    max_rfbw = 56000000;
+else
+    % Tx: 1.25 MHz <= RF bandwidth <= 40 MHz
+    min_rfbw = 1250000;
+    max_rfbw = 40000000;
+end
+
+% If the RF bandwidth is outside the range of acceptable values we modify
+% the divider value until it falls into an acceptable range.
+while (rfbw < min_rfbw) || (rfbw > max_rfbw)
+    if (rfbw < min_rfbw)
+        caldiv = caldiv - 1;
+    else
+        caldiv = caldiv + 1;
+    end
+
+    if (caldiv < 1) || (caldiv > 511)
+        msgbox(sprintf('Calibration divider out of bounds (1 - 511): %i', caldiv), 'Error', 'error');
+        return;
+    end
+
+    if get(handles.filter_type, 'Value') == 1
+        handles.input_rx.caldiv = caldiv;
+    else
+        handles.input_tx.caldiv = caldiv;
+    end
+
+    rfbw = calculate_rfbw(handles, caldiv, hw);
 end
 
 % calculate a channel's complex bandwidth that matches 32 bit integer precision
