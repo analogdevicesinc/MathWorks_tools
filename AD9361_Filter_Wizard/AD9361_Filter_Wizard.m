@@ -331,7 +331,7 @@ plot_buttons_off(handles);
 Filters = get(handles.Saved_Filters, 'String');
 filter_selection = 0;
 for i = 1:length(Filters)
-    if strcmp(Filters{i}, 'New')
+    if strcmp(Filters{i}, 'Custom')
         filter_selection = i;
         break;
     end
@@ -339,7 +339,7 @@ end
 
 if filter_selection == 0
     filter_selection = length(Filters) + 1;
-    Filters{filter_selection} = 'New';
+    Filters{filter_selection} = 'Custom';
     set(handles.Saved_Filters, 'String', Filters);
 end
 set(handles.Saved_Filters, 'Value', filter_selection);
