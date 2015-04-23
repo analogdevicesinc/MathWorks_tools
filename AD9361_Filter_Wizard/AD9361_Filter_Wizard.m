@@ -329,13 +329,21 @@ function dirty(hObject, handles)
 handles.active_plot = 0;
 plot_buttons_off(handles);
 Filters = get(handles.Saved_Filters, 'String');
-if ~ strcmp(Filters{get(handles.Saved_Filters, 'Value')}, 'New')
-    n = length(Filters) + 1;
-    Filters{n} = 'New';
-    set(handles.Saved_Filters, 'String', Filters);
-    set(handles.Saved_Filters, 'Value', n);
-    set(handles.store_filter, 'Visible', 'on');
+filter_selection = 0;
+for i = 1:length(Filters)
+    if strcmp(Filters{i}, 'New')
+        filter_selection = i;
+        break;
+    end
 end
+
+if filter_selection == 0
+    filter_selection = length(Filters) + 1;
+    Filters{filter_selection} = 'New';
+    set(handles.Saved_Filters, 'String', Filters);
+end
+set(handles.Saved_Filters, 'Value', filter_selection);
+set(handles.store_filter, 'Visible', 'on');
 
 function Fpass_Callback(hObject, eventdata, handles)
 % hObject    handle to Fpass (see GCBO)
