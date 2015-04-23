@@ -2159,8 +2159,8 @@ if hw
     % used to reproduce the divider value (caldiv) we expect on the driver
     rfbw = uint32(fix(((pll_rate - 1)/(caldiv - 1))*(2/rounded_factor)));
 else
-    % full precision RFbw
-    rfbw = round(((pll_rate - 1)/(caldiv - 1))*(2/(channel_factor*(2*pi)/log(2))));
+    % full precision RF bandwidth
+    rfbw = round((pll_rate/caldiv)*(2/(channel_factor*(2*pi)/log(2))));
 end
 
 % min/max possible values for the RF bandwidth (2x baseband bandwidth) from the
