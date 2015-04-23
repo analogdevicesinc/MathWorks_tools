@@ -2152,6 +2152,10 @@ sel = get_current_rxtx(handles);
 pll_rate = get_pll_rate(handles);
 
 if hw
+    % avoid divide by zero on boundary case
+    if caldiv == 1
+        caldiv = 1 + eps;
+    end
     % used to reproduce the divider value (caldiv) we expect on the driver
     rfbw = uint32(fix(((pll_rate - 1)/(caldiv - 1))*(2/rounded_factor)));
 else
