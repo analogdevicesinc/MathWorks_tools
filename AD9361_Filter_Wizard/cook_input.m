@@ -74,7 +74,6 @@
 %   struct.wnom     = the RF bandwidth of the Analog Filters
 %   struct.phEQ     = the target for phase equalization in nanoseconds
 %                     (-1 for none).
-%   struct.
 
 function cooked = cook_input(input)
 
@@ -207,7 +206,7 @@ if ~isfield(input, 'caldiv')
     input.caldiv = default_caldiv(input);
 end
 
-%Assume no dBmin
+% Assume no dBmin
 if ~isfield(input, 'FIRdBmin')
     input.FIRdBmin = 0;
 end
