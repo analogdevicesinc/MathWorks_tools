@@ -662,7 +662,9 @@ fprintf(fid, '# Generated with the MATLAB AD9361 Filter Design Wizard\r\n');
 fprintf(fid, '%s\r\n', strcat('# Generated', 32, datestr(now())));
 fprintf(fid, '# Inputs:\r\n');
 
-data_rate = get_data_rate(handles);
+sel = get_current_rxtx(handles);
+data_rate = sel.Rdata;
+
 %FIXME
 %converter_rate = get_converter_clk(handles);
 %converter_rate = get_ADC_clk(handles);
@@ -866,11 +868,7 @@ function FVTool_deeper_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 sel = get_current_rxtx(handles);
-
-data_rate = sel.Rdata;
 converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
-fstop = sel.Fstop;
-fpass = sel.Fpass;
 
 N = 500;
 Fs = converter_rate; % sampling frequency
@@ -894,7 +892,7 @@ Hcon = design(d,'SystemObject',false);
 apass = str2double(get(handles.Apass, 'String'));
 astop = str2double(get(handles.Astop, 'String'));
 
-str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, fpass/1e6, fstop/1e6, apass, astop);
+str = sprintf('%s Filter\nFpass = %g MHz; Fstop = %g MHz\nApass = %g dB; Astop = %g dB', tmp, sel.Fpass/1e6, sel.Fstop/1e6, apass, astop);
 
 hfvt1 = fvtool(Hcon,handles.analogfilter,Hmiddle,handles.grpdelaycal,...
     'FrequencyRange','Specify freq. vector', ...
@@ -972,9 +970,8 @@ sel = get_current_rxtx(handles);
 converter_rate = sel.Rdata * sel.FIR * sel.HB1 * sel.HB2 * sel.HB3;
 
 % determine the RF bandwidth from the current caldiv
-caldiv = sel.caldiv;
-RFbw = get_rfbw(handles, caldiv);
-RFbw_hw = get_rfbw_hw(handles, caldiv);
+RFbw = get_rfbw(handles, sel.caldiv);
+RFbw_hw = get_rfbw_hw(handles, sel.caldiv);
 
 % filter design input structure
 filter_input.Fstop = sel.Fstop;
@@ -991,7 +988,7 @@ filter_input.HB3 = sel.HB3;
 filter_input.PLL_mult = sel.PLL_mult;
 filter_input.phEQ = sel.phEQ;
 filter_input.wnom = value2Hz(handles, handles.freq_units, str2double(get(handles.Fcutoff, 'String')));
-filter_input.caldiv = caldiv;
+filter_input.caldiv = sel.caldiv;
 filter_input.int_FIR = get(handles.Use_FIR, 'Value');
 filter_input.RFbw = RFbw;
 filter_input.converter_rate = converter_rate;
@@ -2184,10 +2181,6 @@ end
 function put_data_clk(handles, data_clk)
 data_clk = Hz2value(handles, handles.freq_units, data_clk);
 set(handles.data_clk, 'String', num2str(data_clk, 10));
-
-function data_clk = get_data_rate(handles)
-sel = get_current_rxtx(handles);
-data_clk = sel.Rdata;
 
 function caldiv = default_caldiv(handles)
 if (get(handles.filter_type, 'Value') == 1)
