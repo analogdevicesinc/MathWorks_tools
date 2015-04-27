@@ -154,8 +154,6 @@ if ~isfield(input, 'FIR')
         end
         input.PLL_mult = fastest_FIR([64 32 16 8 4 2 1], max.MAX_BBPLL_FREQ, max.MIN_BBPLL_FREQ, input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * input.DAC_div);
         input.PLL_rate = input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * input.DAC_div * input.PLL_mult;
-    elseif ~isfield(input, 'HB1') && ~isfield(input, 'HB2') && ~isfield(input, 'HB3') && ~isfield(input, 'PLL_mult') && isfield('PLL_rate')
-    elseif ~isfield(input, 'HB1')
     end
 end
 
