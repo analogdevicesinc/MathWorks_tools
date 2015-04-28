@@ -220,6 +220,10 @@ for i = 1:(Gpass+1)
     omega(i) = fg(i)*clkRFIR;
 end
 rg1 = analogresp('Rx',omega,input.converter_rate,b1,a1,b2,a2).*freqz(Filter1,omega,input.converter_rate);
+phase = unwrap(angle(rg1));
+phase = phase.*(180/pi);
+gd1 = GroupDelay(omega,phase); % group delay on passband for Analog + Converter + HB
+omega1 = omega;                % frequency grid on pass band
 rg2 = exp(-1i*2*pi*omega*delay);
 rg = rg2./rg1;
 w = abs(rg1)/(dBinv(input.dBripple/2)-1);
@@ -353,6 +357,7 @@ if license('test','fixed_point_toolbox') && license('checkout','fixed_point_tool
     Hmd.CoeffWordLength = 16;
 end
 rxFilters=cascade(Filter1,Hmd);
+gd = grpdelay(Hmd,omega1,input.converter_rate).*(1/input.converter_rate); % still need to fix this
 
 aTFIR = 1 + ceil(log2(max(Hmd.Numerator)));
 switch aTFIR
