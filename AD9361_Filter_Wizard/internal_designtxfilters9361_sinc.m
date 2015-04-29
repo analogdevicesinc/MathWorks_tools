@@ -98,28 +98,28 @@ if license('test','fixed_point_toolbox') && license('checkout','fixed_point_tool
     set(Hm2,'arithmetic','fixed');
     set(Hm3,'arithmetic','fixed');
     set(Hm4,'arithmetic','fixed');
-
+    
     Hm1.InputWordLength = 16;
     Hm1.InputFracLength = 14;
     Hm1.FilterInternals = 'SpecifyPrecision';
     Hm1.OutputWordLength = 16;
     Hm1.OutputFracLength = 14;
     Hm1.CoeffWordLength = 16;
-
+    
     Hm2.InputWordLength = 16;
     Hm2.InputFracLength = 14;
     Hm2.FilterInternals = 'SpecifyPrecision';
     Hm2.OutputWordLength = 16;
     Hm2.OutputFracLength = 14;
     Hm2.CoeffWordLength = 16;
-
+    
     Hm3.InputWordLength = 4;
     Hm3.InputFracLength = 2;
     Hm3.FilterInternals = 'SpecifyPrecision';
     Hm3.OutputWordLength = 8;
     Hm3.OutputFracLength = 6;
     Hm3.CoeffWordLength = 16;
-
+    
     Hm4.InputWordLength = 4;
     Hm4.InputFracLength = 2;
     Hm4.FilterInternals = 'SpecifyPrecision';
@@ -221,6 +221,10 @@ for i = 1:(Gpass+1)
     omega(i) = fg(i)*clkTFIR;
 end
 rg1 = freqz(Filter1,omega,input.converter_rate).*analogresp('Tx',omega,input.converter_rate,b1,a1,b2,a2);
+phase = unwrap(angle(rg1));
+phase = phase.*(180/pi);
+gd1 = GroupDelay(omega,phase); % group delay on passband for Analog + Converter + HB
+omega1 = omega;                % frequency grid on pass band
 rg2 = exp(-1i*2*pi*omega*delay);
 rg = rg2./rg1;
 w = abs(rg1)/(dBinv(input.dBripple/2)-1);
@@ -287,7 +291,7 @@ while (1)
     Hd = design(d,'equiripple','B1Weights',W1,'B2Weights',W2,'SystemObject',false);
     ccoef = Hd.Numerator;
     M = length(ccoef);
-
+    
     if input.phEQ ~= -1
         sg = 0.5-grid(end:-1:1);
         sr = imag(resp(end:-1:1));
@@ -312,7 +316,7 @@ while (1)
         scoef = 0;
     end
     tap_store(i,1:M)=ccoef+scoef;
-
+    
     Hmd = mfilt.firinterp(input.FIR_interp,tap_store(i,1:M));
     if license('test','fixed_point_toolbox') && license('checkout','fixed_point_toolbox')
         set(Hmd,'arithmetic','fixed');
@@ -324,13 +328,13 @@ while (1)
         Hmd.CoeffWordLength = 16;
     end
     txFilters=cascade(Hmd,Filter1);
-
+    
     % quantitative values about actual passband and stopband
     rg_pass = abs(freqz(txFilters,omega(1:Gpass+1),input.converter_rate).*analogresp('Tx',omega(1:Gpass+1),input.converter_rate,b1,a1,b2,a2));
     rg_stop = abs(freqz(txFilters,omega(Gpass+2:end),input.converter_rate).*analogresp('Tx',omega(Gpass+2:end),input.converter_rate,b1,a1,b2,a2));
     dBripple_actual_vector(i) = mag2db(max(rg_pass))-mag2db(min(rg_pass));
     dBstop_actual_vector(i) = -mag2db(max(rg_stop));
-
+    
     if input.int_FIR == 0
         h = tap_store(1,1:M);
         dBripple_actual = dBripple_actual_vector(1);
@@ -377,6 +381,14 @@ if license('test','fixed_point_toolbox') && license('checkout','fixed_point_tool
     Hmd.CoeffWordLength = 16;
 end
 txFilters=cascade(Hmd,Filter1);
+gd2 = grpdelay(Hmd,omega1,clkTFIR).*(1/clkTFIR);
+if input.phEQ == -1
+    groupdelay = gd1 + gd2;
+else
+    groupdelay = gd1 + gd2';
+end
+grpdelayvar = max(groupdelay)-min(groupdelay);
+figure;plot(omega1,groupdelay);
 
 aTFIR = 1 + ceil(log2(max(Hmd.Numerator)));
 switch aTFIR
@@ -444,6 +456,7 @@ result.Hanalog = Hanalog;
 result.dBripple_actual = dBripple_actual;
 result.dBstop_actual = dBstop_actual;
 result.delay = delay;
+result.grpdelayvar = grpdelayvar;
 result.webinar = webinar;
 result.tohw = tohw;
 result.b1 = b1;
