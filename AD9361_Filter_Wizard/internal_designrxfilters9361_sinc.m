@@ -364,7 +364,6 @@ else
     groupdelay = gd1 + gd2';
 end
 grpdelayvar = max(groupdelay)-min(groupdelay);
-figure;plot(omega1,groupdelay);
 
 aTFIR = 1 + ceil(log2(max(Hmd.Numerator)));
 switch aTFIR
