@@ -71,7 +71,7 @@
 %                     rolloff for the analog filters
 %   struct.Fcutoff  = the -3dB point of the Analog Filters expressed in
 %                     baseband frequency (Hz)
-%   struct.RFbw     = the RF bandwidth of the Analog Filters
+%   struct.wnom     = the RF bandwidth of the Analog Filters
 %   struct.phEQ     = the target for phase equalization in nanoseconds
 %                     (-1 for none).
 %   struct.
@@ -194,6 +194,15 @@ if ~isfield(input, 'phEQ')
     input.phEQ = -1;
 end
 
+% Assume RF bandwidth (nominal frequency)
+if ~isfield(input, 'wnom')
+    if strcmp(input.RxTx, 'Rx')
+        input.wnom = 1.4 * input.Fstop; % Rx
+    else
+        input.wnom = 1.6 * input.Fstop; % Tx
+    end
+end
+
 if ~isfield(input, 'caldiv')
     input.caldiv = default_caldiv(input);
 end
@@ -207,14 +216,12 @@ cooked = input;
 
 function caldiv = default_caldiv(input)
 if strcmp(input.RxTx, 'Rx')
-    wnom = 1.4 * input.Fstop; % Rx
     pll = input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * ...
         input.PLL_mult;
 else
-    wnom = 1.6 * input.Fstop; % Tx
     pll = input.Rdata * input.FIR * input.HB1 * input.HB2 * input.HB3 * ...
         input.DAC_div * input.PLL_mult;
 end
 
-div = ceil((pll/wnom)*(log(2)/(2*pi)));
+div = ceil((pll/input.wnom)*(log(2)/(2*pi)));
 caldiv = min(max(div,1),511);
