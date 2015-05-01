@@ -222,7 +222,6 @@ for i = 1:(Gpass+1)
 end
 rg1 = freqz(Filter1,omega,input.converter_rate).*analogresp('Tx',omega,input.converter_rate,b1,a1,b2,a2);
 phase = unwrap(angle(rg1));
-phase = phase.*(180/pi);
 gd1 = GroupDelay(omega,phase); % group delay on passband for Analog + Converter + HB
 omega1 = omega;                % frequency grid on pass band
 rg2 = exp(-1i*2*pi*omega*delay);
