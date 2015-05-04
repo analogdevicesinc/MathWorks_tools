@@ -672,6 +672,10 @@ data_rate = get_data_rate(handles);
 %fprintf(fid, '# PLL CLK Frequecy = %f Hz\r\n', pll_rate);
 %fprintf(fid, '# Converter Sample Frequecy = %f Hz\r\n', converter_rate);
 fprintf(fid, '# Data Sample Frequency = %f Hz\r\n', data_rate);
+if get(handles.phase_eq, 'Value')
+    fprintf(fid, '# RX Phase equalization = %f ns\r\n', handles.rx.phEQ);
+    fprintf(fid, '# TX Phase equalization = %f ns\r\n', handles.tx.phEQ);
+end
 fprintf(fid, 'TX 3 GAIN %d INT %d\r\n', handles.tx.gain, handles.tx.int);
 fprintf(fid, 'RX 3 GAIN %d DEC %d\r\n', handles.rx.gain, handles.rx.int);
 fprintf(fid, 'RTX %d %d %d %d %d %d\r\n', handles.tx.PLL, handles.tx.HB3, handles.tx.HB2, handles.tx.HB1, handles.tx.FIR, handles.tx.DATA);
@@ -1021,6 +1025,7 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.grpdelaycal = cascade(filter_result.Hanalog, filter_result.rxFilters);
 
     % values used for saving to a filter file or pushing to the target directly
+    handles.rx.phEQ = filter_input.phEQ;
     handles.rx.BW = RFbw_hw;
     handles.rx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
     handles.rx.HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
@@ -1042,6 +1047,7 @@ else
     handles.grpdelaycal = cascade(filter_result.txFilters, filter_result.Hanalog);
 
     % values used for saving to a filter file or pushing to the target directly
+    handles.tx.phEQ = filter_input.phEQ;
     handles.tx.BW = RFbw_hw;
     handles.tx.PLL = value2Hz(handles, handles.freq_units, str2double(get(handles.Pll_rate, 'String')));
     handles.tx.HB3 = value2Hz(handles, handles.freq_units, str2double(get(handles.HB3_rate, 'String')));
