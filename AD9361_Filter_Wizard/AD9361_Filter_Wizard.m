@@ -1023,6 +1023,7 @@ if (get(handles.filter_type, 'Value') == 1)
     handles.rfirtaps = filter_result.rfirtaps;
     handles.analogfilter = filter_result.Hanalog;
     handles.grpdelaycal = cascade(filter_result.Hanalog, filter_result.rxFilters);
+    handles.grpdelayvar = filter_result.grpdelayvar;
 
     % values used for saving to a filter file or pushing to the target directly
     handles.rx.phEQ = filter_input.phEQ;
@@ -1045,6 +1046,7 @@ else
     handles.tfirtaps = filter_result.tfirtaps;
     handles.analogfilter = filter_result.Hanalog;
     handles.grpdelaycal = cascade(filter_result.txFilters, filter_result.Hanalog);
+    handles.grpdelayvar = filter_result.grpdelayvar;
 
     % values used for saving to a filter file or pushing to the target directly
     handles.tx.phEQ = filter_input.phEQ;
@@ -2424,8 +2426,7 @@ maxmag = max(20*log10(abs(h)));
 [gd,~] = grpdelay(handles.grpdelaycal,2048);
 I = round(fpass/(converter_rate/2)*2048);
 gd2 = gd(1:I).*(1/converter_rate);
-gd_diff = max(gd2)-min(gd2);
-str2 = sprintf('Delay Variance = %g ns', gd_diff*1e9);
+str2 = sprintf('Delay Variance = %g ns', handles.grpdelayvar*1e9);
 
 hfvt0 = fvtool(handles.grpdelaycal,...
     'FrequencyRange','Specify freq. vector', ...
