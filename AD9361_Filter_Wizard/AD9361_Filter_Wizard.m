@@ -671,8 +671,8 @@ data_rate = sel.Rdata;
 
 %pll_rate = get_pll_rate(handles);
 
-%fprintf(fid, '# PLL CLK Frequecy = %f Hz\r\n', pll_rate);
-%fprintf(fid, '# Converter Sample Frequecy = %f Hz\r\n', converter_rate);
+%fprintf(fid, '# PLL CLK Frequency = %f Hz\r\n', pll_rate);
+%fprintf(fid, '# Converter Sample Frequency = %f Hz\r\n', converter_rate);
 fprintf(fid, '# Data Sample Frequency = %f Hz\r\n', data_rate);
 if get(handles.phase_eq, 'Value')
     fprintf(fid, '# RX Phase equalization = %f ns\r\n', handles.rx.phEQ);
@@ -686,7 +686,7 @@ fprintf(fid, 'BWTX %d\r\n', handles.tx.BW);
 fprintf(fid, 'BWRX %d\r\n', handles.rx.BW);
 fclose(fid);
 
-% concat and transform Rx and Tx coefficient matrices for outputting
+% concat and transform Rx and Tx coefficient matrices for output
 output = flip(rot90(vertcat(handles.tfirtaps, handles.rfirtaps)));
 dlmwrite(newpath, output, '-append', 'newline', 'pc');
 
