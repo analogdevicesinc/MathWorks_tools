@@ -279,10 +279,10 @@ classdef iio_sys_obj_matlab
             
             ret=varargout;
         end
-		
-		function ret = writeFirData(obj, fir_data_file)
-			fir_data_str = fileread(fir_data_file);
-			ret = writeAttributeString(obj.libiio_ctrl_dev, 'filter_fir_config', fir_data_str);
-		end
+        
+        function ret = writeFirData(obj, fir_data_file)
+            fir_data_str = fileread(fir_data_file);
+            ret = writeAttributeString(obj.libiio_ctrl_dev, 'filter_fir_config', fir_data_str);
+        end
     end
 end
