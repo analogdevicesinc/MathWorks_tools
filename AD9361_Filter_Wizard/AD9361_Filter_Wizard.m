@@ -1543,7 +1543,7 @@ for rowRx = 1:Rx_numRows;
     end
 end
 
-choices = sort(choices);
+choices = sort_nat(choices);
 set(handles.Saved_Filters, 'String', choices);
 set(handles.Saved_Filters, 'Value', 1);
 
