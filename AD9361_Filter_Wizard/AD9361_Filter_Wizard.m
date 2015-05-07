@@ -223,25 +223,6 @@ if exist(cached_ip_file, 'file')
     fclose(fd);
 end
 
-% initialize PLL div option to show the correct value
-if isstruct(handles.input_rx) || isstruct(handles.input_tx)
-    if get(handles.filter_type, 'Value') == 1
-        pll_mult = handles.input_rx.PLL_mult;
-    else
-        pll_mult = handles.input_tx.PLL_mult;
-    end
-
-    opts = get(handles.converter2PLL, 'String');
-    for i = 1:length(opts)
-        j = char(opts(i));
-        j = str2double(j(1:2));
-        if j == pll_mult
-            set(handles.converter2PLL, 'Value', i);
-            break;
-        end
-    end
-end
-
 axes(handles.magnitude_plot);
 
 handles.libiio_ctrl_dev = {};
@@ -535,7 +516,6 @@ handles = autoselect_rates(handles);
 
 data2gui(hObject, handles);
 handles = guidata(hObject);
-
 guidata(hObject, handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -1270,17 +1250,6 @@ end
 handles.input_rx = cook_input(getfield(options.ad9361_settings.rx, Rx{matchRx}));
 handles.input_tx = cook_input(getfield(options.ad9361_settings.tx, Tx{matchTx}));
 
-% show correct PLL div option to match settings
-opts = get(handles.converter2PLL, 'String');
-for i = 1:length(opts)
-    j = char(opts(i));
-    j = str2double(j(1:2));
-    if j == handles.input_rx.PLL_mult
-        set(handles.converter2PLL, 'Value', i);
-        break;
-    end
-end
-
 set(handles.store_filter, 'Visible', 'off');
 guidata(hObject, handles);
 data2gui(hObject, handles);
@@ -1438,6 +1407,17 @@ for i = 1:length(opts)
     j = str2double(j(1:2));
     if j == HBs
         set(handles.HBs, 'Value', i);
+        break;
+    end
+end
+
+% show correct PLL div option to match settings
+opts = get(handles.converter2PLL, 'String');
+for i = 1:length(opts)
+    j = char(opts(i));
+    j = str2double(j(1:2));
+    if j == sel.PLL_mult
+        set(handles.converter2PLL, 'Value', i);
         break;
     end
 end
