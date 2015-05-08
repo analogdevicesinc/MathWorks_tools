@@ -200,6 +200,7 @@ for i=0:nSubframes-1
             % Compute and display EVM for this subframe.
             evm(e, i+1) = lteEVM(rxSymbols, refSymbols);
             hcd = comm.ConstellationDiagram('Title','Received Data Symbols');
+            hcd.Position = [140 540 460 383];
             step(hcd,rxSymbols);
             fprintf('%s edge EVM, subframe %d: %0.3f%%\n', ...
                 edge, enb.NSubframe, evm(e, i+1).RMS*100);

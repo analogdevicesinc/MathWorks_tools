@@ -115,20 +115,5 @@ I = output{1};
 Q = output{2};
 Rx = I+1i*Q;
 
-% Plot time-domain I and Q channels
-figure % new figure
-ax1 = subplot(2,1,1); % top subplot
-ax2 = subplot(2,1,2); % bottom subplot
-
-plot(ax1,output{1});
-title(ax1,'I');
-xlabel('Sample');
-ylabel('Amplitude');
-
-plot(ax2,output{2});
-title(ax2,'Q');
-xlabel('Sample');
-ylabel('Amplitude');
-
 % Call LTE Reciever Function
 [hsa,hcd,plots]=LTEReceiver(Rx,samplingrate,configuration);
