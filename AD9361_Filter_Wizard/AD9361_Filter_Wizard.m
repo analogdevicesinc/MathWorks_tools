@@ -2092,11 +2092,11 @@ end
 
 % --- Executes on button press in help_button.
 function help_button_Callback(hObject, eventdata, handles)
-% hObject    handle to help_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.helpcallback(handles.callbackObj);
+if ~isfield(handles, 'helpcallback')
+    web('http://wiki.analog.com/resources/eval/user-guides/ad-fmcomms2-ebz/software/filters');
+else
+    handles.helpcallback(handles.callbackObj);
+end
 
 
 % --- Executes on button press in save2HDL.
