@@ -100,8 +100,9 @@ for i = 1:5
     input{1} = real(eNodeBOutput);
     input{2} = imag(eNodeBOutput);
     output = stepImpl(s, input);
+    fprintf('Data Block %i Received...\n',i);
 end
-fprintf('Transmission finished\n');
+fprintf('Transmission and reception finished\n');
 
 % Read the RSSI attributes of both channels
 rssi1 = output{s.out_ch_no+1};
