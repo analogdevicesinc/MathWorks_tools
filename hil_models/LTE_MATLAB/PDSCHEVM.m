@@ -1,7 +1,12 @@
-function [finalEVM,plots,hcd] = PDSCHEVM(enb,cec,rxWaveform)
+function [finalEVM,plots] = PDSCHEVM(enb,cec,rxWaveform)
 
 % Control over receiver corrections to be performed:
-
+persistent hcd
+if isempty(hcd)
+    hcd = comm.ConstellationDiagram('Title','Received Data Symbols');
+    hcd.Position = [140 540 460 383];
+    hcd.ShowReferenceConstellation = false;
+end
 % Frequency offset correction with estimation in the time domain based
 % on cyclic prefix correlation; estimation/correction applies to each
 % subframe.
@@ -46,6 +51,12 @@ end
 
 % Setup plots
 [evmGridFigure,evmSymbolPlot,evmSubcarrierPlot,evmRBPlot] = hEVMPlots();
+evmSubcarrierPlot.ShowLegend = false;
+evmSubcarrierPlot.Title = 'Yellow: RMS   Blue: Peak';
+evmSymbolPlot.ShowLegend = false;
+evmSymbolPlot.Title = 'Yellow: RMS   Blue: Peak';
+evmRBPlot.ShowLegend = false;
+evmRBPlot.Title = 'Yellow: RMS   Blue: Peak';
 if (nSubframes>0)
     evmSymbolPlot.TimeSpan = (L*nSubframes)-1;
 end
@@ -199,9 +210,9 @@ for i=0:nSubframes-1
             
             % Compute and display EVM for this subframe.
             evm(e, i+1) = lteEVM(rxSymbols, refSymbols);
-            hcd = comm.ConstellationDiagram('Title','Received Data Symbols');
-            hcd.Position = [140 540 460 383];
+            
             step(hcd,rxSymbols);
+            release(hcd);
             fprintf('%s edge EVM, subframe %d: %0.3f%%\n', ...
                 edge, enb.NSubframe, evm(e, i+1).RMS*100);
             

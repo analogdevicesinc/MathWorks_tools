@@ -1,4 +1,4 @@
-function [hsa,hcd,plots,rssi1,rssi2]=ad9361_LTE(ip,LTEmode)
+function [plots,rssi1,rssi2]=ad9361_LTE(ip,LTEmode)
 
 clc;
 
@@ -71,7 +71,7 @@ s.dev_name = 'ad9361';
 s.in_ch_no = 2;
 s.out_ch_no = 2;
 s.in_ch_size = length(eNodeBOutput);
-s.out_ch_size = length(eNodeBOutput)*5;
+s.out_ch_size = length(eNodeBOutput)*4;
 
 s = s.setupImpl();
 
@@ -95,7 +95,7 @@ input{s.in_ch_no+10} = bandwidth;
 
 % Keep transmiting and receiving the LTE signal
 fprintf('Starting transmission at Fs = %g MHz\n',txsim.SamplingRate/1e6);
-for i = 1:5
+for i = 1:4
     fprintf('Transmitting Data Block %i ...\n',i);
     input{1} = real(eNodeBOutput);
     input{2} = imag(eNodeBOutput);
@@ -117,4 +117,4 @@ Q = output{2};
 Rx = I+1i*Q;
 
 % Call LTE Reciever Function
-[hsa,hcd,plots]=LTEReceiver(Rx,samplingrate,configuration);
+[plots]=LTEReceiver(Rx,samplingrate,configuration);
