@@ -82,16 +82,16 @@ input = cell(1, s.in_ch_no + length(s.iio_dev_cfg.cfg_ch));
 output = cell(1, s.out_ch_no + length(s.iio_dev_cfg.mon_ch));
 
 % Set the attributes of AD9361
-input{s.in_ch_no+1} = 2.45e9;
-input{s.in_ch_no+2} = samplingrate;
-input{s.in_ch_no+3} = bandwidth;
-input{s.in_ch_no+4} = 'slow_attack';
-input{s.in_ch_no+5} = 0;
-input{s.in_ch_no+6} = 'slow_attack';
-input{s.in_ch_no+7} = 0;
-input{s.in_ch_no+8} = 2.45e9;
-input{s.in_ch_no+9} = samplingrate;
-input{s.in_ch_no+10} = bandwidth;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX_LO_FREQ'))} = 2.45e9;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX_SAMPLING_FREQ'))} = samplingrate;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX_RF_BANDWIDTH'))} = bandwidth;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX1_GAIN_MODE'))} = 'slow_attack';
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX1_GAIN'))} = 0;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX2_GAIN_MODE'))} = 'slow_attack';
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX2_GAIN'))} = 0;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'TX_LO_FREQ'))} = 2.45e9;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'TX_SAMPLING_FREQ'))} = samplingrate;
+input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'TX_RF_BANDWIDTH'))} = bandwidth;
 
 % Keep transmiting and receiving the LTE signal
 fprintf('Starting transmission at Fs = %g MHz\n',txsim.SamplingRate/1e6);
