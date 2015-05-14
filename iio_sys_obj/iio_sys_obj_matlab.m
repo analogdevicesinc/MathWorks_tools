@@ -85,8 +85,12 @@ classdef iio_sys_obj_matlab
                 'data_out_device', '',...	% Pointer to the data output device
                 'ctrl_device', '',... 	 	% Pointer to the control device
                 'cfg_ch', [],...      	 	% Configuration channels list
-                'mon_ch', []);        	 	% Monitoring channels list
-            
+                'mon_ch', [],...       	 	% Monitoring channels list
+				'in_ch_names', [],...		% Configuration channels names
+				'out_ch_names', []);		% Monitoring channels names
+            config.in_ch_names = {};
+			config.out_ch_names = {};
+			
             % Build the configuration/monitoring channels structure
             ch_cfg = struct('port_name', '',...         % Name of the port to be displayed on the object block
                 'port_attr', '',...         % Associated device attribute name
@@ -113,8 +117,10 @@ classdef iio_sys_obj_matlab
                     end
                     if(strcmp(strtrim(line{2}), 'IN'))
                         config.cfg_ch = [config.cfg_ch ch_cfg];
+						config.in_ch_names = [config.in_ch_names ch_cfg.port_name];
                     elseif(strcmp(strtrim(line{2}), 'OUT'))
                         config.mon_ch = [config.mon_ch ch_cfg];
+						config.out_ch_names = [config.out_ch_names ch_cfg.port_name];
                     end
                 elseif(~isempty(strfind(line, 'data_in_device')))
                     % Get the associated data input device
