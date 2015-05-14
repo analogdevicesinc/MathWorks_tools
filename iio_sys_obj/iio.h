@@ -26,6 +26,7 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -36,9 +37,15 @@ extern "C" {
 typedef long ssize_t;
 #endif
 
+#ifdef __GNUC__
+#define __cnst __attribute__((const))
+#define __pure __attribute__((pure))
+#define __notused __attribute__((unused))
+#else
 #define __cnst
 #define __pure
 #define __notused
+#endif
 
 #ifdef _WIN32
 #   ifdef LIBIIO_EXPORTS
@@ -46,6 +53,8 @@ typedef long ssize_t;
 #   else
 #	define __api __declspec(dllimport)
 #   endif
+#elif __GNUC__ >= 4
+#   define __api __attribute__((visibility ("default")))
 #else
 #   define __api
 #endif
@@ -80,7 +89,7 @@ __api void iio_library_get_version(unsigned int *major,
 
 /** @brief Create a context from local or remote IIO devices
  * @return On success, A pointer to an iio_context structure
- * @return On failure, NULL is returned
+ * @return On failure, NULL is returned and errno is set appropriately
  *
  * <b>NOTE:</b> This function will create a network context if the IIOD_REMOTE
  * environment variable is set to the hostname where the IIOD server runs. If
@@ -92,14 +101,14 @@ __api struct iio_context * iio_create_default_context(void);
 
 /** @brief Create a context from local IIO devices (Linux only)
  * @return On success, A pointer to an iio_context structure
- * @return On failure, NULL is returned */
+ * @return On failure, NULL is returned and errno is set appropriately */
 __api struct iio_context * iio_create_local_context(void);
 
 
 /** @brief Create a context from a XML file
  * @param xml_file Path to the XML file to open
  * @return On success, A pointer to an iio_context structure
- * @return On failure, NULL is returned
+ * @return On failure, NULL is returned and errno is set appropriately
  *
  * <b>NOTE:</b> The format of the XML must comply to the one returned by
  * iio_context_get_xml. */
@@ -110,7 +119,7 @@ __api struct iio_context * iio_create_xml_context(const char *xml_file);
  * @param xml Pointer to the XML data in memory
  * @param len Length of the XML string in memory (excluding the final \0)
  * @return On success, A pointer to an iio_context structure
- * @return On failure, NULL is returned
+ * @return On failure, NULL is returned and errno is set appropriately
  *
  * <b>NOTE:</b> The format of the XML must comply to the one returned by
  * iio_context_get_xml */
@@ -121,14 +130,14 @@ __api struct iio_context * iio_create_xml_context_mem(
 /** @brief Create a context from the network
  * @param host Hostname, IPv4 or IPv6 address where the IIO Daemon is running
  * @return On success, a pointer to an iio_context structure
- * @return On failure, NULL is returned */
+ * @return On failure, NULL is returned and errno is set appropriately */
 __api struct iio_context * iio_create_network_context(const char *host);
 
 
 /** @brief Duplicate a pre-existing IIO context
  * @param ctx A pointer to an iio_context structure
  * @return On success, A pointer to an iio_context structure
- * @return On failure, NULL is returned */
+ * @return On failure, NULL is returned and errno is set appropriately */
 __api struct iio_context * iio_context_clone(const struct iio_context *ctx);
 
 
@@ -164,6 +173,16 @@ __api __pure const char * iio_context_get_xml(const struct iio_context *ctx);
  * <b><i>xml</i></b> or <b><i>network</i></b> when the context has been
  * created with the local, xml and network backends respectively.*/
 __api __pure const char * iio_context_get_name(const struct iio_context *ctx);
+
+
+/** @brief Get a description of the given context
+ * @param ctx A pointer to an iio_context structure
+ * @return A pointer to a static NULL-terminated string
+ *
+ * <b>NOTE:</b>The returned string will contain human-readable information about
+ * the current context. */
+__api __pure const char * iio_context_get_description(
+		const struct iio_context *ctx);
 
 
 /** @brief Enumerate the devices found in the given context
@@ -209,6 +228,13 @@ __api int iio_context_set_timeout(
  * @{
  * @struct iio_device
  * @brief Represents a device in the IIO context */
+
+
+/** @brief Retrieve a pointer to the iio_context structure
+ * @param dev A pointer to an iio_device structure
+ * @return A pointer to an iio_context structure */
+__api __pure const struct iio_context * iio_device_get_context(
+		const struct iio_device *dev);
 
 
 /** @brief Retrieve the device ID (e.g. <b><i>iio:device0</i></b>)
@@ -486,6 +512,13 @@ __api __pure bool iio_device_is_trigger(const struct iio_device *dev);
  * @{
  * @struct iio_channel
  * @brief Represents an input or output channel of a device */
+
+
+/** @brief Retrieve a pointer to the iio_device structure
+ * @param chn A pointer to an iio_channel structure
+ * @return A pointer to an iio_device structure */
+__api __pure const struct iio_device * iio_channel_get_device(
+		const struct iio_channel *chn);
 
 
 /** @brief Retrieve the channel ID (e.g. <b><i>voltage0</i></b>)
@@ -800,6 +833,13 @@ __api void * iio_channel_get_data(const struct iio_channel *chn);
  * @brief An input or output buffer, used to read or write samples */
 
 
+/** @brief Retrieve a pointer to the iio_device structure
+ * @param buf A pointer to an iio_buffer structure
+ * @return A pointer to an iio_device structure */
+__api __pure const struct iio_device * iio_buffer_get_device(
+		const struct iio_buffer *buf);
+
+
 /** @brief Create an input or output buffer associated to the given device
  * @param dev A pointer to an iio_device structure
  * @param samples_count The number of samples that the buffer should contain
@@ -841,7 +881,7 @@ __api ssize_t iio_buffer_push(struct iio_buffer *buf);
 /** @brief Get the start address of the buffer
  * @param buf A pointer to an iio_buffer structure
  * @return A pointer corresponding to the start address of the buffer */
-__api __pure void * iio_buffer_start(const struct iio_buffer *buf);
+__api void * iio_buffer_start(const struct iio_buffer *buf);
 
 
 /** @brief Find the first sample of a channel in a buffer

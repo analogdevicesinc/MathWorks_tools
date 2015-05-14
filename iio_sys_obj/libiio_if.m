@@ -120,7 +120,7 @@ classdef libiio_if < handle
             if(pMajor.Value == 0 && pMinor.Value < 2)
                 err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
                 return;
-            elseif(pMajor.Value > 0 || pMinor.Value > 3)
+            elseif(pMajor.Value > 0 || pMinor.Value > 5)
                 err_msg = sprintf('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.\n\n%s\n', ...
                                   local_version_str);
                 return;
