@@ -89,43 +89,32 @@ classdef libiio_if < handle
 
             % Create a set of pointers to read the iiod and dll versions
             data = zeros(1, 10);
-            pMajor = libpointer('uint32Ptr', data(1));
-            pMinor = libpointer('uint32Ptr', data(2));
-            pGitTag = libpointer('int8Ptr', [int8(data(3:end)) 0]);
+            remote_pMajor = libpointer('uint32Ptr', data(1));
+            remote_pMinor = libpointer('uint32Ptr', data(2));
+            remote_pGitTag = libpointer('int8Ptr', [int8(data(3:end)) 0]);
+            local_pMajor = libpointer('uint32Ptr', data(1));
+            local_pMinor = libpointer('uint32Ptr', data(2));
+            local_pGitTag = libpointer('int8Ptr', [int8(data(3:end)) 0]);
 
-            % Check if the libiio version running on the device is
-            % compatible with this version of the system object
-            calllib(obj.libname, 'iio_context_get_version', obj.iio_ctx, pMajor, pMinor, pGitTag);
-
+            % get remote libiio version
+            calllib(obj.libname, 'iio_context_get_version', obj.iio_ctx, remote_pMajor, remote_pMinor, remote_pGitTag);
             % extract git hash without trailing null char
-            githash = pGitTag.Value(1:7);
-            remote_version_str = sprintf('Remote libiio version: %d.%d, (git-%s)', pMajor.Value, pMinor.Value, githash);
+            remote_githash = remote_pGitTag.Value(1:7);
+            remote_version_str = sprintf('Remote libiio version: %d.%d, (git-%s)', remote_pMajor.Value, remote_pMinor.Value, remote_githash);
+            msg_log = [msg_log sprintf('%s: %s\n', class(obj), remote_version_str)];
 
-            if(pMajor.Value == 0 && pMinor.Value < 3)
+            % get local libiio version
+            calllib(obj.libname, 'iio_library_get_version', local_pMajor, local_pMinor, local_pGitTag);
+            local_githash = local_pGitTag.Value(1:7);
+            local_version_str = sprintf('Local libiio version: %d.%d, (git-%s)', local_pMajor.Value, local_pMinor.Value, local_githash);
+            msg_log = [msg_log sprintf('%s: %s\n', class(obj), local_version_str)];
+
+            if(remote_pMajor.Value < local_pMajor.Value)
                 err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
                 return;
-            elseif(~(pMajor.Value >= 0 && pMinor.Value >= 3))
-                err_msg = sprintf('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.\n\n%s\n', ...
-                                  remote_version_str);
-                return;
-            else
-                msg_log = [msg_log sprintf('%s: %s\n', class(obj), remote_version_str)];
-            end
-
-            % Check if the libiio dll is compatible with this version
-            % of the system object
-            calllib(obj.libname, 'iio_library_get_version', pMajor, pMinor, pGitTag);
-            githash = pGitTag.Value(1:7);
-            local_version_str = sprintf('Local libiio version: %d.%d, (git-%s)', pMajor.Value, pMinor.Value, githash);
-            if(pMajor.Value == 0 && pMinor.Value < 2)
+            elseif(remote_pMajor.Value > local_pMajor.Value)
                 err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
                 return;
-            elseif(pMajor.Value > 0 || pMinor.Value > 5)
-                err_msg = sprintf('The Simulink system object is outdated! Download the latest version from the Analog Devices github repository.\n\n%s\n', ...
-                                  local_version_str);
-                return;
-            else
-                msg_log = [msg_log sprintf('%s: %s\n', class(obj), local_version_str)];
             end
 
             % Set the return code to success
