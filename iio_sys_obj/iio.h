@@ -37,15 +37,9 @@ extern "C" {
 typedef long ssize_t;
 #endif
 
-#ifdef __GNUC__
-#define __cnst __attribute__((const))
-#define __pure __attribute__((pure))
-#define __notused __attribute__((unused))
-#else
 #define __cnst
 #define __pure
 #define __notused
-#endif
 
 #ifdef _WIN32
 #   ifdef LIBIIO_EXPORTS
@@ -53,8 +47,6 @@ typedef long ssize_t;
 #   else
 #	define __api __declspec(dllimport)
 #   endif
-#elif __GNUC__ >= 4
-#   define __api __attribute__((visibility ("default")))
 #else
 #   define __api
 #endif
