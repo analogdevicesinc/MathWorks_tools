@@ -144,10 +144,13 @@ classdef libiio_if < handle
             msg_log = [msg_log sprintf('%s: %s\n', class(obj), local_version_str)];
 
             if(remote_pMajor.Value < local_pMajor.Value)
-                err_msg = 'The libiio version running on the device is outdated! Run the adi_update_tools.sh script to get libiio up to date.';
+                err_msg = ['The libiio version running on the device is outdated! ' ...
+                    'Run the adi_update_tools.sh script to get libiio up to date.'];
                 return;
-            elseif(remote_pMajor.Value > local_pMajor.Value)
-                err_msg = 'The libiio dll is outdated! Reinstall the dll using the latest installer from the Analog Devices wiki.';
+            elseif(remote_pMinor.Value > local_pMajor.Value)
+                err_msg = ['The libiio version on the local host is outdated! ' ...
+                    'On Windows, reinstall the dll using the latest installer ' ...
+                    'from the Analog Devices wiki.'];
                 return;
             end
 
