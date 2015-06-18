@@ -82,16 +82,16 @@ input = cell(1, s.in_ch_no + length(s.iio_dev_cfg.cfg_ch));
 output = cell(1, s.out_ch_no + length(s.iio_dev_cfg.mon_ch));
 
 % Set the attributes of AD9361
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX_LO_FREQ'))} = 2.45e9;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX_SAMPLING_FREQ'))} = samplingrate;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX_RF_BANDWIDTH'))} = bandwidth;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX1_GAIN_MODE'))} = 'slow_attack';
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX1_GAIN'))} = 0;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX2_GAIN_MODE'))} = 'slow_attack';
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'RX2_GAIN'))} = 0;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'TX_LO_FREQ'))} = 2.45e9;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'TX_SAMPLING_FREQ'))} = samplingrate;
-input{s.in_ch_no+find(strcmp(s.iio_dev_cfg.in_ch_names, 'TX_RF_BANDWIDTH'))} = bandwidth;
+input{s.getInChannel('RX_LO_FREQ')} = 2.45e9;
+input{s.getInChannel('RX_SAMPLING_FREQ')} = samplingrate;
+input{s.getInChannel('RX_RF_BANDWIDTH')} = bandwidth;
+input{s.getInChannel('RX1_GAIN_MODE')} = 'slow_attack';
+input{s.getInChannel('RX1_GAIN')} = 0;
+input{s.getInChannel('RX2_GAIN_MODE')} = 'slow_attack';
+input{s.getInChannel('RX2_GAIN')} = 0;
+input{s.getInChannel('TX_LO_FREQ')} = 2.45e9;
+input{s.getInChannel('TX_SAMPLING_FREQ')} = samplingrate;
+input{s.getInChannel('TX_RF_BANDWIDTH')} = bandwidth;
 
 % Keep transmiting and receiving the LTE signal
 fprintf('Starting transmission at Fs = %g MHz\n',txsim.SamplingRate/1e6);
@@ -105,12 +105,12 @@ end
 fprintf('Transmission and reception finished\n');
 
 % Read the RSSI attributes of both channels
-rssi1 = output{s.out_ch_no+1};
-rssi2 = output{s.out_ch_no+2};
+rssi1 = output{s.getOutChannel('RX1_RSSI')};
+rssi2 = output{s.getOutChannel('RX2_RSSI')};
 
 s.releaseImpl();
 
-%% Post Processing of Caputured Data
+%% Post Processing of Captured Data
 
 I = output{1};
 Q = output{2};
