@@ -1,5 +1,7 @@
 function [dd,mm,ss] = ConvertFracDeg(degIn)
 
+% Copyright 2010, The MathWorks, Inc.
+
 if degIn>0
     dd=floor(degIn);
 else
