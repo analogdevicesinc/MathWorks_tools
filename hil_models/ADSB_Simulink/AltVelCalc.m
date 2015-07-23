@@ -1,6 +1,6 @@
 function [nv,ev,uv] = AltVelCalc(msg)
 
-% Copyright 2010-2011, The MathWorks, Inc.
+% Copyright 2010, The MathWorks, Inc.
 
 %AltVelCalc
 % msg = '8DABDEEC99153E09802C013F4BDF';
@@ -56,8 +56,8 @@ udVel = (bin2dec(bin(70:78))-1)*64;
 
 speed = sqrt(ewVel^2+nsVel^2);   % Speed in knots
 
-% disp(sprintf('Aircraft ID %s is traveling at %f knots\nDirection %s at %f knots, direction %s at %f knots ', aircraftID, speed, EW, ewVel, NS, nsVel));
-% disp(sprintf('Aircraft ID %s is going %s at %f feet/min\n', aircraftID, UD, udVel));
+disp(sprintf('Aircraft ID %s is traveling at %f knots\nDirection %s at %f knots, direction %s at %f knots ', aircraftID, speed, EW, ewVel, NS, nsVel));
+disp(sprintf('Aircraft ID %s is going %s at %f feet/min\n', aircraftID, UD, udVel));
 
 nv = nd*nsVel;
 ev = ed*ewVel;
