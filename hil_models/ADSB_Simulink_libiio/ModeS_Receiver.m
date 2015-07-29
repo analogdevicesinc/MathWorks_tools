@@ -1,3 +1,4 @@
+Rx = Rx.signals.values;
 data2 = zeros(length(newModeS)*5,1);
 hfilt = dsp.FIRInterpolator(5);
 searchThr = 5;
