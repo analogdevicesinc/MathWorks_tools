@@ -64,9 +64,9 @@ else
 end
 input_content{s.getInChannel('RX_SAMPLING_FREQ')} = 2.5e6;
 input_content{s.getInChannel('RX_RF_BANDWIDTH')} = 10e6;
-input_content{s.getInChannel('RX1_GAIN_MODE')} = 'slow_attack';
+input_content{s.getInChannel('RX1_GAIN_MODE')} = 'fast_attack';
 input_content{s.getInChannel('RX1_GAIN')} = 0;
-input_content{s.getInChannel('RX2_GAIN_MODE')} = 'slow_attack';
+input_content{s.getInChannel('RX2_GAIN_MODE')} = 'fast_attack';
 input_content{s.getInChannel('RX2_GAIN')} = 0;
 input_content{s.getInChannel('TX_LO_FREQ')} = 6e9;
 input_content{s.getInChannel('TX_SAMPLING_FREQ')} = 2.5e6;
@@ -76,10 +76,10 @@ input_content{s.getInChannel('TX_RF_BANDWIDTH')} = 10e6;
 fprintf('Starting transmission ...\n');
 for i = 1:20
     fprintf('Transmitting Data Block %i ...\n',i);
-    input_content{1} = (2^13).*newModeS;
-    input_content{2} = zeros(n,1);
-    input_content{3} = (2^13).*newModeS;
-    input_content{4} = zeros(n,1);
+    input_content{1} = (2^13).*newModeS./sqrt(2);
+    input_content{2} = (2^13).*newModeS./sqrt(2);
+    input_content{3} = (2^13).*newModeS./sqrt(2);
+    input_content{4} = (2^13).*newModeS./sqrt(2);
     output_content = stepImpl(s, input_content);
     if channel == 1
         I = output_content{1}.*(1/1024);
