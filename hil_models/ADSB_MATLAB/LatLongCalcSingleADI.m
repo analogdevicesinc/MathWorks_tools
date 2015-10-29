@@ -6,6 +6,8 @@ a = hex2dec(msg1');
 b = dec2bin(a);
 bin = reshape(b',1,length(msg1)*4);
 
+aircraftID = msg1(3:8);
+
 % Calculate altitude from 11 bits
 q = bin(48);
 if q == '0'
@@ -80,6 +82,6 @@ elseif Rlon < lon-2
     end
 end
 
-% disp(sprintf('Aircraft ID %s is at latitude %d %d %4.1f, longitude %d %d %4.1f\n', aircraftID, degrees2dms(Rlat), degrees2dms(Rlon)));
-
-% GoogleMap(aircraftID, alt1, Rlat, Rlon)
+[ddLat,mmLat,ssLat]=ConvertFracDeg(Rlat);
+[ddLong,mmLong,ssLong]=ConvertFracDeg(Rlon);
+fprintf(sprintf('Aircraft ID %s is at latitude %d %d %4.1f, longitude %d %d %4.1f\n', aircraftID, ddLat, mmLat, ssLat, ddLong, mmLong, ssLong));

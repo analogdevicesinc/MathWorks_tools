@@ -45,7 +45,7 @@ la1 = bin2dec(bin(55:71));
 lo1 = bin2dec(bin(72:88));
 
 % disp(sprintf('Plane is at altitude %d\nLatitude value: %d\nLongitude value: %d', alt, la1, lo1));
-% disp(sprintf('Aircraft ID %s is at altitude %d', aircraftID, alt));
+disp(sprintf('Aircraft ID %s is at altitude %d', aircraftID, alt));
 
 if strcmp(evenOdd1,'Even')
     Dlat0 = 360/(4*15-0);
@@ -73,6 +73,6 @@ else
     Rlon = Dlon1*(-9 + lo1/131072);
 end
 
-% disp(sprintf('Aircraft ID %s is at latitude %d %d %4.1f, longitude %d %d %4.1f\n', aircraftID, degrees2dms(Rlat), degrees2dms(Rlon)));
-
-% GoogleMap(aircraftID, alt1, Rlat, Rlon)
+[ddLat,mmLat,ssLat]=ConvertFracDeg(Rlat);
+[ddLong,mmLong,ssLong]=ConvertFracDeg(Rlon);
+fprintf(sprintf('Aircraft ID %s is at latitude %d %d %4.1f, longitude %d %d %4.1f\n', aircraftID, ddLat, mmLat, ssLat, ddLong, mmLong, ssLong));
