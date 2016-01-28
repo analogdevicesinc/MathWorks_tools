@@ -18,6 +18,10 @@ switch(upper(board))
 		hB.FPGADevice   = sprintf('xc7%s', 'z045');
 		hB.FPGAPackage  = 'ffg900';
 		hB.FPGASpeed    = '-2';
+	case 'ZED'
+		hB.FPGADevice   = sprintf('xc7%s', 'z020');
+		hB.FPGAPackage  = 'clg484';
+		hB.FPGASpeed    = '-1';	
 	otherwise
 		hB.FPGADevice   = sprintf('xc7%s', 'z045');
 		hB.FPGAPackage  = 'ffg900';
