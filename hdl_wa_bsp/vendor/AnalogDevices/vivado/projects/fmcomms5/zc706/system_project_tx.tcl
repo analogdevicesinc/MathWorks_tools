@@ -7,7 +7,7 @@ source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
 adi_project_create fmcomms5_zc706 $proj_dir config_tx.tcl
 
-adi_project_files fmcomms2_zc706 [list \
+adi_project_files fmcomms5_zc706 [list \
   "system_top.v" \
   "system_constr.xdc"\
   "$ad_hdl_dir/library/common/ad_iobuf.v" \

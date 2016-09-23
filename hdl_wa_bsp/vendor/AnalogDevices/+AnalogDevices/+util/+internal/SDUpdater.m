@@ -22,10 +22,10 @@ classdef SDUpdater < hdlbsp.util.SDUpdater.SDUpdater
 			FMCOMMS2Dir = fullfile(vendorRootDir, '+AnalogDevices', '+FMCOMMS2');
 
             % Load the Variants
-            SDZip = fullfile(PicoZedSDRDir, '+rfsom', 'rfsom_sdcard_2015_R1.zip');
+            SDZip = fullfile(PicoZedSDRDir, '+rfsom', 'rfsom_sdcard_2015_R2.zip');
             app.addVariant('AnalogDevices PicoZedSDR', 'Standard', SDZip);
 
-			SDZip = fullfile(FMCOMMS2Dir, '+zc706', 'zc706_sdcard_2015_R1.zip');
+			SDZip = fullfile(FMCOMMS2Dir, '+zc706', 'zc706_sdcard_2015_R2.zip');
             app.addVariant('AnalogDevices FMCOMMS2 + ZC706', 'Standard', SDZip);            
         end
         

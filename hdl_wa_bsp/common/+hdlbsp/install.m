@@ -1,7 +1,7 @@
 function install(mode)
 % hdlbsp.install adds/removes common BSP utilities
 
-% Copyright 2015 MathWorks, Inc. All Rights Reserved.
+% Copyright 2016 MathWorks, Inc. All Rights Reserved.
 
     if nargin == 0
         mode = 0;

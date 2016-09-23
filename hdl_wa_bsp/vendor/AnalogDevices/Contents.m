@@ -1,2 +1,2 @@
 % HDL Coder BSP: Analog Devices Inc
-% Version 1.03 (R2015b) 11-March-2016
+% Version 1.04 (R2016a) 01-August-2016

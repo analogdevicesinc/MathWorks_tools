@@ -30,5 +30,9 @@ function install(mode)
 	zynqTargetDir = fullfile(zynqRootDir,'registry/targethardware');
 	source = fullfile(vendorRootDir, '/+AnalogDevices/+util/adizynqsdr.xml');
 	destination = fullfile(zynqTargetDir, 'adizynqsdr.xml');
-	copyfile(source, destination);
+	if(mode == 0)
+		copyfile(source, destination);
+	else
+		delete(destination);
+	end	
 end
