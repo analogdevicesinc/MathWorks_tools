@@ -242,3 +242,5 @@ create_clock -name tx_div_clk_0   -period  8.00 [get_pins i_system_wrapper/syste
 create_clock -name rx_div_clk_0   -period  8.00 [get_pins i_system_wrapper/system_i/axi_pzslb_gt/inst/g_lane_1[0].i_channel/i_gt/i_gtxe2_channel/RXOUTCLK]
 create_clock -name tx_div_clk_1   -period  8.00 [get_pins i_system_wrapper/system_i/axi_pzslb_gt/inst/g_lane_1[1].i_channel/i_gt/i_gtxe2_channel/TXOUTCLK]
 create_clock -name rx_div_clk_1   -period  8.00 [get_pins i_system_wrapper/system_i/axi_pzslb_gt/inst/g_lane_1[1].i_channel/i_gt/i_gtxe2_channel/RXOUTCLK]
+
+
