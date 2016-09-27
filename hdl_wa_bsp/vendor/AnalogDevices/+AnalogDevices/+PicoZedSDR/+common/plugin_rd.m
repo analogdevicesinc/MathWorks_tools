@@ -54,8 +54,12 @@ hRD.CustomConstraints = {...
 
 % custom source files
 hRD.CustomFiles = {...
-    fullfile('projects')...,
 	fullfile('library')...,
+	fullfile('projects','common')...,
+	fullfile('projects','scripts')...,
+	fullfile('projects','fmcomms2')...,
+	fullfile('projects','pzsdr', 'common')...,
+    fullfile('projects','pzsdr', lower(board))...,
     };	
 	
 %% Add interfaces

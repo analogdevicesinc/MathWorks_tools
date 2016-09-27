@@ -18,4 +18,7 @@ set_property PROCESSING_ORDER EARLY [get_files system_constr.xdc]
 
 adi_project_run ccbrk_pzsdr
 
+# Copy the boot file to the root directory
+file copy -force $proj_dir/boot $ad_hdl_dir/boot
+
 

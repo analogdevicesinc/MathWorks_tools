@@ -14,3 +14,6 @@ adi_project_files fmcomms2_zc706 [list \
   "$ad_hdl_dir/projects/common/zc706/zc706_system_constr.xdc" ]
 
 adi_project_run fmcomms2_zc706
+
+# Copy the boot file to the root directory
+file copy -force $proj_dir/boot $ad_hdl_dir/boot
