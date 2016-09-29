@@ -1,5 +1,4 @@
 *.mlappinstall
-*.prj
 *.mexw64
 **/slprj/**
 AD9361_Filter_Wizard/*TestFiltWiz*.m
