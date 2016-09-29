@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015, MathWorks Inc. -->
+<productinfo>
+    <name>Analog Devices Zynq SDR EC</name>
+    <parametergroup>
+        <name>Clocking</name>
+        <parameter Alignment="1" Callback="widgetChangedCallback" ColSpan="[1,3]" Data="" DialogRefresh="0" DoNotStore="false" Enabled="1" Entries="" Name="CPU Clock (MHz):" RowSpan="codertarget.zynq.internal.setRowSpan(hObj);" SaveValueAsString="true" Storage="Clocking.cpuClockRateMHz" Tag="CPU_Clock_in_MHz" Type="edit" Value="800" Visible="1"/>
+    </parametergroup>
+    <parametergroup>
+        <name>Build options</name>
+    <parameter Alignment="1" Callback="widgetChangedCallback" ColSpan="[1,3]" Data="" DialogRefresh="0" DoNotStore="false" Enabled="1" Entries="Build; Build, load, and run" Name="Build action:" RowSpan="[1,1]" SaveValueAsString="true" Storage="Runtime.BuildAction" Tag="Build_action" Type="combobox" Value="Build, load, and run" Visible="1"/>
+    </parametergroup> 
+</productinfo>

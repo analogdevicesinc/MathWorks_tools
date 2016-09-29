@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--  Copyright 2013-2015 The MathWorks, Inc. -->
+<productinfo version="2.0">
+    <name>Analog Devices Zynq SDR EC</name>
+    <enableoneclick>true</enableoneclick>
+    <externalmodeinfo preconnectfcn="codertarget.zynq.internal.extmodeHooks(hObj,'preconnectfcn');">
+        <sourcefile>$(MATLAB_ROOT)/rtw/c/src/ext_mode/common/rtiostream_interface.c</sourcefile>
+        <!-- <sourcefile>$(MATLAB_ROOT)/rtw/c/src/rtiostream/rtiostreamtcpip/rtiostream_tcpip.c</sourcefile> -->
+        <sourcefile>$(ARM_CORTEX_A_ROOT_DIR)/src/rtiostream_tcpip.c</sourcefile>
+        <setupfcn>codertarget.zynq.internal.extmodeHooks(hObj,'setupfcn');</setupfcn>
+        <transport type="tcp/ip" name="tcpip">
+            <iointerfacename>TCP/IP</iointerfacename>
+            <verbose value="1" visible="true"/>
+            <port value ="17725" visible="false"/>
+            <ipaddress value ="getenv('ADI_ZYNQ_SDR_IPADDRESS')" visible="true"/>
+        </transport>
+        <task inbackground="true" inforeground="true" default="foreground" visible="true"/> 
+        <codertargetparameter name="Runtime.BuildAction" value="Build, load, and run"/>
+    </externalmodeinfo>  
+    <sourcefile>$(TARGET_ROOT)/src/axi4Lite.c</sourcefile> <!--- DONOT REMOVE THIS, required by AXI TLC SFCNS -->
+    <includepath>$(TARGET_ROOT)/include</includepath>      <!--- DONOT REMOVE THIS, required by AXI TLC SFCNS --> 
+    <define>ARM_PROJECT</define>
+    <token>ADI_ZYNQ_SDR_IPADDRESS</token>
+    <token>ZYNQ_USERNAME</token>
+    <token>ZYNQ_PASSWORD</token>
+    <token Name="ARM_CORTEX_A_ROOT_DIR" Value="codertarget.arm_cortex_a.internal.getSpPkgRootDir"/>
+    <onaftercodegenhook>codertarget.zynq.internal.onAfterCodeGen</onaftercodegenhook>
+    <onbuildentryhook>codertarget.zynq.internal.onBuildEntryHook</onbuildentryhook>
+    <onhardwareselecthook>codertarget.zynq.internal.onHardwareSelect</onhardwareselecthook>
+    <profiler
+        TimerSrcFile="$(ARM_CORTEX_A_ROOT_DIR)/src/profile_timer.c" TimerIncludeFile="$(ARM_CORTEX_A_ROOT_DIR)/include/profile_timer.h"     
+        TimerReadFcn="profileReadTimer" TimerDataType="uint32" TimerTicksPerS="1000000000" TimerUpcounting="1" 
+        StoreCoreId="1" PrintData="1" InstantPrint="0" BufferName="profilingData" DataLength="400" 
+        GetDataFcn="codertarget.zynq.internal.getProfileData"/>
+</productinfo>
