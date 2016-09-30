@@ -28,7 +28,8 @@ function install(mode)
 	% Copy the Zynq SDR target definition file into the support package
 	source  = [];
 	destination = [];
-	zynqRootDir   = codertarget.zynq.internal.getSpPkgRootDir;
+	zynqRootDir = codertarget.zynq.internal.getSpPkgRootDir;
+    armRootDir  = codertarget.arm_cortex_a.internal.getSpPkgRootDir;
 	
 	zynqTargetDir = fullfile(zynqRootDir,'registry/targethardware');
 	source = [source {fullfile(vendorRootDir, '/+AnalogDevices/+util/adizynqsdr.xml')}];
@@ -42,6 +43,9 @@ function install(mode)
 	source = [source {fullfile(vendorRootDir, '/+AnalogDevices/+util/ADIZynqSDRParameterInfo.xml')}];
 	destination = [destination {fullfile(zynqTargetDir, 'ADIZynqSDRParameterInfo.xml')}];
 	
+    source = [source {fullfile(armRootDir,'ssh_download.bat')}];
+    destination = [destination {fullfile(zynqRootDir, 'ssh_download.bat')}];
+    
 	if(mode == 0)
         for i = 1:length(source)
             copyfile(char(source(:,i)), char(destination(:,i)), 'f');
