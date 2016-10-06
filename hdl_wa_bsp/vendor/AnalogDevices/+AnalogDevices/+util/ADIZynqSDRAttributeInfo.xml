@@ -13,6 +13,8 @@
             <verbose value="1" visible="true"/>
             <port value ="17725" visible="false"/>
             <ipaddress value ="getenv('ADI_ZYNQ_SDR_IPADDRESS')" visible="true"/>
+			<username value ="root" visible="false"/>
+			<password value ="analog" visible="false"/>
         </transport>
         <task inbackground="true" inforeground="true" default="foreground" visible="true"/> 
         <codertargetparameter name="Runtime.BuildAction" value="Build, load, and run"/>
