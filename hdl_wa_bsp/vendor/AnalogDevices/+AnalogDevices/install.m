@@ -43,6 +43,9 @@ function install(mode)
 	source = [source {fullfile(vendorRootDir, '/+AnalogDevices/+util/ADIZynqSDRParameterInfo.xml')}];
 	destination = [destination {fullfile(zynqTargetDir, 'ADIZynqSDRParameterInfo.xml')}];
 	
+	source = [source {fullfile(vendorRootDir, '/+AnalogDevices/+util/extmodeHooksADI.m')}];
+	destination = [destination {fullfile(zynqRootDir, '/+codertarget/+zynq/+internal/extmodeHooksADI.m')}];
+	
     source = [source {fullfile(armRootDir,'ssh_download.bat')}];
     destination = [destination {fullfile(zynqRootDir, 'ssh_download.bat')}];
     

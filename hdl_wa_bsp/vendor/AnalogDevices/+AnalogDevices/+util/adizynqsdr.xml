@@ -6,8 +6,8 @@
     <subfamily>ARM Cortex-A</subfamily>
     <productionhwdevicetype>ARM Compatible-&gt;ARM Cortex</productionhwdevicetype>
     <toolchain name="Linaro Toolchain v4.8" IsLoadCommandMATLABFcn="false"> 
-        <loadcommand>"$(TARGET_PKG_INSTALLDIR)/ssh_download.bat"</loadcommand>  
-        <loadcommandargs>"$(MATLAB_ROOT)/toolbox/idelink/foundation/hostapps" analog analog $(ADI_ZYNQ_SDR_IPADDRESS) /home/analog/Downloads</loadcommandargs>
+        <loadcommand>"$(ARM_CORTEX_A_ROOT_DIR)/ssh_download.bat"</loadcommand>  
+        <loadcommandargs>"$(MATLAB_ROOT)/toolbox/idelink/foundation/hostapps" root analog $(ADI_ZYNQ_SDR_IPADDRESS) /home/analog/Downloads</loadcommandargs>
     </toolchain>
     <parameterinfo>$(TARGET_ROOT)/registry/parameters/ADIZynqSDRParameterInfo.xml</parameterinfo>
     <attributeinfo>$(TARGET_ROOT)/registry/attributes/ADIZynqSDRAttributeInfo.xml</attributeinfo>
