@@ -15,3 +15,6 @@ adi_project_files fmcomms2_zed [list \
 
 adi_project_run fmcomms2_zed
 
+# Copy the boot file to the root directory
+file copy -force $proj_dir/boot $ad_hdl_dir/boot
+

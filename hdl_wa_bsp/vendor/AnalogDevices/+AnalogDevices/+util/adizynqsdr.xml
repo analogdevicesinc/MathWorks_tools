@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright 2013-2015 The MathWorks, Inc. -->
 <productinfo version="2.0">
-    <name>Zynq SDR</name>
+    <name>Analog Devices Zynq SDR</name>
     <deviceid>ARM Cortex-A9</deviceid>
     <subfamily>ARM Cortex-A</subfamily>
     <productionhwdevicetype>ARM Compatible-&gt;ARM Cortex</productionhwdevicetype>
     <toolchain name="Linaro Toolchain v4.8" IsLoadCommandMATLABFcn="false"> 
-        <loadcommand>"$(TARGET_PKG_INSTALLDIR)/ssh_download.bat"</loadcommand>  
-        <loadcommandargs>"$(MATLAB_ROOT)/toolbox/idelink/foundation/hostapps" analog analog $(ZYNQ_IPADDRESS_NEW) /home/analog/Downloads</loadcommandargs>
+        <loadcommand>"$(ARM_CORTEX_A_ROOT_DIR)/ssh_download.bat"</loadcommand>  
+        <loadcommandargs>"$(MATLAB_ROOT)/toolbox/idelink/foundation/hostapps" root analog $(ADI_ZYNQ_SDR_IPADDRESS) /home/analog/Downloads</loadcommandargs>
     </toolchain>
-    <parameterinfo>$(TARGET_ROOT)/registry/parameters/xilinxZynqZC701ParameterInfo.xml</parameterinfo>
-    <attributeinfo>$(TARGET_ROOT)/registry/attributes/xilinxZynqZC701AttributeInfo.xml</attributeinfo>
-    <rtosinfo>$(TARGET_ROOT)/registry/rtos/linux.xml</rtosinfo>  
+    <parameterinfo>$(TARGET_ROOT)/registry/parameters/ADIZynqSDRParameterInfo.xml</parameterinfo>
+    <attributeinfo>$(TARGET_ROOT)/registry/attributes/ADIZynqSDRAttributeInfo.xml</attributeinfo>
+<!--	<rtosinfo>$(MATLAB_ROOT)/toolbox/target/codertarget/rtos/registry/linux.xml</rtosinfo> -->
+	<matlabpilinfo GetPropsFcn="codertarget.zynq.internal.getMATLABPILProps"></matlabpilinfo>
 </productinfo>

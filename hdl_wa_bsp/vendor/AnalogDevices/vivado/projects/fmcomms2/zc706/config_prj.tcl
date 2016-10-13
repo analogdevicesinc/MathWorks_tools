@@ -12,6 +12,3 @@ connect_bd_net -net [get_bd_nets util_clkdiv_0_clk_out] [get_bd_pins proc_sys_re
 set_property -dict [list CONFIG.NUM_MI {9}] [get_bd_cells axi_cpu_interconnect]
 connect_bd_net -net [get_bd_nets util_clkdiv_0_clk_out] [get_bd_pins axi_cpu_interconnect/M08_ACLK] [get_bd_pins util_clkdiv_0/clk_out]
 connect_bd_net [get_bd_pins proc_sys_reset_0/interconnect_aresetn] [get_bd_pins axi_cpu_interconnect/M08_ARESETN]
-
-# Delete interrupt line 11
-delete_bd_objs [get_bd_ports ps_intr_11]

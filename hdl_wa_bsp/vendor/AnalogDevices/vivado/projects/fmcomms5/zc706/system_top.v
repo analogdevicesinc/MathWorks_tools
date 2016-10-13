@@ -362,6 +362,7 @@ module system_top (
     .ps_intr_08 (1'b0),
     .ps_intr_09 (1'b0),
     .ps_intr_10 (1'b0),
+    .ps_intr_11 (1'b0),
     .rx_clk_in_0_n (rx_clk_in_0_n),
     .rx_clk_in_0_p (rx_clk_in_0_p),
     .rx_clk_in_1_n (rx_clk_in_1_n),
