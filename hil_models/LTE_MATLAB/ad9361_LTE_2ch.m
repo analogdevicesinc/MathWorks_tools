@@ -1,4 +1,4 @@
-function [hsa,hcd,plots,rssi1,rssi2]=ad9361_LTE_2ch(ip,LTEmode,channel)
+function [plots,rssi1,rssi2]=ad9361_LTE_2ch(ip,LTEmode,channel)
 
 clc;
 
@@ -125,4 +125,4 @@ end
 Rx = I+1i*Q;
 
 % Call LTE Reciever Function
-[hsa,hcd,plots]=LTEReceiver(Rx,samplingrate,configuration);
+[plots]=LTEReceiver(Rx,samplingrate,configuration);
