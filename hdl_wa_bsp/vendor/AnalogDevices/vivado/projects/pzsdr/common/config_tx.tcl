@@ -17,9 +17,9 @@ connect_bd_net [get_bd_pins util_ad9361_dac_upack/dac_clk] [get_bd_pins util_clk
 connect_bd_net -net [get_bd_nets util_clkdiv_0_clk_out] [get_bd_pins axi_ad9361_dac_dma/fifo_rd_clk] [get_bd_pins util_clkdiv_0/clk_out]
 
 # Connect the DAC UNPACK valid signals together
-connect_bd_net [get_bd_pins util_ad9361_dac_upack/unpack_valid_0] [get_bd_pins util_ad9361_dac_upack/unpack_valid_1]
-connect_bd_net [get_bd_pins util_ad9361_dac_upack/unpack_valid_0] [get_bd_pins util_ad9361_dac_upack/unpack_valid_2]
-connect_bd_net [get_bd_pins util_ad9361_dac_upack/unpack_valid_0] [get_bd_pins util_ad9361_dac_upack/unpack_valid_3]
+connect_bd_net [get_bd_pins util_ad9361_dac_upack/dac_valid_0] [get_bd_pins util_ad9361_dac_upack/dac_valid_1]
+connect_bd_net [get_bd_pins util_ad9361_dac_upack/dac_valid_0] [get_bd_pins util_ad9361_dac_upack/dac_valid_2]
+connect_bd_net [get_bd_pins util_ad9361_dac_upack/dac_valid_0] [get_bd_pins util_ad9361_dac_upack/dac_valid_3]
 
 # Create the Tx clock transition FIFOs
 p_sys_rfifo [current_bd_instance .] sys_rfifo_0 16 16
