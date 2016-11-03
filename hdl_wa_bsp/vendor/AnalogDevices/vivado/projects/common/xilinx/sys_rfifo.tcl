@@ -38,10 +38,8 @@ proc p_sys_rfifo {p_name m_name dac_data_width dma_data_width} {
   set_property -dict [list CONFIG.Programmable_Full_Type {Single_Programmable_Full_Threshold_Constant}] $rfifo_mem
   set_property -dict [list CONFIG.Full_Threshold_Assert_Value {50}] $rfifo_mem
 
-  connect_bd_net -net dac_clk                 [get_bd_pins dac_clk]
-  connect_bd_net -net dma_clk                 [get_bd_pins dma_clk]
-  connect_bd_net -net dac_clk                 [get_bd_pins rfifo_ctl/dac_clk]
-  connect_bd_net -net dma_clk                 [get_bd_pins rfifo_ctl/dma_clk]
+  connect_bd_net -net dac_clk                 [get_bd_pins dac_clk] [get_bd_pins rfifo_ctl/dac_clk]
+  connect_bd_net -net dma_clk                 [get_bd_pins dma_clk] [get_bd_pins rfifo_ctl/dma_clk]
   connect_bd_net -net dma_clk                 [get_bd_pins rfifo_mem/wr_clk]
   connect_bd_net -net dac_clk                 [get_bd_pins rfifo_mem/rd_clk]
 

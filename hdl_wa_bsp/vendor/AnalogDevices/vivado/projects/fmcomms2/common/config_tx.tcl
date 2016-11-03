@@ -31,18 +31,21 @@ p_sys_rfifo [current_bd_instance .] sys_rfifo_3 16 16
 create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0
 
 # Connect the Tx FIFOs ports
-ad_connect  axi_ad9361_clk sys_rfifo_0/dac_clk
-ad_connect  axi_ad9361_clk sys_rfifo_1/dac_clk
-ad_connect  axi_ad9361_clk sys_rfifo_2/dac_clk
-ad_connect  axi_ad9361_clk sys_rfifo_3/dac_clk
-ad_connect  sys_rfifo_0/dac_rdata axi_ad9361/dac_data_i0
-ad_connect  sys_rfifo_1/dac_rdata axi_ad9361/dac_data_q0
-ad_connect  sys_rfifo_2/dac_rdata axi_ad9361/dac_data_i1
-ad_connect  sys_rfifo_3/dac_rdata axi_ad9361/dac_data_q1
+connect_bd_net -net [get_bd_nets axi_ad9361_clk] [get_bd_pins axi_ad9361/l_clk] [get_bd_pins sys_rfifo_0/dac_clk]
+connect_bd_net -net [get_bd_nets axi_ad9361_clk] [get_bd_pins axi_ad9361/l_clk] [get_bd_pins sys_rfifo_1/dac_clk]
+connect_bd_net -net [get_bd_nets axi_ad9361_clk] [get_bd_pins axi_ad9361/l_clk] [get_bd_pins sys_rfifo_2/dac_clk]
+connect_bd_net -net [get_bd_nets axi_ad9361_clk] [get_bd_pins axi_ad9361/l_clk] [get_bd_pins sys_rfifo_3/dac_clk]
+
+connect_bd_net [get_bd_pins sys_rfifo_0/dac_rdata] [get_bd_pins axi_ad9361/dac_data_i0]
+connect_bd_net [get_bd_pins sys_rfifo_1/dac_rdata] [get_bd_pins axi_ad9361/dac_data_q0]
+connect_bd_net [get_bd_pins sys_rfifo_2/dac_rdata] [get_bd_pins axi_ad9361/dac_data_i1]
+connect_bd_net [get_bd_pins sys_rfifo_3/dac_rdata] [get_bd_pins axi_ad9361/dac_data_q1]
+
 connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins sys_rfifo_0/dac_rd]
 connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins sys_rfifo_1/dac_rd]
 connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins sys_rfifo_2/dac_rd]
 connect_bd_net [get_bd_pins xlconstant_0/dout] [get_bd_pins sys_rfifo_3/dac_rd]
+
 connect_bd_net -net [get_bd_nets util_clkdiv_0_clk_out] [get_bd_pins sys_rfifo_0/dma_clk] [get_bd_pins util_clkdiv_0/clk_out]
 connect_bd_net -net [get_bd_nets util_clkdiv_0_clk_out] [get_bd_pins sys_rfifo_1/dma_clk] [get_bd_pins util_clkdiv_0/clk_out]
 connect_bd_net -net [get_bd_nets util_clkdiv_0_clk_out] [get_bd_pins sys_rfifo_2/dma_clk] [get_bd_pins util_clkdiv_0/clk_out]
