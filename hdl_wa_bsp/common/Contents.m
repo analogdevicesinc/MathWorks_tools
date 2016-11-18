@@ -1,2 +1,2 @@
 % HDL Coder BSP Tools
-% Version 1.04 (R2016a) 01-Aug-2016
+% Version 1.05 (R2016b) 01-November-2016
