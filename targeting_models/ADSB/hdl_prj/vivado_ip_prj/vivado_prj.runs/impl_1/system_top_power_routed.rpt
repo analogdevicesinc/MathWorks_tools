@@ -1,0 +1,779 @@
+Copyright 1986-2016 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version     : Vivado v.2016.2 (win64) Build 1577090 Thu Jun  2 16:32:40 MDT 2016
+| Date             : Mon Jul 24 13:53:30 2017
+| Host             : ACOZMA-L03 running 64-bit Service Pack 1  (build 7601)
+| Command          : report_power -file system_top_power_routed.rpt -pb system_top_power_summary_routed.pb -rpx system_top_power_routed.rpx
+| Design           : system_top
+| Device           : xc7z035ifbg676-2L
+| Design State     : routed
+| Grade            : extended
+| Process          : typical
+| Characterization : Production
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Power Report
+
+Table of Contents
+-----------------
+1. Summary
+1.1 On-Chip Components
+1.2 Power Supply Summary
+1.3 Confidence Level
+2. Settings
+2.1 Environment
+2.2 Clock Constraints
+3. Detailed Reports
+3.1 By Hierarchy
+
+1. Summary
+----------
+
++--------------------------+-------+
+| Total On-Chip Power (W)  | 3.630 |
+| Dynamic (W)              | 3.415 |
+| Device Static (W)        | 0.215 |
+| Total Off-Chip Power (W) | 0.010 |
+| Effective TJA (C/W)      | 1.9   |
+| Max Ambient (C)          | 93.3  |
+| Junction Temperature (C) | 31.7  |
+| Confidence Level         | Low   |
+| Setting File             | ---   |
+| Simulation Activity File | ---   |
+| Design Nets Matched      | NA    |
++--------------------------+-------+
+
+
+1.1 On-Chip Components
+----------------------
+
++--------------------------+-----------+----------+-----------+-----------------+
+| On-Chip                  | Power (W) | Used     | Available | Utilization (%) |
++--------------------------+-----------+----------+-----------+-----------------+
+| Clocks                   |     0.160 |       14 |       --- |             --- |
+| Slice Logic              |     0.107 |    43058 |       --- |             --- |
+|   LUT as Logic           |     0.064 |    12798 |    171900 |            7.45 |
+|   Register               |     0.013 |    24199 |    343800 |            7.04 |
+|   Others                 |     0.012 |     1023 |       --- |             --- |
+|   CARRY4                 |     0.011 |     1737 |     54650 |            3.18 |
+|   LUT as Shift Register  |     0.007 |      615 |     70400 |            0.87 |
+|   LUT as Distributed RAM |    <0.001 |       62 |     70400 |            0.09 |
+|   F7/F8 Muxes            |    <0.001 |      162 |    218600 |            0.07 |
+| Signals                  |     0.148 |    32122 |       --- |             --- |
+| Block RAM                |     0.011 |        4 |       500 |            0.80 |
+| DSPs                     |     0.132 |       63 |       900 |            7.00 |
+| I/O                      |     0.198 |      250 |       250 |          100.00 |
+| GTX                      |     1.113 |        4 |         8 |           50.00 |
+| PS7                      |     1.535 |        1 |       --- |             --- |
+| Static Power             |     0.215 |          |           |                 |
+| Total                    |     3.620 |          |           |                 |
++--------------------------+-----------+----------+-----------+-----------------+
+
+
+1.2 Power Supply Summary
+------------------------
+
++-----------+-------------+-----------+-------------+------------+
+| Source    | Voltage (V) | Total (A) | Dynamic (A) | Static (A) |
++-----------+-------------+-----------+-------------+------------+
+| Vccint    |       0.950 |     0.697 |       0.658 |      0.039 |
+| Vccaux    |       1.800 |     0.078 |       0.029 |      0.049 |
+| Vcco33    |       3.300 |     0.000 |       0.000 |      0.000 |
+| Vcco25    |       2.500 |     0.005 |       0.004 |      0.001 |
+| Vcco18    |       1.800 |     0.084 |       0.083 |      0.001 |
+| Vcco15    |       1.500 |     0.001 |       0.000 |      0.001 |
+| Vcco135   |       1.350 |     0.000 |       0.000 |      0.000 |
+| Vcco12    |       1.200 |     0.000 |       0.000 |      0.000 |
+| Vccaux_io |       1.800 |     0.000 |       0.000 |      0.000 |
+| Vccbram   |       0.950 |     0.002 |       0.000 |      0.001 |
+| MGTAVcc   |       1.000 |     0.609 |       0.605 |      0.003 |
+| MGTAVtt   |       1.200 |     0.369 |       0.364 |      0.005 |
+| MGTVccaux |       1.800 |     0.000 |       0.000 |      0.000 |
+| Vccpint   |       1.000 |     0.739 |       0.726 |      0.013 |
+| Vccpaux   |       1.800 |     0.060 |       0.051 |      0.009 |
+| Vccpll    |       1.800 |     0.017 |       0.014 |      0.003 |
+| Vcco_ddr  |       1.500 |     0.459 |       0.457 |      0.002 |
+| Vcco_mio0 |       1.800 |     0.003 |       0.002 |      0.001 |
+| Vcco_mio1 |       1.800 |     0.003 |       0.002 |      0.001 |
+| Vccadc    |       1.800 |     0.018 |       0.000 |      0.018 |
++-----------+-------------+-----------+-------------+------------+
+
+
+1.3 Confidence Level
+--------------------
+
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+| User Input Data             | Confidence | Details                                                | Action                                                                                                     |
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+| Design implementation state | High       | Design is routed                                       |                                                                                                            |
+| Clock nodes activity        | High       | User specified more than 95% of clocks                 |                                                                                                            |
+| I/O nodes activity          | Low        | More than 75% of inputs are missing user specification | Provide missing input activity with simulation results or by editing the "By Resource Type -> I/Os" view   |
+| Internal nodes activity     | Medium     | User specified less than 25% of internal nodes         | Provide missing internal nodes activity with simulation results or by editing the "By Resource Type" views |
+| Device models               | High       | Device models are Production                           |                                                                                                            |
+|                             |            |                                                        |                                                                                                            |
+| Overall confidence level    | Low        |                                                        |                                                                                                            |
++-----------------------------+------------+--------------------------------------------------------+------------------------------------------------------------------------------------------------------------+
+
+
+2. Settings
+-----------
+
+2.1 Environment
+---------------
+
++-----------------------+--------------------------+
+| Ambient Temp (C)      | 25.0                     |
+| ThetaJA (C/W)         | 1.9                      |
+| Airflow (LFM)         | 250                      |
+| Heat Sink             | medium (Medium Profile)  |
+| ThetaSA (C/W)         | 3.4                      |
+| Board Selection       | medium (10"x10")         |
+| # of Board Layers     | 12to15 (12 to 15 Layers) |
+| Board Temperature (C) | 25.0                     |
++-----------------------+--------------------------+
+
+
+2.2 Clock Constraints
+---------------------
+
++-----------------+---------------------------------------------------------------------------------------+-----------------+
+| Clock           | Domain                                                                                | Constraint (ns) |
++-----------------+---------------------------------------------------------------------------------------+-----------------+
+| clk_div_sel_0_s | i_system_wrapper/system_i/clkdiv/inst/clk_div_sel_0_s                                 |            16.0 |
+| clk_div_sel_1_s | i_system_wrapper/system_i/clkdiv/inst/clk_div_sel_1_s                                 |             8.0 |
+| clk_fpga_0      | i_system_wrapper/system_i/sys_ps7/inst/FCLK_CLK_unbuffered[0]                         |            10.0 |
+| clk_fpga_1      | i_system_wrapper/system_i/sys_ps7/inst/FCLK_CLK_unbuffered[1]                         |             5.0 |
+| ref_clk         | gt_ref_clk_p                                                                          |             4.0 |
+| rx_clk          | i_system_wrapper/system_i/axi_ad9361/inst/i_dev_if/i_clk/clk                          |             4.0 |
+| rx_clk          | rx_clk_in_p                                                                           |             4.0 |
+| xcvr_clk_0      | i_system_wrapper/system_i/axi_pz_xcvrlb/inst/g_lanes[0].i_xcvrlb_1/i_xch/rx_out_clk_s |             8.0 |
+| xcvr_clk_1      | i_system_wrapper/system_i/axi_pz_xcvrlb/inst/g_lanes[1].i_xcvrlb_1/i_xch/rx_out_clk_s |             8.0 |
+| xcvr_clk_2      | i_system_wrapper/system_i/axi_pz_xcvrlb/inst/g_lanes[2].i_xcvrlb_1/i_xch/rx_out_clk_s |             8.0 |
+| xcvr_clk_3      | i_system_wrapper/system_i/axi_pz_xcvrlb/inst/g_lanes[3].i_xcvrlb_1/i_xch/rx_out_clk_s |             8.0 |
++-----------------+---------------------------------------------------------------------------------------+-----------------+
+
+
+3. Detailed Reports
+-------------------
+
+3.1 By Hierarchy
+----------------
+
++------------------------------------------------------------+-----------+
+| Name                                                       | Power (W) |
++------------------------------------------------------------+-----------+
+| system_top                                                 |     3.405 |
+|   gpio_bd_IOBUF[0]_inst                                    |    <0.001 |
+|   gpio_bd_IOBUF[10]_inst                                   |     0.001 |
+|   gpio_bd_IOBUF[11]_inst                                   |     0.001 |
+|   gpio_bd_IOBUF[12]_inst                                   |     0.001 |
+|   gpio_bd_IOBUF[13]_inst                                   |     0.001 |
+|   gpio_bd_IOBUF[14]_inst                                   |     0.001 |
+|   gpio_bd_IOBUF[15]_inst                                   |    <0.001 |
+|   gpio_bd_IOBUF[16]_inst                                   |    <0.001 |
+|   gpio_bd_IOBUF[17]_inst                                   |    <0.001 |
+|   gpio_bd_IOBUF[18]_inst                                   |    <0.001 |
+|   gpio_bd_IOBUF[19]_inst                                   |    <0.001 |
+|   gpio_bd_IOBUF[1]_inst                                    |    <0.001 |
+|   gpio_bd_IOBUF[2]_inst                                    |    <0.001 |
+|   gpio_bd_IOBUF[3]_inst                                    |    <0.001 |
+|   gpio_bd_IOBUF[4]_inst                                    |    <0.001 |
+|   gpio_bd_IOBUF[5]_inst                                    |     0.001 |
+|   gpio_bd_IOBUF[6]_inst                                    |     0.001 |
+|   gpio_bd_IOBUF[7]_inst                                    |     0.001 |
+|   gpio_bd_IOBUF[8]_inst                                    |     0.001 |
+|   gpio_bd_IOBUF[9]_inst                                    |     0.001 |
+|   gpio_clksel_IOBUF_inst                                   |    <0.001 |
+|   gpio_ctl_IOBUF[0]_inst                                   |    <0.001 |
+|   gpio_ctl_IOBUF[1]_inst                                   |    <0.001 |
+|   gpio_ctl_IOBUF[2]_inst                                   |    <0.001 |
+|   gpio_ctl_IOBUF[3]_inst                                   |    <0.001 |
+|   gpio_en_agc_IOBUF_inst                                   |    <0.001 |
+|   gpio_resetb_IOBUF_inst                                   |    <0.001 |
+|   gpio_status_IOBUF[0]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[1]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[2]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[3]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[4]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[5]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[6]_inst                                |    <0.001 |
+|   gpio_status_IOBUF[7]_inst                                |    <0.001 |
+|   gpio_sync_IOBUF_inst                                     |    <0.001 |
+|   i_system_wrapper                                         |     3.373 |
+|     iic_main_scl_iobuf                                     |     0.000 |
+|     iic_main_sda_iobuf                                     |     0.000 |
+|     system_i                                               |     3.373 |
+|       Detector_ip_0                                        |     0.070 |
+|         inst                                               |     0.070 |
+|           u_Detector_ip_axi_lite_inst                      |    <0.001 |
+|             u_Detector_ip_addr_decoder_inst                |    <0.001 |
+|             u_Detector_ip_axi_lite_module_inst             |    <0.001 |
+|           u_Detector_ip_dut_inst                           |     0.070 |
+|             u_Detector_ip_src_Detector                     |     0.070 |
+|               u_Bit_Process                                |     0.002 |
+|               u_CalcCRC                                    |    <0.001 |
+|                 u_Check_CRC                                |    <0.001 |
+|                 u_crc24f                                   |    <0.001 |
+|               u_CalcMagnitude                              |     0.003 |
+|               u_CalcNF                                     |     0.022 |
+|                 u_NoiseFloor                               |     0.022 |
+|               u_CalcSyncCorr                               |     0.041 |
+|                 u_SyncCorr                                 |     0.041 |
+|               u_FrameDetect                                |    <0.001 |
+|               u_SyncAndControl                             |     0.001 |
+|       axi_ad9361                                           |     0.590 |
+|         inst                                               |     0.590 |
+|           i_dev_if                                         |     0.190 |
+|             g_rx_data[0].i_rx_data                         |     0.006 |
+|             g_rx_data[1].i_rx_data                         |     0.006 |
+|             g_rx_data[2].i_rx_data                         |     0.006 |
+|             g_rx_data[3].i_rx_data                         |     0.006 |
+|             g_rx_data[4].i_rx_data                         |     0.006 |
+|             g_rx_data[5].i_rx_data                         |     0.006 |
+|             g_tx_data[0].i_tx_data                         |     0.017 |
+|             g_tx_data[1].i_tx_data                         |     0.017 |
+|             g_tx_data[2].i_tx_data                         |     0.017 |
+|             g_tx_data[3].i_tx_data                         |     0.017 |
+|             g_tx_data[4].i_tx_data                         |     0.017 |
+|             g_tx_data[5].i_tx_data                         |     0.017 |
+|             i_clk                                          |     0.005 |
+|             i_enable                                       |     0.002 |
+|             i_rx_frame                                     |     0.006 |
+|             i_tx_clk                                       |     0.017 |
+|             i_tx_frame                                     |     0.017 |
+|             i_txnrx                                        |     0.002 |
+|           i_rx                                             |     0.096 |
+|             i_delay_cntrl                                  |     0.002 |
+|               i_delay_rst_reg                              |     0.002 |
+|             i_rx_channel_0                                 |     0.023 |
+|               i_ad_datafmt                                 |    <0.001 |
+|               i_ad_dcfilter                                |     0.009 |
+|               i_ad_iqcor                                   |     0.009 |
+|                 i_mul_i                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|                 i_mul_q                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|               i_rx_pnmon                                   |     0.002 |
+|                 i_pnmon                                    |    <0.001 |
+|               i_up_adc_channel                             |     0.003 |
+|                 i_xfer_cntrl                               |     0.002 |
+|                 i_xfer_status                              |    <0.001 |
+|             i_rx_channel_1                                 |     0.023 |
+|               i_ad_datafmt                                 |    <0.001 |
+|               i_ad_dcfilter                                |     0.009 |
+|               i_ad_iqcor                                   |     0.009 |
+|                 i_mul_i                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|                 i_mul_q                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|               i_rx_pnmon                                   |     0.002 |
+|                 i_pnmon                                    |    <0.001 |
+|               i_up_adc_channel                             |     0.003 |
+|                 i_xfer_cntrl                               |     0.002 |
+|                 i_xfer_status                              |    <0.001 |
+|             i_rx_channel_2                                 |     0.023 |
+|               i_ad_datafmt                                 |    <0.001 |
+|               i_ad_dcfilter                                |     0.009 |
+|               i_ad_iqcor                                   |     0.009 |
+|                 i_mul_i                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|                 i_mul_q                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|               i_rx_pnmon                                   |     0.002 |
+|                 i_pnmon                                    |    <0.001 |
+|               i_up_adc_channel                             |     0.003 |
+|                 i_xfer_cntrl                               |     0.002 |
+|                 i_xfer_status                              |    <0.001 |
+|             i_rx_channel_3                                 |     0.023 |
+|               i_ad_datafmt                                 |    <0.001 |
+|               i_ad_dcfilter                                |     0.009 |
+|               i_ad_iqcor                                   |     0.009 |
+|                 i_mul_i                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|                 i_mul_q                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|               i_rx_pnmon                                   |     0.002 |
+|                 i_pnmon                                    |    <0.001 |
+|               i_up_adc_channel                             |     0.003 |
+|                 i_xfer_cntrl                               |     0.002 |
+|                 i_xfer_status                              |    <0.001 |
+|             i_up_adc_common                                |     0.003 |
+|               i_clock_mon                                  |     0.001 |
+|               i_core_rst_reg                               |    <0.001 |
+|               i_xfer_cntrl                                 |    <0.001 |
+|               i_xfer_status                                |    <0.001 |
+|           i_tdd                                            |     0.026 |
+|             i_tdd_control                                  |     0.012 |
+|               i_rx_off_1_comp                              |    <0.001 |
+|               i_rx_off_2_comp                              |    <0.001 |
+|               i_rx_on_1_comp                               |    <0.001 |
+|               i_rx_on_2_comp                               |    <0.001 |
+|               i_tx_dp_off_1_comp                           |    <0.001 |
+|               i_tx_dp_off_2_comp                           |    <0.001 |
+|               i_tx_dp_on_1_comp                            |    <0.001 |
+|               i_tx_dp_on_2_comp                            |    <0.001 |
+|               i_tx_off_1_comp                              |    <0.001 |
+|               i_tx_off_2_comp                              |    <0.001 |
+|               i_tx_on_1_comp                               |    <0.001 |
+|               i_tx_on_2_comp                               |    <0.001 |
+|               i_vco_rx_off_1_comp                          |    <0.001 |
+|               i_vco_rx_off_2_comp                          |    <0.001 |
+|               i_vco_rx_on_1_comp                           |    <0.001 |
+|               i_vco_rx_on_2_comp                           |    <0.001 |
+|               i_vco_tx_off_1_comp                          |    <0.001 |
+|               i_vco_tx_off_2_comp                          |    <0.001 |
+|               i_vco_tx_on_1_comp                           |    <0.001 |
+|               i_vco_tx_on_2_comp                           |    <0.001 |
+|             i_up_tdd_cntrl                                 |     0.014 |
+|               i_xfer_tdd_control                           |    <0.001 |
+|               i_xfer_tdd_counter_values                    |     0.010 |
+|               i_xfer_tdd_status                            |    <0.001 |
+|           i_tdd_if                                         |    <0.001 |
+|           i_tx                                             |     0.269 |
+|             i_delay_cntrl                                  |    <0.001 |
+|             i_tx_channel_0                                 |     0.065 |
+|               i_ad_iqcor                                   |     0.007 |
+|                 i_mul_i                                    |     0.003 |
+|                   i_mult_macro                             |     0.002 |
+|                 i_mul_q                                    |     0.002 |
+|                   i_mult_macro                             |     0.002 |
+|               i_dds                                        |     0.051 |
+|                 i_dds_1_0                                  |     0.025 |
+|                   i_dds_scale                              |     0.002 |
+|                     i_mult_macro                           |     0.002 |
+|                   i_dds_sine                               |     0.023 |
+|                     i_mul_s1                               |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                     i_mul_s2                               |     0.004 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                 i_dds_1_1                                  |     0.024 |
+|                   i_dds_scale                              |     0.002 |
+|                     i_mult_macro                           |     0.002 |
+|                   i_dds_sine                               |     0.021 |
+|                     i_mul_s1                               |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                     i_mul_s2                               |     0.004 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|               i_up_dac_channel                             |     0.004 |
+|                 i_xfer_cntrl                               |     0.003 |
+|             i_tx_channel_1                                 |     0.068 |
+|               i_ad_iqcor                                   |     0.008 |
+|                 i_mul_i                                    |     0.002 |
+|                   i_mult_macro                             |     0.002 |
+|                 i_mul_q                                    |     0.003 |
+|                   i_mult_macro                             |     0.003 |
+|               i_dds                                        |     0.053 |
+|                 i_dds_1_0                                  |     0.026 |
+|                   i_dds_scale                              |     0.003 |
+|                     i_mult_macro                           |     0.003 |
+|                   i_dds_sine                               |     0.023 |
+|                     i_mul_s1                               |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                     i_mul_s2                               |     0.005 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                 i_dds_1_1                                  |     0.026 |
+|                   i_dds_scale                              |     0.003 |
+|                     i_mult_macro                           |     0.003 |
+|                   i_dds_sine                               |     0.023 |
+|                     i_mul_s1                               |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s2                               |     0.005 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|               i_up_dac_channel                             |     0.004 |
+|                 i_xfer_cntrl                               |     0.003 |
+|             i_tx_channel_2                                 |     0.067 |
+|               i_ad_iqcor                                   |     0.007 |
+|                 i_mul_i                                    |     0.003 |
+|                   i_mult_macro                             |     0.002 |
+|                 i_mul_q                                    |     0.002 |
+|                   i_mult_macro                             |     0.002 |
+|               i_dds                                        |     0.053 |
+|                 i_dds_1_0                                  |     0.025 |
+|                   i_dds_scale                              |     0.003 |
+|                     i_mult_macro                           |     0.003 |
+|                   i_dds_sine                               |     0.022 |
+|                     i_mul_s1                               |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                     i_mul_s2                               |     0.004 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                 i_dds_1_1                                  |     0.026 |
+|                   i_dds_scale                              |     0.003 |
+|                     i_mult_macro                           |     0.003 |
+|                   i_dds_sine                               |     0.023 |
+|                     i_mul_s1                               |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s2                               |     0.005 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|               i_up_dac_channel                             |     0.004 |
+|                 i_xfer_cntrl                               |     0.003 |
+|             i_tx_channel_3                                 |     0.065 |
+|               i_ad_iqcor                                   |     0.007 |
+|                 i_mul_i                                    |     0.002 |
+|                   i_mult_macro                             |     0.002 |
+|                 i_mul_q                                    |     0.002 |
+|                   i_mult_macro                             |     0.002 |
+|               i_dds                                        |     0.052 |
+|                 i_dds_1_0                                  |     0.025 |
+|                   i_dds_scale                              |     0.003 |
+|                     i_mult_macro                           |     0.003 |
+|                   i_dds_sine                               |     0.022 |
+|                     i_mul_s1                               |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                     i_mul_s2                               |     0.004 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                 i_dds_1_1                                  |     0.025 |
+|                   i_dds_scale                              |     0.003 |
+|                     i_mult_macro                           |     0.003 |
+|                   i_dds_sine                               |     0.022 |
+|                     i_mul_s1                               |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|                     i_mul_s2                               |     0.004 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_1                             |     0.003 |
+|                       i_mult_macro                         |     0.003 |
+|                     i_mul_s3_2                             |     0.002 |
+|                       i_mult_macro                         |     0.002 |
+|               i_up_dac_channel                             |     0.004 |
+|                 i_xfer_cntrl                               |     0.003 |
+|             i_up_dac_common                                |     0.003 |
+|               i_clock_mon                                  |     0.001 |
+|               i_core_rst_reg                               |    <0.001 |
+|               i_xfer_cntrl                                 |    <0.001 |
+|               i_xfer_status                                |    <0.001 |
+|           i_up_axi                                         |     0.006 |
+|       axi_ad9361_adc_dma                                   |     0.009 |
+|         inst                                               |     0.009 |
+|           i_request_arb                                    |     0.007 |
+|             i_dest_dma_mm                                  |    <0.001 |
+|               i_addr_gen                                   |    <0.001 |
+|               i_data_mover                                 |    <0.001 |
+|               i_req_splitter                               |    <0.001 |
+|               i_response_handler                           |    <0.001 |
+|             i_dest_req_fifo                                |    <0.001 |
+|             i_dest_response_fifo                           |    <0.001 |
+|             i_fifo                                         |     0.006 |
+|               i_address_gray                               |    <0.001 |
+|                 i_raddr_sync                               |    <0.001 |
+|                 i_waddr_sync                               |    <0.001 |
+|             i_req_gen                                      |    <0.001 |
+|             i_req_splitter                                 |    <0.001 |
+|             i_src_dma_fifo                                 |    <0.001 |
+|               i_data_mover                                 |    <0.001 |
+|             i_src_req_fifo                                 |    <0.001 |
+|               i_raddr_sync                                 |    <0.001 |
+|               i_waddr_sync                                 |    <0.001 |
+|             i_sync_control_src                             |    <0.001 |
+|             i_sync_dest_request_id                         |    <0.001 |
+|             i_sync_src_request_id                          |    <0.001 |
+|             i_sync_status_src                              |    <0.001 |
+|           i_up_axi                                         |     0.002 |
+|       axi_ad9361_dac_dma                                   |     0.007 |
+|         inst                                               |     0.007 |
+|           i_request_arb                                    |     0.005 |
+|             i_dest_dma_fifo                                |    <0.001 |
+|               i_data_mover                                 |    <0.001 |
+|               i_response_generator                         |    <0.001 |
+|             i_dest_req_fifo                                |    <0.001 |
+|               i_raddr_sync                                 |    <0.001 |
+|               i_waddr_sync                                 |    <0.001 |
+|             i_dest_response_fifo                           |    <0.001 |
+|               i_raddr_sync                                 |    <0.001 |
+|               i_waddr_sync                                 |    <0.001 |
+|             i_dest_slice                                   |    <0.001 |
+|             i_dest_slice2                                  |    <0.001 |
+|             i_fifo                                         |     0.004 |
+|               i_address_gray                               |    <0.001 |
+|                 i_raddr_sync                               |    <0.001 |
+|                 i_waddr_sync                               |    <0.001 |
+|             i_req_gen                                      |    <0.001 |
+|             i_req_splitter                                 |    <0.001 |
+|             i_src_dma_mm                                   |    <0.001 |
+|               i_addr_gen                                   |    <0.001 |
+|               i_data_mover                                 |    <0.001 |
+|               i_req_splitter                               |    <0.001 |
+|             i_src_req_fifo                                 |    <0.001 |
+|             i_sync_control_dest                            |    <0.001 |
+|             i_sync_dest_request_id                         |    <0.001 |
+|             i_sync_req_response_id                         |    <0.001 |
+|             i_sync_status_dest                             |    <0.001 |
+|           i_up_axi                                         |     0.002 |
+|       axi_cpu_interconnect                                 |     0.010 |
+|         m06_couplers                                       |     0.004 |
+|           auto_cc                                          |     0.004 |
+|             inst                                           |     0.004 |
+|               gen_clock_conv.gen_async_conv.asyncfifo_axi  |     0.004 |
+|                 inst_fifo_gen                              |     0.004 |
+|                   gaxi_full_lite.gread_ch.grach2.axi_rach  |    <0.001 |
+|                     grf.rf                                 |    <0.001 |
+|                       gntv_or_sync_fifo.gcx.clkx           |    <0.001 |
+|                         gsync_stage[1].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[1].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[2].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[2].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[3].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[3].wr_stg_inst         |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.rd             |    <0.001 |
+|                         gr1.gr1_int.rfwft                  |    <0.001 |
+|                         gras.rsts                          |    <0.001 |
+|                         rpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.wr             |    <0.001 |
+|                         gwas.wsts                          |    <0.001 |
+|                         wpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.mem                |    <0.001 |
+|                         gdm.dm_gen.dm                      |    <0.001 |
+|                           RAM_reg_0_15_0_5                 |    <0.001 |
+|                           RAM_reg_0_15_12_17               |    <0.001 |
+|                           RAM_reg_0_15_18_18               |    <0.001 |
+|                           RAM_reg_0_15_6_11                |    <0.001 |
+|                       rstblk                               |    <0.001 |
+|                   gaxi_full_lite.gread_ch.grdch2.axi_rdch  |     0.001 |
+|                     grf.rf                                 |     0.001 |
+|                       gntv_or_sync_fifo.gcx.clkx           |    <0.001 |
+|                         gsync_stage[1].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[1].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[2].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[2].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[3].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[3].wr_stg_inst         |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.rd             |    <0.001 |
+|                         gr1.gr1_int.rfwft                  |    <0.001 |
+|                         gras.rsts                          |    <0.001 |
+|                         rpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.wr             |    <0.001 |
+|                         gwas.wsts                          |    <0.001 |
+|                         wpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.mem                |    <0.001 |
+|                         gdm.dm_gen.dm                      |    <0.001 |
+|                           RAM_reg_0_15_0_5                 |    <0.001 |
+|                           RAM_reg_0_15_12_17               |    <0.001 |
+|                           RAM_reg_0_15_18_23               |    <0.001 |
+|                           RAM_reg_0_15_24_29               |    <0.001 |
+|                           RAM_reg_0_15_30_33               |    <0.001 |
+|                           RAM_reg_0_15_6_11                |    <0.001 |
+|                       rstblk                               |    <0.001 |
+|                   gaxi_full_lite.gwrite_ch.gwach2.axi_wach |     0.001 |
+|                     grf.rf                                 |     0.001 |
+|                       gntv_or_sync_fifo.gcx.clkx           |    <0.001 |
+|                         gsync_stage[1].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[1].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[2].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[2].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[3].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[3].wr_stg_inst         |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.rd             |    <0.001 |
+|                         gr1.gr1_int.rfwft                  |    <0.001 |
+|                         gras.rsts                          |    <0.001 |
+|                         rpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.wr             |    <0.001 |
+|                         gwas.wsts                          |    <0.001 |
+|                         wpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.mem                |    <0.001 |
+|                         gdm.dm_gen.dm                      |    <0.001 |
+|                           RAM_reg_0_15_0_5                 |    <0.001 |
+|                           RAM_reg_0_15_12_17               |    <0.001 |
+|                           RAM_reg_0_15_18_18               |    <0.001 |
+|                           RAM_reg_0_15_6_11                |    <0.001 |
+|                       rstblk                               |    <0.001 |
+|                   gaxi_full_lite.gwrite_ch.gwdch2.axi_wdch |    <0.001 |
+|                     grf.rf                                 |    <0.001 |
+|                       gntv_or_sync_fifo.gcx.clkx           |    <0.001 |
+|                         gsync_stage[1].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[1].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[2].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[2].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[3].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[3].wr_stg_inst         |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.rd             |    <0.001 |
+|                         gr1.gr1_int.rfwft                  |    <0.001 |
+|                         gras.rsts                          |    <0.001 |
+|                         rpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.wr             |    <0.001 |
+|                         gwas.wsts                          |    <0.001 |
+|                         wpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.mem                |    <0.001 |
+|                         gdm.dm_gen.dm                      |    <0.001 |
+|                           RAM_reg_0_15_0_5                 |    <0.001 |
+|                       rstblk                               |    <0.001 |
+|                   gaxi_full_lite.gwrite_ch.gwrch2.axi_wrch |    <0.001 |
+|                     grf.rf                                 |    <0.001 |
+|                       gntv_or_sync_fifo.gcx.clkx           |    <0.001 |
+|                         gsync_stage[1].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[1].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[2].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[2].wr_stg_inst         |    <0.001 |
+|                         gsync_stage[3].rd_stg_inst         |    <0.001 |
+|                         gsync_stage[3].wr_stg_inst         |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.rd             |    <0.001 |
+|                         gr1.gr1_int.rfwft                  |    <0.001 |
+|                         gras.rsts                          |    <0.001 |
+|                         rpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.gl0.wr             |    <0.001 |
+|                         gwas.wsts                          |    <0.001 |
+|                         wpntr                              |    <0.001 |
+|                       gntv_or_sync_fifo.mem                |    <0.001 |
+|                         gdm.dm_gen.dm                      |    <0.001 |
+|                           RAM_reg_0_15_0_0                 |    <0.001 |
+|                           RAM_reg_0_15_1_1                 |    <0.001 |
+|                       rstblk                               |    <0.001 |
+|         s00_couplers                                       |     0.004 |
+|           auto_pc                                          |     0.004 |
+|             inst                                           |     0.004 |
+|               gen_axilite.gen_b2s_conv.axilite_b2s         |     0.004 |
+|                 RD.ar_channel_0                            |    <0.001 |
+|                   ar_cmd_fsm_0                             |    <0.001 |
+|                   cmd_translator_0                         |    <0.001 |
+|                     incr_cmd_0                             |    <0.001 |
+|                     wrap_cmd_0                             |    <0.001 |
+|                 RD.r_channel_0                             |     0.001 |
+|                   rd_data_fifo_0                           |    <0.001 |
+|                   transaction_fifo_0                       |    <0.001 |
+|                 SI_REG                                     |     0.002 |
+|                   ar_pipe                                  |    <0.001 |
+|                   aw_pipe                                  |    <0.001 |
+|                   b_pipe                                   |    <0.001 |
+|                   r_pipe                                   |    <0.001 |
+|                 WR.aw_channel_0                            |    <0.001 |
+|                   aw_cmd_fsm_0                             |    <0.001 |
+|                   cmd_translator_0                         |    <0.001 |
+|                     incr_cmd_0                             |    <0.001 |
+|                     wrap_cmd_0                             |    <0.001 |
+|                 WR.b_channel_0                             |    <0.001 |
+|                   bid_fifo_0                               |    <0.001 |
+|                   bresp_fifo_0                             |    <0.001 |
+|         xbar                                               |     0.002 |
+|           inst                                             |     0.002 |
+|             gen_sasd.crossbar_sasd_0                       |     0.002 |
+|               addr_arbiter_inst                            |     0.001 |
+|               gen_decerr.decerr_slave_inst                 |    <0.001 |
+|               reg_slice_r                                  |    <0.001 |
+|               splitter_ar                                  |    <0.001 |
+|               splitter_aw                                  |    <0.001 |
+|       axi_gpreg                                            |     0.003 |
+|         inst                                               |     0.003 |
+|           g_io[0].i_gpreg_io                               |    <0.001 |
+|           g_io[1].i_gpreg_io                               |    <0.001 |
+|           g_io[2].i_gpreg_io                               |    <0.001 |
+|           g_io[3].i_gpreg_io                               |    <0.001 |
+|           i_up_axi                                         |     0.001 |
+|       axi_hp1_interconnect                                 |     0.000 |
+|       axi_hp2_interconnect                                 |     0.000 |
+|       axi_iic_main                                         |     0.002 |
+|         U0                                                 |     0.002 |
+|           X_IIC                                            |     0.002 |
+|             DYN_MASTER_I                                   |    <0.001 |
+|             FILTER_I                                       |    <0.001 |
+|               SCL_DEBOUNCE                                 |    <0.001 |
+|                 INPUT_DOUBLE_REGS                          |    <0.001 |
+|               SDA_DEBOUNCE                                 |    <0.001 |
+|                 INPUT_DOUBLE_REGS                          |    <0.001 |
+|             IIC_CONTROL_I                                  |    <0.001 |
+|               BITCNT                                       |    <0.001 |
+|               CLKCNT                                       |    <0.001 |
+|               I2CDATA_REG                                  |    <0.001 |
+|               I2CHEADER_REG                                |    <0.001 |
+|               SETUP_CNT                                    |    <0.001 |
+|             READ_FIFO_I                                    |    <0.001 |
+|             REG_INTERFACE_I                                |    <0.001 |
+|             WRITE_FIFO_CTRL_I                              |    <0.001 |
+|             WRITE_FIFO_I                                   |    <0.001 |
+|             X_AXI_IPIF_SSP1                                |    <0.001 |
+|               AXI_LITE_IPIF_I                              |    <0.001 |
+|                 I_SLAVE_ATTACHMENT                         |    <0.001 |
+|                   I_DECODER                                |    <0.001 |
+|               X_INTERRUPT_CONTROL                          |    <0.001 |
+|               X_SOFT_RESET                                 |    <0.001 |
+|       axi_pz_xcvrlb                                        |     1.127 |
+|         inst                                               |     1.127 |
+|           g_lanes[0].i_xcvrlb_1                            |     0.282 |
+|             i_pnmon                                        |    <0.001 |
+|             i_xch                                          |     0.279 |
+|             i_xfer_status                                  |    <0.001 |
+|           g_lanes[1].i_xcvrlb_1                            |     0.281 |
+|             i_pnmon                                        |    <0.001 |
+|             i_xch                                          |     0.279 |
+|             i_xfer_status                                  |    <0.001 |
+|           g_lanes[2].i_xcvrlb_1                            |     0.281 |
+|             i_pnmon                                        |    <0.001 |
+|             i_xch                                          |     0.279 |
+|             i_xfer_status                                  |    <0.001 |
+|           g_lanes[3].i_xcvrlb_1                            |     0.282 |
+|             i_pnmon                                        |    <0.001 |
+|             i_xch                                          |     0.279 |
+|             i_xfer_status                                  |    <0.001 |
+|           i_axi                                            |     0.001 |
+|       clkdiv                                               |    <0.001 |
+|         inst                                               |    <0.001 |
+|       clkdiv_reset                                         |    <0.001 |
+|         U0                                                 |    <0.001 |
+|           EXT_LPF                                          |    <0.001 |
+|             ACTIVE_LOW_EXT.ACT_LO_EXT                      |    <0.001 |
+|           SEQ                                              |    <0.001 |
+|             SEQ_COUNTER                                    |    <0.001 |
+|       clkdiv_sel_logic                                     |    <0.001 |
+|       concat_logic                                         |     0.000 |
+|       dac_fifo                                             |     0.002 |
+|         inst                                               |     0.002 |
+|           i_mem                                            |     0.001 |
+|       sys_concat_intc                                      |     0.000 |
+|       sys_logic_inv                                        |     0.000 |
+|       sys_ps7                                              |     1.541 |
+|         inst                                               |     1.541 |
+|       sys_ps7_ENET1_GMII_RX_CLK_GND                        |     0.000 |
+|       sys_ps7_ENET1_GMII_TX_CLK_GND                        |     0.000 |
+|       sys_rstgen                                           |    <0.001 |
+|         U0                                                 |    <0.001 |
+|           EXT_LPF                                          |    <0.001 |
+|             ACTIVE_LOW_EXT.ACT_LO_EXT                      |    <0.001 |
+|           SEQ                                              |    <0.001 |
+|             SEQ_COUNTER                                    |    <0.001 |
+|       util_ad9361_adc_fifo                                 |     0.003 |
+|         inst                                               |     0.003 |
+|           i_mem                                            |     0.002 |
+|       util_ad9361_adc_pack                                 |    <0.001 |
+|         inst                                               |    <0.001 |
+|           g_dsf[0].i_dsf                                   |    <0.001 |
+|           g_dsf[1].i_dsf                                   |    <0.001 |
+|           g_dsf[2].i_dsf                                   |    <0.001 |
+|           g_dsf[3].i_dsf                                   |    <0.001 |
+|           g_mux[0].i_mux                                   |    <0.001 |
+|       util_ad9361_dac_upack                                |     0.007 |
+|         inst                                               |     0.007 |
+|           g_dmx[0].i_dmx                                   |     0.003 |
+|           g_dsf[0].i_dsf                                   |    <0.001 |
+|           g_dsf[1].i_dsf                                   |    <0.001 |
+|           g_dsf[2].i_dsf                                   |     0.001 |
+|           g_dsf[3].i_dsf                                   |    <0.001 |
+|       util_ad9361_tdd_sync                                 |    <0.001 |
+|         inst                                               |    <0.001 |
+|           i_tdd_sync                                       |    <0.001 |
++------------------------------------------------------------+-----------+
+
+

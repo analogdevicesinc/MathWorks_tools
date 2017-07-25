@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<document>
+<!--The data in this file is primarily intended for consumption by Xilinx tools.
+The structure and the elements are likely to change over the next few releases.
+This means code written to parse this file will need to be revisited each subsequent release.-->
+<application name="pa" timeStamp="Mon Jul 24 14:45:33 2017">
+<section name="Project Information" visible="false">
+<property name="ProjectID" value="ddca3e2a49264aa9beaeb2bf1b0e7f4a" type="ProjectID"/>
+<property name="ProjectIteration" value="2" type="ProjectIteration"/>
+</section>
+<section name="PlanAhead Usage" visible="true">
+<item name="Project Data">
+<property name="SrcSetCount" value="1" type="SrcSetCount"/>
+<property name="ConstraintSetCount" value="1" type="ConstraintSetCount"/>
+<property name="DesignMode" value="RTL" type="DesignMode"/>
+<property name="SynthesisStrategy" value="Vivado Synthesis Defaults" type="SynthesisStrategy"/>
+<property name="ImplStrategy" value="Vivado Implementation Defaults" type="ImplStrategy"/>
+</item>
+<item name="Java Command Handlers">
+<property name="OpenBlockDesign" value="1" type="JavaHandler"/>
+<property name="RunImplementation" value="1" type="JavaHandler"/>
+<property name="ViewTaskImplementation" value="1" type="JavaHandler"/>
+</item>
+<item name="Gui Resources Info">
+<property name="PAResourceAtoD.CheckTimingResultTreeTablePanel_CHECK_TIMING_RESULT_TREE_TABLE, Severity, 1" value="1" type="GuiResourceData"/>
+<property name="PAResourceAtoD.CheckTimingResultTreeTablePanel_CHECK_TIMING_RESULT_TREE_TABLE, gp_out[13] ; High, 6, gp_out[13], 0, false" value="1" type="GuiResourceData"/>
+<property name="PAResourceAtoD.CheckTimingResultTreeTablePanel_CHECK_TIMING_RESULT_TREE_TABLE, gp_out[21] ; High, 15, gp_out[21], 0, false" value="1" type="GuiResourceData"/>
+<property name="PAResourceAtoD.CmdMsgDialog_OK, OK" value="1" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Check Timing, no_input_delay], 9, false" value="2" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Check Timing, no_input_delay], 9, false, false, false, false, false, true" value="1" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Check Timing, no_output_delay], 10, false" value="3" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Check Timing, no_output_delay], 10, false, false, false, false, false, true" value="2" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Check Timing], 4" value="2" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Design Timing Summary], 2, false" value="1" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, General Information], 0, false" value="1" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Intra-Clock Paths], 17" value="2" type="GuiResourceData"/>
+<property name="PAResourceItoN.NavigableTimingReportTab_TIMING_REPORT_NAVIGATION_TREE, [Root, Timer Settings], 1, false" value="1" type="GuiResourceData"/>
+<property name="RDIResource.BaseDialog_OK, OK" value="1" type="GuiResourceData"/>
+</item>
+<item name="Other">
+<property name="GuiMode" value="17" type="GuiMode"/>
+<property name="BatchMode" value="0" type="BatchMode"/>
+<property name="TclMode" value="14" type="TclMode"/>
+</item>
+</section>
+</application>
+</document>

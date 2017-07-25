@@ -1,0 +1,13 @@
+vlib work
+vlog  Detector_ip_src_Bit_Process.v
+vlog  Detector_ip_src_Check_CRC.v
+vlog  Detector_ip_src_crc24f.v
+vlog  Detector_ip_src_CalcCRC.v
+vlog  Detector_ip_src_CalcMagnitude.v
+vlog  Detector_ip_src_NoiseFloor.v
+vlog  Detector_ip_src_CalcNF.v
+vlog  Detector_ip_src_SyncCorr.v
+vlog  Detector_ip_src_CalcSyncCorr.v
+vlog  Detector_ip_src_FrameDetect.v
+vlog  Detector_ip_src_SyncAndControl.v
+vlog  Detector_ip_src_Detector.v

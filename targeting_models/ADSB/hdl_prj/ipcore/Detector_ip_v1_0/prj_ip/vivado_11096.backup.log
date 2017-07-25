@@ -1,0 +1,255 @@
+#-----------------------------------------------------------
+# Vivado v2016.2 (64-bit)
+# SW Build 1577090 on Thu Jun  2 16:32:40 MDT 2016
+# IP Build 1577682 on Fri Jun  3 12:00:54 MDT 2016
+# Start of session at: Mon Jul 24 12:13:04 2017
+# Process ID: 11096
+# Current directory: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip
+# Command line: vivado.exe -mode batch -source vivado_ip_package.tcl
+# Log file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip/vivado.log
+# Journal file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip\vivado.jou
+#-----------------------------------------------------------
+source vivado_ip_package.tcl
+# create_project prj_ip {} -part xc7z035ifbg676-2L -force
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip'
+# set_property ip_repo_paths {../../} [current_fileset]
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_Bit_Process.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_Check_CRC.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_crc24f.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_CalcCRC.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_CalcMagnitude.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_NoiseFloor.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_CalcNF.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_SyncCorr.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_CalcSyncCorr.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_FrameDetect.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_SyncAndControl.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_src_Detector.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_dut.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_axi_lite_module.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_addr_decoder.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip_axi_lite.v}
+# add_files -norecurse {../hdl/verilog/Detector_ip.v}
+# set_property top Detector_ip [get_filesets sources_1]
+# set_property top Detector_ip [get_filesets sim_1]
+# update_compile_order -fileset sources_1
+# update_compile_order -fileset sim_1
+# ipx::package_project -root_dir {../} -force
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore'.
+WARNING: [IP_Flow 19-3656] If you move the project, the path for repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore' may become invalid. A better location for the repostory would be in a path adjacent to the project. (Current project location is 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip'.)
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2016.2/data/ip'.
+INFO: [IP_Flow 19-2228] Inferred bus interface 'AXI4_Lite' of definition 'xilinx.com:interface:aximm:1.0'.
+INFO: [IP_Flow 19-4753] Inferred signal 'reset' from port 'AXI4_Lite_ARESETN' as interface 'AXI4_Lite_ARESETN'.
+INFO: [IP_Flow 19-4728] Bus Interface 'AXI4_Lite_ARESETN': Added interface parameter 'POLARITY' with value 'ACTIVE_LOW'.
+INFO: [IP_Flow 19-4753] Inferred signal 'clock' from port 'AXI4_Lite_ACLK' as interface 'AXI4_Lite_ACLK'.
+INFO: [IP_Flow 19-4728] Bus Interface 'AXI4_Lite_ACLK': Added interface parameter 'ASSOCIATED_BUSIF' with value 'AXI4_Lite'.
+INFO: [IP_Flow 19-4728] Bus Interface 'AXI4_Lite_ACLK': Added interface parameter 'ASSOCIATED_RESET' with value 'AXI4_Lite_ARESETN'.
+INFO: [IP_Flow 19-4753] Inferred signal 'reset' from port 'IPCORE_RESETN' as interface 'IPCORE_RESETN'.
+INFO: [IP_Flow 19-4728] Bus Interface 'IPCORE_RESETN': Added interface parameter 'POLARITY' with value 'ACTIVE_LOW'.
+INFO: [IP_Flow 19-4753] Inferred signal 'clock' from port 'IPCORE_CLK' as interface 'IPCORE_CLK'.
+INFO: [IP_Flow 19-4728] Bus Interface 'IPCORE_CLK': Added interface parameter 'ASSOCIATED_RESET' with value 'IPCORE_RESETN'.
+# set_property name Detector_ip [ipx::current_core]
+# set_property display_name Detector_ip [ipx::current_core]
+# set_property version {1.0} [ipx::current_core]
+# set_property library {ip} [ipx::current_core]
+# set Families [split [lsort -uniq [get_property C_FAMILY [get_parts]]]]
+# set IPSupportedFamily {}
+# foreach family $Families {append IPSupportedFamily "{$family} {Production} "}
+# set_property supported_families $IPSupportedFamily [ipx::current_core]
+# set_property taxonomy {{/HDL Coder Generated IP}} [ipx::current_core]
+# set_property description {HDL Coder generated IP} [ipx::current_core]
+# set_property core_revision 1707241213 [ipx::current_core]
+# ipx::add_file {hdl/verilog/Detector_ip_src_Bit_Process.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_Bit_Process.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_Bit_Process.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_Bit_Process.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_Bit_Process.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_Bit_Process.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_Check_CRC.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_Check_CRC.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_Check_CRC.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_Check_CRC.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_Check_CRC.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_Check_CRC.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_crc24f.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_crc24f.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_crc24f.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_crc24f.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_crc24f.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_crc24f.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcCRC.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcCRC.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcCRC.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcCRC.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcCRC.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcCRC.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcMagnitude.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcMagnitude.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcMagnitude.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcMagnitude.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcMagnitude.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcMagnitude.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_NoiseFloor.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_NoiseFloor.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_NoiseFloor.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_NoiseFloor.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_NoiseFloor.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_NoiseFloor.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcNF.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcNF.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcNF.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcNF.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcNF.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcNF.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_SyncCorr.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_SyncCorr.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_SyncCorr.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_SyncCorr.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_SyncCorr.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_SyncCorr.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcSyncCorr.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcSyncCorr.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcSyncCorr.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_CalcSyncCorr.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_CalcSyncCorr.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_CalcSyncCorr.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_FrameDetect.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_FrameDetect.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_FrameDetect.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_FrameDetect.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_FrameDetect.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_FrameDetect.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_SyncAndControl.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_SyncAndControl.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_SyncAndControl.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_SyncAndControl.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_SyncAndControl.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_SyncAndControl.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_Detector.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_Detector.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_Detector.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_src_Detector.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_src_Detector.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_src_Detector.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_dut.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_dut.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_dut.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_dut.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_dut.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_dut.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_axi_lite_module.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_axi_lite_module.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_axi_lite_module.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_axi_lite_module.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_axi_lite_module.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_axi_lite_module.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_addr_decoder.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_addr_decoder.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_addr_decoder.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_addr_decoder.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_addr_decoder.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_addr_decoder.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_axi_lite.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_axi_lite.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_axi_lite.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip_axi_lite.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip_axi_lite.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip_axi_lite.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip.v} [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip.v" already exists in file group "xilinx_anylanguagesynthesis", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip.v} -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
+# ipx::add_file {hdl/verilog/Detector_ip.v} [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]
+WARNING: [IP_Flow 19-1971] File named "hdl/verilog/Detector_ip.v" already exists in file group "xilinx_anylanguagebehavioralsimulation", cannot add it again.
+# set_property type {{verilogSource}} [ipx::get_files {hdl/verilog/Detector_ip.v} -of_objects [ipx::get_file_groups xilinx_anylanguagebehavioralsimulation -of_objects [ipx::current_core]]]
+# ipx::remove_all_bus_interface [ipx::current_core]
+# ipx::remove_all_memory_map [ipx::current_core]
+# ipx::add_bus_interface {AXI4_Lite} [ipx::current_core]
+# set_property abstraction_type_vlnv {xilinx.com:interface:aximm_rtl:1.0} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property bus_type_vlnv {xilinx.com:interface:aximm:1.0} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# ipx::add_port_map {AWADDR} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_AWADDR} [ipx::get_port_maps AWADDR -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {AWVALID} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_AWVALID} [ipx::get_port_maps AWVALID -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {WDATA} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_WDATA} [ipx::get_port_maps WDATA -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {WSTRB} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_WSTRB} [ipx::get_port_maps WSTRB -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {WVALID} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_WVALID} [ipx::get_port_maps WVALID -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {BREADY} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_BREADY} [ipx::get_port_maps BREADY -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {ARADDR} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_ARADDR} [ipx::get_port_maps ARADDR -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {ARVALID} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_ARVALID} [ipx::get_port_maps ARVALID -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {RREADY} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_RREADY} [ipx::get_port_maps RREADY -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {AWREADY} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_AWREADY} [ipx::get_port_maps AWREADY -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {WREADY} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_WREADY} [ipx::get_port_maps WREADY -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {BRESP} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_BRESP} [ipx::get_port_maps BRESP -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {BVALID} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_BVALID} [ipx::get_port_maps BVALID -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {ARREADY} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_ARREADY} [ipx::get_port_maps ARREADY -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {RDATA} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_RDATA} [ipx::get_port_maps RDATA -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {RRESP} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_RRESP} [ipx::get_port_maps RRESP -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_port_map {RVALID} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_RVALID} [ipx::get_port_maps RVALID -of_objects [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_bus_interface {AXI4_Lite_signal_clock} [ipx::current_core]
+# set_property abstraction_type_vlnv {xilinx.com:signal:clock_rtl:1.0} [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]
+# set_property bus_type_vlnv {xilinx.com:signal:clock:1.0} [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]
+# ipx::add_port_map {CLK} [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_ACLK} [ipx::get_port_maps CLK -of_objects [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]]
+# ipx::add_bus_interface {AXI4_Lite_signal_reset} [ipx::current_core]
+# set_property abstraction_type_vlnv {xilinx.com:signal:reset_rtl:1.0} [ipx::get_bus_interfaces AXI4_Lite_signal_reset -of_objects [ipx::current_core]]
+# set_property bus_type_vlnv {xilinx.com:signal:reset:1.0} [ipx::get_bus_interfaces AXI4_Lite_signal_reset -of_objects [ipx::current_core]]
+# ipx::add_port_map {RST} [ipx::get_bus_interfaces AXI4_Lite_signal_reset -of_objects [ipx::current_core]]
+# set_property physical_name {AXI4_Lite_ARESETN} [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces AXI4_Lite_signal_reset -of_objects [ipx::current_core]]]
+# ipx::add_bus_parameter {ASSOCIATED_BUSIF} [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]
+# set_property value {AXI4_Lite} [ipx::get_bus_parameters ASSOCIATED_BUSIF -of_objects [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]]
+# ipx::add_bus_parameter {ASSOCIATED_RESET} [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]
+# set_property value {AXI4_Lite_ARESETN} [ipx::get_bus_parameters ASSOCIATED_RESET -of_objects [ipx::get_bus_interfaces AXI4_Lite_signal_clock -of_objects [ipx::current_core]]]
+# ipx::add_bus_parameter {POLARITY} [ipx::get_bus_interfaces AXI4_Lite_signal_reset -of_objects [ipx::current_core]]
+# set_property value {ACTIVE_LOW} [ipx::get_bus_parameters POLARITY -of_objects [ipx::get_bus_interfaces AXI4_Lite_signal_reset -of_objects [ipx::current_core]]]
+# ipx::add_memory_map {AXI4_Lite} [ipx::current_core]
+# set_property slave_memory_map_ref {AXI4_Lite} [ipx::get_bus_interfaces AXI4_Lite -of_objects [ipx::current_core]]
+# ipx::add_address_block {reg0} [ipx::get_memory_maps AXI4_Lite -of_objects [ipx::current_core]]
+# set_property range {65536} [ipx::get_address_blocks reg0 -of_objects [ipx::get_memory_maps AXI4_Lite -of_objects [ipx::current_core]]]
+# ipx::add_bus_interface {IPCORE_CLK} [ipx::current_core]
+# set_property abstraction_type_vlnv {xilinx.com:signal:clock_rtl:1.0} [ipx::get_bus_interfaces IPCORE_CLK -of_objects [ipx::current_core]]
+# set_property bus_type_vlnv {xilinx.com:signal:clock:1.0} [ipx::get_bus_interfaces IPCORE_CLK -of_objects [ipx::current_core]]
+# ipx::add_port_map {CLK} [ipx::get_bus_interfaces IPCORE_CLK -of_objects [ipx::current_core]]
+# set_property physical_name {IPCORE_CLK} [ipx::get_port_maps CLK -of_objects [ipx::get_bus_interfaces IPCORE_CLK -of_objects [ipx::current_core]]]
+# ipx::add_bus_interface {IPCORE_RESETN} [ipx::current_core]
+# set_property abstraction_type_vlnv {xilinx.com:signal:reset_rtl:1.0} [ipx::get_bus_interfaces IPCORE_RESETN -of_objects [ipx::current_core]]
+# set_property bus_type_vlnv {xilinx.com:signal:reset:1.0} [ipx::get_bus_interfaces IPCORE_RESETN -of_objects [ipx::current_core]]
+# ipx::add_port_map {RST} [ipx::get_bus_interfaces IPCORE_RESETN -of_objects [ipx::current_core]]
+# set_property physical_name {IPCORE_RESETN} [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces IPCORE_RESETN -of_objects [ipx::current_core]]]
+# ipx::add_bus_parameter {ASSOCIATED_RESET} [ipx::get_bus_interfaces IPCORE_CLK -of_objects [ipx::current_core]]
+# set_property value {IPCORE_RESETN} [ipx::get_bus_parameters ASSOCIATED_RESET -of_objects [ipx::get_bus_interfaces IPCORE_CLK -of_objects [ipx::current_core]]]
+# ipx::add_bus_parameter {POLARITY} [ipx::get_bus_interfaces IPCORE_RESETN -of_objects [ipx::current_core]]
+# set_property value {ACTIVE_LOW} [ipx::get_bus_parameters POLARITY -of_objects [ipx::get_bus_interfaces IPCORE_RESETN -of_objects [ipx::current_core]]]
+# ipx::add_file_group -type {product_guide} {} [ipx::current_core]
+# ipx::add_file {doc/doc_arch_axi4_lite.jpg} [ipx::get_file_groups xilinx_productguide -of_objects [ipx::current_core]]
+# set_property type {{image}} [ipx::get_files {doc/doc_arch_axi4_lite.jpg} -of_objects [ipx::get_file_groups xilinx_productguide -of_objects [ipx::current_core]]]
+# ipx::add_file {doc/free_running.jpg} [ipx::get_file_groups xilinx_productguide -of_objects [ipx::current_core]]
+# set_property type {{image}} [ipx::get_files {doc/free_running.jpg} -of_objects [ipx::get_file_groups xilinx_productguide -of_objects [ipx::current_core]]]
+# ipx::add_file {doc/ModeS_ADI_Codegen_ip_core_report.html} [ipx::get_file_groups xilinx_productguide -of_objects [ipx::current_core]]
+# set_property type {{html}} [ipx::get_files {doc/ModeS_ADI_Codegen_ip_core_report.html} -of_objects [ipx::get_file_groups xilinx_productguide -of_objects [ipx::current_core]]]
+# ipx::add_file_group -type {misc} {} [ipx::current_core]
+# ipx::add_file {include/Detector_ip_addr.h} [ipx::get_file_groups xilinx_miscfiles -of_objects [ipx::current_core]]
+# set_property type {{cSource}} [ipx::get_files {include/Detector_ip_addr.h} -of_objects [ipx::get_file_groups xilinx_miscfiles -of_objects [ipx::current_core]]]
+# ipx::create_xgui_files [ipx::current_core]
+# ipx::check_integrity -quiet [ipx::current_core]
+# ipx::save_core [ipx::current_core]
+# ipx::archive_core {../Detector_ip_v1_0.zip} [ipx::current_core]
+# close_project
+# exit
+INFO: [Common 17-206] Exiting Vivado at Mon Jul 24 12:13:17 2017...

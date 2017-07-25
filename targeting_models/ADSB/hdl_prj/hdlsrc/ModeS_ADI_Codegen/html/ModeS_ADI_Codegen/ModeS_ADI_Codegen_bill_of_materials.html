@@ -1,0 +1,1220 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="rtwreport.css" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>
+High-level Resource Utilization Report for ModeS_ADI_Codegen
+</title>
+
+</head>
+<body bgcolor="#ffffff" link="0033CC" vlink="#666666" onload="try {if (top) {if (top.rtwPageOnLoad) top.rtwPageOnLoad('rtwIdBillOfMaterials'); else local_onload();}} catch(err) {};hdlTableShrink(this, 'Register_1_1');hdlTableShrink(this, 'Register_1_2');hdlTableShrink(this, 'Input_Port');hdlTableShrink(this, 'Output_Port');hdlTableShrink(this, 'Register_3_1');hdlTableShrink(this, 'Multiply_6_1');hdlTableShrink(this, 'Adder_6_1');hdlTableShrink(this, 'Register_6_1');hdlTableShrink(this, 'Register_8_1');hdlTableShrink(this, 'Multiplexer_8_1');hdlTableShrink(this, 'Register_9_1');hdlTableShrink(this, 'Multiplexer_9_1');hdlTableShrink(this, 'Adder_10_1');hdlTableShrink(this, 'Adder_10_2');hdlTableShrink(this, 'Register_10_1');hdlTableShrink(this, 'Register_10_3');hdlTableShrink(this, 'Multiplexer_10_2');">
+<script>
+<!--
+function hdlTableShrink(o,tagNameStr)
+{
+var temp = document.getElementsByName(tagNameStr);
+if (temp[0].style.display == "")
+{
+	temp[0].style.display = "none";
+	o.innerHTML = '<span style="font-family:monospace">[+]</span>';
+}
+else
+{
+	temp[0].style.display = "";
+	o.innerHTML = '<span style="font-family:monospace">[-]</span>';
+}
+}
+// -->
+</script>
+<script>
+<!--
+function hdlTableCollapseAll(o, numNtks, numComps)
+{
+	var id = "";
+	for (i = 1; i <= numNtks; i++)
+	{
+		for (j = 1; j <= numComps; j++)
+		{
+			id = "Multiply" + "_" + i + "_" + j;
+			var temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "none";
+			}
+			id = "Adder" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "none";
+			}
+			id = "Subtractor" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "none";
+			}
+			id = "Register" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "none";
+			}
+			id = "RAM" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "none";
+			}
+			id = "Multiplexer" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "none";
+			}
+		}
+	}
+	var collapsibles = document.getElementsByName('collapsible');
+	for (i = 0; i < collapsibles.length; i++)
+	{
+		collapsibles[i].innerHTML = '<span style="font-family:monospace">[+]</span>';
+	}
+}
+// -->
+</script>
+<script>
+<!--
+function hdlTableExpandAll(o, numNtks, numComps)
+{
+	var id = "";
+	for (i = 1; i <= numNtks; i++)
+	{
+		for (j = 1; j <= numComps; j++)
+		{
+			id = "Multiply" + "_" + i + "_" + j;
+			var temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "";
+			}
+			id = "Adder" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "";
+			}
+			id = "Subtractor" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "";
+			}
+			id = "Register" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "";
+			}
+			id = "RAM" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "";
+			}
+			id = "Multiplexer" + "_" + i + "_" + j;
+			temp = document.getElementsByName(id);
+			if (temp != null && temp.length > 0)
+			{
+				temp[0].style.display = "";
+			}
+		}
+	}
+	var collapsibles = document.getElementsByName('collapsible');
+	for (i = 0; i < collapsibles.length; i++)
+	{
+		collapsibles[i].innerHTML = '<span style="font-family:monospace">[-]</span>';
+	}
+}
+// -->
+</script>
+<font SIZE="+2" COLOR="#000066">
+Generic Resource Report for ModeS_ADI_Codegen
+</font>
+<br /><br /><br /><a name="Summary">
+<font size="+1" color="#000066">
+<b class="midprod">
+Summary
+</b>
+
+</font>
+
+</a>
+<br /><br /><table width="100%" border="1">
+<tr style="background-color: #eeeeff">
+<td align="left" valign="top" style="border-style: none">
+Multipliers
+</td>
+<td align="center" valign="top" style="border-style: none">
+3
+</td>
+
+</tr>
+<tr style="background-color: #ffffff">
+<td align="left" valign="top" style="border-style: none">
+Adders/Subtractors
+</td>
+<td align="center" valign="top" style="border-style: none">
+204
+</td>
+
+</tr>
+<tr style="background-color: #eeeeff">
+<td align="left" valign="top" style="border-style: none">
+Registers
+</td>
+<td align="center" valign="top" style="border-style: none">
+377
+</td>
+
+</tr>
+<tr style="background-color: #ffffff">
+<td align="left" valign="top" style="border-style: none">
+Total 1-Bit Registers
+</td>
+<td align="center" valign="top" style="border-style: none">
+9167
+</td>
+
+</tr>
+<tr style="background-color: #eeeeff">
+<td align="left" valign="top" style="border-style: none">
+RAMs
+</td>
+<td align="center" valign="top" style="border-style: none">
+0
+</td>
+
+</tr>
+<tr style="background-color: #ffffff">
+<td align="left" valign="top" style="border-style: none">
+Multiplexers
+</td>
+<td align="center" valign="top" style="border-style: none">
+40
+</td>
+
+</tr>
+<tr style="background-color: #eeeeff">
+<td align="left" valign="top" style="border-style: none">
+I/O Bits
+</td>
+<td align="center" valign="top" style="border-style: none">
+106
+</td>
+
+</tr>
+<tr style="background-color: #ffffff">
+<td align="left" valign="top" style="border-style: none">
+Static Shift operators
+</td>
+<td align="center" valign="top" style="border-style: none">
+0
+</td>
+
+</tr>
+<tr style="background-color: #eeeeff">
+<td align="left" valign="top" style="border-style: none">
+Dynamic Shift operators
+</td>
+<td align="center" valign="top" style="border-style: none">
+0
+</td>
+
+</tr>
+
+</table>
+<br /><br /><a name="Detailed Report">
+<font size="+1" color="#000066">
+<b class="midprod">
+Detailed Report
+</b>
+
+</font>
+
+</a>
+<br /><br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:167')" name="code2model" class="code2model">
+Detector
+</a>
+
+</h5>
+<h5>
+Registers (27)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_1_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+16-bit Register 							: 21
+</span>
+<span name="Register_1_1" id="Register_1_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:249')" name="code2model" class="code2model">
+Delay17
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:250')" name="code2model" class="code2model">
+Delay18
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:220')" name="code2model" class="code2model">
+Delay
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:233')" name="code2model" class="code2model">
+Delay13
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:221')" name="code2model" class="code2model">
+Delay1
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:222')" name="code2model" class="code2model">
+Delay2
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:487')" name="code2model" class="code2model">
+Delay14
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:223')" name="code2model" class="code2model">
+Delay3
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:227')" name="code2model" class="code2model">
+Delay7
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_1_2')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+1-bit Register 							: 6
+</span>
+<span name="Register_1_2" id="Register_1_2">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:224')" name="code2model" class="code2model">
+Delay4
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:225')" name="code2model" class="code2model">
+Delay5
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:226')" name="code2model" class="code2model">
+Delay6
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:231')" name="code2model" class="code2model">
+Delay11
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:232')" name="code2model" class="code2model">
+Delay12
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:229')" name="code2model" class="code2model">
+Delay9
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><h5>
+Number of I/O Bits (106)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Input_Port')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+Number of Input Bits: 35
+</span>
+<span name="Input_Port" id="Input_Port">
+<ul>
+<li>
+clk: 1 bit
+</li>
+<li>
+reset: 1 bit
+</li>
+<li>
+clk_enable: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:169')" name="code2model" class="code2model">
+I_In
+</a>
+: 16 bits
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:243')" name="code2model" class="code2model">
+Q_In
+</a>
+: 16 bits
+</li>
+
+</ul>
+
+</span>
+<br /><span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Output_Port')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+Number of Output Bits: 71
+</span>
+<span name="Output_Port" id="Output_Port">
+<ul class="SystemdefinedCollapse" id="79a09a99-8d42-4deb-82d4-29b2e847f261" dataCollapse="off">
+<li>
+ce_out: 1 bit
+</li>
+<li>
+reset_1: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:170')" name="code2model" class="code2model">
+bit_process
+</a>
+: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:171')" name="code2model" class="code2model">
+empty_reg
+</a>
+: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:172')" name="code2model" class="code2model">
+bit_clk
+</a>
+: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:173')" name="code2model" class="code2model">
+bits
+</a>
+: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:174')" name="code2model" class="code2model">
+crc
+</a>
+: 1 bit
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:175')" name="code2model" class="code2model">
+noise_floor
+</a>
+: 16 bits
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:176')" name="code2model" class="code2model">
+sync_corr
+</a>
+: 16 bits
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:352')" name="code2model" class="code2model">
+data
+</a>
+: 16 bits
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:427')" name="code2model" class="code2model">
+frame_valid
+</a>
+: 16 bits
+</li>
+
+</ul>
+<span class="SDCollapseControl" onclick="collapseSD(this, '79a09a99-8d42-4deb-82d4-29b2e847f261')" onmouseover="this.style.cursor = 'pointer'">
+&#8743; Less
+</span>
+<br />
+</span>
+<br /><p><hr /></p><h5>
+Report for User-defined block:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:98')" name="code2model" class="code2model">
+SyncAndControl
+</a>
+
+</h5>
+<h5>
+Multipliers (1)
+</h5>
+<span style="font-family:monospace">
+7x16-bit Multiply 							: 1
+</span>
+<br /><h5>
+Adders/Subtractors (5)
+</h5>
+<span style="font-family:monospace">
+16x16-bit Adder 							: 4
+</span>
+<br /><span style="font-family:monospace">
+8x8-bit Adder 							: 1
+</span>
+<br /><h5>
+Registers (8)
+</h5>
+<span style="font-family:monospace">
+4-bit Register 							: 1
+</span>
+<br /><span style="font-family:monospace">
+16-bit Register 							: 2
+</span>
+<br /><span style="font-family:monospace">
+14-bit Register 							: 1
+</span>
+<br /><span style="font-family:monospace">
+8-bit Register 							: 1
+</span>
+<br /><span style="font-family:monospace">
+1-bit Register 							: 3
+</span>
+<br /><h5>
+Multiplexers (8)
+</h5>
+<span style="font-family:monospace">
+4-bit 11-to-1 Multiplexer 							: 1
+</span>
+<br /><span style="font-family:monospace">
+16-bit 7-to-1 Multiplexer 							: 1
+</span>
+<br /><span style="font-family:monospace">
+1-bit 6-to-1 Multiplexer 							: 1
+</span>
+<br /><span style="font-family:monospace">
+8-bit 5-to-1 Multiplexer 							: 1
+</span>
+<br /><span style="font-family:monospace">
+14-bit 5-to-1 Multiplexer 							: 1
+</span>
+<br /><span style="font-family:monospace">
+1-bit 3-to-1 Multiplexer 							: 2
+</span>
+<br /><span style="font-family:monospace">
+16-bit 3-to-1 Multiplexer 							: 1
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:446')" name="code2model" class="code2model">
+FrameDetect
+</a>
+
+</h5>
+<h5>
+Registers (1)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_3_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+1-bit Register 							: 1
+</span>
+<span name="Register_3_1" id="Register_3_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:322')" name="code2model" class="code2model">
+Delay14
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:198')" name="code2model" class="code2model">
+CalcSyncCorr
+</a>
+
+</h5>
+<h5>
+Adders/Subtractors (124)
+</h5>
+<span style="font-family:monospace">
+38x38-bit Adder 							: 74
+</span>
+<br /><span style="font-family:monospace">
+17-bit Subtractor 							: 50
+</span>
+<br /><h5>
+Registers (227)
+</h5>
+<span style="font-family:monospace">
+16-bit Register 							: 74
+</span>
+<br /><span style="font-family:monospace">
+31-bit Register 							: 76
+</span>
+<br /><span style="font-family:monospace">
+37-bit Register 							: 77
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:194')" name="code2model" class="code2model">
+CalcNF
+</a>
+
+</h5>
+<h5>
+Adders/Subtractors (63)
+</h5>
+<span style="font-family:monospace">
+33x33-bit Adder 							: 63
+</span>
+<br /><h5>
+Registers (65)
+</h5>
+<span style="font-family:monospace">
+32-bit Register 							: 65
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:257')" name="code2model" class="code2model">
+CalcMagnitude
+</a>
+
+</h5>
+<h5>
+Multipliers (2)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Multiply_6_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+16x16-bit Multiply 							: 2
+</span>
+<span name="Multiply_6_1" id="Multiply_6_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:244')" name="code2model" class="code2model">
+Product
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:246')" name="code2model" class="code2model">
+Product1
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><h5>
+Adders/Subtractors (1)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Adder_6_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+16x16-bit Adder 							: 1
+</span>
+<span name="Adder_6_1" id="Adder_6_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:245')" name="code2model" class="code2model">
+Add
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><h5>
+Registers (2)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_6_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+16-bit Register 							: 2
+</span>
+<span name="Register_6_1" id="Register_6_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:247')" name="code2model" class="code2model">
+Delay15
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:248')" name="code2model" class="code2model">
+Delay16
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:19')" name="code2model" class="code2model">
+CalcCRC
+</a>
+
+</h5>
+<h5>
+Registers (3)
+</h5>
+<span style="font-family:monospace">
+1-bit Register 							: 3
+</span>
+<br /><h5>
+Multiplexers (3)
+</h5>
+<span style="font-family:monospace">
+1-bit 2-to-1 Multiplexer 							: 3
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:27')" name="code2model" class="code2model">
+crc24f
+</a>
+
+</h5>
+<h5>
+Registers (24)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_8_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+1-bit Register 							: 24
+</span>
+<span name="Register_8_1" id="Register_8_1">
+<ul class="SystemdefinedCollapse" id="78467d56-f012-428a-b477-9e1166d2bdc7" dataCollapse="off">
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:74')" name="code2model" class="code2model">
+x0
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:75')" name="code2model" class="code2model">
+x1
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:76')" name="code2model" class="code2model">
+x2
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:77')" name="code2model" class="code2model">
+x3
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:78')" name="code2model" class="code2model">
+x4
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:79')" name="code2model" class="code2model">
+x5
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:80')" name="code2model" class="code2model">
+x6
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:81')" name="code2model" class="code2model">
+x7
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:82')" name="code2model" class="code2model">
+x8
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:83')" name="code2model" class="code2model">
+x9
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:84')" name="code2model" class="code2model">
+x10
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:85')" name="code2model" class="code2model">
+x11
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:86')" name="code2model" class="code2model">
+x12
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:87')" name="code2model" class="code2model">
+x13
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:88')" name="code2model" class="code2model">
+x14
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:89')" name="code2model" class="code2model">
+x15
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:90')" name="code2model" class="code2model">
+x16
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:91')" name="code2model" class="code2model">
+x17
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:92')" name="code2model" class="code2model">
+x18
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:93')" name="code2model" class="code2model">
+x19
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:94')" name="code2model" class="code2model">
+x20
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:95')" name="code2model" class="code2model">
+x21
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:96')" name="code2model" class="code2model">
+x22
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:97')" name="code2model" class="code2model">
+x23
+</a>
+
+</li>
+
+</ul>
+<span class="SDCollapseControl" onclick="collapseSD(this, '78467d56-f012-428a-b477-9e1166d2bdc7')" onmouseover="this.style.cursor = 'pointer'">
+&#8743; Less
+</span>
+<br />
+</span>
+<br /><h5>
+Multiplexers (26)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Multiplexer_8_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+1-bit 2-to-1 Multiplexer 							: 26
+</span>
+<span name="Multiplexer_8_1" id="Multiplexer_8_1">
+<ul class="SystemdefinedCollapse" id="929b3917-612c-4539-a2fa-c78bd6b2aea9" dataCollapse="off">
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:74')" name="code2model" class="code2model">
+x0
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:75')" name="code2model" class="code2model">
+x1
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:76')" name="code2model" class="code2model">
+x2
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:77')" name="code2model" class="code2model">
+x3
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:78')" name="code2model" class="code2model">
+x4
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:79')" name="code2model" class="code2model">
+x5
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:80')" name="code2model" class="code2model">
+x6
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:81')" name="code2model" class="code2model">
+x7
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:82')" name="code2model" class="code2model">
+x8
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:83')" name="code2model" class="code2model">
+x9
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:84')" name="code2model" class="code2model">
+x10
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:85')" name="code2model" class="code2model">
+x11
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:86')" name="code2model" class="code2model">
+x12
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:87')" name="code2model" class="code2model">
+x13
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:88')" name="code2model" class="code2model">
+x14
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:89')" name="code2model" class="code2model">
+x15
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:90')" name="code2model" class="code2model">
+x16
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:91')" name="code2model" class="code2model">
+x17
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:92')" name="code2model" class="code2model">
+x18
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:93')" name="code2model" class="code2model">
+x19
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:94')" name="code2model" class="code2model">
+x20
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:95')" name="code2model" class="code2model">
+x21
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:96')" name="code2model" class="code2model">
+x22
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:31')" name="code2model" class="code2model">
+Switch1
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:97')" name="code2model" class="code2model">
+x23
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:32')" name="code2model" class="code2model">
+Switch2
+</a>
+
+</li>
+
+</ul>
+<span class="SDCollapseControl" onclick="collapseSD(this, '929b3917-612c-4539-a2fa-c78bd6b2aea9')" onmouseover="this.style.cursor = 'pointer'">
+&#8743; Less
+</span>
+<br />
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:305')" name="code2model" class="code2model">
+Check_CRC
+</a>
+
+</h5>
+<h5>
+Registers (1)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_9_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+1-bit Register 							: 1
+</span>
+<span name="Register_9_1" id="Register_9_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:309')" name="code2model" class="code2model">
+Delay
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><h5>
+Multiplexers (1)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Multiplexer_9_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+1-bit 2-to-1 Multiplexer 							: 1
+</span>
+<span name="Multiplexer_9_1" id="Multiplexer_9_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:309')" name="code2model" class="code2model">
+Delay
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><p><hr /></p><h5>
+Report for Subsystem:    <a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:103')" name="code2model" class="code2model">
+Bit Process
+</a>
+
+</h5>
+<h5>
+Adders/Subtractors (11)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Adder_10_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+16x16-bit Adder 							: 10
+</span>
+<span name="Adder_10_1" id="Adder_10_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:112')" name="code2model" class="code2model">
+Logical1
+</a>
+
+</li>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:111')" name="code2model" class="code2model">
+Logical0
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Adder_10_2')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+8x8-bit Adder 							: 1
+</span>
+<span name="Adder_10_2" id="Adder_10_2">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:109')" name="code2model" class="code2model">
+HDL Counter
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><h5>
+Registers (19)
+</h5>
+<span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_10_1')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+16-bit Register 							: 12
+</span>
+<span name="Register_10_1" id="Register_10_1">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:119')" name="code2model" class="code2model">
+Tapped Delay
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><span style="font-family:monospace">
+1-bit Register 							: 2
+</span>
+<br /><span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Register_10_3')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+8-bit Register 							: 5
+</span>
+<span name="Register_10_3" id="Register_10_3">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:109')" name="code2model" class="code2model">
+HDL Counter
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><h5>
+Multiplexers (2)
+</h5>
+<span style="font-family:monospace">
+8-bit 3-to-1 Multiplexer 							: 1
+</span>
+<br /><span name="collapsible" id="collapsible" style="font-family:monospace" onclick="hdlTableShrink(this, 'Multiplexer_10_2')" onmouseover="this.style.cursor = 'pointer'">
+[+]
+</span>
+<span style="font-family:monospace">
+8-bit 2-to-1 Multiplexer 							: 1
+</span>
+<span name="Multiplexer_10_2" id="Multiplexer_10_2">
+<ul>
+<li>
+<a href="matlab:Simulink.ID.hilite('ModeS_ADI_Codegen:109')" name="code2model" class="code2model">
+HDL Counter
+</a>
+
+</li>
+
+</ul>
+
+</span>
+<br /><p><hr /></p>
+</body>
+
+</html>

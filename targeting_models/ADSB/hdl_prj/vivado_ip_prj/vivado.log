@@ -1,0 +1,96 @@
+#-----------------------------------------------------------
+# Vivado v2016.2 (64-bit)
+# SW Build 1577090 on Thu Jun  2 16:32:40 MDT 2016
+# IP Build 1577682 on Fri Jun  3 12:00:54 MDT 2016
+# Start of session at: Mon Jul 24 13:37:51 2017
+# Process ID: 14628
+# Current directory: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj
+# Command line: vivado.exe -mode batch -source vivado_insert_ip.tcl
+# Log file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado.log
+# Journal file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj\vivado.jou
+#-----------------------------------------------------------
+source vivado_insert_ip.tcl
+# open_project vivado_prj.xpr
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj'
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/ipcore'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2016.2/data/ip'.
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+open_project: Time (s): cpu = 00:00:05 ; elapsed = 00:00:07 . Memory (MB): peak = 331.359 ; gain = 121.504
+# update_ip_catalog -delete_ip {./ipcore/Detector_ip_v1_0/component.xml} -repo_path {./ipcore} -quiet
+# update_ip_catalog -add_ip {./ipcore/Detector_ip_v1_0.zip} -repo_path {./ipcore}
+INFO: [IP_Flow 19-949] Unzipped './ipcore/Detector_ip_v1_0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/ipcore'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/ipcore'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+# update_ip_catalog
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+# set HDLCODERIPVLNV [get_property VLNV [get_ipdefs -filter {NAME==Detector_ip && VERSION==1.0}]]
+# set HDLCODERIPINST Detector_ip_0
+# set BDFILEPATH [get_files -quiet system.bd]
+# open_bd_design $BDFILEPATH
+Adding cell -- xilinx.com:ip:processing_system7:5.5 - sys_ps7
+Adding cell -- xilinx.com:ip:axi_iic:2.0 - axi_iic_main
+Adding cell -- xilinx.com:ip:xlconcat:2.1 - sys_concat_intc
+Adding cell -- xilinx.com:ip:proc_sys_reset:5.0 - sys_rstgen
+Adding cell -- xilinx.com:ip:util_vector_logic:2.0 - sys_logic_inv
+Adding cell -- analog.com:user:axi_ad9361:1.0 - axi_ad9361
+Adding cell -- analog.com:user:axi_dmac:1.0 - axi_ad9361_dac_dma
+Adding cell -- analog.com:user:util_upack:1.0 - util_ad9361_dac_upack
+Adding cell -- analog.com:user:axi_dmac:1.0 - axi_ad9361_adc_dma
+Adding cell -- analog.com:user:util_cpack:1.0 - util_ad9361_adc_pack
+Adding cell -- analog.com:user:util_wfifo:1.0 - util_ad9361_adc_fifo
+Adding cell -- analog.com:user:util_tdd_sync:1.0 - util_ad9361_tdd_sync
+Adding cell -- analog.com:user:util_clkdiv:1.0 - clkdiv
+Adding cell -- xilinx.com:ip:proc_sys_reset:5.0 - clkdiv_reset
+Adding cell -- analog.com:user:util_rfifo:1.0 - dac_fifo
+Adding cell -- xilinx.com:ip:util_reduced_logic:2.0 - clkdiv_sel_logic
+Adding cell -- xilinx.com:ip:xlconcat:2.1 - concat_logic
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - sys_ps7_ENET1_GMII_RX_CLK_GND
+Adding cell -- xilinx.com:ip:xlconstant:1.1 - sys_ps7_ENET1_GMII_TX_CLK_GND
+Adding cell -- analog.com:user:axi_xcvrlb:1.0 - axi_pz_xcvrlb
+Adding cell -- analog.com:user:axi_gpreg:1.0 - axi_gpreg
+Adding cell -- xilinx.com:ip:axi_crossbar:2.1 - xbar
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Adding cell -- xilinx.com:ip:axi_protocol_converter:2.1 - auto_pc
+Successfully read diagram <system> from BD file <C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/system.bd>
+# create_bd_cell -type ip -vlnv $HDLCODERIPVLNV $HDLCODERIPINST
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins clkdiv/clk_out]] [get_bd_pins $HDLCODERIPINST/AXI4_Lite_ACLK] [get_bd_pins clkdiv/clk_out]
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins clkdiv_reset/peripheral_aresetn]] [get_bd_pins $HDLCODERIPINST/AXI4_Lite_ARESETN] [get_bd_pins clkdiv_reset/peripheral_aresetn]
+# connect_bd_intf_net [get_bd_intf_pins $HDLCODERIPINST/AXI4_Lite] [get_bd_intf_pins axi_cpu_interconnect/M06_AXI]
+# create_bd_addr_seg -range 0x10000 -offset 0x43C00000 [get_bd_addr_spaces sys_ps7/Data] [get_bd_addr_segs $HDLCODERIPINST/AXI4_Lite/reg0] SEG_${HDLCODERIPINST}_reg0
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins util_ad9361_adc_pack/adc_valid_0]] [get_bd_pins $HDLCODERIPINST/dut_data_valid] [get_bd_pins util_ad9361_adc_pack/adc_valid_0]
+WARNING: [BD 5-234] No nets matched 'get_bd_nets -of_objects /util_ad9361_adc_pack/adc_data_0'
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins util_ad9361_adc_pack/adc_data_0]] [get_bd_pins $HDLCODERIPINST/dut_data_0] [get_bd_pins util_ad9361_adc_pack/adc_data_0]
+WARNING: [BD 5-234] No nets matched 'get_bd_nets -of_objects /util_ad9361_adc_pack/adc_data_1'
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins util_ad9361_adc_pack/adc_data_1]] [get_bd_pins $HDLCODERIPINST/dut_data_1] [get_bd_pins util_ad9361_adc_pack/adc_data_1]
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins util_ad9361_adc_fifo/dout_data_0]] [get_bd_pins $HDLCODERIPINST/sys_wfifo_0_dma_wdata] [get_bd_pins util_ad9361_adc_fifo/dout_data_0]
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins util_ad9361_adc_fifo/dout_data_1]] [get_bd_pins $HDLCODERIPINST/sys_wfifo_1_dma_wdata] [get_bd_pins util_ad9361_adc_fifo/dout_data_1]
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins clkdiv/clk_out]] [get_bd_pins $HDLCODERIPINST/IPCORE_CLK] [get_bd_pins clkdiv/clk_out]
+# connect_bd_net -net [get_bd_nets -of_objects [get_bd_pins clkdiv_reset/peripheral_aresetn]] [get_bd_pins $HDLCODERIPINST/IPCORE_RESETN] [get_bd_pins clkdiv_reset/peripheral_aresetn]
+# add_files -norecurse {projects/pzsdr2/ccbrk_lvds/system_top.v}
+WARNING: [filemgmt 56-12] File 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/projects/pzsdr2/ccbrk_lvds/system_top.v' cannot be added to the project because it already exists in the project, skipping this file
+# update_compile_order -fileset sources_1
+# validate_bd_design
+WARNING: [#UNDEF] When using EMIO pins for SPI_0 tie SSIN High in the PL bitstream
+WARNING: [#UNDEF] When using EMIO pins for SPI_1 tie SSIN High in the PL bitstream
+CRITICAL WARNING: [BD 41-759] The input pins (listed below) are either not connected or do not have a source port, and they don't have a tie-off specified. 
+Please check your design and connect them if needed: 
+/util_ad9361_adc_pack/adc_data_2
+/util_ad9361_adc_pack/adc_data_3
+
+validate_bd_design: Time (s): cpu = 00:00:08 ; elapsed = 00:00:08 . Memory (MB): peak = 450.309 ; gain = 79.891
+# save_bd_design
+Wrote  : <C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/system.bd> 
+# add_files -fileset constrs_1 -norecurse projects/pzsdr2/common/ccbrk_constr.xdc projects/pzsdr2/common/pzsdr2_constr.xdc projects/pzsdr2/common/pzsdr2_constr_lvds.xdc
+# close_project
+# exit
+INFO: [Common 17-206] Exiting Vivado at Mon Jul 24 13:38:14 2017...
