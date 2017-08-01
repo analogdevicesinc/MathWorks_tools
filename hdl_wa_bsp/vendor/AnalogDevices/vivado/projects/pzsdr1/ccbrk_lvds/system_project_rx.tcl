@@ -9,9 +9,9 @@ set p_device "xc7z020clg400-1"
 adi_project_create pzsdr1_ccbrk_lvds $proj_dir config_rx.tcl
 adi_project_files pzsdr1_ccbrk_lvds [list \
   "$ad_hdl_dir/library/xilinx/common/ad_iobuf.v" \
-  "$ad_hdl_dir/projects/common/pzsdr1_constr.xdc" \
-  "$ad_hdl_dir/projects/common/pzsdr1_constr_lvds.xdc" \
-  "$ad_hdl_dir/projects/common/ccbrk_constr.xdc" \
+  "$ad_hdl_dir/projects/pzsdr1/common/pzsdr1_constr.xdc" \
+  "$ad_hdl_dir/projects/pzsdr1/common/pzsdr1_constr_lvds.xdc" \
+  "$ad_hdl_dir/projects/pzsdr1/common/ccbrk_constr.xdc" \
   "system_top.v" ]
 
 set_property is_enabled false [get_files  *axi_gpreg_constr.xdc]

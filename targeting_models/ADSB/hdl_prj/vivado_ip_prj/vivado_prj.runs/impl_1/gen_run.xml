@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenRun Id="impl_1" LaunchPart="xc7z035ifbg676-2L" LaunchTime="1500892903">
-  <File Type="OPT-DCP" Name="system_top_opt.dcp"/>
   <File Type="ROUTE-STATUS-PB" Name="system_top_route_status.pb"/>
   <File Type="PA-TCL" Name="system_top.tcl"/>
+  <File Type="OPT-DCP" Name="system_top_opt.dcp"/>
+  <File Type="INIT-TIMING" Name="system_top_timing_summary_init.rpt"/>
+  <File Type="OPT-METHODOLOGY-DRC" Name="system_top_methodology_drc_opted.rpt"/>
   <File Type="RDI-RDI" Name="system_top.vdi"/>
   <File Type="PWROPT-DRC" Name="system_top_drc_pwropted.rpt"/>
-  <File Type="OPT-METHODOLOGY-DRC" Name="system_top_methodology_drc_opted.rpt"/>
-  <File Type="INIT-TIMING" Name="system_top_timing_summary_init.rpt"/>
   <File Type="OPT-DRC" Name="system_top_drc_opted.rpt"/>
   <File Type="PWROPT-DCP" Name="system_top_pwropt.dcp"/>
   <File Type="OPT-HWDEF" Name="system_top.hwdef"/>
@@ -31,8 +31,8 @@
   <File Type="ROUTE-DRC" Name="system_top_drc_routed.rpt"/>
   <File Type="ROUTE-DRC-PB" Name="system_top_drc_routed.pb"/>
   <File Type="ROUTE-METHODOLOGY-DRC" Name="system_top_methodology_drc_routed.rpt"/>
-  <File Type="BG-BIT" Name="system_top.bit"/>
   <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="system_top_methodology_drc_routed.pb"/>
+  <File Type="BG-BIT" Name="system_top.bit"/>
   <File Type="ROUTE-PWR" Name="system_top_power_routed.rpt"/>
   <File Type="ROUTE-PWR-SUM" Name="system_top_power_summary_routed.pb"/>
   <File Type="ROUTE-PWR-RPX" Name="system_top_power_routed.rpx"/>

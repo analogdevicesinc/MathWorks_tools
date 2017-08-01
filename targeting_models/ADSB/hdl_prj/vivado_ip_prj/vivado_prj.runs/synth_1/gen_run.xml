@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenRun Id="synth_1" LaunchPart="xc7z035ifbg676-2L" LaunchTime="1500892903">
-  <File Type="RDS-PROPCONSTRS" Name="system_top_drc_synth.rpt"/>
   <File Type="PA-TCL" Name="system_top.tcl"/>
+  <File Type="RDS-PROPCONSTRS" Name="system_top_drc_synth.rpt"/>
   <File Type="RDS-RDS" Name="system_top.vds"/>
   <File Type="RDS-UTIL" Name="system_top_utilization_synth.rpt"/>
   <File Type="RDS-UTIL-PB" Name="system_top_utilization_synth.pb"/>

@@ -54,39 +54,6 @@
         <CompFileExtendedInfo CompFileName="system_axi_gpreg_0.xci" FileRelPathName="axi_gpreg_constr.xdc">
           <Attr Name="UserDisabled" Val="1"/>
         </CompFileExtendedInfo>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_sys_ps7_ENET1_GMII_RX_CLK_GND_0/system_sys_ps7_ENET1_GMII_RX_CLK_GND_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_hp2_interconnect_0/system_axi_hp2_interconnect_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_cpu_interconnect_0/system_axi_cpu_interconnect_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_sys_logic_inv_0/system_sys_logic_inv_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_sys_rstgen_0/system_sys_rstgen_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_sys_concat_intc_0/system_sys_concat_intc_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_iic_main_0/system_axi_iic_main_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_sys_ps7_0/system_sys_ps7_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_dac_fifo_0/system_dac_fifo_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_clkdiv_reset_0/system_clkdiv_reset_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_clkdiv_0/system_clkdiv_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_hp1_interconnect_0/system_axi_hp1_interconnect_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_xbar_0/system_xbar_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_concat_logic_0/system_concat_logic_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_clkdiv_sel_logic_0/system_clkdiv_sel_logic_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_util_ad9361_adc_pack_0/system_util_ad9361_adc_pack_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_util_ad9361_tdd_sync_0/system_util_ad9361_tdd_sync_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_util_ad9361_adc_fifo_0/system_util_ad9361_adc_fifo_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_ad9361_adc_dma_0/system_axi_ad9361_adc_dma_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_util_ad9361_dac_upack_0/system_util_ad9361_dac_upack_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_ad9361_dac_dma_0/system_axi_ad9361_dac_dma_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_ad9361_0/system_axi_ad9361_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_sys_ps7_ENET1_GMII_TX_CLK_GND_0/system_sys_ps7_ENET1_GMII_TX_CLK_GND_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_auto_pc_0/system_auto_pc_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_auto_cc_0/system_auto_cc_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_Detector_ip_0_0/system_Detector_ip_0_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.v"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_gpreg_0/system_axi_gpreg_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="ip/system_axi_pz_xcvrlb_0/system_axi_pz_xcvrlb_0.xci"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hdl/system.hwdef"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system_bd.tcl"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="hw_handoff/system.hwh"/>
-        <CompFileExtendedInfo CompFileName="system.bd" FileRelPathName="system_ooc.xdc"/>
       </File>
       <File Path="$PSRCDIR/sources_1/imports/hdl/system_wrapper.v">
         <FileInfo>

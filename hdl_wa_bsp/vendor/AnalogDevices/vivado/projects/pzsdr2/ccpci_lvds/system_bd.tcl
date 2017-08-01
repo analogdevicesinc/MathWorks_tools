@@ -1,6 +1,6 @@
 
-source ../common/pzsdr2_bd.tcl
-source ../common/ccpci_bd.tcl
+source $ad_hdl_dir/projects/pzsdr2/common/pzsdr2_bd.tcl
+source $ad_hdl_dir/projects/pzsdr2/common/ccpci_bd.tcl
 
 ## core digital interface -- cmos (1) or lvds (0)
 
