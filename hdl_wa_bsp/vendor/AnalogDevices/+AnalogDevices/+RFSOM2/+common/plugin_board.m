@@ -13,20 +13,10 @@ hB.FPGAVendor   = 'Xilinx';
 hB.FPGAFamily   = 'Zynq';
 
 % Determine the device based on the board
-switch(upper(board))
-	case 'BREAKOUT CMOS'
-		hB.FPGADevice   = sprintf('xc7%s', 'z035i');
-		hB.FPGAPackage  = 'fbg676';
-		hB.FPGASpeed    = '-2L';
-	case 'BREAKOUT LVDS'
-		hB.FPGADevice   = sprintf('xc7%s', 'z035i');
-		hB.FPGAPackage  = 'fbg676';
-		hB.FPGASpeed    = '-2L';
-	otherwise
-		hB.FPGADevice   = sprintf('xc7%s', 'z035i');
-		hB.FPGAPackage  = 'fbg676';
-		hB.FPGASpeed    = '-2L';
-end
+hB.FPGADevice   = sprintf('xc7%s', 'z035i');
+hB.FPGAPackage  = 'fbg676';
+hB.FPGASpeed    = '-2L';
+
 
 % Tool Info
 hB.SupportedTool = {'Xilinx Vivado'};
