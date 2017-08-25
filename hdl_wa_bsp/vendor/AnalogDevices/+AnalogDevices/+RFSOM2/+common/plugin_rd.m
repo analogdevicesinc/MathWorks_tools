@@ -26,6 +26,8 @@ hRD.SharedRDFolder = fullfile(rootDir, 'vivado');
 switch(upper(board))
 	case 'BOX LVDS'
 		board = 'ccbox_lvds';
+	case 'BOX MODEM'
+		board = 'ccbox_modem';	
 	case 'BREAKOUT LVDS'
 		board = 'ccbrk_lvds';
 	case 'BREAKOUT CMOS'

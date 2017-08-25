@@ -14,7 +14,7 @@ hRD.ReferenceDesignName = sprintf('FMCOMMS5 %s Base System (Vivado 2015.2)', upp
 hRD.BoardName = sprintf('AnalogDevices FMCOMMS5 %s (%s)', upper(board), design);
 
 % Tool information
-hRD.SupportedToolVersion = {'2015.2'};
+hRD.SupportedToolVersion = {'2016.2'};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
