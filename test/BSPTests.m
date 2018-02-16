@@ -19,12 +19,28 @@ classdef BSPTests < matlab.unittest.TestCase
                 'ReferenceDesignName',ReferenceDesignName,...
                 'vivado_version',vivado_version,'mode',mode);
         end
+        
+        function setVivadoPath(vivado)
+            if ispc
+                pathname = ['C:\Xilinx\Vivado\',vivado,'\bin\vivado.bat'];
+            elseif isunix
+                pathname = ['/opt/Xilinx/Vivado/',vivado,'/bin/vivado'];
+            end
+            assert(exist(pathname,'file')>0,'Correct version of Vivado is unavailable or in a non-standard location');
+            hdlsetuptoolpath('ToolName', 'Xilinx Vivado', ...
+                'ToolPath', pathname);
+        end
     end
     
     methods(Test)
         function testMain(testCase, configs)
+            if exist('hdl_prj','dir')
+                rmdir('hdl_prj','s');
+            end
             % Extract board configuration
             cfg = testCase.extractConfigs(configs);
+            % Set up vivado
+            testCase.setVivadoPath(cfg.vivado_version);
             % Build
             res = build_design(cfg.Board,cfg.ReferenceDesignName,...
                 cfg.vivado_version,cfg.mode);

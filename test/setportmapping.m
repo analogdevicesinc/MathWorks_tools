@@ -4,6 +4,15 @@ if mod(numChannels,2)~=0
     error('Channels must be multiple of 2');
 end
 
+% First set all ports to NIS
+for k=1:8
+    hdlset_param([mdl,'/HDL_DUT/in',num2str(k)], 'IOInterface', 'No Interface Specified');
+    hdlset_param([mdl,'/HDL_DUT/in',num2str(k)], 'IOInterfaceMapping', '');
+    hdlset_param([mdl,'/HDL_DUT/out',num2str(k)], 'IOInterface', 'No Interface Specified');
+    hdlset_param([mdl,'/HDL_DUT/out',num2str(k)], 'IOInterfaceMapping', '');
+end
+
+        
 switch mode
     case 'tx'
         hdlset_param([mdl,'/HDL_DUT/in1'], 'IOInterface', 'IP Data 0 IN [0:15]');
