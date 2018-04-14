@@ -28,6 +28,7 @@ function install(mode)
 	% Copy the Zynq SDR target definition file into the support package
 	source  = [];
 	destination = [];
+	if iswin
 	zynqRootDir = codertarget.zynq.internal.getSpPkgRootDir;
     armRootDir  = codertarget.arm_cortex_a.internal.getSpPkgRootDir;
 	
@@ -48,7 +49,7 @@ function install(mode)
 	
     source = [source {fullfile(armRootDir,'ssh_download.bat')}];
     destination = [destination {fullfile(zynqRootDir, 'ssh_download.bat')}];
-    
+        end
 	if(mode == 0)
         for i = 1:length(source)
             copyfile(char(source(:,i)), char(destination(:,i)), 'f');
