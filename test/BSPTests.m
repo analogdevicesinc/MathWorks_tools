@@ -42,11 +42,11 @@ classdef BSPTests < matlab.unittest.TestCase
             % Set up vivado
             testCase.setVivadoPath(cfg.vivado_version);
             % Build
+            disp(['Building: ',cfg.Board.BoardName]);
             res = build_design(cfg.Board,cfg.ReferenceDesignName,...
                 cfg.vivado_version,cfg.mode);
             % Check
             testCase.assertEmpty(res,res);
-            
         end
     end
 end

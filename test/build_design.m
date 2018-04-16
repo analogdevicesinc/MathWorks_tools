@@ -19,6 +19,7 @@ hdlset_param(mdl, 'SynthesisToolDeviceName', config.FPGADevice);
 hdlset_param(mdl, 'SynthesisToolPackageName', config.FPGAPackage);
 hdlset_param(mdl, 'SynthesisToolSpeedValue', config.FPGASpeed);
 hdlset_param(mdl, 'TargetPlatform', config.BoardName);
+hdlset_param(mdl, 'TargetLanguage', 'Verilog');
 hdlset_param(mdl, 'TargetDirectory', 'hdl_prj\hdlsrc');
 hdlset_param(mdl, 'Workflow', 'IP Core Generation');
 hdlset_param([mdl,'/HDL_DUT'], 'ProcessorFPGASynchronization', 'Free running');
@@ -40,7 +41,7 @@ hWC.RunTaskGenerateRTLCodeAndIPCore = true;
 hWC.RunTaskCreateProject = true;
 hWC.RunTaskGenerateSoftwareInterfaceModel = false;
 hWC.RunTaskBuildFPGABitstream = false; % CHANGED
-hWC.RunTaskProgramTargetDevice = true;
+hWC.RunTaskProgramTargetDevice = false;
 
 % Set properties related to 'RunTaskGenerateRTLCodeAndIPCore' Task
 hWC.IPCoreRepository = '';
@@ -56,11 +57,14 @@ hWC.OperatingSystem = 'Linux';
 
 % Set properties related to 'RunTaskBuildFPGABitstream' Task
 hWC.RunExternalBuild = false;
-hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Default;
-hWC.CustomBuildTclFile = '';
+%hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Default;
+%hWC.CustomBuildTclFile = '';
+hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Custom;
+hWC.CustomBuildTclFile = '../hdl_wa_bsp/vendor/AnalogDevices/vivado/projects/scripts/adi_build.tcl';
 
 % Set properties related to 'RunTaskProgramTargetDevice' Task
-hWC.ProgrammingMethod = hdlcoder.ProgrammingMethod.Download;
+%hWC.ProgrammingMethod = hdlcoder.ProgrammingMethod.Download;
+%hWC.ProgrammingMethod = hdlcoder.ProgrammingMethod.Custom;
 
 % Validate the Workflow Configuration Object
 hWC.validate;
@@ -68,6 +72,8 @@ hWC.validate;
 %% Run the workflow
 try
     hdlcoder.runWorkflow([mdl,'/HDL_DUT'], hWC);
+    close_system(mdl, false);
+    bdclose('all');
     out = [];
 catch ME
     out = ME;%.identifier
