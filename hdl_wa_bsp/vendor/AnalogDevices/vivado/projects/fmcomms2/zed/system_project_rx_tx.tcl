@@ -14,6 +14,7 @@ adi_project_files fmcomms2_zed [list \
   "$ad_hdl_dir/projects/common/zed/zed_system_constr.xdc" ]
 
 adi_project_run fmcomms2_zed
+source $ad_hdl_dir/library/axi_ad9361/axi_ad9361_delay.tcl
 
 # Copy the boot file to the root directory
 file copy -force $proj_dir/boot $ad_hdl_dir/boot

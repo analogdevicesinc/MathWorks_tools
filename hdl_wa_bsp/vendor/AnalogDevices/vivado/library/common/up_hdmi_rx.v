@@ -1,120 +1,82 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// All rights reserved.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
 //
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
 //
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; Loos OF USE, DATA, OR PROFITS; OR
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE PoosIBILITY OF SUCH DAMAGE.
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 
-module up_hdmi_rx (
+module up_hdmi_rx #(
+
+  parameter   ID = 0) (
 
   // hdmi interface
 
-  hdmi_clk,
-  hdmi_rst,
-  hdmi_edge_sel,
-  hdmi_bgr,
-  hdmi_packed,
-  hdmi_csc_bypass,
-  hdmi_vs_count,
-  hdmi_hs_count,
-  hdmi_dma_ovf,
-  hdmi_dma_unf,
-  hdmi_tpm_oos,
-  hdmi_vs_oos,
-  hdmi_hs_oos,
-  hdmi_vs_mismatch,
-  hdmi_hs_mismatch,
-  hdmi_vs,
-  hdmi_hs,
-  hdmi_clk_ratio,
+  input                   hdmi_clk,
+  output                  hdmi_rst,
+  output                  hdmi_edge_sel,
+  output                  hdmi_bgr,
+  output                  hdmi_packed,
+  output                  hdmi_csc_bypass,
+  output      [15:0]      hdmi_vs_count,
+  output      [15:0]      hdmi_hs_count,
+  input                   hdmi_dma_ovf,
+  input                   hdmi_dma_unf,
+  input                   hdmi_tpm_oos,
+  input                   hdmi_vs_oos,
+  input                   hdmi_hs_oos,
+  input                   hdmi_vs_mismatch,
+  input                   hdmi_hs_mismatch,
+  input       [15:0]      hdmi_vs,
+  input       [15:0]      hdmi_hs,
+  input       [31:0]      hdmi_clk_ratio,
 
   // bus interface
 
-  up_rstn,
-  up_clk,
-  up_wreq,
-  up_waddr,
-  up_wdata,
-  up_wack,
-  up_rreq,
-  up_raddr,
-  up_rdata,
-  up_rack);
-
-  // parameters
+  input                   up_rstn,
+  input                   up_clk,
+  input                   up_wreq,
+  input       [13:0]      up_waddr,
+  input       [31:0]      up_wdata,
+  output  reg             up_wack,
+  input                   up_rreq,
+  input       [13:0]      up_raddr,
+  output  reg [31:0]      up_rdata,
+  output  reg             up_rack);
 
   localparam  PCORE_VERSION = 32'h00040063;
-  parameter   ID = 0;
-
-  // hdmi interface
-
-  input           hdmi_clk;
-  output          hdmi_rst;
-  output          hdmi_edge_sel;
-  output          hdmi_bgr;
-  output          hdmi_packed;
-  output          hdmi_csc_bypass;
-  output  [15:0]  hdmi_vs_count;
-  output  [15:0]  hdmi_hs_count;
-  input           hdmi_dma_ovf;
-  input           hdmi_dma_unf;
-  input           hdmi_tpm_oos;
-  input           hdmi_vs_oos;
-  input           hdmi_hs_oos;
-  input           hdmi_vs_mismatch;
-  input           hdmi_hs_mismatch;
-  input   [15:0]  hdmi_vs;
-  input   [15:0]  hdmi_hs;
-  input   [31:0]  hdmi_clk_ratio;
-
-  // bus interface
-
-  input           up_rstn;
-  input           up_clk;
-  input           up_wreq;
-  input   [13:0]  up_waddr;
-  input   [31:0]  up_wdata;
-  output          up_wack;
-  input           up_rreq;
-  input   [13:0]  up_raddr;
-  output  [31:0]  up_rdata;
-  output          up_rack;
 
   // internal registers
 
   reg             up_core_preset = 'd0;
   reg             up_resetn = 'd0;
-  reg             up_wack = 'd0;
   reg     [31:0]  up_scratch = 'd0;
   reg             up_edge_sel = 'd0;
   reg             up_bgr = 'd0;
@@ -129,8 +91,6 @@ module up_hdmi_rx (
   reg             up_hs_mismatch = 'd0;
   reg     [15:0]  up_vs_count = 'd0;
   reg     [15:0]  up_hs_count = 'd0;
-  reg             up_rack = 'd0;
-  reg     [31:0]  up_rdata = 'd0;
 
   // internal signals
 

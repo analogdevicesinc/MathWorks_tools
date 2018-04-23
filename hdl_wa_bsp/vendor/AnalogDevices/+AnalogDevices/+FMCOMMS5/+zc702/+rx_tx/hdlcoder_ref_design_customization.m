@@ -11,7 +11,7 @@ function [rd, boardName] = hdlcoder_ref_design_customization
 
 %   Copyright 2013-2014 The MathWorks, Inc.
 
-rd = {'AnalogDevices.FMCOMMS5.zc702.rx_tx.plugin_rd', ...
+rd = {'AnalogDevices.fmcomms5.zc702.rx_tx.plugin_rd', ...
      };
 
 boardName = 'AnalogDevices FMCOMMS5 ZC702 (Rx & Tx)';

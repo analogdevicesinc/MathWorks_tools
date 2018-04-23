@@ -1,92 +1,75 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
-// 
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
-//    
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
+//
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
+//
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
+//
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 
 `timescale 1ns/100ps
 
-module up_xfer_status (
+module up_xfer_status #(
+
+  parameter     DATA_WIDTH = 8) (
 
   // up interface
 
-  up_rstn,
-  up_clk,
-  up_data_status,
+  input                       up_rstn,
+  input                       up_clk,
+  output  [(DATA_WIDTH-1):0]  up_data_status,
 
   // device interface
 
-  d_rst,
-  d_clk,
-  d_data_status);
-
-  // parameters
-
-  parameter     DATA_WIDTH = 8;
-  localparam    DW = DATA_WIDTH - 1;
-
-  // up interface
-
-  input           up_rstn;
-  input           up_clk;
-  output  [DW:0]  up_data_status;
-
-  // device interface
-
-  input           d_rst;
-  input           d_clk;
-  input   [DW:0]  d_data_status;
+  input                       d_rst,
+  input                       d_clk,
+  input   [(DATA_WIDTH-1):0]  d_data_status);
 
   // internal registers
 
-  reg             d_xfer_state_m1 = 'd0;
-  reg             d_xfer_state_m2 = 'd0;
-  reg             d_xfer_state = 'd0;
-  reg     [ 5:0]  d_xfer_count = 'd0;
-  reg             d_xfer_toggle = 'd0;
-  reg     [DW:0]  d_xfer_data = 'd0;
-  reg     [DW:0]  d_acc_data = 'd0;
-  reg             up_xfer_toggle_m1 = 'd0;
-  reg             up_xfer_toggle_m2 = 'd0;
-  reg             up_xfer_toggle_m3 = 'd0;
-  reg             up_xfer_toggle = 'd0;
-  reg     [DW:0]  up_data_status = 'd0;
+  reg                         d_xfer_state_m1 = 'd0;
+  reg                         d_xfer_state_m2 = 'd0;
+  reg                         d_xfer_state = 'd0;
+  reg     [ 5:0]              d_xfer_count = 'd0;
+  reg                         d_xfer_toggle = 'd0;
+  reg     [(DATA_WIDTH-1):0]  d_xfer_data = 'd0;
+  reg     [(DATA_WIDTH-1):0]  d_acc_data = 'd0;
+  reg                         up_xfer_toggle_m1 = 'd0;
+  reg                         up_xfer_toggle_m2 = 'd0;
+  reg                         up_xfer_toggle_m3 = 'd0;
+  reg                         up_xfer_toggle = 'd0;
+  reg     [(DATA_WIDTH-1):0]  up_data_status_int = 'd0;
 
   // internal signals
 
-  wire            d_xfer_enable_s;
-  wire            up_xfer_toggle_s;
+  wire                        d_xfer_enable_s;
+  wire                        up_xfer_toggle_s;
 
   // device status transfer
 
@@ -118,6 +101,7 @@ module up_xfer_status (
     end
   end
 
+  assign up_data_status = up_data_status_int;
   assign up_xfer_toggle_s = up_xfer_toggle_m3 ^ up_xfer_toggle_m2;
 
   always @(negedge up_rstn or posedge up_clk) begin
@@ -126,14 +110,14 @@ module up_xfer_status (
       up_xfer_toggle_m2 <= 'd0;
       up_xfer_toggle_m3 <= 'd0;
       up_xfer_toggle <= 'd0;
-      up_data_status <= 'd0;
+      up_data_status_int <= 'd0;
     end else begin
       up_xfer_toggle_m1 <= d_xfer_toggle;
       up_xfer_toggle_m2 <= up_xfer_toggle_m1;
       up_xfer_toggle_m3 <= up_xfer_toggle_m2;
       up_xfer_toggle <= up_xfer_toggle_m3;
       if (up_xfer_toggle_s == 1'b1) begin
-        up_data_status <= d_xfer_data;
+        up_data_status_int <= d_xfer_data;
       end
     end
   end

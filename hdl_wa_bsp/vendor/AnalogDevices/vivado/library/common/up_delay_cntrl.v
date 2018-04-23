@@ -1,37 +1,35 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
-// 
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
-//    
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
+//
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
+//
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
+//
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 
@@ -42,6 +40,7 @@ module up_delay_cntrl #(
   // parameters
 
   parameter   DISABLE = 0,
+  parameter   INIT_DELAY = 0,
   parameter   DATA_WIDTH = 8,
   parameter   BASE_ADDRESS = 6'h02) (
 
@@ -77,6 +76,8 @@ module up_delay_cntrl #(
   reg                             up_rack_int = 'd0;
   reg     [31:0]                  up_rdata_int = 'd0;
   reg                             up_dlocked_m1 = 'd0;
+  reg                             up_dlocked_m2 = 'd0;
+  reg                             up_dlocked_m3 = 'd0;
   reg                             up_dlocked = 'd0;
   reg     [(DATA_WIDTH-1):0]      up_dld_int = 'd0;
   reg     [((DATA_WIDTH*5)-1):0]  up_dwdata_int = 'd0;
@@ -93,6 +94,8 @@ module up_delay_cntrl #(
   wire    [(DATA_WIDTH-1):0]      up_drdata0_s;
   wire    [(DATA_WIDTH-1):0]      up_dld_s;
   wire    [((DATA_WIDTH*5)-1):0]  up_dwdata_s;
+  wire    [(DATA_WIDTH-1):0]      up_dinit_s;
+  wire    [((DATA_WIDTH*5)-1):0]  up_dinitdata_s;
   wire                            delay_rst_s;
 
   // variables
@@ -132,6 +135,8 @@ module up_delay_cntrl #(
       up_rack_int <= 'd0;
       up_rdata_int <= 'd0;
       up_dlocked_m1 <= 'd0;
+      up_dlocked_m2 <= 'd0;
+      up_dlocked_m3 <= 'd0;
       up_dlocked <= 'd0;
     end else begin
       up_preset <= 1'd0;
@@ -147,9 +152,20 @@ module up_delay_cntrl #(
         up_rdata_int <= 32'd0;
       end
       up_dlocked_m1 <= delay_locked;
-      up_dlocked <= up_dlocked_m1;
+      up_dlocked_m2 <= up_dlocked_m1;
+      up_dlocked_m3 <= up_dlocked_m2;
+      up_dlocked <= up_dlocked_m3;
     end
   end
+
+  // init delay values (after delay locked)
+
+  generate
+  for (n = 0; n < DATA_WIDTH; n = n + 1) begin: g_dinit
+  assign up_dinit_s[n] = up_dlocked_m2 & ~up_dlocked_m3;
+  assign up_dinitdata_s[((n*5)+4):(n*5)] = INIT_DELAY;
+  end
+  endgenerate
 
   // write does not hold- read back what goes into effect. 
 
@@ -169,8 +185,10 @@ module up_delay_cntrl #(
       up_dld_int <= 'd0;
       up_dwdata_int <= 'd0;
     end else begin
-      up_dld_int <= up_dld_s;
-      if (up_wreq_s == 1'b1) begin
+      up_dld_int <= up_dld_s | up_dinit_s;
+      if ((up_dlocked_m2 == 1'b1) && (up_dlocked_m3 == 1'b0)) begin
+        up_dwdata_int <= up_dinitdata_s;
+      end else if (up_wreq_s == 1'b1) begin
         up_dwdata_int <= up_dwdata_s;
       end
     end

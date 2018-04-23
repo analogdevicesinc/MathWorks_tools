@@ -7,6 +7,7 @@ set cpu_name [lindex [hsi get_cells -filter {IP_TYPE==PROCESSOR}] 0]
 sdk set_workspace $sdk_loc
 sdk create_hw_project -name hw_0 -hwspec $sdk_loc/system_top.hdf
 sdk create_app_project -name fsbl -hwproject hw_0 -proc $cpu_name -os standalone -lang C -app {Zynq FSBL}
+sdk configapp -app fsbl build-config release
 sdk build_project -type all
 
 # Create the BOOT.bin

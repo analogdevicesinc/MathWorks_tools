@@ -1,40 +1,40 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
-// 
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
-//    
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
+//
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
+//
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
+//
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 // iq correction = a*(i+x) + b*(q+y); offsets are added in dcfilter.
+// if SCALE_ONLY is set to 1, b*(q+y) is set to 0, and the module is used for
+// scale correction of channel I
 
 `timescale 1ns/100ps
 
@@ -43,6 +43,7 @@ module ad_iqcor #(
   // select i/q if disabled
 
   parameter   Q_OR_I_N = 0,
+  parameter   SCALE_ONLY = 0,
   parameter   DISABLE = 0) (
 
   // data interface
@@ -95,7 +96,7 @@ module ad_iqcor #(
 
   // swap i & q
 
-  assign data_i_s = (Q_OR_I_N == 1) ? data_iq : data_in;
+  assign data_i_s = (Q_OR_I_N == 1 && SCALE_ONLY == 1'b0) ? data_iq : data_in;
   assign data_q_s = (Q_OR_I_N == 1) ? data_in : data_iq;
 
   // coefficients are flopped to remove warnings from vivado
@@ -115,6 +116,8 @@ module ad_iqcor #(
     .ddata_in ({valid, data_i_s}),
     .ddata_out ({p1_valid_s, p1_data_i_s}));
 
+  generate 
+  if (SCALE_ONLY == 0) begin
   // scaling functions - q
 
   ad_mul #(.DELAY_DATA_WIDTH(16)) i_mul_q (
@@ -126,6 +129,11 @@ module ad_iqcor #(
     .ddata_out (p1_data_q_s));
 
   // sum
+  end else begin
+  assign p1_data_p_q_s = 34'h0;
+  assign p1_data_q_s = 16'h0;
+  end
+  endgenerate
 
   always @(posedge clk) begin
     p1_valid <= p1_valid_s;
@@ -133,19 +141,19 @@ module ad_iqcor #(
     p1_data_q <= p1_data_q_s;
     p1_data_p <= p1_data_p_i_s + p1_data_p_q_s;
   end
-
   // output registers
 
   always @(posedge clk) begin
     valid_int <= p1_valid;
     if (iqcor_enable == 1'b1) begin
       data_int <= p1_data_p[29:14];
-    end else if (Q_OR_I_N == 1) begin
+    end else if (Q_OR_I_N == 1 && SCALE_ONLY == 0) begin
       data_int <= p1_data_q;
     end else begin
       data_int <= p1_data_i;
     end
   end
+
 
 endmodule
 

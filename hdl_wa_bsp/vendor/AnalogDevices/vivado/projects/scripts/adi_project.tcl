@@ -7,7 +7,7 @@ variable p_prcfg_list
 variable p_prcfg_status
 
 if {![info exists REQUIRED_VIVADO_VERSION]} {
-  set REQUIRED_VIVADO_VERSION "2016.2"
+  set REQUIRED_VIVADO_VERSION "2016.4"
 }
 
 if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
@@ -19,8 +19,9 @@ if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
 set p_board "not-applicable"
 set p_device "none"
 set sys_zynq 1
+set ADI_POWER_OPTIMIZATION 0
 
-proc adi_project_create {project_name project_dir update_tcl {mode 0}} {
+proc adi_project_xilinx {project_name project_dir {mode 0}} {
 
   global ad_hdl_dir
   global ad_phdl_dir
@@ -76,21 +77,24 @@ proc adi_project_create {project_name project_dir update_tcl {mode 0}} {
     set sys_zynq 1
   }
   if [regexp "_zcu102$" $project_name] {
-    set p_device "xczu9eg-ffvb1156-1-i-es1"
-    set p_board "xilinx.com:zcu102:part0:1.2"
+    set p_device "xczu9eg-ffvb1156-2-i-es2"
+    set p_board "xilinx.com:zcu102:part0:2.0"
     set sys_zynq 2
   }
 
   #Added
   set project_name vivado_prj
-
-  if {!$IGNORE_VERSION_CHECK && [string compare [version -short] $REQUIRED_VIVADO_VERSION] != 0} {
-    return -code error [format "ERROR: This project requires Vivado %s." $REQUIRED_VIVADO_VERSION]
+  
+  set VIVADO_VERSION [version -short]
+  if {[string compare $VIVADO_VERSION $REQUIRED_VIVADO_VERSION] != 0} {
+    puts -nonewline "CRITICAL WARNING: vivado version mismatch; "
+    puts -nonewline "expected $REQUIRED_VIVADO_VERSION, "
+    puts -nonewline "got $VIVADO_VERSION.\n"
   }
 
   #Added
   adi_setup_libs
-
+  
   if {$mode == 0} {
     set project_system_dir "./$project_name.srcs/sources_1/bd/system"
     #Removed
@@ -109,7 +113,7 @@ proc adi_project_create {project_name project_dir update_tcl {mode 0}} {
     set_property board_part $p_board [current_project]
   }
 
-  #Removed  
+  #Removed
   #set lib_dirs $ad_hdl_dir/library
   #if {$ad_hdl_dir ne $ad_phdl_dir} {
   #  lappend lib_dirs $ad_phdl_dir/library
@@ -128,12 +132,12 @@ proc adi_project_create {project_name project_dir update_tcl {mode 0}} {
   #Added
   create_bd_design "system"
   source $project_dir/system_bd.tcl
-  source $project_dir/$update_tcl
-
+  
   regenerate_bd_layout
   save_bd_design
   validate_bd_design
 
+  set_property synth_checkpoint_mode None [get_files  $project_system_dir/system.bd]
   generate_target {synthesis implementation} [get_files  $project_system_dir/system.bd]
   make_wrapper -files [get_files $project_system_dir/system.bd] -top
 
@@ -142,12 +146,6 @@ proc adi_project_create {project_name project_dir update_tcl {mode 0}} {
   } else {
     write_hwdef -file "$project_name.data/$project_name.hwdef"
   }
-
-  if {![info exists ::env(ADI_NO_BITSTREAM_COMPRESSION)] && ![info exists ADI_NO_BITSTREAM_COMPRESSION]} {
-    add_files -norecurse -fileset sources_1 \
-		"$ad_hdl_dir/projects/common/xilinx/compression_system_constr.xdc"
-  }
-
 }
 
 #Added
@@ -181,21 +179,22 @@ proc adi_add_archive_ip {lib_dirs} {
 }
 
 proc adi_project_files {project_name project_files} {
-
+  
   global ad_hdl_dir
   global ad_phdl_dir
   global proj_dir
   
   #Added
   cd $proj_dir
-
+  
   add_files -norecurse -fileset sources_1 $project_files
   set_property top system_top [current_fileset]
-
+  
   #Added
   cd $ad_hdl_dir
 }
 
 proc adi_project_run {project_name} {
-	#Removed
+  #Removed
 }
+

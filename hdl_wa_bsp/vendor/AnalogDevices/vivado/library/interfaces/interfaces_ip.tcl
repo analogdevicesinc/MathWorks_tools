@@ -4,7 +4,6 @@ source ../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip.tcl
 
 adi_if_define if_xcvr_cm
-adi_if_ports output    8  sel
 adi_if_ports output    1  enb
 adi_if_ports output   12  addr
 adi_if_ports output    1  wr  
@@ -21,7 +20,6 @@ adi_if_ports output    1  lpm_dfe_n
 adi_if_ports output    3  rate
 adi_if_ports output    2  sys_clk_sel
 adi_if_ports output    3  out_clk_sel
-adi_if_ports output    8  sel
 adi_if_ports output    1  enb
 adi_if_ports output   12  addr
 adi_if_ports output    1  wr
@@ -96,4 +94,3 @@ adi_if_ports  output   4  rx_gt_ilas_a
 adi_if_ports  output   4  rx_gt_ilas_r
 adi_if_ports  output   4  rx_gt_cgs_k
 
-ipx::archive_core {analog.com_user_interfaces_1.0.zip} [ipx::current_core]

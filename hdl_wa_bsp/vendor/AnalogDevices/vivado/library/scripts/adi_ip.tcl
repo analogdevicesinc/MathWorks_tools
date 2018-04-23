@@ -1,8 +1,9 @@
-
-# check tool version
+## ###############################################################################################
+## ###############################################################################################
+## check tool version
 
 if {![info exists REQUIRED_VIVADO_VERSION]} {
-  set REQUIRED_VIVADO_VERSION "2016.2"
+  set REQUIRED_VIVADO_VERSION "2016.4"
 }
 
 if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
@@ -11,56 +12,9 @@ if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
   set IGNORE_VERSION_CHECK 0
 }
 
-# ip related stuff
-
-proc adi_ip_create {ip_name} {
-
-  global ad_hdl_dir
-  global ad_phdl_dir
-  global REQUIRED_VIVADO_VERSION
-  global IGNORE_VERSION_CHECK
-
-  if {!$IGNORE_VERSION_CHECK && [string compare [version -short] $REQUIRED_VIVADO_VERSION] != 0} {
-    return -code error [format "ERROR: This library requires Vivado %s." $REQUIRED_VIVADO_VERSION]
-  }
-
-  create_project $ip_name . -force
-
-  set_msg_config -id {IP_Flow 19-3656} -new_severity INFO
-  set_msg_config -id {IP_Flow 19-2999} -new_severity INFO 
-  set_msg_config -id {IP_Flow 19-1654} -new_severity INFO 
-  set_msg_config -id {IP_Flow 19-459} -new_severity INFO 
-
-  set lib_dirs $ad_hdl_dir/library
-  if {$ad_hdl_dir ne $ad_phdl_dir} {
-    lappend lib_dirs $ad_phdl_dir/library
-  }
-
-  set_property ip_repo_paths $lib_dirs [current_fileset]
-  update_ip_catalog
-
-  set proj_dir [get_property directory [current_project]]
-  set proj_name [get_projects $ip_name]
-}
-
-proc adi_ip_files {ip_name ip_files} {
-
-  set proj_fileset [get_filesets sources_1]
-  set cdir [pwd]
-  add_files -norecurse -scan_for_includes -copy_to $cdir -force -fileset $proj_fileset $ip_files
-  set_property "top" "$ip_name" $proj_fileset
-}
-
-proc adi_ip_constraints {ip_name ip_constr_files {processing_order late}} {
-
-  set proj_filegroup [ipx::get_file_groups -of_objects [ipx::current_core] -filter {NAME =~ *synthesis*}]
-  foreach f_name $ip_constr_files {
-    set f_name [file tail $f_name]
-	ipx::add_file $f_name $proj_filegroup
-    set_property type xdc [ipx::get_files $f_name -of_objects $proj_filegroup]
-    set_property processing_order $processing_order [ipx::get_files $f_name -of_objects $proj_filegroup]
-  }
-}
+## ###############################################################################################
+## ###############################################################################################
+## ip related stuff
 
 proc adi_ip_ttcl {ip_name ip_constr_files} {
 
@@ -82,46 +36,6 @@ proc adi_ip_bd {ip_name ip_bd_files} {
   ] $f
 }
 
-proc adi_ip_properties {ip_name} {
-
-  adi_ip_properties_lite $ip_name
-
-  ipx::infer_bus_interface {\
-    s_axi_awvalid \
-    s_axi_awaddr \
-    s_axi_awprot \
-    s_axi_awready \
-    s_axi_wvalid \
-    s_axi_wdata \
-    s_axi_wstrb \
-    s_axi_wready \
-    s_axi_bvalid \
-    s_axi_bresp \
-    s_axi_bready \
-    s_axi_arvalid \
-    s_axi_araddr \
-    s_axi_arprot \
-    s_axi_arready \
-    s_axi_rvalid \
-    s_axi_rdata \
-    s_axi_rresp \
-    s_axi_rready} \
-  xilinx.com:interface:aximm_rtl:1.0 [ipx::current_core]
-
-  ipx::infer_bus_interface s_axi_aclk xilinx.com:signal:clock_rtl:1.0 [ipx::current_core]
-  ipx::infer_bus_interface s_axi_aresetn xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
-  ipx::add_memory_map {s_axi} [ipx::current_core]
-  set_property slave_memory_map_ref {s_axi} [ipx::get_bus_interfaces s_axi -of_objects [ipx::current_core]]
-  ipx::add_address_block {axi_lite} [ipx::get_memory_maps s_axi -of_objects [ipx::current_core]]
-  set_property range {65536} [ipx::get_address_blocks axi_lite \
-    -of_objects [ipx::get_memory_maps s_axi -of_objects [ipx::current_core]]]
-  ipx::add_bus_parameter ASSOCIATED_BUSIF [ipx::get_bus_interfaces s_axi_aclk \
-    -of_objects [ipx::current_core]]
-  set_property value s_axi [ipx::get_bus_parameters ASSOCIATED_BUSIF \
-    -of_objects [ipx::get_bus_interfaces s_axi_aclk \
-    -of_objects [ipx::current_core]]]
-}
-
 proc adi_ip_infer_streaming_interfaces {ip_name} {
 
   ipx::infer_bus_interfaces xilinx.com:interface:axis_rtl:1.0 [ipx::current_core]
@@ -134,64 +48,12 @@ proc adi_ip_infer_mm_interfaces {ip_name} {
 
 }
 
-proc adi_ip_properties_lite {ip_name} {
-
-  ipx::package_project -root_dir . \
-    -vendor analog.com \
-    -library user \
-    -taxonomy /Analog_Devices
-
-  set_property vendor_display_name {Analog Devices} [ipx::current_core]
-  set_property company_url {www.analog.com} [ipx::current_core]
-
-  set_property supported_families {\
-    virtex7       Production \
-    qvirtex7      Production \
-    kintex7       Production \
-    kintex7l      Production \
-    qkintex7      Production \
-    qkintex7l     Production \
-    artix7        Production \
-    artix7l       Production \
-    aartix7       Production \
-    qartix7       Production \
-    zynq          Production \
-    qzynq         Production \
-    azynq         Production \
-    virtexu       Production \
-    kintexuplus   Production \
-    zynquplus     Production \
-    kintexu       Production \
-    virtex7       Beta \
-    qvirtex7      Beta \
-    kintex7       Beta \
-    kintex7l      Beta \
-    qkintex7      Beta \
-    qkintex7l     Beta \
-    artix7        Beta \
-    artix7l       Beta \
-    aartix7       Beta \
-    qartix7       Beta \
-    zynq          Beta \
-    qzynq         Beta \
-    azynq         Beta \
-    virtexu       Beta \
-    virtexuplus   Beta \
-    kintexuplus   Beta \
-    zynquplus     Beta \
-    kintexu       Beta}\
-  [ipx::current_core]
-
-  ipx::remove_all_bus_interface [ipx::current_core]
-  set memory_maps [ipx::get_memory_maps * -of_objects [ipx::current_core]]
-  foreach map $memory_maps {
-    ipx::remove_memory_map [lindex $map 2] [ipx::current_core ]
-  }
-}
-
-proc adi_set_ports_dependency {port_prefix dependency} {
+proc adi_set_ports_dependency {port_prefix dependency {driver_value {}}} {
   foreach port [ipx::get_ports [format "%s%s" $port_prefix "*"]] {
     set_property ENABLEMENT_DEPENDENCY $dependency $port
+    if {$driver_value != {}} {
+      set_property DRIVER_VALUE $driver_value $port
+    }
   }
 }
 
@@ -215,6 +77,31 @@ proc adi_add_bus {bus_name mode abs_type bus_type port_maps} {
 
   foreach port_map $port_maps {
     adi_add_port_map $bus {*}$port_map
+  }
+}
+
+proc adi_add_multi_bus {num bus_name_prefix mode abs_type bus_type port_maps dependency} {
+  for {set i 0} {$i < 8} {incr i} {
+    set bus_name [format "%s%d" $bus_name_prefix $i]
+    set bus [ipx::add_bus_interface $bus_name [ipx::current_core]]
+
+    set_property "ABSTRACTION_TYPE_VLNV" $abs_type $bus
+    set_property "BUS_TYPE_VLNV" $bus_type $bus
+    set_property "INTERFACE_MODE" $mode $bus
+
+    if {$dependency ne ""} {
+      set bus_dependency [string map [list "{i}" $i] $dependency]
+      set_property ENABLEMENT_DEPENDENCY $bus_dependency $bus
+    }
+
+    foreach port_map $port_maps {
+      lassign $port_map phys logic width
+      set map [ipx::add_port_map $phys $bus]
+      set_property "PHYSICAL_NAME" $phys $map
+      set_property "LOGICAL_NAME" $logic $map
+      set_property "PHYSICAL_RIGHT" [expr $i*$width] $map
+      set_property "PHYSICAL_LEFT" [expr ($i+1)*$width-1] $map
+    }
   }
 }
 
@@ -245,7 +132,11 @@ proc adi_add_bus_clock {clock_signal_name bus_inf_name {reset_signal_name ""} {r
     set_property physical_name $reset_signal_name $reset_map
 
     set reset_polarity [ipx::add_bus_parameter "POLARITY" $reset_inf]
-    set_property value "ACTIVE_LOW" $reset_polarity
+    if {[string match {*[Nn]} $reset_signal_name] == 1} {
+      set_property value "ACTIVE_LOW" $reset_polarity
+    } else {
+      set_property value "ACTIVE_HIGH" $reset_polarity
+    }
   }
 }
 
@@ -257,14 +148,168 @@ proc adi_ip_add_core_dependencies {vlnvs} {
   }
 }
 
+## ###############################################################################################
+## ###############################################################################################
+## ip related stuff
+
+variable ip_constr_files
+
+proc adi_ip_create {ip_name} {
+
+  global ad_hdl_dir
+  global ad_phdl_dir
+  global ip_constr_files
+  global REQUIRED_VIVADO_VERSION
+  global IGNORE_VERSION_CHECK
+
+  set VIVADO_VERSION [version -short]
+  if {[string compare $VIVADO_VERSION $REQUIRED_VIVADO_VERSION] != 0} {
+    puts -nonewline "CRITICAL WARNING: vivado version mismatch; "
+    puts -nonewline "expected $REQUIRED_VIVADO_VERSION, "
+    puts -nonewline "got $VIVADO_VERSION.\n"
+  }
+
+  create_project $ip_name . -force
+
+  set_msg_config -id {IP_Flow 19-3656} -new_severity INFO
+  set_msg_config -id {IP_Flow 19-2999} -new_severity INFO 
+  set_msg_config -id {IP_Flow 19-1654} -new_severity INFO 
+  set_msg_config -id {IP_Flow 19-4623} -new_severity INFO 
+  set_msg_config -id {IP_Flow 19-459} -new_severity INFO 
+
+  set ip_constr_files ""
+  set lib_dirs $ad_hdl_dir/library
+  if {$ad_hdl_dir ne $ad_phdl_dir} {
+    lappend lib_dirs $ad_phdl_dir/library
+  }
+
+  set_property ip_repo_paths $lib_dirs [current_fileset]
+  update_ip_catalog
+}
+
+proc adi_ip_files {ip_name ip_files} {
+
+  global ip_constr_files
+
+  set ip_constr_files ""
+  foreach m_file $ip_files {
+    if {[file extension $m_file] eq ".xdc"} {
+      lappend ip_constr_files $m_file
+    }
+  }
+
+  set proj_fileset [get_filesets sources_1]
+  add_files -norecurse -scan_for_includes -fileset $proj_fileset $ip_files
+  set_property "top" "$ip_name" $proj_fileset
+}
+
+proc adi_ip_properties_lite {ip_name} {
+
+  global ip_constr_files
+
+  ipx::package_project -root_dir . -vendor analog.com -library user -taxonomy /Analog_Devices
+  set_property name $ip_name [ipx::current_core]
+  set_property vendor_display_name {Analog Devices} [ipx::current_core]
+  set_property company_url {www.analog.com} [ipx::current_core]
+
+  set i_families ""
+  foreach i_part [get_parts] {
+    lappend i_families [get_property FAMILY $i_part]
+  }
+  set i_families [lsort -unique $i_families]
+  set s_families [get_property supported_families [ipx::current_core]]
+  foreach i_family $i_families {
+    set s_families "$s_families $i_family Production"
+    set s_families "$s_families $i_family Beta"
+  }
+  set_property supported_families $s_families [ipx::current_core]
+  ipx::save_core
+
+  ipx::remove_all_bus_interface [ipx::current_core]
+  set memory_maps [ipx::get_memory_maps * -of_objects [ipx::current_core]]
+  foreach map $memory_maps {
+    ipx::remove_memory_map [lindex $map 2] [ipx::current_core ]
+  }
+  ipx::save_core
+
+  set i_filegroup [ipx::get_file_groups -of_objects [ipx::current_core] -filter {NAME =~ *synthesis*}]
+  foreach i_file $ip_constr_files {
+    set i_module [file tail $i_file]
+    regsub {_constr\.xdc} $i_module {} i_module
+    ipx::add_file $i_file $i_filegroup
+    set_property SCOPED_TO_REF $i_module [ipx::get_files $i_file -of_objects $i_filegroup]
+  }
+  ipx::save_core
+}
+
+proc adi_ip_properties {ip_name} {
+
+  adi_ip_properties_lite $ip_name
+
+  ipx::infer_bus_interface {\
+    s_axi_awvalid \
+    s_axi_awaddr \
+    s_axi_awprot \
+    s_axi_awready \
+    s_axi_wvalid \
+    s_axi_wdata \
+    s_axi_wstrb \
+    s_axi_wready \
+    s_axi_bvalid \
+    s_axi_bresp \
+    s_axi_bready \
+    s_axi_arvalid \
+    s_axi_araddr \
+    s_axi_arprot \
+    s_axi_arready \
+    s_axi_rvalid \
+    s_axi_rdata \
+    s_axi_rresp \
+    s_axi_rready} \
+  xilinx.com:interface:aximm_rtl:1.0 [ipx::current_core]
+
+  ipx::infer_bus_interface s_axi_aclk xilinx.com:signal:clock_rtl:1.0 [ipx::current_core]
+  ipx::infer_bus_interface s_axi_aresetn xilinx.com:signal:reset_rtl:1.0 [ipx::current_core]
+
+  set raddr_width [expr [get_property SIZE_LEFT [ipx::get_ports -nocase true s_axi_araddr -of_objects [ipx::current_core]]] + 1]
+  set waddr_width [expr [get_property SIZE_LEFT [ipx::get_ports -nocase true s_axi_awaddr -of_objects [ipx::current_core]]] + 1]
+
+  if {$raddr_width != $waddr_width} {
+    puts [format "WARNING: AXI address width mismatch for %s (r=%d, w=%d)" $ip_name $raddr_width, $waddr_width]
+    set range 65536
+  } else {
+    if {$raddr_width >= 16} {
+      set range 65536
+    } else {
+      set range [expr 1 << $raddr_width]
+    }
+  }
+
+  ipx::add_memory_map {s_axi} [ipx::current_core]
+  set_property slave_memory_map_ref {s_axi} [ipx::get_bus_interfaces s_axi -of_objects [ipx::current_core]]
+  ipx::add_address_block {axi_lite} [ipx::get_memory_maps s_axi -of_objects [ipx::current_core]]
+  set_property range $range [ipx::get_address_blocks axi_lite \
+    -of_objects [ipx::get_memory_maps s_axi -of_objects [ipx::current_core]]]
+  ipx::add_bus_parameter ASSOCIATED_BUSIF [ipx::get_bus_interfaces s_axi_aclk \
+    -of_objects [ipx::current_core]]
+  set_property value s_axi [ipx::get_bus_parameters ASSOCIATED_BUSIF \
+    -of_objects [ipx::get_bus_interfaces s_axi_aclk \
+    -of_objects [ipx::current_core]]]
+  ipx::save_core
+}
+
+## ###############################################################################################
+## ###############################################################################################
+## interface related stuff
+
 proc adi_if_define {name} {
 
-  ipx::create_abstraction_definition ADI user ${name}_rtl 1.0
-  ipx::create_bus_definition ADI user $name 1.0
+  ipx::create_abstraction_definition analog.com interface ${name}_rtl 1.0
+  ipx::create_bus_definition analog.com interface $name 1.0
 
   set_property xml_file_name ${name}_rtl.xml [ipx::current_busabs]
   set_property xml_file_name ${name}.xml [ipx::current_busdef]
-  set_property bus_type_vlnv ADI:user:${name}:1.0 [ipx::current_busabs]
+  set_property bus_type_vlnv analog.com:interface:${name}:1.0 [ipx::current_busabs]
 
   ipx::save_abstraction_definition [ipx::current_busabs]
   ipx::save_bus_definition [ipx::current_busdef]
@@ -313,3 +358,5 @@ proc adi_if_infer_bus {if_name mode name maps} {
   }
 }
 
+## ###############################################################################################
+## ###############################################################################################

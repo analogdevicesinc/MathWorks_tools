@@ -1,4 +1,5 @@
 
 source $ad_hdl_dir/projects/common/zc702/zc702_system_bd.tcl
-source $ad_hdl_dir/projects/common/xilinx/sys_wfifo.tcl
 source $ad_hdl_dir/projects/fmcomms2/common/fmcomms2_bd.tcl
+
+ad_ip_parameter axi_ad9361 CONFIG.ADC_INIT_DELAY 23

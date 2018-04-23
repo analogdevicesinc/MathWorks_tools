@@ -1,37 +1,35 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// All rights reserved.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
 //
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
 //
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 
@@ -45,62 +43,69 @@ module up_adc_common #(
   parameter   CONFIG = 0,
   parameter   COMMON_ID = 6'h00,
   parameter   DRP_DISABLE = 6'h00,
-  parameter   USERPORTS_DISABLE = 0) (
+  parameter   USERPORTS_DISABLE = 0,
+  parameter   GPIO_DISABLE = 0,
+  parameter   START_CODE_DISABLE = 0) (
 
   // clock reset
 
-  output          mmcm_rst,
+  output              mmcm_rst,
 
   // adc interface
 
-  input           adc_clk,
-  output          adc_rst,
-  output          adc_r1_mode,
-  output          adc_ddr_edgesel,
-  output          adc_pin_mode,
-  input           adc_status,
-  input           adc_sync_status,
-  input           adc_status_ovf,
-  input           adc_status_unf,
-  input   [31:0]  adc_clk_ratio,
-  output  [31:0]  adc_start_code,
-  output          adc_sync,
+  input               adc_clk,
+  output              adc_rst,
+  output              adc_r1_mode,
+  output              adc_ddr_edgesel,
+  output              adc_pin_mode,
+  input               adc_status,
+  input               adc_sync_status,
+  input               adc_status_ovf,
+  input               adc_status_unf,
+  input       [31:0]  adc_clk_ratio,
+  output      [31:0]  adc_start_code,
+  output              adc_sref_sync,
+  output              adc_sync,
+  input       [31:0]  up_pps_rcounter,
+  input               up_pps_status,
+  output  reg         up_pps_irq_mask,
 
   // channel interface
 
-  input           up_status_pn_err,
-  input           up_status_pn_oos,
-  input           up_status_or,
+  output              up_adc_ce,
+  input               up_status_pn_err,
+  input               up_status_pn_oos,
+  input               up_status_or,
 
   // drp interface
 
-  output          up_drp_sel,
-  output          up_drp_wr,
-  output  [11:0]  up_drp_addr,
-  output  [31:0]  up_drp_wdata,
-  input   [31:0]  up_drp_rdata,
-  input           up_drp_ready,
-  input           up_drp_locked,
+  output              up_drp_sel,
+  output              up_drp_wr,
+  output      [11:0]  up_drp_addr,
+  output      [31:0]  up_drp_wdata,
+  input       [31:0]  up_drp_rdata,
+  input               up_drp_ready,
+  input               up_drp_locked,
 
   // user channel control
 
-  output  [ 7:0]  up_usr_chanmax,
-  input   [ 7:0]  adc_usr_chanmax,
-  input   [31:0]  up_adc_gpio_in,
-  output  [31:0]  up_adc_gpio_out,
+  output      [ 7:0]  up_usr_chanmax_out,
+  input       [ 7:0]  up_usr_chanmax_in,
+  input       [31:0]  up_adc_gpio_in,
+  output      [31:0]  up_adc_gpio_out,
 
   // bus interface
 
-  input           up_rstn,
-  input           up_clk,
-  input           up_wreq,
-  input   [13:0]  up_waddr,
-  input   [31:0]  up_wdata,
-  output          up_wack,
-  input           up_rreq,
-  input   [13:0]  up_raddr,
-  output  [31:0]  up_rdata,
-  output          up_rack);
+  input               up_rstn,
+  input               up_clk,
+  input               up_wreq,
+  input       [13:0]  up_waddr,
+  input       [31:0]  up_wdata,
+  output              up_wack,
+  input               up_rreq,
+  input       [13:0]  up_raddr,
+  output      [31:0]  up_rdata,
+  output              up_rack);
 
   // parameters
 
@@ -108,41 +113,45 @@ module up_adc_common #(
 
   // internal registers
 
-  reg             up_core_preset = 'd1;
-  reg             up_mmcm_preset = 'd1;
-  reg             up_wack_int = 'd0;
-  reg     [31:0]  up_scratch = 'd0;
-  reg             up_mmcm_resetn = 'd0;
-  reg             up_resetn = 'd0;
-  reg             up_adc_sync = 'd0;
-  reg             up_adc_r1_mode = 'd0;
-  reg             up_adc_ddr_edgesel = 'd0;
-  reg             up_adc_pin_mode = 'd0;
-  reg             up_drp_sel_int = 'd0;
-  reg             up_drp_wr_int = 'd0;
-  reg             up_drp_status = 'd0;
-  reg             up_drp_rwn = 'd0;
-  reg     [11:0]  up_drp_addr_int = 'd0;
-  reg     [31:0]  up_drp_wdata_int = 'd0;
-  reg     [31:0]  up_drp_rdata_hold = 'd0;
-  reg             up_status_ovf = 'd0;
-  reg             up_status_unf = 'd0;
-  reg     [ 7:0]  up_usr_chanmax_int = 'd0;
-  reg     [31:0]  up_adc_start_code = 'd0;
-  reg     [31:0]  up_adc_gpio_out_int = 'd0;
-  reg             up_rack_int = 'd0;
-  reg     [31:0]  up_rdata_int = 'd0;
+  reg                 up_adc_clk_enb_int = 'd1;
+  reg                 up_core_preset = 'd1;
+  reg                 up_mmcm_preset = 'd1;
+  reg                 up_wack_int = 'd0;
+  reg         [31:0]  up_scratch = 'd0;
+  reg                 up_adc_clk_enb = 'd0;
+  reg                 up_mmcm_resetn = 'd0;
+  reg                 up_resetn = 'd0;
+  reg                 up_adc_sync = 'd0;
+  reg                 up_adc_sref_sync = 'd0;
+  reg                 up_adc_r1_mode = 'd0;
+  reg                 up_adc_ddr_edgesel = 'd0;
+  reg                 up_adc_pin_mode = 'd0;
+  reg                 up_drp_sel_int = 'd0;
+  reg                 up_drp_wr_int = 'd0;
+  reg                 up_drp_status = 'd0;
+  reg                 up_drp_rwn = 'd0;
+  reg         [11:0]  up_drp_addr_int = 'd0;
+  reg         [31:0]  up_drp_wdata_int = 'd0;
+  reg         [31:0]  up_drp_rdata_hold = 'd0;
+  reg                 up_status_ovf = 'd0;
+  reg                 up_status_unf = 'd0;
+  reg         [ 7:0]  up_usr_chanmax_int = 'd0;
+  reg         [31:0]  up_adc_start_code = 'd0;
+  reg         [31:0]  up_adc_gpio_out_int = 'd0;
+  reg         [31:0]  up_timer = 'd0;
+  reg                 up_rack_int = 'd0;
+  reg         [31:0]  up_rdata_int = 'd0;
 
   // internal signals
 
-  wire            up_wreq_s;
-  wire            up_rreq_s;
-  wire            up_status_s;
-  wire            up_sync_status_s;
-  wire            up_status_ovf_s;
-  wire            up_status_unf_s;
-  wire            up_cntrl_xfer_done_s;
-  wire    [31:0]  up_adc_clk_count_s;
+  wire                up_wreq_s;
+  wire                up_rreq_s;
+  wire                up_status_s;
+  wire                up_sync_status_s;
+  wire                up_status_ovf_s;
+  wire                up_status_unf_s;
+  wire                up_cntrl_xfer_done_s;
+  wire        [31:0]  up_adc_clk_count_s;
 
   // decode block select
 
@@ -152,27 +161,37 @@ module up_adc_common #(
   // processor write interface
 
   assign up_wack = up_wack_int;
+  assign up_adc_ce = up_adc_clk_enb_int;
 
   always @(negedge up_rstn or posedge up_clk) begin
     if (up_rstn == 0) begin
+      up_adc_clk_enb_int <= 1'd1;
       up_core_preset <= 1'd1;
       up_mmcm_preset <= 1'd1;
       up_wack_int <= 'd0;
       up_scratch <= 'd0;
+      up_adc_clk_enb <= 'd0;
       up_mmcm_resetn <= 'd0;
       up_resetn <= 'd0;
       up_adc_sync <= 'd0;
+      up_adc_sref_sync <= 'd0;
       up_adc_r1_mode <= 'd0;
       up_adc_ddr_edgesel <= 'd0;
       up_adc_pin_mode <= 'd0;
+      up_pps_irq_mask <= 1'b1;
     end else begin
+      up_adc_clk_enb_int <= ~up_adc_clk_enb;
       up_core_preset <= ~up_resetn;
       up_mmcm_preset <= ~up_mmcm_resetn;
       up_wack_int <= up_wreq_s;
       if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h02)) begin
         up_scratch <= up_wdata;
       end
+      if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h04)) begin
+        up_pps_irq_mask <= up_wdata[0];
+      end
       if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h10)) begin
+        up_adc_clk_enb <= up_wdata[2];
         up_mmcm_resetn <= up_wdata[1];
         up_resetn <= up_wdata[0];
       end
@@ -184,6 +203,7 @@ module up_adc_common #(
         up_adc_sync <= up_wdata[3];
       end
       if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h11)) begin
+        up_adc_sref_sync <= up_wdata[4];
         up_adc_r1_mode <= up_wdata[2];
         up_adc_ddr_edgesel <= up_wdata[1];
         up_adc_pin_mode <= up_wdata[0];
@@ -263,7 +283,7 @@ module up_adc_common #(
     end
   end
 
-  assign up_usr_chanmax = up_usr_chanmax_int;
+  assign up_usr_chanmax_out = up_usr_chanmax_int;
 
   generate
   if (USERPORTS_DISABLE == 1) begin
@@ -285,16 +305,52 @@ module up_adc_common #(
 
   assign up_adc_gpio_out = up_adc_gpio_out_int;
 
+  generate
+  if (GPIO_DISABLE == 1) begin
+  always @(posedge up_clk) begin
+    up_adc_gpio_out_int <= 'd0;
+  end
+  end else begin
+  always @(negedge up_rstn or posedge up_clk) begin
+    if (up_rstn == 0) begin
+      up_adc_gpio_out_int <= 'd0;
+    end else begin
+      if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h2f)) begin
+        up_adc_gpio_out_int <= up_wdata;
+      end
+    end
+  end
+  end
+  endgenerate
+
+  generate
+  if (START_CODE_DISABLE == 1) begin
+  always @(posedge up_clk) begin
+    up_adc_start_code <= 'd0;
+  end
+  end else begin
   always @(negedge up_rstn or posedge up_clk) begin
     if (up_rstn == 0) begin
       up_adc_start_code <= 'd0;
-      up_adc_gpio_out_int <= 'd0;
     end else begin
       if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h29)) begin
         up_adc_start_code <= up_wdata[31:0];
       end
-      if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h2f)) begin
-        up_adc_gpio_out_int <= up_wdata;
+    end
+  end
+  end
+  endgenerate
+
+  // timer with premature termination
+
+  always @(negedge up_rstn or posedge up_clk) begin
+    if (up_rstn == 0) begin
+      up_timer <= 32'd0;
+    end else begin
+      if ((up_wreq_s == 1'b1) && (up_waddr[7:0] == 8'h40)) begin
+        up_timer <= up_wdata;
+      end else if (up_timer > 0) begin
+        up_timer <= up_timer - 1'b1;
       end
     end
   end
@@ -316,8 +372,10 @@ module up_adc_common #(
           8'h01: up_rdata_int <= ID;
           8'h02: up_rdata_int <= up_scratch;
           8'h03: up_rdata_int <= CONFIG;
-          8'h10: up_rdata_int <= {30'd0, up_mmcm_resetn, up_resetn};
-          8'h11: up_rdata_int <= {28'd0, up_adc_sync, up_adc_r1_mode, up_adc_ddr_edgesel, up_adc_pin_mode};
+          8'h04: up_rdata_int <= {31'b0, up_pps_irq_mask};
+          8'h10: up_rdata_int <= {29'd0, up_adc_clk_enb, up_mmcm_resetn, up_resetn};
+          8'h11: up_rdata_int <= {27'd0, up_adc_sref_sync, up_adc_sync, up_adc_r1_mode,
+                                  up_adc_ddr_edgesel, up_adc_pin_mode};
           8'h15: up_rdata_int <= up_adc_clk_count_s;
           8'h16: up_rdata_int <= adc_clk_ratio;
           8'h17: up_rdata_int <= {28'd0, up_status_pn_err, up_status_pn_oos, up_status_or, up_status_s};
@@ -328,10 +386,13 @@ module up_adc_common #(
           8'h1f: up_rdata_int <= up_drp_rdata_hold;
           8'h22: up_rdata_int <= {29'd0, up_status_ovf, up_status_unf, 1'b0};
           8'h23: up_rdata_int <= 32'd8;
-          8'h28: up_rdata_int <= {24'd0, adc_usr_chanmax};
+          8'h28: up_rdata_int <= {24'd0, up_usr_chanmax_in};
           8'h29: up_rdata_int <= up_adc_start_code;
           8'h2e: up_rdata_int <= up_adc_gpio_in;
           8'h2f: up_rdata_int <= up_adc_gpio_out_int;
+          8'h30: up_rdata_int <= up_pps_rcounter;
+          8'h31: up_rdata_int <= {31'b0, up_pps_status};
+          8'h40: up_rdata_int <= up_timer;
           default: up_rdata_int <= 0;
         endcase
       end else begin
@@ -347,10 +408,11 @@ module up_adc_common #(
 
   // adc control & status
 
-  up_xfer_cntrl #(.DATA_WIDTH(36)) i_xfer_cntrl (
+  up_xfer_cntrl #(.DATA_WIDTH(37)) i_xfer_cntrl (
     .up_rstn (up_rstn),
     .up_clk (up_clk),
-    .up_data_cntrl ({ up_adc_sync,
+    .up_data_cntrl ({ up_adc_sref_sync,
+                      up_adc_sync,
                       up_adc_start_code,
                       up_adc_r1_mode,
                       up_adc_ddr_edgesel,
@@ -358,7 +420,8 @@ module up_adc_common #(
     .up_xfer_done (up_cntrl_xfer_done_s),
     .d_rst (adc_rst),
     .d_clk (adc_clk),
-    .d_data_cntrl ({  adc_sync,
+    .d_data_cntrl ({  adc_sref_sync,
+                      adc_sync,
                       adc_start_code,
                       adc_r1_mode,
                       adc_ddr_edgesel,
