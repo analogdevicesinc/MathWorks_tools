@@ -11,7 +11,7 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 hRD.ReferenceDesignName = sprintf('FMCOMMS5 %s Base System (Vivado 2016.4)', upper(board));
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices fmcomms5 %s (%s)', upper(board), design);
+hRD.BoardName = sprintf('AnalogDevices FMCOMMS5 %s (%s)', upper(board), design);
 
 % Tool information
 hRD.SupportedToolVersion = {'2016.4'};
