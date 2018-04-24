@@ -5,5 +5,5 @@ function hP = plugin_board()
 %   Copyright 2015 The MathWorks, Inc.
 
 % Call the common board definition function
-hP = AnalogDevices.adrv9361z7035.common.plugin_board('adrv9361z7035 bob cmos', 'Rx');
+hP = AnalogDevices.adrv9361z7035.common.plugin_board('bob cmos', 'Rx');
 
