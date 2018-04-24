@@ -28,7 +28,7 @@ hdlset_param('combinedTxRx_ADIDMA', 'SynthesisToolPackageName', 'fbg676');
 hdlset_param('combinedTxRx_ADIDMA', 'SynthesisToolSpeedValue', '-2L');
 hdlset_param('combinedTxRx_ADIDMA', 'TargetDirectory', 'hdl_prj/hdlsrc');
 hdlset_param('combinedTxRx_ADIDMA', 'TargetLanguage', 'Verilog');
-hdlset_param('combinedTxRx_ADIDMA', 'TargetPlatform', 'AnalogDevices adrv9361z7035 box lvds (Rx & Tx)');
+hdlset_param('combinedTxRx_ADIDMA', 'TargetPlatform', 'AnalogDevices adrv9361z7035 box lvds (modem)');
 hdlset_param('combinedTxRx_ADIDMA', 'Workflow', 'IP Core Generation');
 
 % Set SubSystem HDL parameters
