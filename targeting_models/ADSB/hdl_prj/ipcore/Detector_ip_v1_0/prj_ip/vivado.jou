@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2016.2 (64-bit)
+# SW Build 1577090 on Thu Jun  2 16:32:40 MDT 2016
+# IP Build 1577682 on Fri Jun  3 12:00:54 MDT 2016
+# Start of session at: Mon Jul 24 13:34:37 2017
+# Process ID: 13212
+# Current directory: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip
+# Command line: vivado.exe -mode batch -source vivado_ip_package.tcl
+# Log file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip/vivado.log
+# Journal file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/ipcore/Detector_ip_v1_0/prj_ip\vivado.jou
+#-----------------------------------------------------------
+source vivado_ip_package.tcl

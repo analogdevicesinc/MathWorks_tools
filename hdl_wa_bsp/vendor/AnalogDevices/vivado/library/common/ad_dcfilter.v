@@ -1,77 +1,64 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
-// 
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-// ***************************************************************************
-// ***************************************************************************
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
+//
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
+//
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 // dc filter- y(n) = c*x(n) + (1-c)*y(n-1)
 
 `timescale 1ps/1ps
 
-module ad_dcfilter (
+module ad_dcfilter #(
+
+  // data path disable
+
+  parameter   DISABLE = 0) (
 
   // data interface
 
-  clk,
-  valid,
-  data,
-  valid_out,
-  data_out,
+  input           clk,
+  input           valid,
+  input   [15:0]  data,
+  output          valid_out,
+  output  [15:0]  data_out,
 
   // control interface
 
-  dcfilt_enb,
-  dcfilt_coeff,
-  dcfilt_offset);
-
-  // data interface
-
-  input           clk;
-  input           valid;
-  input   [15:0]  data;
-  output          valid_out;
-  output  [15:0]  data_out;
-
-  // control interface
-
-  input           dcfilt_enb;
-  input   [15:0]  dcfilt_coeff;
-  input   [15:0]  dcfilt_offset;
+  input           dcfilt_enb,
+  input   [15:0]  dcfilt_coeff,
+  input   [15:0]  dcfilt_offset);
 
   // internal registers
 
+  reg     [15:0]  dcfilt_coeff_d = 'd0;
   reg     [47:0]  dc_offset = 'd0;
   reg     [47:0]  dc_offset_d = 'd0;
   reg             valid_d = 'd0;
@@ -79,20 +66,32 @@ module ad_dcfilter (
   reg             valid_2d = 'd0;
   reg     [15:0]  data_2d = 'd0;
   reg     [15:0]  data_dcfilt = 'd0;
-  reg             valid_out = 'd0;
-  reg     [15:0]  data_out = 'd0;
-  reg     [15:0]  dcfilt_coeff_r;
+  reg             valid_int = 'd0;
+  reg     [15:0]  data_int = 'd0;
 
   // internal signals
 
   wire    [47:0]  dc_offset_s;
 
-  // cancelling the dc offset
+  // data-path disable
+
+  generate
+  if (DISABLE == 1) begin
+  assign valid_out = valid;
+  assign data_out = data;
+  end else begin
+  assign valid_out = valid_int;
+  assign data_out = data_int;
+  end
+  endgenerate
 
   // dcfilt_coeff is flopped so to remove warnings from vivado
+
   always @(posedge clk) begin
-    dcfilt_coeff_r <= dcfilt_coeff;
+    dcfilt_coeff_d <= dcfilt_coeff;
   end
+
+  // removing dc offset
 
   always @(posedge clk) begin
     dc_offset   <= dc_offset_s;
@@ -105,11 +104,11 @@ module ad_dcfilter (
     data_2d  <= data_d;
     data_dcfilt <= data_d - dc_offset[32:17];
     if (dcfilt_enb == 1'b1) begin
-      valid_out <= valid_2d;
-      data_out  <= data_dcfilt;
+      valid_int <= valid_2d;
+      data_int  <= data_dcfilt;
     end else begin
-      valid_out <= valid_2d;
-      data_out  <= data_2d;
+      valid_int <= valid_2d;
+      data_int  <= data_2d;
     end
   end
 
@@ -144,7 +143,7 @@ module ad_dcfilter (
   i_dsp48e1 (
     .CLK (clk),
     .A ({{14{dc_offset_s[32]}}, dc_offset_s[32:17]}),
-    .B ({{2{dcfilt_coeff_r[15]}}, dcfilt_coeff_r}),
+    .B ({{2{dcfilt_coeff_d[15]}}, dcfilt_coeff_d}),
     .C (dc_offset_d),
     .D ({{9{data_d[15]}}, data_d}),
     .MULTSIGNIN (1'd0),

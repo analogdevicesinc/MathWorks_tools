@@ -72,27 +72,10 @@ set_property  -dict {PACKAGE_PIN  D15  IOSTANDARD LVCMOS25} [get_ports spi_udc_d
 set_property  -dict {PACKAGE_PIN  W17  IOSTANDARD LVCMOS25} [get_ports gpio_muxout_tx]                   ; ## PMOD1_2_LS
 set_property  -dict {PACKAGE_PIN  V10  IOSTANDARD LVCMOS25} [get_ports gpio_muxout_rx]                   ; ## PL_PJTAG_TCK
 
-# timing rx
+# gpio (pmods)
 
-set_false_path \
-	-from [get_cells -hier d_data_cntrl_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier ddata_reg* -filter {primitive_subgroup == flop}]
-
-set_false_path \
-	-from [get_cells -hier d_data_cntrl_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier enable_cnt*_reg* -filter {primitive_subgroup == flop}]
-
-# timing tx
-	
-set_false_path \
-	-from [get_cells -hier dac_enable_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier *_counter_reg* -filter {name =~ *util_dac_unpack* && primitive_subgroup == flop}]
-
-set_false_path \
-	-from [get_cells -hier dac_enable_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier dac_enable_d1_reg* -filter {name =~ *util_dac_unpack* && primitive_subgroup == flop}]
-
-set_false_path \
-	-from [get_cells -hier dac_enable_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier dma_rd_reg* -filter {name =~ *util_dac_unpack* && primitive_subgroup == flop}]		
+set_property  -dict {PACKAGE_PIN  P17   IOSTANDARD LVCMOS25} [get_ports gpio_bd[8]]   ; ## PMOD2_3_LS
+set_property  -dict {PACKAGE_PIN  P18   IOSTANDARD LVCMOS25} [get_ports gpio_bd[9]]   ; ## PMOD2_2_LS
+set_property  -dict {PACKAGE_PIN  W10   IOSTANDARD LVCMOS25} [get_ports gpio_bd[10]]  ; ## PMOD2_1_LS
+set_property  -dict {PACKAGE_PIN  V7    IOSTANDARD LVCMOS25} [get_ports gpio_bd[11]]  ; ## PMOD2_0_LS
 

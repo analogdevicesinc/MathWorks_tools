@@ -72,27 +72,3 @@ set_property  -dict {PACKAGE_PIN  AB9    IOSTANDARD LVCMOS33}     [get_ports gpi
 
 create_clock -name rx_clk       -period  4 [get_ports rx_clk_in_p]
 
-# timing rx
-
-set_false_path \
-	-from [get_cells -hier d_data_cntrl_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier ddata_reg* -filter {primitive_subgroup == flop}]
-
-set_false_path \
-	-from [get_cells -hier d_data_cntrl_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier enable_cnt*_reg* -filter {primitive_subgroup == flop}]
-
-# timing tx
-	
-set_false_path \
-	-from [get_cells -hier dac_enable_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier *_counter_reg* -filter {name =~ *util_dac_unpack* && primitive_subgroup == flop}]
-
-set_false_path \
-	-from [get_cells -hier dac_enable_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier dac_enable_d1_reg* -filter {name =~ *util_dac_unpack* && primitive_subgroup == flop}]
-
-set_false_path \
-	-from [get_cells -hier dac_enable_reg* -filter {primitive_subgroup == flop}] \
-	-to [get_cells -hier dma_rd_reg* -filter {name =~ *util_dac_unpack* && primitive_subgroup == flop}]		
-

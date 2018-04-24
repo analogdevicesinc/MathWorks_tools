@@ -1,144 +1,96 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2011(c) Analog Devices, Inc.
-// 
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//     - Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     - Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in
-//       the documentation and/or other materials provided with the
-//       distribution.
-//     - Neither the name of Analog Devices, Inc. nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//     - The use of this software may or may not infringe the patent rights
-//       of one or more patent holders.  This license does not release you
-//       from the requirement that you obtain separate licenses from these
-//       patent holders to use this software.
-//     - Use of the software either in source or binary form, must be run
-//       on or directly connected to an Analog Devices Inc. component.
-//    
-// THIS SOFTWARE IS PROVIDED BY ANALOG DEVICES "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
-// PARTICULAR PURPOSE ARE DISCLAIMED.
+// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
 //
-// IN NO EVENT SHALL ANALOG DEVICES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, INTELLECTUAL PROPERTY
-// RIGHTS, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
-// BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF 
-// THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// In this HDL repository, there are many different and unique modules, consisting
+// of various HDL (Verilog or VHDL) components. The individual modules are
+// developed independently, and may be accompanied by separate and unique license
+// terms.
+//
+// The user should read each of these license terms, and understand the
+// freedoms and responsabilities that he or she has by using this source/core.
+//
+// This core is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE.
+//
+// Redistribution and use of source or resulting binaries, with or without modification
+// of this file, are permitted under one of the following two license terms:
+//
+//   1. The GNU General Public License version 2 as published by the
+//      Free Software Foundation, which can be found in the top level directory
+//      of this repository (LICENSE_GPL2), and also online at:
+//      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+//
+// OR
+//
+//   2. An ADI specific BSD license, which can be found in the top level directory
+//      of this repository (LICENSE_ADIBSD), and also on-line at:
+//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      This will allow to generate bit files and not release the source code,
+//      as long as it attaches to an ADI device.
+//
 // ***************************************************************************
 // ***************************************************************************
 
 `timescale 1ns/100ps
 
-module up_hdmi_tx (
+module up_hdmi_tx #(
+
+  parameter   ID = 0) (
 
   // hdmi interface
 
-  hdmi_clk,
-  hdmi_rst,
-  hdmi_full_range,
-  hdmi_csc_bypass,
-  hdmi_ss_bypass,
-  hdmi_srcsel,
-  hdmi_const_rgb,
-  hdmi_hl_active,
-  hdmi_hl_width,
-  hdmi_hs_width,
-  hdmi_he_max,
-  hdmi_he_min,
-  hdmi_vf_active,
-  hdmi_vf_width,
-  hdmi_vs_width,
-  hdmi_ve_max,
-  hdmi_ve_min,
-  hdmi_status,
-  hdmi_tpm_oos,
-  hdmi_clk_ratio,
+  input                   hdmi_clk,
+  output                  hdmi_rst,
+  output                  hdmi_csc_bypass,
+  output                  hdmi_ss_bypass,
+  output      [ 1:0]      hdmi_srcsel,
+  output      [23:0]      hdmi_const_rgb,
+  output      [15:0]      hdmi_hl_active,
+  output      [15:0]      hdmi_hl_width,
+  output      [15:0]      hdmi_hs_width,
+  output      [15:0]      hdmi_he_max,
+  output      [15:0]      hdmi_he_min,
+  output      [15:0]      hdmi_vf_active,
+  output      [15:0]      hdmi_vf_width,
+  output      [15:0]      hdmi_vs_width,
+  output      [15:0]      hdmi_ve_max,
+  output      [15:0]      hdmi_ve_min,
+  output      [23:0]      hdmi_clip_max,
+  output      [23:0]      hdmi_clip_min,
+  input                   hdmi_status,
+  input                   hdmi_tpm_oos,
+  input       [31:0]      hdmi_clk_ratio,
 
   // vdma interface
 
-  vdma_clk,
-  vdma_rst,
-  vdma_ovf,
-  vdma_unf,
-  vdma_tpm_oos,
+  input                   vdma_clk,
+  output                  vdma_rst,
+  input                   vdma_ovf,
+  input                   vdma_unf,
+  input                   vdma_tpm_oos,
 
   // bus interface
 
-  up_rstn,
-  up_clk,
-  up_wreq,
-  up_waddr,
-  up_wdata,
-  up_wack,
-  up_rreq,
-  up_raddr,
-  up_rdata,
-  up_rack);
-
-  // parameters
+  input                   up_rstn,
+  input                   up_clk,
+  input                   up_wreq,
+  input       [13:0]      up_waddr,
+  input       [31:0]      up_wdata,
+  output  reg             up_wack,
+  input                   up_rreq,
+  input       [13:0]      up_raddr,
+  output  reg [31:0]      up_rdata,
+  output  reg             up_rack);
 
   localparam  PCORE_VERSION = 32'h00040063;
-  parameter   ID = 0;
-
-  // hdmi interface
-
-  input           hdmi_clk;
-  output          hdmi_rst;
-  output          hdmi_full_range;
-  output          hdmi_csc_bypass;
-  output          hdmi_ss_bypass;
-  output  [ 1:0]  hdmi_srcsel;
-  output  [23:0]  hdmi_const_rgb;
-  output  [15:0]  hdmi_hl_active;
-  output  [15:0]  hdmi_hl_width;
-  output  [15:0]  hdmi_hs_width;
-  output  [15:0]  hdmi_he_max;
-  output  [15:0]  hdmi_he_min;
-  output  [15:0]  hdmi_vf_active;
-  output  [15:0]  hdmi_vf_width;
-  output  [15:0]  hdmi_vs_width;
-  output  [15:0]  hdmi_ve_max;
-  output  [15:0]  hdmi_ve_min;
-  input           hdmi_status;
-  input           hdmi_tpm_oos;
-  input   [31:0]  hdmi_clk_ratio;
-
-  // vdma interface
-
-  input           vdma_clk;
-  output          vdma_rst;
-  input           vdma_ovf;
-  input           vdma_unf;
-  input           vdma_tpm_oos;
-
-  // bus interface
-
-  input           up_rstn;
-  input           up_clk;
-  input           up_wreq;
-  input   [13:0]  up_waddr;
-  input   [31:0]  up_wdata;
-  output          up_wack;
-  input           up_rreq;
-  input   [13:0]  up_raddr;
-  output  [31:0]  up_rdata;
-  output          up_rack;
 
   // internal registers
 
   reg             up_core_preset = 'd0;
-  reg             up_wack = 'd0;
   reg     [31:0]  up_scratch = 'd0;
   reg             up_resetn = 'd0;
-  reg             up_full_range = 'd0;
   reg             up_csc_bypass = 'd0;
   reg             up_ss_bypass = 'd0;
   reg     [ 1:0]  up_srcsel = 'd1;
@@ -157,8 +109,8 @@ module up_hdmi_tx (
   reg     [15:0]  up_vs_width = 'd0;
   reg     [15:0]  up_ve_max = 'd0;
   reg     [15:0]  up_ve_min = 'd0;
-  reg             up_rack = 'd0;
-  reg     [31:0]  up_rdata = 'd0;
+  reg     [23:0]  up_clip_max = 'd0;
+  reg     [23:0]  up_clip_min = 'd0;
 
   // internal signals
 
@@ -184,7 +136,6 @@ module up_hdmi_tx (
       up_wack <= 'd0;
       up_scratch <= 'd0;
       up_resetn <= 'd0;
-      up_full_range <= 'd0;
       up_csc_bypass <= 'd0;
       up_ss_bypass <= 'd0;
       up_srcsel <= 'd1;
@@ -203,6 +154,8 @@ module up_hdmi_tx (
       up_vs_width <= 'd0;
       up_ve_max <= 'd0;
       up_ve_min <= 'd0;
+      up_clip_max <= 24'hf0ebf0;
+      up_clip_min <= 24'h101010;
     end else begin
       up_core_preset <= ~up_resetn;
       up_wack <= up_wreq_s;
@@ -214,7 +167,6 @@ module up_hdmi_tx (
       end
       if ((up_wreq_s == 1'b1) && (up_waddr[11:0] == 12'h011)) begin
         up_ss_bypass <= up_wdata[2];
-        up_full_range <= up_wdata[1];
         up_csc_bypass <= up_wdata[0];
       end
       if ((up_wreq_s == 1'b1) && (up_waddr[11:0] == 12'h012)) begin
@@ -242,6 +194,12 @@ module up_hdmi_tx (
         up_vdma_tpm_oos <= 1'b1;
       end else if ((up_wreq_s == 1'b1) && (up_waddr[11:0] == 12'h019)) begin
         up_vdma_tpm_oos <= up_vdma_tpm_oos & ~up_wdata[0];
+      end
+      if ((up_wreq_s == 1'b1) && (up_waddr[11:0] == 12'h01a)) begin
+        up_clip_max <= up_wdata[23:0];
+      end
+    if ((up_wreq_s == 1'b1) && (up_waddr[11:0] == 12'h01b)) begin
+        up_clip_min <= up_wdata[23:0];
       end
       if ((up_wreq_s == 1'b1) && (up_waddr[11:0] == 12'h100)) begin
         up_hl_active <= up_wdata[31:16];
@@ -282,7 +240,7 @@ module up_hdmi_tx (
           12'h001: up_rdata <= ID;
           12'h002: up_rdata <= up_scratch;
           12'h010: up_rdata <= {31'd0, up_resetn};
-          12'h011: up_rdata <= {29'd0, up_ss_bypass, up_full_range, up_csc_bypass};
+          12'h011: up_rdata <= {29'd0, up_ss_bypass, 1'b0, up_csc_bypass};
           12'h012: up_rdata <= {30'd0, up_srcsel};
           12'h013: up_rdata <= {8'd0, up_const_rgb};
           12'h015: up_rdata <= up_hdmi_clk_count_s;
@@ -290,6 +248,9 @@ module up_hdmi_tx (
           12'h017: up_rdata <= {31'd0, up_hdmi_status_s};
           12'h018: up_rdata <= {30'd0, up_vdma_ovf, up_vdma_unf};
           12'h019: up_rdata <= {30'd0, up_hdmi_tpm_oos, up_vdma_tpm_oos};
+          12'h01a: up_rdata <= {8'd0, up_clip_max};
+          12'h01b: up_rdata <= {8'd0, up_clip_min};
+
           12'h100: up_rdata <= {up_hl_active, up_hl_width};
           12'h101: up_rdata <= {16'd0, up_hs_width};
           12'h102: up_rdata <= {up_he_max, up_he_min};
@@ -311,11 +272,10 @@ module up_hdmi_tx (
 
   // hdmi control & status
 
-  up_xfer_cntrl #(.DATA_WIDTH(189)) i_xfer_cntrl (
+  up_xfer_cntrl #(.DATA_WIDTH(236)) i_xfer_cntrl (
     .up_rstn (up_rstn),
     .up_clk (up_clk),
     .up_data_cntrl ({ up_ss_bypass,
-                      up_full_range,
                       up_csc_bypass,
                       up_srcsel,
                       up_const_rgb,
@@ -328,12 +288,13 @@ module up_hdmi_tx (
                       up_vf_width,
                       up_vs_width,
                       up_ve_max,
-                      up_ve_min}),
+                      up_ve_min,
+                      up_clip_max,
+                      up_clip_min}),
     .up_xfer_done (),
     .d_rst (hdmi_rst),
     .d_clk (hdmi_clk),
     .d_data_cntrl ({  hdmi_ss_bypass,
-                      hdmi_full_range,
                       hdmi_csc_bypass,
                       hdmi_srcsel,
                       hdmi_const_rgb,
@@ -346,7 +307,9 @@ module up_hdmi_tx (
                       hdmi_vf_width,
                       hdmi_vs_width,
                       hdmi_ve_max,
-                      hdmi_ve_min}));
+                      hdmi_ve_min,
+                      hdmi_clip_max,
+                      hdmi_clip_min}));
 
   up_xfer_status #(.DATA_WIDTH(2)) i_xfer_status (
     .up_rstn (up_rstn),

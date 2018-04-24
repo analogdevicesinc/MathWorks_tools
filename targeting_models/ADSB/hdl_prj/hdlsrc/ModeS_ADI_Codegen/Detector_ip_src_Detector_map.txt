@@ -1,0 +1,12 @@
+ModeS_ADI_Codegen/Detector/Bit Process --> Detector_ip_src_Bit_Process
+ModeS_ADI_Codegen/Detector/CalcCRC/Check_CRC --> Detector_ip_src_Check_CRC
+ModeS_ADI_Codegen/Detector/CalcCRC/crc24f --> Detector_ip_src_crc24f
+ModeS_ADI_Codegen/Detector/CalcCRC --> Detector_ip_src_CalcCRC
+ModeS_ADI_Codegen/Detector/CalcMagnitude --> Detector_ip_src_CalcMagnitude
+ModeS_ADI_Codegen/Detector/CalcNF/NoiseFloor --> Detector_ip_src_NoiseFloor
+ModeS_ADI_Codegen/Detector/CalcNF --> Detector_ip_src_CalcNF
+ModeS_ADI_Codegen/Detector/CalcSyncCorr/SyncCorr --> Detector_ip_src_SyncCorr
+ModeS_ADI_Codegen/Detector/CalcSyncCorr --> Detector_ip_src_CalcSyncCorr
+ModeS_ADI_Codegen/Detector/FrameDetect --> Detector_ip_src_FrameDetect
+ModeS_ADI_Codegen/Detector/SyncAndControl --> Detector_ip_src_SyncAndControl
+ModeS_ADI_Codegen/Detector --> Detector_ip_src_Detector

@@ -1,0 +1,1733 @@
+#-----------------------------------------------------------
+# Vivado v2016.2 (64-bit)
+# SW Build 1577090 on Thu Jun  2 16:32:40 MDT 2016
+# IP Build 1577682 on Fri Jun  3 12:00:54 MDT 2016
+# Start of session at: Mon Jul 24 13:35:56 2017
+# Process ID: 11532
+# Current directory: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj
+# Command line: vivado.exe -mode batch -source vivado_create_prj.tcl
+# Log file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado.log
+# Journal file: C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj\vivado.jou
+#-----------------------------------------------------------
+source vivado_create_prj.tcl
+# create_project vivado_prj {} -part xc7z035ifbg676-2L -force
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj'
+# set_property target_language Verilog [current_project]
+# set defaultRepoPath {./ipcore}
+# set_property ip_repo_paths $defaultRepoPath [current_fileset]
+# update_ip_catalog
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/ipcore'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'C:/Xilinx/Vivado/2016.2/data/ip'.
+# set ipList [glob -nocomplain -directory $defaultRepoPath *.zip]
+# foreach ipCore $ipList {
+#   set folderList [glob -nocomplain -directory $defaultRepoPath -type d *]
+#   if {[lsearch -exact $folderList [file rootname $ipCore]] == -1} {
+#     catch {update_ip_catalog -add_ip $ipCore -repo_path $defaultRepoPath}
+#   }
+# }
+# update_ip_catalog
+INFO: [IP_Flow 19-1839] IP Catalog is up to date.
+# source vivado_custom_block_design.tcl
+## set ad_hdl_dir    	[pwd]
+## set ad_phdl_dir   	[pwd]
+## set proj_dir		$ad_hdl_dir/projects/pzsdr2/ccbrk_lvds
+## source $ad_hdl_dir/projects/scripts/adi_project.tcl 
+### variable p_board
+### variable p_device
+### variable sys_zynq
+### variable p_prcfg_init
+### variable p_prcfg_list
+### variable p_prcfg_status
+### if {![info exists REQUIRED_VIVADO_VERSION]} {
+###   set REQUIRED_VIVADO_VERSION "2016.2"
+### }
+### if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
+###   set IGNORE_VERSION_CHECK 1
+### } elseif {![info exists IGNORE_VERSION_CHECK]} {
+###   set IGNORE_VERSION_CHECK 0
+### }
+### set p_board "not-applicable"
+### set p_device "none"
+### set sys_zynq 1
+### proc adi_project_create {project_name project_dir update_tcl {mode 0}} {
+### 
+###   global ad_hdl_dir
+###   global ad_phdl_dir
+###   global p_board
+###   global p_device
+###   global sys_zynq
+###   global REQUIRED_VIVADO_VERSION
+###   global IGNORE_VERSION_CHECK
+### 
+###   if [regexp "_ac701$" $project_name] {
+###     set p_device "xc7a200tfbg676-2"
+###     set p_board "xilinx.com:ac701:part0:1.0"
+###     set sys_zynq 0
+###   }
+###   if [regexp "_kc705$" $project_name] {
+###     set p_device "xc7k325tffg900-2"
+###     set p_board "xilinx.com:kc705:part0:1.1"
+###     set sys_zynq 0
+###   }
+###   if [regexp "_vc707$" $project_name] {
+###     set p_device "xc7vx485tffg1761-2"
+###     set p_board "xilinx.com:vc707:part0:1.1"
+###     set sys_zynq 0
+###   }
+###   if [regexp "_kcu105$" $project_name] {
+###     set p_device "xcku040-ffva1156-2-e"
+###     set p_board "xilinx.com:kcu105:part0:1.1"
+###     set sys_zynq 0
+###   }
+###   if [regexp "_zed$" $project_name] {
+###     set p_device "xc7z020clg484-1"
+###     set p_board "em.avnet.com:zed:part0:1.3"
+###     set sys_zynq 1
+###   }
+###   if [regexp "_microzed$" $project_name] {
+###     set p_device "xc7z010clg400-1"
+###     set p_board "not-applicable"
+###     set sys_zynq 1
+###   }
+###   if [regexp "_zc702$" $project_name] {
+###     set p_device "xc7z020clg484-1"
+###     set p_board "xilinx.com:zc702:part0:1.2"
+###     set sys_zynq 1
+###   }
+###   if [regexp "_zc706$" $project_name] {
+###     set p_device "xc7z045ffg900-2"
+###     set p_board "xilinx.com:zc706:part0:1.2"
+###     set sys_zynq 1
+###   }
+###   if [regexp "_mitx045$" $project_name] {
+###     set p_device "xc7z045ffg900-2"
+###     set p_board "not-applicable"
+###     set sys_zynq 1
+###   }
+###   if [regexp "_zcu102$" $project_name] {
+###     set p_device "xczu9eg-ffvb1156-1-i-es1"
+###     set p_board "xilinx.com:zcu102:part0:1.2"
+###     set sys_zynq 2
+###   }
+### 
+###   #Added
+###   set project_name vivado_prj
+### 
+###   if {!$IGNORE_VERSION_CHECK && [string compare [version -short] $REQUIRED_VIVADO_VERSION] != 0} {
+###     return -code error [format "ERROR: This project requires Vivado %s." $REQUIRED_VIVADO_VERSION]
+###   }
+### 
+###   #Added
+###   adi_setup_libs
+### 
+###   if {$mode == 0} {
+###     set project_system_dir "./$project_name.srcs/sources_1/bd/system"
+###     #Removed
+### 	#create_project $project_name . -part $p_device -force
+###   } else {
+###     set project_system_dir ".srcs/sources_1/bd/system"
+###     #Removed
+### 	#create_project -in_memory -part $p_device
+###   }
+### 
+###   if {$mode == 1} {
+###     file mkdir $project_name.data
+###   }
+### 
+###   if {$p_board ne "not-applicable"} {
+###     set_property board_part $p_board [current_project]
+###   }
+### 
+###   #Removed  
+###   #set lib_dirs $ad_hdl_dir/library
+###   #if {$ad_hdl_dir ne $ad_phdl_dir} {
+###   #  lappend lib_dirs $ad_phdl_dir/library
+###   #}
+### 
+###   #set_property ip_repo_paths $lib_dirs [current_fileset]
+###   #update_ip_catalog
+### 
+###   set_msg_config -id {BD 41-1348} -new_severity info
+###   set_msg_config -id {BD 41-1343} -new_severity info
+###   set_msg_config -id {BD 41-1306} -new_severity info
+###   set_msg_config -id {IP_Flow 19-1687} -new_severity info
+###   set_msg_config -id {filemgmt 20-1763} -new_severity info
+###   set_msg_config -severity {CRITICAL WARNING} -quiet -id {BD 41-1276} -new_severity error
+### 
+###   #Added
+###   create_bd_design "system"
+###   source $project_dir/system_bd.tcl
+###   source $project_dir/$update_tcl
+### 
+###   regenerate_bd_layout
+###   save_bd_design
+###   validate_bd_design
+### 
+###   generate_target {synthesis implementation} [get_files  $project_system_dir/system.bd]
+###   make_wrapper -files [get_files $project_system_dir/system.bd] -top
+### 
+###   if {$mode == 0} {
+###     import_files -force -norecurse -fileset sources_1 $project_system_dir/hdl/system_wrapper.v
+###   } else {
+###     write_hwdef -file "$project_name.data/$project_name.hwdef"
+###   }
+### 
+###   if {![info exists ::env(ADI_NO_BITSTREAM_COMPRESSION)] && ![info exists ADI_NO_BITSTREAM_COMPRESSION]} {
+###     add_files -norecurse -fileset sources_1 \
+### 		"$ad_hdl_dir/projects/common/xilinx/compression_system_constr.xdc"
+###   }
+### 
+### }
+### proc adi_setup_libs {} {
+###   global ad_hdl_dir
+###   global ad_phdl_dir 
+### 
+###   set lib_dirs [get_property ip_repo_paths [current_fileset]]
+###   
+###   lappend lib_dirs $ad_hdl_dir/library
+###   if {$ad_hdl_dir ne $ad_phdl_dir} {
+###     lappend lib_dirs $ad_phdl_dir/library
+###   }
+###   
+###   set_property ip_repo_paths $lib_dirs [current_fileset]
+###   update_ip_catalog
+###   adi_add_archive_ip $lib_dirs
+### }
+### proc adi_add_archive_ip {lib_dirs} {
+###   global ad_hdl_dir
+###   global ad_phdl_dir 
+###   foreach libDir $lib_dirs {
+###     set ipList [glob -nocomplain -directory $libDir *.zip]
+###     foreach ipCore $ipList {
+###       catch {update_ip_catalog -add_ip $ipCore -repo_path $libDir}
+### 	  file delete -force $ipCore	  
+###     }
+###   }
+### }
+### proc adi_project_files {project_name project_files} {
+### 
+###   global ad_hdl_dir
+###   global ad_phdl_dir
+###   global proj_dir
+###   
+###   #Added
+###   cd $proj_dir
+### 
+###   add_files -norecurse -fileset sources_1 $project_files
+###   set_property top system_top [current_fileset]
+### 
+###   #Added
+###   cd $ad_hdl_dir
+### }
+### proc adi_project_run {project_name} {
+### 	#Removed
+### }
+## source $ad_hdl_dir/projects/scripts/adi_board.tcl 
+### variable sys_cpu_interconnect_index
+### variable sys_hp0_interconnect_index
+### variable sys_hp1_interconnect_index
+### variable sys_hp2_interconnect_index
+### variable sys_hp3_interconnect_index
+### variable sys_mem_interconnect_index
+### variable xcvr_index
+### variable xcvr_tx_index
+### variable xcvr_rx_index
+### variable xcvr_instance
+### set sys_cpu_interconnect_index 0
+### set sys_hp0_interconnect_index -1
+### set sys_hp1_interconnect_index -1
+### set sys_hp2_interconnect_index -1
+### set sys_hp3_interconnect_index -1
+### set sys_mem_interconnect_index -1
+### set xcvr_index -1
+### set xcvr_tx_index 0
+### set xcvr_rx_index 0
+### set xcvr_instance NONE
+### proc ad_connect_type {p_name} {
+### 
+###   set m_name ""
+### 
+###   if {$m_name eq ""} {set m_name [get_bd_intf_pins  -quiet $p_name]}
+###   if {$m_name eq ""} {set m_name [get_bd_pins       -quiet $p_name]}
+###   if {$m_name eq ""} {set m_name [get_bd_intf_ports -quiet $p_name]}
+###   if {$m_name eq ""} {set m_name [get_bd_ports      -quiet $p_name]}
+###   if {$m_name eq ""} {set m_name [get_bd_intf_nets  -quiet $p_name]}
+###   if {$m_name eq ""} {set m_name [get_bd_nets       -quiet $p_name]}
+### 
+###   return $m_name
+### }
+### proc ad_connect {p_name_1 p_name_2} {
+### 
+###   if {($p_name_2 eq "GND") || ($p_name_2 eq "VCC")} {
+###     set p_size 1
+###     set p_msb [get_property left [get_bd_pins $p_name_1]]
+###     set p_lsb [get_property right [get_bd_pins $p_name_1]]
+###     if {($p_msb ne "") && ($p_lsb ne "")} {
+###       set p_size [expr (($p_msb + 1) - $p_lsb)]
+###     }
+###     set p_cell_name [regsub -all {/} $p_name_1 "_"]
+###     set p_cell_name "${p_cell_name}_${p_name_2}"
+###     if {$p_name_2 eq "VCC"} {
+###       set p_value -1
+###     } else {
+###       set p_value 0
+###     }
+###     puts "create_bd_cell(xlconstant) size($p_size) value($p_value) name($p_cell_name)"
+###     create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 $p_cell_name
+###     set_property CONFIG.CONST_WIDTH $p_size [get_bd_cells $p_cell_name]
+###     set_property CONFIG.CONST_VAL $p_value [get_bd_cells $p_cell_name]
+###     puts "connect_bd_net $p_cell_name/dout $p_name_1"
+###     connect_bd_net [get_bd_pins $p_cell_name/dout] [get_bd_pins $p_name_1]
+###     return
+###   }
+### 
+###   set m_name_1 [ad_connect_type $p_name_1]
+###   set m_name_2 [ad_connect_type $p_name_2]
+### 
+###   if {$m_name_1 eq ""} {
+###     if {[get_property CLASS $m_name_2] eq "bd_intf_pin"} {
+###       puts "create_bd_intf_net $p_name_1"
+###       create_bd_intf_net $p_name_1
+###     }
+###     if {[get_property CLASS $m_name_2] eq "bd_pin"} {
+###       puts "create_bd_net $p_name_1"
+###       create_bd_net $p_name_1
+###     }
+###     set m_name_1 [ad_connect_type $p_name_1]
+###   }
+### 
+###   if {[get_property CLASS $m_name_1] eq "bd_intf_pin"} {
+###     puts "connect_bd_intf_net $m_name_1 $m_name_2"
+###     connect_bd_intf_net $m_name_1 $m_name_2
+###     return
+###   }
+### 
+###   if {[get_property CLASS $m_name_1] eq "bd_pin"} {
+###     puts "connect_bd_net $m_name_1 $m_name_2"
+###     connect_bd_net $m_name_1 $m_name_2
+###     return
+###   }
+### 
+###   if {[get_property CLASS $m_name_1] eq "bd_net"} {
+###     puts "connect_bd_net -net $m_name_1 $m_name_2"
+###     connect_bd_net -net $m_name_1 $m_name_2
+###     return
+###   }
+### }
+### proc ad_disconnect {p_name_1 p_name_2} {
+### 
+###   set m_name_1 [ad_connect_type $p_name_1]
+###   set m_name_2 [ad_connect_type $p_name_2]
+### 
+###   if {[get_property CLASS $m_name_1] eq "bd_net"} {
+###     disconnect_bd_net $m_name_1 $m_name_2
+###     return
+###   }
+### 
+### }
+### proc ad_reconct {p_name_1 p_name_2} {
+### 
+###   set m_name_1 [ad_connect_type $p_name_1]
+###   set m_name_2 [ad_connect_type $p_name_2]
+### 
+###   if {[get_property CLASS $m_name_1] eq "bd_pin"} {
+###     delete_bd_objs -quiet [get_bd_nets -quiet -of_objects \
+###       [find_bd_objs -relation connected_to $m_name_1]]
+###     delete_bd_objs -quiet [get_bd_nets -quiet -of_objects \
+###       [find_bd_objs -relation connected_to $m_name_2]]
+###   }
+### 
+###   if {[get_property CLASS $m_name_1] eq "bd_intf_pin"} {
+###     delete_bd_objs -quiet [get_bd_intf_nets -quiet -of_objects \
+###       [find_bd_objs -relation connected_to $m_name_1]]
+###     delete_bd_objs -quiet [get_bd_intf_nets -quiet -of_objects \
+###       [find_bd_objs -relation connected_to $m_name_2]]
+###   }
+### 
+###   ad_connect $p_name_1 $p_name_2
+### }
+### proc ad_xcvrcon {u_xcvr a_xcvr a_jesd} {
+###   
+###   global xcvr_index
+###   global xcvr_tx_index
+###   global xcvr_rx_index
+###   global xcvr_instance
+### 
+###   set no_of_lanes [get_property CONFIG.NUM_OF_LANES [get_bd_cells $a_xcvr]]
+###   set qpll_enable [get_property CONFIG.QPLL_ENABLE [get_bd_cells $a_xcvr]]
+###   set tx_or_rx_n [get_property CONFIG.TX_OR_RX_N [get_bd_cells $a_xcvr]]
+### 
+###   if {$xcvr_instance ne $u_xcvr} {
+###     set xcvr_index [expr ($xcvr_index + 1)]
+###     set xcvr_tx_index 0
+###     set xcvr_rx_index 0
+###     set xcvr_instance $u_xcvr
+###   }
+### 
+###   set txrx "rx"
+###   set data_dir "I"
+###   set ctrl_dir "O"
+###   set index $xcvr_rx_index
+### 
+###   if {$tx_or_rx_n == 1} {
+### 
+###     set txrx "tx"
+###     set data_dir "O"
+###     set ctrl_dir "I"
+###     set index $xcvr_tx_index
+###   }
+### 
+###   set m_sysref ${txrx}_sysref_${index}
+###   set m_sync ${txrx}_sync_${index}
+###   set m_data ${txrx}_data
+### 
+###   if {$xcvr_index >= 1} {
+### 
+###     set m_sysref ${txrx}_sysref_${xcvr_index}_${index}
+###     set m_sync ${txrx}_sync_${xcvr_index}_${index}
+###     set m_data ${txrx}_data_${xcvr_index}
+###   }
+### 
+###   create_bd_port -dir I $m_sysref
+###   create_bd_port -dir ${ctrl_dir} $m_sync
+###   create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 ${a_jesd}_rstgen
+### 
+###   for {set n 0} {$n < $no_of_lanes} {incr n} {
+### 
+###     set m [expr ($n + $index)]
+### 
+###     if {$tx_or_rx_n == 0} {
+###       ad_connect  ${a_xcvr}/up_es_${n} ${u_xcvr}/up_es_${m}
+###       ad_connect  ${a_jesd}/rxencommaalign_out ${u_xcvr}/${txrx}_calign_${m}
+###     }
+### 
+###     if {(($m%4) == 0) && ($qpll_enable == 1)} {
+###       ad_connect  ${a_xcvr}/up_cm_${n} ${u_xcvr}/up_cm_${m}
+###     }
+### 
+###     ad_connect  ${a_xcvr}/up_ch_${n} ${u_xcvr}/up_${txrx}_${m}
+###     ad_connect  ${u_xcvr}/${txrx}_${m} ${a_jesd}/gt${n}_${txrx}
+###     ad_connect  ${u_xcvr}/${txrx}_out_clk_${index} ${u_xcvr}/${txrx}_clk_${m}
+### 
+###     create_bd_port -dir ${data_dir} ${m_data}_${m}_p
+###     create_bd_port -dir ${data_dir} ${m_data}_${m}_n
+###     ad_connect  ${u_xcvr}/${txrx}_${m}_p ${m_data}_${m}_p
+###     ad_connect  ${u_xcvr}/${txrx}_${m}_n ${m_data}_${m}_n
+###   }
+### 
+###   ad_connect  ${a_jesd}/${txrx}_sysref $m_sysref
+###   ad_connect  ${a_jesd}/${txrx}_sync $m_sync
+###   ad_connect  ${u_xcvr}/${txrx}_out_clk_${index} ${a_jesd}/${txrx}_core_clk
+###   ad_connect  ${a_xcvr}/up_status ${a_jesd}/${txrx}_reset_done
+###   ad_connect  ${u_xcvr}/${txrx}_out_clk_${index} ${a_jesd}_rstgen/slowest_sync_clk
+###   ad_connect  sys_cpu_resetn ${a_jesd}_rstgen/ext_reset_in
+###   ad_connect  sys_cpu_reset ${a_jesd}/${txrx}_reset
+### 
+###   if {$tx_or_rx_n == 0} {
+###     set xcvr_rx_index [expr ($xcvr_rx_index + $no_of_lanes)]
+###   }
+### 
+###   if {$tx_or_rx_n == 1} {
+###     set xcvr_tx_index [expr ($xcvr_tx_index + $no_of_lanes)]
+###   }
+### }
+### proc ad_xcvrpll {m_src m_dst} {
+### 
+###   foreach p_dst [get_bd_pins -quiet $m_dst] {
+###     connect_bd_net [ad_connect_type $m_src] $p_dst
+###   }
+### }
+### proc ad_mem_hp0_interconnect {p_clk p_name} {
+### 
+###   global sys_zynq
+### 
+###   if {($sys_zynq == 0) && ($p_name eq "sys_ps7/S_AXI_HP0")} {return}
+###   if {$sys_zynq == 0} {ad_mem_hpx_interconnect "MEM" $p_clk $p_name}
+###   if {$sys_zynq >= 1} {ad_mem_hpx_interconnect "HP0" $p_clk $p_name}
+### }
+### proc ad_mem_hp1_interconnect {p_clk p_name} {
+### 
+###   global sys_zynq
+### 
+###   if {($sys_zynq == 0) && ($p_name eq "sys_ps7/S_AXI_HP1")} {return}
+###   if {$sys_zynq == 0} {ad_mem_hpx_interconnect "MEM" $p_clk $p_name}
+###   if {$sys_zynq >= 1} {ad_mem_hpx_interconnect "HP1" $p_clk $p_name}
+### }
+### proc ad_mem_hp2_interconnect {p_clk p_name} {
+### 
+###   global sys_zynq
+### 
+###   if {($sys_zynq == 0) && ($p_name eq "sys_ps7/S_AXI_HP2")} {return}
+###   if {$sys_zynq == 0} {ad_mem_hpx_interconnect "MEM" $p_clk $p_name}
+###   if {$sys_zynq >= 1} {ad_mem_hpx_interconnect "HP2" $p_clk $p_name}
+### }
+### proc ad_mem_hp3_interconnect {p_clk p_name} {
+### 
+###   global sys_zynq
+### 
+###   if {($sys_zynq == 0) && ($p_name eq "sys_ps7/S_AXI_HP3")} {return}
+###   if {$sys_zynq == 0} {ad_mem_hpx_interconnect "MEM" $p_clk $p_name}
+###   if {$sys_zynq >= 1} {ad_mem_hpx_interconnect "HP3" $p_clk $p_name}
+### }
+### proc ad_mem_hpx_interconnect {p_sel p_clk p_name} {
+### 
+###   global sys_zynq
+###   global sys_ddr_addr_seg
+###   global sys_hp0_interconnect_index
+###   global sys_hp1_interconnect_index
+###   global sys_hp2_interconnect_index
+###   global sys_hp3_interconnect_index
+###   global sys_mem_interconnect_index
+### 
+###   set p_name_int $p_name
+###   set p_clk_source [get_bd_pins -filter {DIR == O} -of_objects [get_bd_nets $p_clk]]
+### 
+###   if {$p_sel eq "MEM"} {
+###     if {$sys_mem_interconnect_index < 0} {
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_mem_interconnect
+###     }
+###     set m_interconnect_index $sys_mem_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_mem_interconnect]
+###     set m_addr_seg [get_bd_addr_segs -of_objects [get_bd_cells axi_ddr_cntrl]]
+###   }
+### 
+###   if {($p_sel eq "HP0") && ($sys_zynq == 1)} {
+###     if {$sys_hp0_interconnect_index < 0} {
+###       set p_name_int sys_ps7/S_AXI_HP0
+###       set_property CONFIG.PCW_USE_S_AXI_HP0 {1} [get_bd_cells sys_ps7]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp0_interconnect
+###     }
+###     set m_interconnect_index $sys_hp0_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp0_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps7/S_AXI_HP0/HP0_DDR_LOWOCM]
+###   }
+### 
+###   if {($p_sel eq "HP1") && ($sys_zynq == 1)} {
+###     if {$sys_hp1_interconnect_index < 0} {
+###       set p_name_int sys_ps7/S_AXI_HP1
+###       set_property CONFIG.PCW_USE_S_AXI_HP1 {1} [get_bd_cells sys_ps7]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp1_interconnect
+###     }
+###     set m_interconnect_index $sys_hp1_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp1_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps7/S_AXI_HP1/HP1_DDR_LOWOCM]
+###   }
+### 
+###   if {($p_sel eq "HP2") && ($sys_zynq == 1)} {
+###     if {$sys_hp2_interconnect_index < 0} {
+###       set p_name_int sys_ps7/S_AXI_HP2
+###       set_property CONFIG.PCW_USE_S_AXI_HP2 {1} [get_bd_cells sys_ps7]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp2_interconnect
+###     }
+###     set m_interconnect_index $sys_hp2_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp2_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps7/S_AXI_HP2/HP2_DDR_LOWOCM]
+###   }
+### 
+###   if {($p_sel eq "HP3") && ($sys_zynq == 1)} {
+###     if {$sys_hp3_interconnect_index < 0} {
+###       set p_name_int sys_ps7/S_AXI_HP3
+###       set_property CONFIG.PCW_USE_S_AXI_HP3 {1} [get_bd_cells sys_ps7]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp3_interconnect
+###     }
+###     set m_interconnect_index $sys_hp3_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp3_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps7/S_AXI_HP3/HP3_DDR_LOWOCM]
+###   }
+### 
+###   if {($p_sel eq "HP0") && ($sys_zynq == 2)} {
+###     if {$sys_hp0_interconnect_index < 0} {
+###       set p_name_int sys_ps8/S_AXI_HP0_FPD
+###       set_property CONFIG.PSU__USE__S_AXI_GP2 {1} [get_bd_cells sys_ps8]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp0_interconnect
+###     }
+###     set m_interconnect_index $sys_hp0_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp0_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps8/S_AXI_HP0_FPD/PLLPD_DDR_LOW]
+###   }
+### 
+###   if {($p_sel eq "HP1") && ($sys_zynq == 2)} {
+###     if {$sys_hp1_interconnect_index < 0} {
+###       set p_name_int sys_ps8/S_AXI_HP1_FPD
+###       set_property CONFIG.PSU__USE__S_AXI_GP3 {1} [get_bd_cells sys_ps8]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp1_interconnect
+###     }
+###     set m_interconnect_index $sys_hp1_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp1_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps8/S_AXI_HP1_FPD/HP0_DDR_LOW]
+###   }
+### 
+###   if {($p_sel eq "HP2") && ($sys_zynq == 2)} {
+###     if {$sys_hp2_interconnect_index < 0} {
+###       set p_name_int sys_ps8/S_AXI_HP2_FPD
+###       set_property CONFIG.PSU__USE__S_AXI_GP4 {1} [get_bd_cells sys_ps8]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp2_interconnect
+###     }
+###     set m_interconnect_index $sys_hp2_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp2_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps8/S_AXI_HP2_FPD/HP1_DDR_LOW]
+###   }
+### 
+###   if {($p_sel eq "HP3") && ($sys_zynq == 2)} {
+###     if {$sys_hp3_interconnect_index < 0} {
+###       set p_name_int sys_ps8/S_AXI_HP3_FPD
+###       set_property CONFIG.PSU__USE__S_AXI_GP5 {1} [get_bd_cells sys_ps8]
+###       create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_hp3_interconnect
+###     }
+###     set m_interconnect_index $sys_hp3_interconnect_index
+###     set m_interconnect_cell [get_bd_cells axi_hp3_interconnect]
+###     set m_addr_seg [get_bd_addr_segs sys_ps8/S_AXI_HP3_FPD/HP2_DDR_LOW]
+###   }
+### 
+###   set i_str "S$m_interconnect_index"
+###   if {$m_interconnect_index < 10} {
+###     set i_str "S0$m_interconnect_index"
+###   }
+### 
+###   set m_interconnect_index [expr $m_interconnect_index + 1]
+### 
+###   set p_intf_name [lrange [split $p_name_int "/"] end end]
+###   set p_cell_name [lrange [split $p_name_int "/"] 0 0]
+###   set p_intf_clock [get_bd_pins -filter "TYPE == clk && (CONFIG.ASSOCIATED_BUSIF == ${p_intf_name} || \
+###     CONFIG.ASSOCIATED_BUSIF =~ ${p_intf_name}:* || CONFIG.ASSOCIATED_BUSIF =~ *:${p_intf_name} || \
+###     CONFIG.ASSOCIATED_BUSIF =~ *:${p_intf_name}:*)" -quiet -of_objects [get_bd_cells $p_cell_name]]
+###   if {[find_bd_objs -quiet -relation connected_to $p_intf_clock] ne "" ||
+###       $p_intf_clock eq $p_clk_source} {
+###     set p_intf_clock ""
+###   }
+### 
+###   regsub clk $p_clk resetn p_rst
+###   if {[get_bd_nets -quiet $p_rst] eq ""} {
+###     set p_rst sys_cpu_resetn
+###   }
+### 
+###   if {$m_interconnect_index == 0} {
+###     set_property CONFIG.NUM_MI 1 $m_interconnect_cell
+###     set_property CONFIG.NUM_SI 1 $m_interconnect_cell
+###     ad_connect $p_rst $m_interconnect_cell/ARESETN
+###     ad_connect $p_clk $m_interconnect_cell/ACLK
+###     ad_connect $p_rst $m_interconnect_cell/M00_ARESETN
+###     ad_connect $p_clk $m_interconnect_cell/M00_ACLK
+###     ad_connect $m_interconnect_cell/M00_AXI $p_name_int
+###     if {$p_intf_clock ne ""} {
+###       ad_connect $p_clk $p_intf_clock
+###     }
+###   } else {
+###     set_property CONFIG.NUM_SI $m_interconnect_index $m_interconnect_cell
+###     ad_connect $p_rst $m_interconnect_cell/${i_str}_ARESETN
+###     ad_connect $p_clk $m_interconnect_cell/${i_str}_ACLK
+###     ad_connect $m_interconnect_cell/${i_str}_AXI $p_name_int
+###     if {$p_intf_clock ne ""} {
+###       ad_connect $p_clk $p_intf_clock
+###     }
+###     assign_bd_address $m_addr_seg
+###   }
+### 
+###   if {$m_interconnect_index > 1} {
+###     set_property CONFIG.STRATEGY {2} $m_interconnect_cell
+###   }
+### 
+###   if {$p_sel eq "MEM"} {set sys_mem_interconnect_index $m_interconnect_index}
+###   if {$p_sel eq "HP0"} {set sys_hp0_interconnect_index $m_interconnect_index}
+###   if {$p_sel eq "HP1"} {set sys_hp1_interconnect_index $m_interconnect_index}
+###   if {$p_sel eq "HP2"} {set sys_hp2_interconnect_index $m_interconnect_index}
+###   if {$p_sel eq "HP3"} {set sys_hp3_interconnect_index $m_interconnect_index}
+### 
+### }
+### proc ad_cpu_interconnect {p_address p_name} {
+### 
+###   global sys_zynq
+###   global sys_cpu_interconnect_index
+### 
+###   set i_str "M$sys_cpu_interconnect_index"
+###   if {$sys_cpu_interconnect_index < 10} {
+###     set i_str "M0$sys_cpu_interconnect_index"
+###   }
+### 
+###   if {$sys_cpu_interconnect_index == 0} {
+###     create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_cpu_interconnect
+###     if {$sys_zynq == 2} {
+###       ad_connect sys_cpu_clk sys_ps8/maxihpm0_lpd_aclk
+###       ad_connect sys_cpu_clk axi_cpu_interconnect/ACLK
+###       ad_connect sys_cpu_clk axi_cpu_interconnect/S00_ACLK
+###       ad_connect sys_cpu_resetn axi_cpu_interconnect/ARESETN
+###       ad_connect sys_cpu_resetn axi_cpu_interconnect/S00_ARESETN
+###       ad_connect axi_cpu_interconnect/S00_AXI sys_ps8/M_AXI_HPM0_LPD
+###     }
+###     if {$sys_zynq == 1} {
+###       ad_connect sys_cpu_clk sys_ps7/M_AXI_GP0_ACLK
+###       ad_connect sys_cpu_clk axi_cpu_interconnect/ACLK
+###       ad_connect sys_cpu_clk axi_cpu_interconnect/S00_ACLK
+###       ad_connect sys_cpu_resetn axi_cpu_interconnect/ARESETN
+###       ad_connect sys_cpu_resetn axi_cpu_interconnect/S00_ARESETN
+###       ad_connect axi_cpu_interconnect/S00_AXI sys_ps7/M_AXI_GP0
+###     }
+###     if {$sys_zynq == 0} {
+###       ad_connect sys_cpu_clk axi_cpu_interconnect/ACLK
+###       ad_connect sys_cpu_clk axi_cpu_interconnect/S00_ACLK
+###       ad_connect sys_cpu_resetn axi_cpu_interconnect/ARESETN
+###       ad_connect sys_cpu_resetn axi_cpu_interconnect/S00_ARESETN
+###       ad_connect axi_cpu_interconnect/S00_AXI sys_mb/M_AXI_DP
+###     }
+###   }
+### 
+###   if {$sys_zynq == 2} {
+###     set sys_addr_cntrl_space [get_bd_addr_spaces sys_ps8/Data]
+###   }
+###   if {$sys_zynq == 1} {
+###     set sys_addr_cntrl_space [get_bd_addr_spaces sys_ps7/Data]
+###   }
+###   if {$sys_zynq == 0} {
+###     set sys_addr_cntrl_space [get_bd_addr_spaces sys_mb/Data]
+###   }
+### 
+###   set sys_cpu_interconnect_index [expr $sys_cpu_interconnect_index + 1]
+###   set p_intf [get_bd_intf_pins -filter "MODE == Slave && VLNV == xilinx.com:interface:aximm_rtl:1.0"\
+###     -of_objects [get_bd_cells $p_name]]
+###   set p_intf_name [lrange [split $p_intf "/"] end end]
+###   set p_intf_clock [get_bd_pins -filter "TYPE == clk && (CONFIG.ASSOCIATED_BUSIF == ${p_intf_name} || \
+###     CONFIG.ASSOCIATED_BUSIF =~ ${p_intf_name}:* || CONFIG.ASSOCIATED_BUSIF =~ *:${p_intf_name} || \
+###     CONFIG.ASSOCIATED_BUSIF =~ *:${p_intf_name}:*)" -quiet -of_objects [get_bd_cells $p_name]]
+###   set p_intf_reset [get_bd_pins -filter "TYPE == rst && (CONFIG.ASSOCIATED_BUSIF == ${p_intf_name} || \
+###     CONFIG.ASSOCIATED_BUSIF =~ ${p_intf_name}:* || CONFIG.ASSOCIATED_BUSIF =~ *:${p_intf_name} || \
+###     CONFIG.ASSOCIATED_BUSIF =~ *:${p_intf_name}:*)" -quiet -of_objects [get_bd_cells $p_name]]
+###   if {($p_intf_clock ne "") && ($p_intf_reset eq "")} {
+###     set p_intf_reset [get_property CONFIG.ASSOCIATED_RESET [get_bd_pins ${p_intf_clock}]]
+###     if {$p_intf_reset ne ""} {
+###       set p_intf_reset [get_bd_pins $p_name/$p_intf_reset]
+###     }
+###   }
+###   if {[find_bd_objs -quiet -relation connected_to $p_intf_clock] ne ""} {
+###     set p_intf_clock ""
+###   }
+###   if {$p_intf_reset ne ""} {
+###     if {[find_bd_objs -quiet -relation connected_to $p_intf_reset] ne ""} {
+###       set p_intf_reset ""
+###     }
+###   }
+### 
+###   set_property CONFIG.NUM_MI $sys_cpu_interconnect_index [get_bd_cells axi_cpu_interconnect]
+### 
+###   ad_connect sys_cpu_clk axi_cpu_interconnect/${i_str}_ACLK
+###   if {$p_intf_clock ne ""} {
+###     ad_connect sys_cpu_clk ${p_intf_clock}
+###   }
+###   ad_connect sys_cpu_resetn axi_cpu_interconnect/${i_str}_ARESETN
+###   if {$p_intf_reset ne ""} {
+###     ad_connect sys_cpu_resetn ${p_intf_reset}
+###   }
+###   ad_connect axi_cpu_interconnect/${i_str}_AXI ${p_intf}
+### 
+###   set p_seg [get_bd_addr_segs -of_objects [get_bd_cells $p_name]]
+###   set p_index 0
+###   foreach p_seg_name $p_seg {
+###     if {$p_index == 0} {
+###       set p_seg_range [get_property range $p_seg_name]
+###       if {$p_seg_range < 0x1000} {
+###         set p_seg_range 0x1000
+###       }
+###       if {$sys_zynq == 2} {
+###         if {($p_address >= 0x40000000) && ($p_address <= 0x4fffffff)} {
+###           set p_address [expr ($p_address + 0x40000000)]
+###         }
+###         if {($p_address >= 0x70000000) && ($p_address <= 0x7fffffff)} {
+###           set p_address [expr ($p_address + 0x20000000)]
+###         }
+###       }
+###       create_bd_addr_seg -range $p_seg_range \
+###         -offset $p_address $sys_addr_cntrl_space \
+###         $p_seg_name "SEG_data_${p_name}"
+###     } else {
+###       assign_bd_address $p_seg_name
+###     }
+###     incr p_index
+###   }
+### }
+### proc ad_cpu_interrupt {p_ps_index p_mb_index p_name} {
+### 
+###   global sys_zynq
+### 
+###   if {$sys_zynq == 0} {set p_index_int $p_mb_index}
+###   if {$sys_zynq >= 1} {set p_index_int $p_ps_index}
+### 
+###   set p_index [regsub -all {[^0-9]} $p_index_int ""]
+###   set m_index [expr ($p_index - 8)]
+### 
+###   if {($sys_zynq == 2) && ($p_index <= 7)} {
+###     set p_net [get_bd_nets -of_objects [get_bd_pins sys_concat_intc_0/In$p_index]]
+###     set p_pin [find_bd_objs -relation connected_to [get_bd_pins sys_concat_intc_0/In$p_index]]
+### 
+###     puts "delete_bd_objs $p_net $p_pin"
+###     delete_bd_objs $p_net $p_pin
+###     ad_connect sys_concat_intc_0/In$p_index $p_name
+###   }
+### 
+###   if {($sys_zynq == 2) && ($p_index >= 8)} {
+###     set p_net [get_bd_nets -of_objects [get_bd_pins sys_concat_intc_1/In$m_index]]
+###     set p_pin [find_bd_objs -relation connected_to [get_bd_pins sys_concat_intc_1/In$m_index]]
+### 
+###     puts "delete_bd_objs $p_net $p_pin"
+###     delete_bd_objs $p_net $p_pin
+###     ad_connect sys_concat_intc_1/In$m_index $p_name
+###   }
+### 
+###   if {$sys_zynq <= 1} {
+### 
+###     set p_net [get_bd_nets -of_objects [get_bd_pins sys_concat_intc/In$p_index]]
+###     set p_pin [find_bd_objs -relation connected_to [get_bd_pins sys_concat_intc/In$p_index]]
+### 
+###     puts "delete_bd_objs $p_net $p_pin"
+###     delete_bd_objs $p_net $p_pin
+###     ad_connect sys_concat_intc/In$p_index $p_name
+###   }
+### }
+## set p_device "xc7z035ifbg676-2L"
+## adi_project_create pzsdr2_ccbrk_lvds $proj_dir config_rx.tcl
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/ipcore'.
+INFO: [IP_Flow 19-1700] Loaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad6676_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad7616_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9122_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9144_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9152_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9162_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9234_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9250_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9265_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9361_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9371_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9434_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9467_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9625_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9643_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9652_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9671_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9680_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9684_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9739a_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_ad9963_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_adcfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_adc_decimate_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_adc_trigger_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_adxcvr_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_clkgen_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_dacfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_dac_interpolate_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_dmac_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_generic_adc_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_gpreg_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_hdmi_rx_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_hdmi_tx_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_i2s_adi_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_intr_monitor_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_logic_analyzer_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_mc_controller_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_mc_current_monitor_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_mc_speed_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_spdif_rx_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_spdif_tx_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_usb_fx3_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_axi_xcvrlb_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_adcfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_adxcvr_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_axis_fifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_axis_resize_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_bsplit_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_ccat_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_clkdiv_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_cpack_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_dacfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_extract_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_fir_dec_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_fir_int_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_gmii_to_rgmii_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_i2c_mixer_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_mfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_pmod_adc_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_pmod_fmeter_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_rfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_sigma_delta_spi_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_tdd_sync_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_upack_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_var_fifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+INFO: [IP_Flow 19-949] Unzipped 'C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_util_wfifo_1.0.zip' into repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'.
+INFO: [IP_Flow 19-725] Reloaded user IP repository 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library'
+CRITICAL WARNING: [IP_Flow 19-1663] Duplicate IP found for 'analog.com:user:cordic_demod:1.0'. The one found in IP location 'c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_cordic_demod_1.0' will take precedence over the same IP in location c:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/library/analog.com_user_interfaces_1.0
+Wrote  : <C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/system.bd> 
+### source $ad_hdl_dir/projects/pzsdr2/common/pzsdr2_bd.tcl
+#### create_bd_intf_port -mode Master -vlnv xilinx.com:interface:ddrx_rtl:1.0 ddr
+#### create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 iic_main
+#### create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 fixed_io
+#### create_bd_port -dir O spi0_csn_2_o
+#### create_bd_port -dir O spi0_csn_1_o
+#### create_bd_port -dir O spi0_csn_0_o
+#### create_bd_port -dir I spi0_csn_i
+#### create_bd_port -dir I spi0_clk_i
+#### create_bd_port -dir O spi0_clk_o
+#### create_bd_port -dir I spi0_sdo_i
+#### create_bd_port -dir O spi0_sdo_o
+#### create_bd_port -dir I spi0_sdi_i
+#### create_bd_port -dir O spi1_csn_2_o
+#### create_bd_port -dir O spi1_csn_1_o
+#### create_bd_port -dir O spi1_csn_0_o
+#### create_bd_port -dir I spi1_csn_i
+#### create_bd_port -dir I spi1_clk_i
+#### create_bd_port -dir O spi1_clk_o
+#### create_bd_port -dir I spi1_sdo_i
+#### create_bd_port -dir O spi1_sdo_o
+#### create_bd_port -dir I spi1_sdi_i
+#### create_bd_port -dir I -from 63 -to 0 gpio_i
+#### create_bd_port -dir O -from 63 -to 0 gpio_o
+#### create_bd_port -dir O -from 63 -to 0 gpio_t
+#### set otg_vbusoc      [create_bd_port -dir I otg_vbusoc]
+#### create_bd_port -dir I -type intr ps_intr_00
+#### create_bd_port -dir I -type intr ps_intr_01
+#### create_bd_port -dir I -type intr ps_intr_02
+#### create_bd_port -dir I -type intr ps_intr_03
+#### create_bd_port -dir I -type intr ps_intr_04
+#### create_bd_port -dir I -type intr ps_intr_05
+#### create_bd_port -dir I -type intr ps_intr_06
+#### create_bd_port -dir I -type intr ps_intr_07
+#### create_bd_port -dir I -type intr ps_intr_08
+#### create_bd_port -dir I -type intr ps_intr_09
+#### create_bd_port -dir I -type intr ps_intr_10
+#### create_bd_port -dir I -type intr ps_intr_11
+#### create_bd_port -dir I -type intr ps_intr_12
+#### create_bd_port -dir I -type intr ps_intr_13
+#### create_bd_port -dir I -type intr ps_intr_15
+#### set sys_ps7  [create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 sys_ps7]
+#### set_property -dict [list CONFIG.PCW_PRESET_BANK0_VOLTAGE {LVCMOS 1.8V}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_PRESET_BANK1_VOLTAGE {LVCMOS 1.8V}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_PACKAGE_NAME {fbg676}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET0_ENET0_IO {MIO 16 .. 27}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET0_GRP_MDIO_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET1_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET_RESET_SELECT {Separate reset pins}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET0_RESET_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET0_RESET_IO {MIO 8}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET1_RESET_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_ENET1_RESET_IO {MIO 51}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SD0_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SD0_GRP_CD_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SD0_GRP_CD_IO {MIO 50}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SDIO_PERIPHERAL_FREQMHZ {50}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_USB0_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_USB0_RESET_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_USB0_RESET_IO {MIO 7}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_QSPI_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_PARTNO {MT41K256M16 RE-125}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_BUS_WIDTH {32 Bit}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_USE_INTERNAL_VREF {0}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_TRAIN_WRITE_LEVEL {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_TRAIN_READ_GATE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_TRAIN_DATA_EYE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_0 {-0.053}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_1 {-0.059}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_2 {0.065}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_DQS_TO_CLK_DELAY_3 {0.066}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY0 {0.264}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY1 {0.265}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY2 {0.330}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY3 {0.330}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_TTC0_PERIPHERAL_ENABLE {0}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_EN_CLK1_PORT {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_EN_RST1_PORT {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_EN_CLK2_PORT {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_EN_RST2_PORT {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100.0}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_FPGA1_PERIPHERAL_FREQMHZ {200.0}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_FPGA2_PERIPHERAL_FREQMHZ {200.0}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_USE_FABRIC_INTERRUPT {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_IRQ_F2P_INTR {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_GPIO_EMIO_GPIO_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_GPIO_EMIO_GPIO_IO {64}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_IRQ_F2P_MODE {REVERSE}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SPI0_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SPI0_SPI0_IO {EMIO}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SPI1_PERIPHERAL_ENABLE {1}] $sys_ps7
+#### set_property -dict [list CONFIG.PCW_SPI1_SPI1_IO {EMIO}] $sys_ps7
+#### set axi_iic_main [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_iic:2.0 axi_iic_main]
+#### set_property -dict [list CONFIG.USE_BOARD_FLOW {true}] $axi_iic_main
+#### set_property -dict [list CONFIG.IIC_BOARD_INTERFACE {Custom}] $axi_iic_main
+#### set sys_concat_intc [create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 sys_concat_intc]
+#### set_property -dict [list CONFIG.NUM_PORTS {16}] $sys_concat_intc
+#### set sys_rstgen [create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 sys_rstgen]
+#### set_property -dict [list CONFIG.C_EXT_RST_WIDTH {1}] $sys_rstgen
+#### set sys_logic_inv [create_bd_cell -type ip -vlnv xilinx.com:ip:util_vector_logic:2.0 sys_logic_inv]
+#### set_property -dict [list CONFIG.C_SIZE {1}] $sys_logic_inv
+#### set_property -dict [list CONFIG.C_OPERATION {not}] $sys_logic_inv
+#### ad_connect  sys_cpu_clk sys_ps7/FCLK_CLK0
+create_bd_net sys_cpu_clk
+connect_bd_net -net /sys_cpu_clk /sys_ps7/FCLK_CLK0
+#### ad_connect  sys_200m_clk sys_ps7/FCLK_CLK1
+create_bd_net sys_200m_clk
+connect_bd_net -net /sys_200m_clk /sys_ps7/FCLK_CLK1
+#### ad_connect  sys_cpu_reset sys_rstgen/peripheral_reset
+create_bd_net sys_cpu_reset
+connect_bd_net -net /sys_cpu_reset /sys_rstgen/peripheral_reset
+#### ad_connect  sys_cpu_resetn sys_rstgen/peripheral_aresetn
+create_bd_net sys_cpu_resetn
+connect_bd_net -net /sys_cpu_resetn /sys_rstgen/peripheral_aresetn
+#### ad_connect  sys_cpu_clk sys_rstgen/slowest_sync_clk
+connect_bd_net -net /sys_cpu_clk /sys_rstgen/slowest_sync_clk
+#### ad_connect  sys_rstgen/ext_reset_in sys_ps7/FCLK_RESET0_N
+connect_bd_net /sys_rstgen/ext_reset_in /sys_ps7/FCLK_RESET0_N
+#### ad_connect  ddr sys_ps7/DDR
+connect_bd_intf_net /ddr /sys_ps7/DDR
+#### ad_connect  gpio_i sys_ps7/GPIO_I
+connect_bd_net /gpio_i /sys_ps7/GPIO_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/GPIO_I is being overridden by the user. This pin will not be connected as a part of interface connection GPIO_0
+#### ad_connect  gpio_o sys_ps7/GPIO_O
+connect_bd_net /gpio_o /sys_ps7/GPIO_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/GPIO_O is being overridden by the user. This pin will not be connected as a part of interface connection GPIO_0
+#### ad_connect  gpio_t sys_ps7/GPIO_T
+connect_bd_net /gpio_t /sys_ps7/GPIO_T
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/GPIO_T is being overridden by the user. This pin will not be connected as a part of interface connection GPIO_0
+#### ad_connect  fixed_io sys_ps7/FIXED_IO
+connect_bd_intf_net /fixed_io /sys_ps7/FIXED_IO
+#### ad_connect  iic_main axi_iic_main/iic
+connect_bd_intf_net /iic_main /axi_iic_main/IIC
+#### ad_connect  sys_logic_inv/Res sys_ps7/USB0_VBUS_PWRFAULT
+connect_bd_net /sys_logic_inv/Res /sys_ps7/USB0_VBUS_PWRFAULT
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/USB0_VBUS_PWRFAULT is being overridden by the user. This pin will not be connected as a part of interface connection USBIND_0
+#### ad_connect  sys_logic_inv/Op1 otg_vbusoc
+connect_bd_net /sys_logic_inv/Op1 /otg_vbusoc
+#### ad_connect  spi0_csn_2_o sys_ps7/SPI0_SS2_O
+connect_bd_net /spi0_csn_2_o /sys_ps7/SPI0_SS2_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_SS2_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_csn_1_o sys_ps7/SPI0_SS1_O
+connect_bd_net /spi0_csn_1_o /sys_ps7/SPI0_SS1_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_SS1_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_csn_0_o sys_ps7/SPI0_SS_O
+connect_bd_net /spi0_csn_0_o /sys_ps7/SPI0_SS_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_SS_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_csn_i sys_ps7/SPI0_SS_I
+connect_bd_net /spi0_csn_i /sys_ps7/SPI0_SS_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_SS_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_clk_i sys_ps7/SPI0_SCLK_I
+connect_bd_net /spi0_clk_i /sys_ps7/SPI0_SCLK_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_SCLK_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_clk_o sys_ps7/SPI0_SCLK_O
+connect_bd_net /spi0_clk_o /sys_ps7/SPI0_SCLK_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_SCLK_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_sdo_i sys_ps7/SPI0_MOSI_I
+connect_bd_net /spi0_sdo_i /sys_ps7/SPI0_MOSI_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_MOSI_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_sdo_o sys_ps7/SPI0_MOSI_O
+connect_bd_net /spi0_sdo_o /sys_ps7/SPI0_MOSI_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_MOSI_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi0_sdi_i sys_ps7/SPI0_MISO_I
+connect_bd_net /spi0_sdi_i /sys_ps7/SPI0_MISO_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI0_MISO_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_0
+#### ad_connect  spi1_csn_2_o sys_ps7/SPI1_SS2_O
+connect_bd_net /spi1_csn_2_o /sys_ps7/SPI1_SS2_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_SS2_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_csn_1_o sys_ps7/SPI1_SS1_O
+connect_bd_net /spi1_csn_1_o /sys_ps7/SPI1_SS1_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_SS1_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_csn_0_o sys_ps7/SPI1_SS_O
+connect_bd_net /spi1_csn_0_o /sys_ps7/SPI1_SS_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_SS_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_csn_i sys_ps7/SPI1_SS_I
+connect_bd_net /spi1_csn_i /sys_ps7/SPI1_SS_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_SS_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_clk_i sys_ps7/SPI1_SCLK_I
+connect_bd_net /spi1_clk_i /sys_ps7/SPI1_SCLK_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_SCLK_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_clk_o sys_ps7/SPI1_SCLK_O
+connect_bd_net /spi1_clk_o /sys_ps7/SPI1_SCLK_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_SCLK_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_sdo_i sys_ps7/SPI1_MOSI_I
+connect_bd_net /spi1_sdo_i /sys_ps7/SPI1_MOSI_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_MOSI_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_sdo_o sys_ps7/SPI1_MOSI_O
+connect_bd_net /spi1_sdo_o /sys_ps7/SPI1_MOSI_O
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_MOSI_O is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  spi1_sdi_i sys_ps7/SPI1_MISO_I
+connect_bd_net /spi1_sdi_i /sys_ps7/SPI1_MISO_I
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/SPI1_MISO_I is being overridden by the user. This pin will not be connected as a part of interface connection SPI_1
+#### ad_connect  sys_concat_intc/dout sys_ps7/IRQ_F2P
+connect_bd_net /sys_concat_intc/dout /sys_ps7/IRQ_F2P
+#### ad_connect  sys_concat_intc/In15 ps_intr_15
+connect_bd_net /sys_concat_intc/In15 /ps_intr_15
+#### ad_connect  sys_concat_intc/In14 axi_iic_main/iic2intc_irpt
+connect_bd_net /sys_concat_intc/In14 /axi_iic_main/iic2intc_irpt
+#### ad_connect  sys_concat_intc/In13 ps_intr_13
+connect_bd_net /sys_concat_intc/In13 /ps_intr_13
+#### ad_connect  sys_concat_intc/In12 ps_intr_12
+connect_bd_net /sys_concat_intc/In12 /ps_intr_12
+#### ad_connect  sys_concat_intc/In11 ps_intr_11
+connect_bd_net /sys_concat_intc/In11 /ps_intr_11
+#### ad_connect  sys_concat_intc/In10 ps_intr_10
+connect_bd_net /sys_concat_intc/In10 /ps_intr_10
+#### ad_connect  sys_concat_intc/In9 ps_intr_09
+connect_bd_net /sys_concat_intc/In9 /ps_intr_09
+#### ad_connect  sys_concat_intc/In8 ps_intr_08
+connect_bd_net /sys_concat_intc/In8 /ps_intr_08
+#### ad_connect  sys_concat_intc/In7 ps_intr_07
+connect_bd_net /sys_concat_intc/In7 /ps_intr_07
+#### ad_connect  sys_concat_intc/In6 ps_intr_06
+connect_bd_net /sys_concat_intc/In6 /ps_intr_06
+#### ad_connect  sys_concat_intc/In5 ps_intr_05
+connect_bd_net /sys_concat_intc/In5 /ps_intr_05
+#### ad_connect  sys_concat_intc/In4 ps_intr_04
+connect_bd_net /sys_concat_intc/In4 /ps_intr_04
+#### ad_connect  sys_concat_intc/In3 ps_intr_03
+connect_bd_net /sys_concat_intc/In3 /ps_intr_03
+#### ad_connect  sys_concat_intc/In2 ps_intr_02
+connect_bd_net /sys_concat_intc/In2 /ps_intr_02
+#### ad_connect  sys_concat_intc/In1 ps_intr_01
+connect_bd_net /sys_concat_intc/In1 /ps_intr_01
+#### ad_connect  sys_concat_intc/In0 ps_intr_00
+connect_bd_net /sys_concat_intc/In0 /ps_intr_00
+#### ad_cpu_interconnect 0x41600000 axi_iic_main
+connect_bd_net -net /sys_cpu_clk /sys_ps7/M_AXI_GP0_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/ACLK
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/S00_ACLK
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/S00_ARESETN
+connect_bd_intf_net /axi_cpu_interconnect/S00_AXI /sys_ps7/M_AXI_GP0
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/M00_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_iic_main/s_axi_aclk
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/M00_ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_iic_main/s_axi_aresetn
+connect_bd_intf_net /axi_cpu_interconnect/M00_AXI /axi_iic_main/S_AXI
+#### create_bd_port -dir O enable
+#### create_bd_port -dir O txnrx
+#### create_bd_port -dir I up_enable
+#### create_bd_port -dir I up_txnrx
+#### create_bd_port -dir O tdd_sync_o
+#### create_bd_port -dir I tdd_sync_i
+#### create_bd_port -dir O tdd_sync_t
+#### set axi_ad9361 [create_bd_cell -type ip -vlnv analog.com:user:axi_ad9361:1.0 axi_ad9361]
+#### set_property -dict [list CONFIG.ID {0}] $axi_ad9361
+#### set_property -dict [list CONFIG.DAC_IODELAY_ENABLE {1}] $axi_ad9361
+#### set axi_ad9361_dac_dma [create_bd_cell -type ip -vlnv analog.com:user:axi_dmac:1.0 axi_ad9361_dac_dma]
+#### set_property -dict [list CONFIG.DMA_TYPE_SRC {0}] $axi_ad9361_dac_dma
+#### set_property -dict [list CONFIG.DMA_TYPE_DEST {2}] $axi_ad9361_dac_dma
+#### set_property -dict [list CONFIG.CYCLIC {1}] $axi_ad9361_dac_dma
+#### set_property -dict [list CONFIG.AXI_SLICE_SRC {0}] $axi_ad9361_dac_dma
+#### set_property -dict [list CONFIG.AXI_SLICE_DEST {1}] $axi_ad9361_dac_dma
+#### set_property -dict [list CONFIG.DMA_2D_TRANSFER {0}] $axi_ad9361_dac_dma
+#### set_property -dict [list CONFIG.DMA_DATA_WIDTH_DEST {64}] $axi_ad9361_dac_dma
+#### set util_ad9361_dac_upack [create_bd_cell -type ip -vlnv analog.com:user:util_upack:1.0 util_ad9361_dac_upack]
+#### set_property -dict [list CONFIG.NUM_OF_CHANNELS {4}] $util_ad9361_dac_upack
+#### set_property -dict [list CONFIG.CHANNEL_DATA_WIDTH {16}] $util_ad9361_dac_upack
+#### set axi_ad9361_adc_dma [create_bd_cell -type ip -vlnv analog.com:user:axi_dmac:1.0 axi_ad9361_adc_dma]
+#### set_property -dict [list CONFIG.DMA_TYPE_SRC {2}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.DMA_TYPE_DEST {0}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.CYCLIC {0}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.SYNC_TRANSFER_START {1}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.AXI_SLICE_SRC {0}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.AXI_SLICE_DEST {0}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.DMA_2D_TRANSFER {0}] $axi_ad9361_adc_dma
+#### set_property -dict [list CONFIG.DMA_DATA_WIDTH_SRC {64}]  $axi_ad9361_adc_dma
+#### set util_ad9361_adc_pack [create_bd_cell -type ip -vlnv analog.com:user:util_cpack:1.0 util_ad9361_adc_pack]
+#### set_property -dict [list CONFIG.NUM_OF_CHANNELS {4}] $util_ad9361_adc_pack
+#### set_property -dict [list CONFIG.CHANNEL_DATA_WIDTH {16}] $util_ad9361_adc_pack
+#### set util_ad9361_adc_fifo [create_bd_cell -type ip -vlnv analog.com:user:util_wfifo:1.0 util_ad9361_adc_fifo]
+#### set_property -dict [list CONFIG.NUM_OF_CHANNELS {4}] $util_ad9361_adc_fifo
+#### set_property -dict [list CONFIG.DIN_ADDRESS_WIDTH {4}] $util_ad9361_adc_fifo
+#### set_property -dict [list CONFIG.DIN_DATA_WIDTH {16}] $util_ad9361_adc_fifo
+#### set_property -dict [list CONFIG.DOUT_DATA_WIDTH {16}] $util_ad9361_adc_fifo
+#### set util_ad9361_tdd_sync [create_bd_cell -type ip -vlnv analog.com:user:util_tdd_sync:1.0 util_ad9361_tdd_sync]
+#### set_property -dict [list CONFIG.TDD_SYNC_PERIOD {10000000}] $util_ad9361_tdd_sync
+#### set clkdiv [ create_bd_cell -type ip -vlnv analog.com:user:util_clkdiv:1.0 clkdiv ]
+#### set clkdiv_reset [create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 clkdiv_reset]
+#### set dac_fifo [create_bd_cell -type ip -vlnv analog.com:user:util_rfifo:1.0 dac_fifo]
+#### set_property -dict [list CONFIG.DIN_DATA_WIDTH {16}] $dac_fifo
+#### set_property -dict [list CONFIG.DOUT_DATA_WIDTH {16}] $dac_fifo
+#### set_property -dict [list CONFIG.DIN_ADDRESS_WIDTH {4}] $dac_fifo
+#### set clkdiv_sel_logic [create_bd_cell -type ip -vlnv xilinx.com:ip:util_reduced_logic:2.0 clkdiv_sel_logic]
+#### set_property -dict [list CONFIG.C_SIZE {2}] $clkdiv_sel_logic
+#### set concat_logic [create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 concat_logic]
+#### set_property -dict [list CONFIG.NUM_PORTS {2}] $concat_logic
+#### ad_connect  sys_200m_clk axi_ad9361/delay_clk
+connect_bd_net -net /sys_200m_clk /axi_ad9361/delay_clk
+#### ad_connect  axi_ad9361_clk axi_ad9361/l_clk
+create_bd_net axi_ad9361_clk
+connect_bd_net -net /axi_ad9361_clk /axi_ad9361/l_clk
+#### ad_connect  axi_ad9361_clk axi_ad9361/clk
+connect_bd_net -net /axi_ad9361_clk /axi_ad9361/clk
+#### ad_connect  enable axi_ad9361/enable
+connect_bd_net /enable /axi_ad9361/enable
+#### ad_connect  txnrx axi_ad9361/txnrx
+connect_bd_net /txnrx /axi_ad9361/txnrx
+#### ad_connect  up_enable axi_ad9361/up_enable
+connect_bd_net /up_enable /axi_ad9361/up_enable
+#### ad_connect  up_txnrx axi_ad9361/up_txnrx
+connect_bd_net /up_txnrx /axi_ad9361/up_txnrx
+#### ad_connect  axi_ad9361_clk util_ad9361_adc_fifo/din_clk
+connect_bd_net -net /axi_ad9361_clk /util_ad9361_adc_fifo/din_clk
+#### ad_connect  axi_ad9361/rst util_ad9361_adc_fifo/din_rst
+connect_bd_net /axi_ad9361/rst /util_ad9361_adc_fifo/din_rst
+#### ad_connect  axi_ad9361_clk clkdiv/clk
+connect_bd_net -net /axi_ad9361_clk /clkdiv/clk
+#### ad_connect  clkdiv/clk_out axi_ad9361_adc_dma/fifo_wr_clk
+connect_bd_net /clkdiv/clk_out /axi_ad9361_adc_dma/fifo_wr_clk
+#### ad_connect  clkdiv/clk_out util_ad9361_adc_fifo/dout_clk
+connect_bd_net /clkdiv/clk_out /util_ad9361_adc_fifo/dout_clk
+#### ad_connect  clkdiv/clk_out util_ad9361_adc_pack/adc_clk
+connect_bd_net /clkdiv/clk_out /util_ad9361_adc_pack/adc_clk
+#### ad_connect  clkdiv_reset/ext_reset_in sys_rstgen/peripheral_aresetn
+connect_bd_net /clkdiv_reset/ext_reset_in /sys_rstgen/peripheral_aresetn
+#### ad_connect  clkdiv_reset/slowest_sync_clk clkdiv/clk_out
+connect_bd_net /clkdiv_reset/slowest_sync_clk /clkdiv/clk_out
+#### ad_connect  util_ad9361_adc_pack/adc_rst clkdiv_reset/peripheral_reset
+connect_bd_net /util_ad9361_adc_pack/adc_rst /clkdiv_reset/peripheral_reset
+#### ad_connect  util_ad9361_adc_fifo/dout_rstn clkdiv_reset/peripheral_aresetn
+connect_bd_net /util_ad9361_adc_fifo/dout_rstn /clkdiv_reset/peripheral_aresetn
+#### ad_connect  axi_ad9361/adc_enable_i0 util_ad9361_adc_fifo/din_enable_0
+connect_bd_net /axi_ad9361/adc_enable_i0 /util_ad9361_adc_fifo/din_enable_0
+#### ad_connect  axi_ad9361/adc_valid_i0 util_ad9361_adc_fifo/din_valid_0
+connect_bd_net /axi_ad9361/adc_valid_i0 /util_ad9361_adc_fifo/din_valid_0
+#### ad_connect  axi_ad9361/adc_data_i0 util_ad9361_adc_fifo/din_data_0
+connect_bd_net /axi_ad9361/adc_data_i0 /util_ad9361_adc_fifo/din_data_0
+#### ad_connect  axi_ad9361/adc_enable_q0 util_ad9361_adc_fifo/din_enable_1
+connect_bd_net /axi_ad9361/adc_enable_q0 /util_ad9361_adc_fifo/din_enable_1
+#### ad_connect  axi_ad9361/adc_valid_q0 util_ad9361_adc_fifo/din_valid_1
+connect_bd_net /axi_ad9361/adc_valid_q0 /util_ad9361_adc_fifo/din_valid_1
+#### ad_connect  axi_ad9361/adc_data_q0 util_ad9361_adc_fifo/din_data_1
+connect_bd_net /axi_ad9361/adc_data_q0 /util_ad9361_adc_fifo/din_data_1
+#### ad_connect  axi_ad9361/adc_enable_i1 util_ad9361_adc_fifo/din_enable_2
+connect_bd_net /axi_ad9361/adc_enable_i1 /util_ad9361_adc_fifo/din_enable_2
+#### ad_connect  axi_ad9361/adc_valid_i1 util_ad9361_adc_fifo/din_valid_2
+connect_bd_net /axi_ad9361/adc_valid_i1 /util_ad9361_adc_fifo/din_valid_2
+#### ad_connect  axi_ad9361/adc_data_i1 util_ad9361_adc_fifo/din_data_2
+connect_bd_net /axi_ad9361/adc_data_i1 /util_ad9361_adc_fifo/din_data_2
+#### ad_connect  axi_ad9361/adc_enable_q1 util_ad9361_adc_fifo/din_enable_3
+connect_bd_net /axi_ad9361/adc_enable_q1 /util_ad9361_adc_fifo/din_enable_3
+#### ad_connect  axi_ad9361/adc_valid_q1 util_ad9361_adc_fifo/din_valid_3
+connect_bd_net /axi_ad9361/adc_valid_q1 /util_ad9361_adc_fifo/din_valid_3
+#### ad_connect  axi_ad9361/adc_data_q1 util_ad9361_adc_fifo/din_data_3
+connect_bd_net /axi_ad9361/adc_data_q1 /util_ad9361_adc_fifo/din_data_3
+#### ad_connect  util_ad9361_adc_fifo/dout_enable_0 util_ad9361_adc_pack/adc_enable_0
+connect_bd_net /util_ad9361_adc_fifo/dout_enable_0 /util_ad9361_adc_pack/adc_enable_0
+#### ad_connect  util_ad9361_adc_fifo/dout_valid_0 util_ad9361_adc_pack/adc_valid_0
+connect_bd_net /util_ad9361_adc_fifo/dout_valid_0 /util_ad9361_adc_pack/adc_valid_0
+#### ad_connect  util_ad9361_adc_fifo/dout_data_0 util_ad9361_adc_pack/adc_data_0
+connect_bd_net /util_ad9361_adc_fifo/dout_data_0 /util_ad9361_adc_pack/adc_data_0
+#### ad_connect  util_ad9361_adc_fifo/dout_enable_1 util_ad9361_adc_pack/adc_enable_1
+connect_bd_net /util_ad9361_adc_fifo/dout_enable_1 /util_ad9361_adc_pack/adc_enable_1
+#### ad_connect  util_ad9361_adc_fifo/dout_valid_1 util_ad9361_adc_pack/adc_valid_1
+connect_bd_net /util_ad9361_adc_fifo/dout_valid_1 /util_ad9361_adc_pack/adc_valid_1
+#### ad_connect  util_ad9361_adc_fifo/dout_data_1 util_ad9361_adc_pack/adc_data_1
+connect_bd_net /util_ad9361_adc_fifo/dout_data_1 /util_ad9361_adc_pack/adc_data_1
+#### ad_connect  util_ad9361_adc_fifo/dout_enable_2 util_ad9361_adc_pack/adc_enable_2
+connect_bd_net /util_ad9361_adc_fifo/dout_enable_2 /util_ad9361_adc_pack/adc_enable_2
+#### ad_connect  util_ad9361_adc_fifo/dout_valid_2 util_ad9361_adc_pack/adc_valid_2
+connect_bd_net /util_ad9361_adc_fifo/dout_valid_2 /util_ad9361_adc_pack/adc_valid_2
+#### ad_connect  util_ad9361_adc_fifo/dout_data_2 util_ad9361_adc_pack/adc_data_2
+connect_bd_net /util_ad9361_adc_fifo/dout_data_2 /util_ad9361_adc_pack/adc_data_2
+#### ad_connect  util_ad9361_adc_fifo/dout_enable_3 util_ad9361_adc_pack/adc_enable_3
+connect_bd_net /util_ad9361_adc_fifo/dout_enable_3 /util_ad9361_adc_pack/adc_enable_3
+#### ad_connect  util_ad9361_adc_fifo/dout_valid_3 util_ad9361_adc_pack/adc_valid_3
+connect_bd_net /util_ad9361_adc_fifo/dout_valid_3 /util_ad9361_adc_pack/adc_valid_3
+#### ad_connect  util_ad9361_adc_fifo/dout_data_3 util_ad9361_adc_pack/adc_data_3
+connect_bd_net /util_ad9361_adc_fifo/dout_data_3 /util_ad9361_adc_pack/adc_data_3
+#### ad_connect  util_ad9361_adc_pack/adc_valid axi_ad9361_adc_dma/fifo_wr_en
+connect_bd_net /util_ad9361_adc_pack/adc_valid /axi_ad9361_adc_dma/fifo_wr_en
+INFO: [BD 41-1306] The connection to interface pin /axi_ad9361_adc_dma/fifo_wr_en is being overridden by the user. This pin will not be connected as a part of interface connection fifo_wr
+#### ad_connect  util_ad9361_adc_pack/adc_sync axi_ad9361_adc_dma/fifo_wr_sync
+connect_bd_net /util_ad9361_adc_pack/adc_sync /axi_ad9361_adc_dma/fifo_wr_sync
+INFO: [BD 41-1306] The connection to interface pin /axi_ad9361_adc_dma/fifo_wr_sync is being overridden by the user. This pin will not be connected as a part of interface connection fifo_wr
+#### ad_connect  util_ad9361_adc_pack/adc_data axi_ad9361_adc_dma/fifo_wr_din
+connect_bd_net /util_ad9361_adc_pack/adc_data /axi_ad9361_adc_dma/fifo_wr_din
+INFO: [BD 41-1306] The connection to interface pin /axi_ad9361_adc_dma/fifo_wr_din is being overridden by the user. This pin will not be connected as a part of interface connection fifo_wr
+#### ad_connect  axi_ad9361_adc_dma/fifo_wr_overflow util_ad9361_adc_fifo/dout_ovf
+connect_bd_net /axi_ad9361_adc_dma/fifo_wr_overflow /util_ad9361_adc_fifo/dout_ovf
+INFO: [BD 41-1306] The connection to interface pin /axi_ad9361_adc_dma/fifo_wr_overflow is being overridden by the user. This pin will not be connected as a part of interface connection fifo_wr
+#### ad_connect  util_ad9361_adc_fifo/din_ovf axi_ad9361/adc_dovf
+connect_bd_net /util_ad9361_adc_fifo/din_ovf /axi_ad9361/adc_dovf
+#### ad_connect  axi_ad9361/adc_r1_mode concat_logic/In0
+connect_bd_net /axi_ad9361/adc_r1_mode /concat_logic/In0
+#### ad_connect  axi_ad9361/dac_r1_mode concat_logic/In1
+connect_bd_net /axi_ad9361/dac_r1_mode /concat_logic/In1
+#### ad_connect  concat_logic/dout clkdiv_sel_logic/Op1
+connect_bd_net /concat_logic/dout /clkdiv_sel_logic/Op1
+#### ad_connect  clkdiv/clk_sel clkdiv_sel_logic/Res
+connect_bd_net /clkdiv/clk_sel /clkdiv_sel_logic/Res
+#### ad_connect  util_ad9361_dac_upack/dac_valid axi_ad9361_dac_dma/fifo_rd_en
+connect_bd_net /util_ad9361_dac_upack/dac_valid /axi_ad9361_dac_dma/fifo_rd_en
+INFO: [BD 41-1306] The connection to interface pin /axi_ad9361_dac_dma/fifo_rd_en is being overridden by the user. This pin will not be connected as a part of interface connection fifo_rd
+#### ad_connect  util_ad9361_dac_upack/dac_data axi_ad9361_dac_dma/fifo_rd_dout
+connect_bd_net /util_ad9361_dac_upack/dac_data /axi_ad9361_dac_dma/fifo_rd_dout
+INFO: [BD 41-1306] The connection to interface pin /axi_ad9361_dac_dma/fifo_rd_dout is being overridden by the user. This pin will not be connected as a part of interface connection fifo_rd
+#### ad_connect  clkdiv/clk_out axi_ad9361_dac_dma/fifo_rd_clk
+connect_bd_net /clkdiv/clk_out /axi_ad9361_dac_dma/fifo_rd_clk
+#### ad_connect  axi_ad9361/dac_dunf dac_fifo/dout_unf
+connect_bd_net /axi_ad9361/dac_dunf /dac_fifo/dout_unf
+#### ad_connect  dac_fifo/din_clk clkdiv/clk_out
+connect_bd_net /dac_fifo/din_clk /clkdiv/clk_out
+#### ad_connect  dac_fifo/din_rstn clkdiv_reset/peripheral_aresetn
+connect_bd_net /dac_fifo/din_rstn /clkdiv_reset/peripheral_aresetn
+#### ad_connect  axi_ad9361_clk dac_fifo/dout_clk
+connect_bd_net -net /axi_ad9361_clk /dac_fifo/dout_clk
+#### ad_connect  dac_fifo/dout_rst axi_ad9361/rst
+connect_bd_net /dac_fifo/dout_rst /axi_ad9361/rst
+#### ad_connect  util_ad9361_dac_upack/dac_clk clkdiv/clk_out
+connect_bd_net /util_ad9361_dac_upack/dac_clk /clkdiv/clk_out
+#### ad_connect  dac_fifo/din_enable_0 util_ad9361_dac_upack/dac_enable_0
+connect_bd_net /dac_fifo/din_enable_0 /util_ad9361_dac_upack/dac_enable_0
+#### ad_connect  dac_fifo/din_valid_0 util_ad9361_dac_upack/dac_valid_0
+connect_bd_net /dac_fifo/din_valid_0 /util_ad9361_dac_upack/dac_valid_0
+#### ad_connect  dac_fifo/din_data_0 util_ad9361_dac_upack/dac_data_0
+connect_bd_net /dac_fifo/din_data_0 /util_ad9361_dac_upack/dac_data_0
+#### ad_connect  dac_fifo/din_enable_1 util_ad9361_dac_upack/dac_enable_1
+connect_bd_net /dac_fifo/din_enable_1 /util_ad9361_dac_upack/dac_enable_1
+#### ad_connect  dac_fifo/din_valid_1 util_ad9361_dac_upack/dac_valid_1
+connect_bd_net /dac_fifo/din_valid_1 /util_ad9361_dac_upack/dac_valid_1
+#### ad_connect  dac_fifo/din_data_1 util_ad9361_dac_upack/dac_data_1
+connect_bd_net /dac_fifo/din_data_1 /util_ad9361_dac_upack/dac_data_1
+#### ad_connect  dac_fifo/din_enable_2 util_ad9361_dac_upack/dac_enable_2
+connect_bd_net /dac_fifo/din_enable_2 /util_ad9361_dac_upack/dac_enable_2
+#### ad_connect  dac_fifo/din_valid_2 util_ad9361_dac_upack/dac_valid_2
+connect_bd_net /dac_fifo/din_valid_2 /util_ad9361_dac_upack/dac_valid_2
+#### ad_connect  dac_fifo/din_data_2 util_ad9361_dac_upack/dac_data_2
+connect_bd_net /dac_fifo/din_data_2 /util_ad9361_dac_upack/dac_data_2
+#### ad_connect  dac_fifo/din_enable_3 util_ad9361_dac_upack/dac_enable_3
+connect_bd_net /dac_fifo/din_enable_3 /util_ad9361_dac_upack/dac_enable_3
+#### ad_connect  dac_fifo/din_valid_3 util_ad9361_dac_upack/dac_valid_3
+connect_bd_net /dac_fifo/din_valid_3 /util_ad9361_dac_upack/dac_valid_3
+#### ad_connect  dac_fifo/din_data_3 util_ad9361_dac_upack/dac_data_3
+connect_bd_net /dac_fifo/din_data_3 /util_ad9361_dac_upack/dac_data_3
+#### ad_connect  axi_ad9361/dac_enable_i0 dac_fifo/dout_enable_0
+connect_bd_net /axi_ad9361/dac_enable_i0 /dac_fifo/dout_enable_0
+#### ad_connect  axi_ad9361/dac_valid_i0 dac_fifo/dout_valid_0
+connect_bd_net /axi_ad9361/dac_valid_i0 /dac_fifo/dout_valid_0
+#### ad_connect  axi_ad9361/dac_data_i0 dac_fifo/dout_data_0
+connect_bd_net /axi_ad9361/dac_data_i0 /dac_fifo/dout_data_0
+#### ad_connect  axi_ad9361/dac_enable_q0 dac_fifo/dout_enable_1
+connect_bd_net /axi_ad9361/dac_enable_q0 /dac_fifo/dout_enable_1
+#### ad_connect  axi_ad9361/dac_valid_q0 dac_fifo/dout_valid_1
+connect_bd_net /axi_ad9361/dac_valid_q0 /dac_fifo/dout_valid_1
+#### ad_connect  axi_ad9361/dac_data_q0 dac_fifo/dout_data_1
+connect_bd_net /axi_ad9361/dac_data_q0 /dac_fifo/dout_data_1
+#### ad_connect  axi_ad9361/dac_enable_i1 dac_fifo/dout_enable_2
+connect_bd_net /axi_ad9361/dac_enable_i1 /dac_fifo/dout_enable_2
+#### ad_connect  axi_ad9361/dac_valid_i1 dac_fifo/dout_valid_2
+connect_bd_net /axi_ad9361/dac_valid_i1 /dac_fifo/dout_valid_2
+#### ad_connect  axi_ad9361/dac_data_i1 dac_fifo/dout_data_2
+connect_bd_net /axi_ad9361/dac_data_i1 /dac_fifo/dout_data_2
+#### ad_connect  axi_ad9361/dac_enable_q1 dac_fifo/dout_enable_3
+connect_bd_net /axi_ad9361/dac_enable_q1 /dac_fifo/dout_enable_3
+#### ad_connect  axi_ad9361/dac_valid_q1 dac_fifo/dout_valid_3
+connect_bd_net /axi_ad9361/dac_valid_q1 /dac_fifo/dout_valid_3
+#### ad_connect  axi_ad9361/dac_data_q1 dac_fifo/dout_data_3
+connect_bd_net /axi_ad9361/dac_data_q1 /dac_fifo/dout_data_3
+#### ad_connect  sys_cpu_clk util_ad9361_tdd_sync/clk
+connect_bd_net -net /sys_cpu_clk /util_ad9361_tdd_sync/clk
+#### ad_connect  sys_cpu_resetn util_ad9361_tdd_sync/rstn
+connect_bd_net -net /sys_cpu_resetn /util_ad9361_tdd_sync/rstn
+#### ad_connect  util_ad9361_tdd_sync/sync_out axi_ad9361/tdd_sync
+connect_bd_net /util_ad9361_tdd_sync/sync_out /axi_ad9361/tdd_sync
+#### ad_connect  util_ad9361_tdd_sync/sync_mode axi_ad9361/tdd_sync_cntr
+connect_bd_net /util_ad9361_tdd_sync/sync_mode /axi_ad9361/tdd_sync_cntr
+#### ad_connect  tdd_sync_t axi_ad9361/tdd_sync_cntr
+connect_bd_net /tdd_sync_t /axi_ad9361/tdd_sync_cntr
+#### ad_connect  tdd_sync_o util_ad9361_tdd_sync/sync_out
+connect_bd_net /tdd_sync_o /util_ad9361_tdd_sync/sync_out
+#### ad_connect  tdd_sync_i util_ad9361_tdd_sync/sync_in
+connect_bd_net /tdd_sync_i /util_ad9361_tdd_sync/sync_in
+#### ad_cpu_interconnect 0x79020000 axi_ad9361
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/M01_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_ad9361/s_axi_aclk
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/M01_ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_ad9361/s_axi_aresetn
+connect_bd_intf_net /axi_cpu_interconnect/M01_AXI /axi_ad9361/s_axi
+#### ad_cpu_interconnect 0x7C400000 axi_ad9361_adc_dma
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/M02_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_ad9361_adc_dma/s_axi_aclk
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/M02_ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_ad9361_adc_dma/s_axi_aresetn
+connect_bd_intf_net /axi_cpu_interconnect/M02_AXI /axi_ad9361_adc_dma/s_axi
+#### ad_cpu_interconnect 0x7C420000 axi_ad9361_dac_dma
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/M03_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_ad9361_dac_dma/s_axi_aclk
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/M03_ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_ad9361_dac_dma/s_axi_aresetn
+connect_bd_intf_net /axi_cpu_interconnect/M03_AXI /axi_ad9361_dac_dma/s_axi
+#### ad_mem_hp1_interconnect sys_cpu_clk sys_ps7/S_AXI_HP1
+connect_bd_net -net /sys_cpu_resetn /axi_hp1_interconnect/ARESETN
+connect_bd_net -net /sys_cpu_clk /axi_hp1_interconnect/ACLK
+connect_bd_net -net /sys_cpu_resetn /axi_hp1_interconnect/M00_ARESETN
+connect_bd_net -net /sys_cpu_clk /axi_hp1_interconnect/M00_ACLK
+connect_bd_intf_net /axi_hp1_interconnect/M00_AXI /sys_ps7/S_AXI_HP1
+connect_bd_net -net /sys_cpu_clk /sys_ps7/S_AXI_HP1_ACLK
+#### ad_mem_hp1_interconnect sys_cpu_clk axi_ad9361_adc_dma/m_dest_axi
+connect_bd_net -net /sys_cpu_resetn /axi_hp1_interconnect/S00_ARESETN
+connect_bd_net -net /sys_cpu_clk /axi_hp1_interconnect/S00_ACLK
+connect_bd_intf_net /axi_hp1_interconnect/S00_AXI /axi_ad9361_adc_dma/m_dest_axi
+connect_bd_net -net /sys_cpu_clk /axi_ad9361_adc_dma/m_dest_axi_aclk
+</sys_ps7/S_AXI_HP1/HP1_DDR_LOWOCM> is being mapped into </axi_ad9361_adc_dma/m_dest_axi> at <0x00000000 [ 1G ]>
+#### ad_mem_hp2_interconnect sys_cpu_clk sys_ps7/S_AXI_HP2
+connect_bd_net -net /sys_cpu_resetn /axi_hp2_interconnect/ARESETN
+connect_bd_net -net /sys_cpu_clk /axi_hp2_interconnect/ACLK
+connect_bd_net -net /sys_cpu_resetn /axi_hp2_interconnect/M00_ARESETN
+connect_bd_net -net /sys_cpu_clk /axi_hp2_interconnect/M00_ACLK
+connect_bd_intf_net /axi_hp2_interconnect/M00_AXI /sys_ps7/S_AXI_HP2
+connect_bd_net -net /sys_cpu_clk /sys_ps7/S_AXI_HP2_ACLK
+#### ad_mem_hp2_interconnect sys_cpu_clk axi_ad9361_dac_dma/m_src_axi
+connect_bd_net -net /sys_cpu_resetn /axi_hp2_interconnect/S00_ARESETN
+connect_bd_net -net /sys_cpu_clk /axi_hp2_interconnect/S00_ACLK
+connect_bd_intf_net /axi_hp2_interconnect/S00_AXI /axi_ad9361_dac_dma/m_src_axi
+connect_bd_net -net /sys_cpu_clk /axi_ad9361_dac_dma/m_src_axi_aclk
+</sys_ps7/S_AXI_HP2/HP2_DDR_LOWOCM> is being mapped into </axi_ad9361_dac_dma/m_src_axi> at <0x00000000 [ 1G ]>
+#### ad_connect  sys_cpu_resetn axi_ad9361_adc_dma/m_dest_axi_aresetn
+connect_bd_net -net /sys_cpu_resetn /axi_ad9361_adc_dma/m_dest_axi_aresetn
+#### ad_connect  sys_cpu_resetn axi_ad9361_dac_dma/m_src_axi_aresetn
+connect_bd_net -net /sys_cpu_resetn /axi_ad9361_dac_dma/m_src_axi_aresetn
+#### ad_cpu_interrupt ps-13 mb-13 axi_ad9361_adc_dma/irq
+delete_bd_objs /ps_intr_13_1 /ps_intr_13
+connect_bd_net /sys_concat_intc/In13 /axi_ad9361_adc_dma/irq
+#### ad_cpu_interrupt ps-12 mb-12 axi_ad9361_dac_dma/irq
+delete_bd_objs /ps_intr_12_1 /ps_intr_12
+connect_bd_net /sys_concat_intc/In12 /axi_ad9361_dac_dma/irq
+#### set_property CONFIG.MODE_1R1T 0 [get_bd_cells axi_ad9361]
+#### set_property CONFIG.CMOS_OR_LVDS_N 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.ADC_DATAPATH_DISABLE 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.DAC_DATAPATH_DISABLE 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.ADC_DATAFORMAT_DISABLE 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.ADC_DCFILTER_DISABLE 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.ADC_IQCORRECTION_DISABLE 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.ADC_USERPORTS_DISABLE 0 [get_bd_cells axi_ad9361]
+#### set_property CONFIG.DAC_DDS_DISABLE 0 [get_bd_cells axi_ad9361]
+#### set_property CONFIG.DAC_IQCORRECTION_DISABLE 0  [get_bd_cells axi_ad9361]
+#### set_property CONFIG.DAC_USERPORTS_DISABLE 0 [get_bd_cells axi_ad9361]
+#### set_property CONFIG.TDD_DISABLE 0 [get_bd_cells axi_ad9361]
+#### proc cfg_ad9361_interface {cmos_or_lvds} {
+#### 
+####   if {$cmos_or_lvds eq "LVDS"} {
+#### 
+####     set_property CONFIG.CMOS_OR_LVDS_N 0 [get_bd_cells axi_ad9361]
+#### 
+####     create_bd_port -dir I rx_clk_in_p
+####     create_bd_port -dir I rx_clk_in_n
+####     create_bd_port -dir I rx_frame_in_p
+####     create_bd_port -dir I rx_frame_in_n
+####     create_bd_port -dir I -from 5 -to 0 rx_data_in_p
+####     create_bd_port -dir I -from 5 -to 0 rx_data_in_n
+#### 
+####     create_bd_port -dir O tx_clk_out_p
+####     create_bd_port -dir O tx_clk_out_n
+####     create_bd_port -dir O tx_frame_out_p
+####     create_bd_port -dir O tx_frame_out_n
+####     create_bd_port -dir O -from 5 -to 0 tx_data_out_p
+####     create_bd_port -dir O -from 5 -to 0 tx_data_out_n
+#### 
+####     ad_connect  rx_clk_in_p axi_ad9361/rx_clk_in_p
+####     ad_connect  rx_clk_in_n axi_ad9361/rx_clk_in_n
+####     ad_connect  rx_frame_in_p axi_ad9361/rx_frame_in_p
+####     ad_connect  rx_frame_in_n axi_ad9361/rx_frame_in_n
+####     ad_connect  rx_data_in_p axi_ad9361/rx_data_in_p
+####     ad_connect  rx_data_in_n axi_ad9361/rx_data_in_n
+####     ad_connect  tx_clk_out_p axi_ad9361/tx_clk_out_p
+####     ad_connect  tx_clk_out_n axi_ad9361/tx_clk_out_n
+####     ad_connect  tx_frame_out_p axi_ad9361/tx_frame_out_p
+####     ad_connect  tx_frame_out_n axi_ad9361/tx_frame_out_n
+####     ad_connect  tx_data_out_p axi_ad9361/tx_data_out_p
+####     ad_connect  tx_data_out_n axi_ad9361/tx_data_out_n
+#### 
+####     return
+####   }
+#### 
+####   if {$cmos_or_lvds eq "CMOS"} {
+#### 
+####     set_property CONFIG.CMOS_OR_LVDS_N 1 [get_bd_cells axi_ad9361]
+#### 
+####     create_bd_port -dir I rx_clk_in
+####     create_bd_port -dir I rx_frame_in
+####     create_bd_port -dir I -from 11 -to 0 rx_data_in
+####     create_bd_port -dir O tx_clk_out
+####     create_bd_port -dir O tx_frame_out
+####     create_bd_port -dir O -from 11 -to 0 tx_data_out
+#### 
+####     ad_connect  rx_clk_in axi_ad9361/rx_clk_in
+####     ad_connect  rx_frame_in axi_ad9361/rx_frame_in
+####     ad_connect  rx_data_in axi_ad9361/rx_data_in
+####     ad_connect  tx_clk_out axi_ad9361/tx_clk_out
+####     ad_connect  tx_frame_out axi_ad9361/tx_frame_out
+####     ad_connect  tx_data_out axi_ad9361/tx_data_out
+#### 
+####     return
+####   }
+#### 
+#### }
+### source $ad_hdl_dir/projects/pzsdr2/common/ccbrk_bd.tcl
+#### ad_connect  sys_ps7/ENET1_GMII_RX_CLK GND
+create_bd_cell(xlconstant) size(1) value(0) name(sys_ps7_ENET1_GMII_RX_CLK_GND)
+connect_bd_net sys_ps7_ENET1_GMII_RX_CLK_GND/dout sys_ps7/ENET1_GMII_RX_CLK
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/ENET1_GMII_RX_CLK is being overridden by the user. This pin will not be connected as a part of interface connection GMII_ETHERNET_1
+#### ad_connect  sys_ps7/ENET1_GMII_TX_CLK GND
+create_bd_cell(xlconstant) size(1) value(0) name(sys_ps7_ENET1_GMII_TX_CLK_GND)
+connect_bd_net sys_ps7_ENET1_GMII_TX_CLK_GND/dout sys_ps7/ENET1_GMII_TX_CLK
+INFO: [BD 41-1306] The connection to interface pin /sys_ps7/ENET1_GMII_TX_CLK is being overridden by the user. This pin will not be connected as a part of interface connection GMII_ETHERNET_1
+#### set axi_pz_xcvrlb [create_bd_cell -type ip -vlnv analog.com:user:axi_xcvrlb:1.0 axi_pz_xcvrlb]
+#### set_property -dict [list CONFIG.NUM_OF_LANES {4}] $axi_pz_xcvrlb
+#### create_bd_port -dir I gt_ref_clk
+#### create_bd_port -dir I -from 3 -to 0 gt_rx_p
+#### create_bd_port -dir I -from 3 -to 0 gt_rx_n
+#### create_bd_port -dir O -from 3 -to 0 gt_tx_p
+#### create_bd_port -dir O -from 3 -to 0 gt_tx_n
+#### ad_cpu_interconnect 0x44A60000 axi_pz_xcvrlb
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/M04_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_pz_xcvrlb/s_axi_aclk
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/M04_ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_pz_xcvrlb/s_axi_aresetn
+connect_bd_intf_net /axi_cpu_interconnect/M04_AXI /axi_pz_xcvrlb/s_axi
+#### ad_connect  axi_pz_xcvrlb/ref_clk gt_ref_clk
+connect_bd_net /axi_pz_xcvrlb/ref_clk /gt_ref_clk
+#### ad_connect  axi_pz_xcvrlb/rx_p gt_rx_p
+connect_bd_net /axi_pz_xcvrlb/rx_p /gt_rx_p
+#### ad_connect  axi_pz_xcvrlb/rx_n gt_rx_n
+connect_bd_net /axi_pz_xcvrlb/rx_n /gt_rx_n
+#### ad_connect  axi_pz_xcvrlb/tx_p gt_tx_p
+connect_bd_net /axi_pz_xcvrlb/tx_p /gt_tx_p
+#### ad_connect  axi_pz_xcvrlb/tx_n gt_tx_n
+connect_bd_net /axi_pz_xcvrlb/tx_n /gt_tx_n
+#### set axi_gpreg [create_bd_cell -type ip -vlnv analog.com:user:axi_gpreg:1.0 axi_gpreg]
+#### set_property -dict [list CONFIG.NUM_OF_CLK_MONS {0}] $axi_gpreg
+#### set_property -dict [list CONFIG.NUM_OF_IO {4}] $axi_gpreg
+#### create_bd_port -dir I -from 31 -to 0 gp_in_0
+#### create_bd_port -dir I -from 31 -to 0 gp_in_1
+#### create_bd_port -dir I -from 31 -to 0 gp_in_2
+#### create_bd_port -dir I -from 31 -to 0 gp_in_3
+#### create_bd_port -dir O -from 31 -to 0 gp_out_0
+#### create_bd_port -dir O -from 31 -to 0 gp_out_1
+#### create_bd_port -dir O -from 31 -to 0 gp_out_2
+#### create_bd_port -dir O -from 31 -to 0 gp_out_3
+#### ad_connect  gp_in_0 axi_gpreg/up_gp_in_0
+connect_bd_net /gp_in_0 /axi_gpreg/up_gp_in_0
+#### ad_connect  gp_in_1 axi_gpreg/up_gp_in_1
+connect_bd_net /gp_in_1 /axi_gpreg/up_gp_in_1
+#### ad_connect  gp_in_2 axi_gpreg/up_gp_in_2
+connect_bd_net /gp_in_2 /axi_gpreg/up_gp_in_2
+#### ad_connect  gp_in_3 axi_gpreg/up_gp_in_3
+connect_bd_net /gp_in_3 /axi_gpreg/up_gp_in_3
+#### ad_connect  gp_out_0 axi_gpreg/up_gp_out_0
+connect_bd_net /gp_out_0 /axi_gpreg/up_gp_out_0
+#### ad_connect  gp_out_1 axi_gpreg/up_gp_out_1
+connect_bd_net /gp_out_1 /axi_gpreg/up_gp_out_1
+#### ad_connect  gp_out_2 axi_gpreg/up_gp_out_2
+connect_bd_net /gp_out_2 /axi_gpreg/up_gp_out_2
+#### ad_connect  gp_out_3 axi_gpreg/up_gp_out_3
+connect_bd_net /gp_out_3 /axi_gpreg/up_gp_out_3
+#### ad_cpu_interconnect 0x41200000 axi_gpreg
+connect_bd_net -net /sys_cpu_clk /axi_cpu_interconnect/M05_ACLK
+connect_bd_net -net /sys_cpu_clk /axi_gpreg/s_axi_aclk
+connect_bd_net -net /sys_cpu_resetn /axi_cpu_interconnect/M05_ARESETN
+connect_bd_net -net /sys_cpu_resetn /axi_gpreg/s_axi_aresetn
+connect_bd_intf_net /axi_cpu_interconnect/M05_AXI /axi_gpreg/s_axi
+### cfg_ad9361_interface LVDS
+connect_bd_net /rx_clk_in_p /axi_ad9361/rx_clk_in_p
+connect_bd_net /rx_clk_in_n /axi_ad9361/rx_clk_in_n
+connect_bd_net /rx_frame_in_p /axi_ad9361/rx_frame_in_p
+connect_bd_net /rx_frame_in_n /axi_ad9361/rx_frame_in_n
+connect_bd_net /rx_data_in_p /axi_ad9361/rx_data_in_p
+connect_bd_net /rx_data_in_n /axi_ad9361/rx_data_in_n
+connect_bd_net /tx_clk_out_p /axi_ad9361/tx_clk_out_p
+connect_bd_net /tx_clk_out_n /axi_ad9361/tx_clk_out_n
+connect_bd_net /tx_frame_out_p /axi_ad9361/tx_frame_out_p
+connect_bd_net /tx_frame_out_n /axi_ad9361/tx_frame_out_n
+connect_bd_net /tx_data_out_p /axi_ad9361/tx_data_out_p
+connect_bd_net /tx_data_out_n /axi_ad9361/tx_data_out_n
+### set ad_hdl_dir    	[pwd]
+### set proj_dir		$ad_hdl_dir/projects/pzsdr2/ccbrk_lvds
+### source $proj_dir/config_prj.tcl
+#### set_property -dict [list CONFIG.NUM_MI {7}] [get_bd_cells axi_cpu_interconnect]
+#### connect_bd_net -net [get_bd_nets clkdiv_clk_out] [get_bd_pins axi_cpu_interconnect/M06_ACLK] [get_bd_pins clkdiv/clk_out]
+#### connect_bd_net [get_bd_pins clkdiv_reset/interconnect_aresetn] [get_bd_pins axi_cpu_interconnect/M06_ARESETN]
+### source $ad_hdl_dir/projects/pzsdr2/common/config_rx.tcl
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_0 [get_bd_pins util_ad9361_adc_pack/adc_valid_0]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_1 [get_bd_pins util_ad9361_adc_pack/adc_valid_1]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_2 [get_bd_pins util_ad9361_adc_pack/adc_valid_2]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_3 [get_bd_pins util_ad9361_adc_pack/adc_valid_3]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_data_0 [get_bd_pins util_ad9361_adc_pack/adc_data_0]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_data_1 [get_bd_pins util_ad9361_adc_pack/adc_data_1]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_data_2 [get_bd_pins util_ad9361_adc_pack/adc_data_2]
+#### disconnect_bd_net /util_ad9361_adc_fifo_dout_data_3 [get_bd_pins util_ad9361_adc_pack/adc_data_3]
+#### connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_1]
+#### connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_2]
+#### connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_3]
+### regenerate_bd_layout
+WARNING: [BD 41-597] NET <Net> has no source
+Wrote  : <C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/system.bd> 
+WARNING: [#UNDEF] When using EMIO pins for SPI_0 tie SSIN High in the PL bitstream
+WARNING: [#UNDEF] When using EMIO pins for SPI_1 tie SSIN High in the PL bitstream
+WARNING: [BD 41-927] Following properties on pin /clkdiv/clk_out have been updated from connected ip. They may not be synchronized with cell properties. You can set property on pin directly to confirm the value and resolve the warning.
+	CLK_DOMAIN=system_clkdiv_0_clk_out 
+CRITICAL WARNING: [BD 41-759] The input pins (listed below) are either not connected or do not have a source port, and they don't have a tie-off specified. 
+Please check your design and connect them if needed: 
+/util_ad9361_adc_pack/adc_valid_0
+/util_ad9361_adc_pack/adc_data_0
+/util_ad9361_adc_pack/adc_valid_1
+/util_ad9361_adc_pack/adc_data_1
+/util_ad9361_adc_pack/adc_valid_2
+/util_ad9361_adc_pack/adc_data_2
+/util_ad9361_adc_pack/adc_valid_3
+/util_ad9361_adc_pack/adc_data_3
+
+validate_bd_design: Time (s): cpu = 00:00:05 ; elapsed = 00:00:06 . Memory (MB): peak = 1246.727 ; gain = 10.496
+INFO: [BD 41-1662] The design 'system.bd' is already validated. Therefore parameter propagation will not be re-run.
+CRITICAL WARNING: [BD 41-759] The input pins (listed below) are either not connected or do not have a source port, and they don't have a tie-off specified. 
+Please check your design and connect them if needed: 
+/util_ad9361_adc_pack/adc_valid_0
+/util_ad9361_adc_pack/adc_data_0
+/util_ad9361_adc_pack/adc_valid_1
+/util_ad9361_adc_pack/adc_data_1
+/util_ad9361_adc_pack/adc_valid_2
+/util_ad9361_adc_pack/adc_data_2
+/util_ad9361_adc_pack/adc_valid_3
+/util_ad9361_adc_pack/adc_data_3
+
+WARNING: [BD 41-166] The net:Net is not connected to a valid source.
+Verilog Output written to : C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/hdl/system.v
+Verilog Output written to : C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/hdl/system_wrapper.v
+WARNING: [BD 41-597] NET <Net> has no source
+Wrote  : <C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/system.bd> 
+INFO: [BD 41-1029] Generation completed for the IP Integrator block sys_ps7 .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_iic_main .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block sys_concat_intc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block sys_rstgen .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block sys_logic_inv .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_ad9361 .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_ad9361_dac_dma .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block util_ad9361_dac_upack .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_ad9361_adc_dma .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block util_ad9361_adc_pack .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block util_ad9361_adc_fifo .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block util_ad9361_tdd_sync .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block clkdiv .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block clkdiv_reset .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block dac_fifo .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block clkdiv_sel_logic .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block concat_logic .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/xbar .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block sys_ps7_ENET1_GMII_RX_CLK_GND .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block sys_ps7_ENET1_GMII_TX_CLK_GND .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_pz_xcvrlb .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_gpreg .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/m00_couplers/auto_pc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/m01_couplers/auto_pc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/m02_couplers/auto_pc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/m03_couplers/auto_pc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/m04_couplers/auto_pc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/m05_couplers/auto_pc .
+INFO: [BD 41-1029] Generation completed for the IP Integrator block axi_cpu_interconnect/s00_couplers/auto_pc .
+Exporting to file C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/hw_handoff/system.hwh
+Generated Block Design Tcl file C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/hw_handoff/system_bd.tcl
+Generated Hardware Definition File C:/Users/acozma/Documents/GitHub/MathWorks_tools/targeting_models/ADSB/hdl_prj/vivado_ip_prj/vivado_prj.srcs/sources_1/bd/system/hdl/system.hwdef
+generate_target: Time (s): cpu = 00:00:28 ; elapsed = 00:00:35 . Memory (MB): peak = 1359.871 ; gain = 113.145
+## adi_project_files pzsdr2_ccbrk_lvds [list \
+##   "$ad_hdl_dir/library/xilinx/common/ad_iobuf.v" \
+##   "$ad_hdl_dir/projects/pzsdr2/common/pzsdr2_constr.xdc" \
+##   "$ad_hdl_dir/projects/pzsdr2/common/pzsdr2_constr_lvds.xdc" \
+##   "$ad_hdl_dir/projects/pzsdr2/common/ccbrk_constr.xdc" \
+##   "system_top.v" ]
+## set_property is_enabled false [get_files  *axi_gpreg_constr.xdc]
+## adi_project_run pzsdr2_ccbrk_lvds
+## file copy -force $proj_dir/boot $ad_hdl_dir/boot
+# validate_bd_design
+INFO: [BD 5-320] Validate design is not run, since the design is already validated.
+# save_bd_design
+# close_project
+# exit
+INFO: [Common 17-206] Exiting Vivado at Mon Jul 24 13:37:50 2017...

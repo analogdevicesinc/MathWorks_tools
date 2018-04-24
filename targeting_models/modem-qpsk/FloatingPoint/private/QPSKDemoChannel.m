@@ -1,0 +1,29 @@
+function out = QPSKDemoChannel(in)
+
+DelayType = 'Triangle';
+FilterSpan = 32;
+PhaseOffset = 45;
+FrameSize = 1000;
+UpSample = 4;
+EbNo = 13;
+BitsPerSymbol = 2;
+FrequencyOffset = 1000;
+Fs = 1e6;
+
+% Create and configure the AWGN channel System object
+qpskChan = QPSKChannel('DelayType', DelayType, ...
+    'RaisedCosineFilterSpan', FilterSpan, ...
+    'PhaseOffset', PhaseOffset, ...
+    'SignalPower', 1/UpSample, ...
+    'FrameSize', FrameSize, ...
+    'UpsamplingFactor', UpSample, ...
+    'EbNo', EbNo, ...
+    'BitsPerSymbol', BitsPerSymbol, ...
+    'FrequencyOffset', FrequencyOffset, ...
+    'SampleRate', Fs);
+
+frameCount = 10;
+out = qpskChan(in,frameCount);
+
+
+end

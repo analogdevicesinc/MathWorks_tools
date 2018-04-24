@@ -1,3 +1,38 @@
+-- ***************************************************************************
+-- ***************************************************************************
+-- Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+--
+-- In this HDL repository, there are many different and unique modules, consisting
+-- of various HDL (Verilog or VHDL) components. The individual modules are
+-- developed independently, and may be accompanied by separate and unique license
+-- terms.
+--
+-- The user should read each of these license terms, and understand the
+-- freedoms and responsabilities that he or she has by using this source/core.
+--
+-- This core is distributed in the hope that it will be useful, but WITHOUT ANY
+-- WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+-- A PARTICULAR PURPOSE.
+--
+-- Redistribution and use of source or resulting binaries, with or without modification
+-- of this file, are permitted under one of the following two license terms:
+--
+--   1. The GNU General Public License version 2 as published by the
+--      Free Software Foundation, which can be found in the top level directory
+--      of this repository (LICENSE_GPL2), and also online at:
+--      <https://www.gnu.org/licenses/old-licenses/gpl-2.0.html>
+--
+-- OR
+--
+--   2. An ADI specific BSD license, which can be found in the top level directory
+--      of this repository (LICENSE_ADIBSD), and also on-line at:
+--      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+--      This will allow to generate bit files and not release the source code,
+--      as long as it attaches to an ADI device.
+--
+-- ***************************************************************************
+-- ***************************************************************************
+
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -18,11 +53,11 @@ entity axi_streaming_dma_tx_fifo is
 		enable		: in Boolean;
 
 		-- Write port
-		S_AXIS_ACLK	: in std_logic;
-		S_AXIS_TREADY	: out std_logic;
-		S_AXIS_TDATA	: in std_logic_vector(FIFO_DWIDTH-1 downto 0);
-		S_AXIS_TLAST	: in std_logic;
-		S_AXIS_TVALID	: in std_logic;
+		s_axis_aclk	: in std_logic;
+		s_axis_tready	: out std_logic;
+		s_axis_tdata	: in std_logic_vector(FIFO_DWIDTH-1 downto 0);
+		s_axis_tlast	: in std_logic;
+		s_axis_tvalid	: in std_logic;
 
 		-- Read port
 		out_stb		: out std_logic;
@@ -45,24 +80,26 @@ begin
 			clk => clk,
 			resetn => resetn,
 			fifo_reset => fifo_reset,
-			in_stb => S_AXIS_TVALID,
+			in_stb => s_axis_tvalid,
 			in_ack => in_ack,
-			in_data => S_AXIS_TDATA,
+			in_data => s_axis_tdata,
 			out_stb => out_stb,
 			out_ack => out_ack,
 			out_data => out_data
 		);
 
-	drain_process: process (S_AXIS_ACLK) is
+	drain_process: process (s_axis_aclk) is
 		variable enable_d1 : Boolean;
 	begin
-		if rising_edge(S_AXIS_ACLK) then
+		if rising_edge(s_axis_aclk) then
 			if resetn = '0' then
 				drain_dma <= False;
 			else
-				if S_AXIS_TLAST = '1' then
+				if s_axis_tlast = '1' then
 					drain_dma <= False;
-				elsif enable_d1 and enable then
+				elsif not enable_d1 and enable then
+					drain_dma <= False;
+				elsif enable_d1 and not enable then
 					drain_dma <= True;
 				end if;
 				enable_d1 := enable;
@@ -70,5 +107,5 @@ begin
 		end if;
 	end process;
 
-	S_AXIS_TREADY <= '1' when in_ack = '1' or drain_dma else '0';
+	s_axis_tready <= '1' when in_ack = '1' or drain_dma else '0';
 end;

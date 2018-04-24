@@ -8,13 +8,13 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('FMCOMMS2/3 %s Base System (Vivado 2015.2)', upper(board));
+hRD.ReferenceDesignName = sprintf('FMCOMMS2/3 %s Base System (Vivado 2016.4)', upper(board));
 
 % Determine the board name based on the design
 hRD.BoardName = sprintf('AnalogDevices FMCOMMS2/3 %s (%s)', upper(board), design);
 
 % Tool information
-hRD.SupportedToolVersion = {'2015.2'};
+hRD.SupportedToolVersion = {'2016.4'};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
@@ -61,6 +61,6 @@ hRD.CustomFiles = {...
 %% Add interfaces
 % add clock interface
 hRD.addClockInterface( ...
-    'ClockConnection',   'util_clkdiv_0/clk_out', ...
-    'ResetConnection',   'proc_sys_reset_0/peripheral_aresetn');
+    'ClockConnection',   'clkdiv/clk_out', ...
+    'ResetConnection',   'clkdiv_reset/peripheral_aresetn');
 	
