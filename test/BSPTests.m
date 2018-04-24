@@ -2,12 +2,19 @@ classdef BSPTests < matlab.unittest.TestCase
     properties(TestParameter)
         % Pull in board permutations
         configs = hdlcoder_board_customization;
+    end    
+    
+    methods(TestClassSetup)
+        % Add the necessary files to path
+        function addbspfiles(~)
+            addpath(genpath('../hdl_wa_bsp'));
+        end
     end
     
     methods(Static)
         function cfg = extractConfigs(config)
             s = strsplit(config,'.');mode = s{4};
-            if strcmp(s{2},'RFSOM1')
+            if strcmp(s{2},'RFSOM1') || ~isempty(strfind(s{2},'modem'))
                 assert(0);
             end
             s = strjoin(s(1:end-1),'.');
