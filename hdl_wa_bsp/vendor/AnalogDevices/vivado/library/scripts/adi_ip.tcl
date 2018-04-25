@@ -19,10 +19,11 @@ if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
 proc adi_ip_ttcl {ip_name ip_constr_files} {
 
   set proj_filegroup [ipx::get_file_groups -of_objects [ipx::current_core] -filter {NAME =~ *synthesis*}]
-  set f [ipx::add_file $ip_constr_files $proj_filegroup]
-  set_property -dict [list \
-    type ttcl \
-  ] $f
+  foreach f_name $ip_constr_files {
+    set f_name [file tail $f_name]
+	ipx::add_file $f_name $proj_filegroup
+    set_property type ttcl [ipx::get_files $f_name -of_objects $proj_filegroup]
+  }
 }
 
 proc adi_ip_bd {ip_name ip_bd_files} {
@@ -199,7 +200,8 @@ proc adi_ip_files {ip_name ip_files} {
   }
 
   set proj_fileset [get_filesets sources_1]
-  add_files -norecurse -scan_for_includes -fileset $proj_fileset $ip_files
+  set cdir [pwd]
+  add_files -norecurse -scan_for_includes -copy_to $cdir -force -fileset $proj_fileset $ip_files
   set_property "top" "$ip_name" $proj_fileset
 }
 
@@ -235,9 +237,10 @@ proc adi_ip_properties_lite {ip_name} {
   set i_filegroup [ipx::get_file_groups -of_objects [ipx::current_core] -filter {NAME =~ *synthesis*}]
   foreach i_file $ip_constr_files {
     set i_module [file tail $i_file]
+	set f_name [file tail $i_file]
     regsub {_constr\.xdc} $i_module {} i_module
-    ipx::add_file $i_file $i_filegroup
-    set_property SCOPED_TO_REF $i_module [ipx::get_files $i_file -of_objects $i_filegroup]
+    ipx::add_file $f_name $i_filegroup
+    set_property SCOPED_TO_REF $i_module [ipx::get_files $f_name -of_objects $i_filegroup]
   }
   ipx::save_core
 }

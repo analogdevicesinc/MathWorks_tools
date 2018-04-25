@@ -21,7 +21,7 @@ set p_device "none"
 set sys_zynq 1
 set ADI_POWER_OPTIMIZATION 0
 
-proc adi_project_xilinx {project_name project_dir {mode 0}} {
+proc adi_project_xilinx {project_name project_dir update_tcl {mode 0}} {
 
   global ad_hdl_dir
   global ad_phdl_dir
@@ -132,6 +132,7 @@ proc adi_project_xilinx {project_name project_dir {mode 0}} {
   #Added
   create_bd_design "system"
   source $project_dir/system_bd.tcl
+  source $project_dir/$update_tcl
   
   regenerate_bd_layout
   save_bd_design

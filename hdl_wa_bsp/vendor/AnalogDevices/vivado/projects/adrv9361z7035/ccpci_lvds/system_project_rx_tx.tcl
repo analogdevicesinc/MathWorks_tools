@@ -16,6 +16,6 @@ adi_project_files adrv9361z7035_ccpci_lvds [list \
   "system_top.v" ]
 
 adi_project_run adrv9361z7035_ccpci_lvds
-source $ad_hdl_dir/library/axi_ad9361/axi_ad9361_delay.tcl
+source $ad_hdl_dir/library/analog.com_user_axi_ad9361_1.0/axi_ad9361_delay.tcl
 # Copy the boot file to the root directory
 file copy -force $proj_dir/boot $ad_hdl_dir/boot
