@@ -5,7 +5,7 @@ set proj_dir		$ad_hdl_dir/projects/fmcomms2/zed
 source $ad_hdl_dir/projects/scripts/adi_project.tcl
 source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
-adi_project_create fmcomms2_zed $proj_dir config_tx.tcl
+adi_project_xilinx fmcomms2_zed $proj_dir config_tx.tcl
 
 adi_project_files fmcomms2_zed [list \
   "system_top.v" \
