@@ -7,7 +7,7 @@ source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
 set p_device "xc7z020clg400-1"
 adi_project_xilinx adrv9364z7020_ccbox_lvds
-adi_project_create adrv9364z7020_ccbox_lvds $proj_dir config_tx.tcl
+adi_project_xilinx adrv9364z7020_ccbox_lvds $proj_dir config_tx.tcl
 adi_project_files adrv9364z7020_ccbox_lvds [list \
   "$ad_hdl_dir/library/xilinx/common/ad_iobuf.v" \
   "$ad_hdl_dir/library/common/ad_adl5904_rst.v" \
