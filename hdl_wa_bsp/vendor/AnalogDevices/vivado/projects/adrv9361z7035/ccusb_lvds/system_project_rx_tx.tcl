@@ -11,8 +11,8 @@ adi_project_files adrv9361z7035_ccusb_lvds [list \
   "system_top.v" \
   "$ad_hdl_dir/library/xilinx/common/ad_iobuf.v" \
   "$ad_hdl_dir/projects/adrv9361z7035/common/adrv9361z7035_constr.xdc" \
-  "$ad_hdl_dir/projects/adrv9361z703/common/adrv9361z7035_constr_lvds.xdc" \
-  "$ad_hdl_dir/projects/adrv9361z703/common/ccusb_constr.xdc" ]
+  "$ad_hdl_dir/projects/adrv9361z7035/common/adrv9361z7035_constr_lvds.xdc" \
+  "$ad_hdl_dir/projects/adrv9361z7035/common/ccusb_constr.xdc" ]
 
 adi_project_run adrv9361z7035_ccusb_lvds
 #source $ad_hdl_dir/library/analog.com_user_axi_ad9361_1.0/axi_ad9361_delay.tcl
