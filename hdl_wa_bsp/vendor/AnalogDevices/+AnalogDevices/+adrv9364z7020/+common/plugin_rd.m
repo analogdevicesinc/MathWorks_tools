@@ -33,7 +33,7 @@ switch(upper(board))
 	case 'USB LVDS'
 		board = 'ccusb_lvds';		
 	otherwise
-		board = 'ccbrk_lvds';	
+		board = 'ccbob_lvds';	
 end
 
 %% Add custom design files

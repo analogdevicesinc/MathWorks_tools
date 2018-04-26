@@ -1,8 +1,8 @@
 # Disconnect the DAC UNPACK pins
-delete_bd_objs [get_bd_nets dac_fifo_din_valid_0]
-delete_bd_objs [get_bd_nets dac_fifo_din_valid_1]
-delete_bd_objs [get_bd_nets dac_fifo_din_valid_2]
-delete_bd_objs [get_bd_nets dac_fifo_din_valid_3]
+delete_bd_objs [get_bd_nets axi_ad9361_dac_fifo_din_valid_0]
+delete_bd_objs [get_bd_nets axi_ad9361_dac_fifo_din_valid_1]
+delete_bd_objs [get_bd_nets axi_ad9361_dac_fifo_din_valid_2]
+delete_bd_objs [get_bd_nets axi_ad9361_dac_fifo_din_valid_3]
 
 delete_bd_objs [get_bd_nets util_ad9361_dac_upack_dac_data_0]
 delete_bd_objs [get_bd_nets util_ad9361_dac_upack_dac_data_1]

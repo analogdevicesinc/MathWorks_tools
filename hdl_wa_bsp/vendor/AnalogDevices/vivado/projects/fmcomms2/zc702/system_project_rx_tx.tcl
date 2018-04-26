@@ -14,7 +14,7 @@ adi_project_files fmcomms2_zc702 [list \
   "$ad_hdl_dir/projects/common/zc702/zc702_system_constr.xdc" ]
 
 adi_project_run fmcomms2_zc702
-source $ad_hdl_dir/library/analog.com_user_axi_ad9361_1.0/axi_ad9361_delay.tcl
+#source $ad_hdl_dir/library/analog.com_user_axi_ad9361_1.0/axi_ad9361_delay.tcl
 
 # Copy the boot file to the root directory
 file copy -force $proj_dir/boot $ad_hdl_dir/boot

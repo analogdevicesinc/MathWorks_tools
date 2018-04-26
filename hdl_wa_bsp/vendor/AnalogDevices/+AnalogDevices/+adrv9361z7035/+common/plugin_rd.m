@@ -81,6 +81,7 @@ hRD.CustomConstraints = {...
 % custom source files
 hRD.CustomFiles = {...
 	fullfile('library')...,
+	fullfile('library','xilinx')...,
 	fullfile('projects','common')...,
 	fullfile('projects','scripts')...,
 	fullfile('projects','fmcomms2')...,
