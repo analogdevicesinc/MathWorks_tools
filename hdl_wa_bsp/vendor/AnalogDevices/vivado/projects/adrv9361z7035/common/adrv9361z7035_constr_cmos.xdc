@@ -1,5 +1,5 @@
 
-# constraints (pzsdr2.e)
+# constraints (adrv9361z7035.e)
 # ad9361 (SWAP == 0x1)
 
 set_property  -dict {PACKAGE_PIN  J14  IOSTANDARD LVCMOS18} [get_ports rx_clk_in]       ; ## IO_L12P_T1_MRCC_35         U1,J14,IO_L12_MRCC_35_DATA_CLK_P

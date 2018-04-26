@@ -1,5 +1,5 @@
 
-# constraints (pzsdr1.b)
+# constraints (adrv9364z7020.b)
 # ad9361
 
 set_property  -dict {PACKAGE_PIN  K17  IOSTANDARD LVDS_25   DIFF_TERM TRUE} [get_ports rx_clk_in_p]       ; ## IO_L12P_T1_MRCC_35           U1,K17,IO_L12_MRCC_35_DATA_CLK_P

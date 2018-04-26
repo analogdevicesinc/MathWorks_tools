@@ -1,5 +1,5 @@
 
-# constraints (pzsdr2.e)
+# constraints (adrv9361z7035.e)
 # ad9361
 
 set_property  -dict {PACKAGE_PIN  G14  IOSTANDARD LVCMOS18} [get_ports enable]                            ; ## IO_L11P_T1_SRCC_35           U1,G14,IO_L11_35_ENABLE

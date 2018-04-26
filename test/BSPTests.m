@@ -14,7 +14,7 @@ classdef BSPTests < matlab.unittest.TestCase
     methods(Static)
         function cfg = extractConfigs(config)
             s = strsplit(config,'.');mode = s{4};
-            if strcmp(s{2},'adrv9361z7035') || ~isempty(strfind(s{2},'modem'))
+            if strcmp(s{2},'adrv9361z7035') && ~isempty(strfind(s{2},'modem'))
                 assert(0);
             end
             s = strjoin(s(1:end-1),'.');
