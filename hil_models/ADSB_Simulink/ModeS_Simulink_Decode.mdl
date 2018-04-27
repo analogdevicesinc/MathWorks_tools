@@ -1,6 +1,6 @@
 Model {
   Name			  "ModeS_Simulink_Decode"
-  Version		  8.8
+  Version		  9.0
   SavedCharacterEncoding  "windows-1252"
   GraphicalInterface {
     NumRootInports	    0
@@ -15,12 +15,221 @@ Model {
     HasInitializeEvent	    0
     HasTerminateEvent	    0
     IsExportFunctionModel   0
+    NumParameterArguments   0
+    NumExternalFileReferences 34
+    ExternalFileReference {
+      Reference		      "commutil2/Bit to Integer\nConverter"
+      Path		      "ModeS_Simulink_Decode/Decode & Display/Bit to Integer Converter"
+      SID		      "305"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
+      Path		      "ModeS_Simulink_Decode/Detector/Bit Process/Compare To Constant"
+      SID		      "107"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
+      Path		      "ModeS_Simulink_Decode/Detector/Bit Process/Compare To Constant1"
+      SID		      "108"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "hdlsllib/HDL Operations/HDL Counter"
+      Path		      "ModeS_Simulink_Decode/Detector/Bit Process/HDL Counter"
+      SID		      "109"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "dspindex/Multiport\nSelector"
+      Path		      "ModeS_Simulink_Decode/Detector/Bit Process/Multiport Selector"
+      SID		      "113"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink/Discrete/Tapped Delay"
+      Path		      "ModeS_Simulink_Decode/Detector/Bit Process/Tapped Delay"
+      SID		      "119"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x0"
+      SID		      "74"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x1"
+      SID		      "75"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x10"
+      SID		      "84"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x11"
+      SID		      "85"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x12"
+      SID		      "86"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x13"
+      SID		      "87"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x14"
+      SID		      "88"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x15"
+      SID		      "89"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x16"
+      SID		      "90"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x17"
+      SID		      "91"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x18"
+      SID		      "92"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x19"
+      SID		      "93"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x2"
+      SID		      "76"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x20"
+      SID		      "94"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x21"
+      SID		      "95"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x22"
+      SID		      "96"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x23"
+      SID		      "97"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x3"
+      SID		      "77"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x4"
+      SID		      "78"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x5"
+      SID		      "79"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x6"
+      SID		      "80"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x7"
+      SID		      "81"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x8"
+      SID		      "82"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "simulink_need_slupdate/Unit Delay\nResettable"
+      Path		      "ModeS_Simulink_Decode/Detector/CRC_Check/crc24f/x9"
+      SID		      "83"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "dspobslib/Digital Filter"
+      Path		      "ModeS_Simulink_Decode/Detector/CalcNF/NoiseFloor"
+      SID		      "122"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "dspobslib/Digital Filter"
+      Path		      "ModeS_Simulink_Decode/Detector/CalcSyncCorr/SyncCorr"
+      SID		      "123"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "dspbuff3/Delay Line"
+      Path		      "ModeS_Simulink_Decode/Modified Buffer/Modified Buffer/Delay Line"
+      SID		      "226"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "dspsrcs4/Signal From\nWorkspace"
+      Path		      "ModeS_Simulink_Decode/Signal From Workspace"
+      SID		      "126"
+      Type		      "LIBRARY_BLOCK"
+    }
+    OrderedModelArguments   1
   }
   LogicAnalyzerGraphicalSettings ""
   LogicAnalyzerPlugin	  "on"
   LogicAnalyzerSignalOrdering ""
   DiagnosticSuppressor	  "on"
-  SuppressorTable	  "22 serialization::archive 11 0 3 0 0 0 8 0"
+  SuppressorTable	  "22 serialization::archive 11 0 6 0 0 0 8 0"
+  CustomCodeFunctionData  ""
+  SLCCPlugin		  "on"
   slprops.hdlmdlprops {
     $PropName		    "HDLParams"
     $ObjectID		    1
@@ -84,10 +293,10 @@ Model {
 	$ObjectID		6
 	$ClassName		"Simulink.EditorInfo"
 	IsActive		[1]
-	ViewObjType		"SimulinkSubsys"
-	LoadSaveID		"233"
-	Extents			[1332.0, 640.0]
-	ZoomFactor		[1.0]
+	ViewObjType		"SimulinkTopLevel"
+	LoadSaveID		"0"
+	Extents			[1328.0, 639.0]
+	ZoomFactor		[1.31]
 	Offset			[0.0, 0.0]
       }
       Object {
@@ -106,31 +315,32 @@ Model {
       }
       WindowState	      "AAAA/wAAAAD9AAAAAgAAAAAAAAC9AAAB+PwCAAAAA/sAAAAWAEQAbwBjAGsAVwBpAGQAZwBlAHQAMwEAAAAxAAAB+AAAA"
       "AAAAAAA+wAAABYARABvAGMAawBXAGkAZABnAGUAdAA0AAAAAAD/////AAAAAAAAAAD7AAAAUgBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0Ac"
-      "ABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAAP////8AAABfAP///wAAAAEAAAAAAAAAAPwCA"
+      "ABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAAP////8AAABjAP///wAAAAEAAAAAAAAAAPwCA"
       "AAAAfsAAABUAEcATABVAEUAMgA6AFAAcgBvAHAAZQByAHQAeQBJAG4AcwBwAGUAYwB0AG8AcgAvAFAAcgBvAHAAZQByAHQAeQAgAEkAbgBzAHAAZ"
-      "QBjAHQAbwByAAAAAAD/////AAAAJwD///8AAAVWAAACtgAAAAEAAAACAAAAAQAAAAL8AAAAAQAAAAIAAAAP/////wAAAAAA/////wAAAAAAAAAA/"
+      "QBjAHQAbwByAAAAAAD/////AAAAKwD///8AAAVWAAACuAAAAAEAAAACAAAAAQAAAAL8AAAAAQAAAAIAAAAP/////wAAAAAA/////wAAAAAAAAAA/"
       "////wEAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/"
       "////wEAAAB5/////wAAAAAAAAAA/////wEAAADa/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAFT/////wAAAAAAAAAA/"
       "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAMr/////wAAAAAAAAAA/"
       "////wEAAANa/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA"
     }
   }
+  HideAutomaticNames	  on
   Created		  "Thu Mar 31 21:06:39 2011"
   Creator		  "mdonovan"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "DPu1"
+  LastModifiedBy	  "ACozma"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Mon Oct 24 14:00:48 2016"
+  LastModifiedDate	  "Fri Apr 27 11:12:28 2018"
   RTWModifiedTimeStamp	  399218447
   ModelVersionFormat	  "1.%<AutoIncrement:94>"
-  ConfigurationManager	  "none"
   SampleTimeColors	  on
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "none"
   WideLines		  off
   ShowLineDimensions	  off
   ShowPortDataTypes	  on
+  PortDataTypeDisplayFormat "AliasTypeOnly"
   ShowEditTimeErrors	  on
   ShowEditTimeWarnings	  on
   ShowEditTimeAdvisorChecks off
@@ -151,12 +361,14 @@ Model {
   BlockNameDataTip	  off
   BlockParametersDataTip  off
   BlockDescriptionStringDataTip	off
+  BlockVariantConditionDataTip off
   ToolBar		  on
   StatusBar		  on
   BrowserShowLibraryLinks off
   FunctionConnectors	  off
   BrowserLookUnderMasks	  off
   SimulationMode	  "normal"
+  VisualizeLoggedSignalsWhenLoggingToFile off
   PauseTimes		  "5"
   NumberOfSteps		  1
   SnapshotBufferSize	  10
@@ -211,12 +423,13 @@ Model {
   ExtModeAutoUpdateStatusClock on
   ShowModelReferenceBlockVersion off
   ShowModelReferenceBlockIO off
+  OrderedModelArguments	  on
   Array {
     Type		    "Handle"
     Dimension		    1
     Simulink.ConfigSet {
       $ObjectID		      9
-      Version		      "1.16.5"
+      Version		      "1.17.1"
       DisabledProps	      []
       Description	      ""
       Array {
@@ -224,7 +437,7 @@ Model {
 	Dimension		10
 	Simulink.SolverCC {
 	  $ObjectID		  10
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  ""
 	  StartTime		  "0.0"
@@ -232,7 +445,6 @@ Model {
 	  AbsTol		  "auto"
 	  FixedStep		  "auto"
 	  InitialStep		  "auto"
-	  MaxNumMinSteps	  "-1"
 	  MaxOrder		  5
 	  ZcThreshold		  "auto"
 	  ConsecutiveZCsStepRelTol "10*128*eps"
@@ -244,7 +456,6 @@ Model {
 	  MaxConsecutiveMinStep	  "1"
 	  RelTol		  "1e-3"
 	  EnableMultiTasking	  off
-	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
 	  Solver		  "VariableStepDiscrete"
 	  SolverName		  "VariableStepDiscrete"
@@ -261,10 +472,11 @@ Model {
 	  SampleTimeConstraint	  "Unconstrained"
 	  InsertRTBMode		  "Whenever possible"
 	  SampleTimeProperty	  []
+	  DecoupledContinuousIntegration off
 	}
 	Simulink.DataIOCC {
 	  $ObjectID		  11
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  ""
 	  Decimation		  "1"
@@ -299,12 +511,13 @@ Model {
 	  ReturnWorkspaceOutputsName "out"
 	  Refine		  "1"
 	  LoggingToFile		  off
+	  DatasetSignalFormat	  "timeseries"
 	  LoggingFileName	  "out.mat"
 	  LoggingIntervals	  "[-inf, inf]"
 	}
 	Simulink.OptimizationCC {
 	  $ObjectID		  12
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    8
@@ -359,10 +572,14 @@ Model {
 	  BufferReusableBoundary  on
 	  SimCompilerOptimization "off"
 	  AccelVerboseBuild	  off
+	  OptimizeBlockOrder	  "off"
+	  OptimizeDataStoreBuffers on
+	  BusAssignmentInplaceUpdate on
+	  DifferentSizesBufferReuse off
 	}
 	Simulink.DebuggingCC {
 	  $ObjectID		  13
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    1
@@ -401,6 +618,7 @@ Model {
 	  MultiTaskRateTransMsg	  "error"
 	  SingleTaskRateTransMsg  "error"
 	  TasksWithSamePriorityMsg "warning"
+	  ExportedTasksRateTransMsg "none"
 	  SigSpecEnsureSampleTimeMsg "warning"
 	  CheckMatrixSingularityMsg "none"
 	  IntegerOverflowMsg	  "warning"
@@ -442,6 +660,7 @@ Model {
 	  StateNameClashWarn	  "warning"
 	  SimStateInterfaceChecksumMismatchMsg "warning"
 	  SimStateOlderReleaseMsg "error"
+	  ChecksumConsistencyForSSReuse	"none"
 	  InitInArrayFormatMsg	  "warning"
 	  StrictBusMsg		  "ErrorLevel1"
 	  BusNameAdapt		  "WarnAndRepair"
@@ -449,6 +668,7 @@ Model {
 	  SymbolicDimMinMaxWarning "warning"
 	  LossOfSymbolicDimsSimulationWarning "warning"
 	  LossOfSymbolicDimsCodeGenerationWarning "error"
+	  SymbolicDimsDataTypeCodeGenerationDiagnostic "error"
 	  BlockIODiagnostic	  "none"
 	  SFUnusedDataAndEventsDiag "warning"
 	  SFUnexpectedBacktrackingDiag "warning"
@@ -467,10 +687,14 @@ Model {
 	  AllowedUnitSystems	  "all"
 	  UnitsInconsistencyMsg	  "warning"
 	  AllowAutomaticUnitConversions	on
+	  RCSCRenamedMsg	  "warning"
+	  RCSCObservableMsg	  "warning"
+	  ForceCombineOutputUpdateInSim	off
+	  UnitDatabase		  ""
 	}
 	Simulink.HardwareCC {
 	  $ObjectID		  14
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  ""
 	  ProdBitPerChar	  8
@@ -518,7 +742,7 @@ Model {
 	}
 	Simulink.ModelReferenceCC {
 	  $ObjectID		  15
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  ""
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
@@ -537,7 +761,7 @@ Model {
 	}
 	Simulink.SFSimCC {
 	  $ObjectID		  16
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  ""
 	  SimCustomSourceCode	  ""
@@ -561,11 +785,13 @@ Model {
 	  ModelFunctionsGlobalVisibility "on"
 	  CompileTimeRecursionLimit 50
 	  EnableRuntimeRecursion  on
+	  MATLABDynamicMemAlloc	  on
+	  MATLABDynamicMemAllocThreshold 65536
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
 	  $ObjectID		  17
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  Array {
 	    Type		    "Cell"
 	    Dimension		    13
@@ -613,6 +839,7 @@ Model {
 	  CustomLibrary		  ""
 	  CustomDefine		  ""
 	  CustomLAPACKCallback	  ""
+	  CustomFFTCallback	  ""
 	  CustomInitializer	  ""
 	  CustomTerminator	  ""
 	  Toolchain		  "Automatically locate an installed toolchain"
@@ -648,10 +875,10 @@ Model {
 	    Dimension		    2
 	    Simulink.CodeAppCC {
 	      $ObjectID		      18
-	      Version		      "1.16.5"
+	      Version		      "1.17.1"
 	      Array {
 		Type			"Cell"
-		Dimension		25
+		Dimension		27
 		Cell			"IgnoreCustomStorageClasses"
 		Cell			"IgnoreTestpoints"
 		Cell			"InsertBlockDesc"
@@ -677,6 +904,8 @@ Model {
 		Cell			"CustomSymbolStrModelFcn"
 		Cell			"CustomSymbolStrUtil"
 		Cell			"CustomUserTokenString"
+		Cell			"CustomSymbolStrEmxType"
+		Cell			"CustomSymbolStrEmxFcn"
 		PropName		"DisabledProps"
 	      }
 	      Description	      ""
@@ -686,18 +915,16 @@ Model {
 	      CommentStyle	      "Auto"
 	      IgnoreCustomStorageClasses on
 	      IgnoreTestpoints	      off
-	      IncHierarchyInIds	      off
 	      MaxIdLength	      31
 	      PreserveName	      off
 	      PreserveNameWithParent  off
 	      ShowEliminatedStatement off
 	      OperatorAnnotations     off
-	      IncAutoGenComments      off
 	      SimulinkDataObjDesc     off
 	      SFDataObjDesc	      off
 	      MATLABFcnDesc	      off
-	      IncDataTypeInIds	      off
 	      MangleLength	      1
+	      SharedChecksumLength    8
 	      CustomSymbolStrGlobalVar "$R$N$M"
 	      CustomSymbolStrType     "$N$R$M_T"
 	      CustomSymbolStrField    "$N$M"
@@ -708,6 +935,8 @@ Model {
 	      CustomSymbolStrTmpVar   "$N$M"
 	      CustomSymbolStrMacro    "$R$N$M"
 	      CustomSymbolStrUtil     "$N$C"
+	      CustomSymbolStrEmxType  "emxArray_$M$N"
+	      CustomSymbolStrEmxFcn   "emx$M$N"
 	      CustomUserTokenString   ""
 	      CustomCommentsFcn	      ""
 	      DefineNamingRule	      "None"
@@ -719,6 +948,7 @@ Model {
 	      InsertBlockDesc	      off
 	      InsertPolySpaceComments off
 	      SimulinkBlockComments   on
+	      StateflowObjectComments on
 	      MATLABSourceComments    off
 	      EnableCustomComments    off
 	      InternalIdentifierFile  ""
@@ -731,7 +961,7 @@ Model {
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
 	      $ObjectID		      19
-	      Version		      "1.16.5"
+	      Version		      "1.17.1"
 	      Array {
 		Type			"Cell"
 		Dimension		18
@@ -763,8 +993,7 @@ Model {
 	      TargetLangStandard      "C89/C90 (ANSI)"
 	      CodeReplacementLibrary  "None"
 	      UtilityFuncGeneration   "Auto"
-	      ERTMultiwordTypeDef     "System defined"
-	      ERTMultiwordLength      256
+	      MultiwordTypeDef	      "System defined"
 	      MultiwordLength	      2048
 	      GenerateFullHeader      on
 	      InferredTypesCompatibility off
@@ -780,7 +1009,6 @@ Model {
 	      CombineOutputUpdateFcns off
 	      CombineSignalStateStructs	off
 	      SuppressErrorStatus     off
-	      ERTFirstTimeCompliant   off
 	      IncludeFileDelimiter    "Auto"
 	      ERTCustomFileBanners    off
 	      SupportAbsoluteTime     on
@@ -808,6 +1036,11 @@ Model {
 	      UseToolchainInfoCompliant	on
 	      GenerateSharedConstants on
 	      CoderGroups	      []
+	      AccessMethods	      []
+	      LookupTableObjectStructAxisOrder "1,2,3,4,..."
+	      LUTObjectStructOrderExplicitValues "Size,Breakpoints,Table"
+	      LUTObjectStructOrderEvenSpacing "Size,Breakpoints,Table"
+	      ArrayLayout	      "Column-major"
 	      UseMalloc		      off
 	      ExtMode		      off
 	      ExtModeStaticAlloc      off
@@ -829,7 +1062,7 @@ Model {
 	}
 	SlCovCC.ConfigComp {
 	  $ObjectID		  20
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  "Simulink Coverage Configuration Component"
 	  Name			  "Simulink Coverage"
@@ -865,10 +1098,11 @@ Model {
 	  CovUseTimeInterval	  off
 	  CovStartTime		  0
 	  CovStopTime		  0
+	  CovMcdcMode		  "Masking"
 	}
 	hdlcoderui.hdlcc {
 	  $ObjectID		  21
-	  Version		  "1.16.5"
+	  Version		  "1.17.1"
 	  DisabledProps		  []
 	  Description		  "HDL Coder custom configuration component"
 	  Name			  "HDL Coder"
@@ -885,7 +1119,7 @@ Model {
       Name		      "Configuration"
       ExtraOptions	      ""
       CurrentDlgPage	      "HDL Code Generation"
-      ConfigPrmDlgPosition     [ 35, 469, 1131, 1099 ] 
+      ConfigPrmDlgPosition    [ 35, 469, 1131, 1099 ]
     }
     PropName		    "ConfigurationSets"
   }
@@ -914,6 +1148,7 @@ Model {
     FontWeight		    "normal"
     FontAngle		    "normal"
     ShowName		    on
+    HideAutomaticName	    on
     BlockRotation	    0
     BlockMirror		    off
   }
@@ -927,7 +1162,12 @@ Model {
     FontSize		    10
     FontWeight		    "normal"
     FontAngle		    "normal"
+    MarkupType		    "model"
     UseDisplayTextAsClickCallback off
+    AnnotationType	    "note_annotation"
+    FixedHeight		    off
+    FixedWidth		    off
+    Interpreter		    "off"
   }
   LineDefaults {
     FontName		    "Helvetica"
@@ -939,7 +1179,7 @@ Model {
     SelfModifiable	    "off"
     IconFrame		    "on"
     IconOpaque		    "opaque"
-    RunInitForIconRedraw    "off"
+    RunInitForIconRedraw    "analyze"
     IconRotate		    "none"
     PortRotate		    "default"
     IconUnits		    "autoscale"
@@ -1090,6 +1330,10 @@ Model {
       SourceOfInitialOutputValue "Dialog"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
+      MustResolveToSignalObject	off
+      OutputWhenUnConnected   off
+      OutputWhenUnconnectedValue "0"
+      VectorParamsAs1DForOutWhenUnconnected off
     }
     Block {
       BlockType		      RelationalOperator
@@ -1138,10 +1382,12 @@ Model {
       MaskHideContents	      off
       SFBlockType	      "NONE"
       GeneratePreprocessorConditionals off
+      AllowZeroVariantControls off
       PropagateVariantConditions off
       TreatAsGroupedWhenPropagatingVariantConditions on
       ContentPreviewEnabled   off
       IsWebBlock	      off
+      IsObserver	      off
     }
     Block {
       BlockType		      Sum
@@ -1181,6 +1427,7 @@ Model {
       BlockType		      TriggerPort
       TriggerType	      "rising"
       IsSimulinkFunction      off
+      FunctionVisibility      "global"
       Variant		      off
       GeneratePreprocessorConditionals off
       StatesWhenEnabling      "inherit"
@@ -1202,8 +1449,9 @@ Model {
   }
   System {
     Name		    "ModeS_Simulink_Decode"
-    Location		    [2039, 127, 3421, 871]
-    Open		    off
+    Location		    [2039, 127, 3421, 946]
+    Open		    on
+    PortBlocksUseCompactNotation off
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
     ScreenColor		    "white"
@@ -1225,8 +1473,8 @@ Model {
       Position		      [560, 248, 605, 312]
       ZOrder		      -1
       ScopeSpecificationString "C++SS(StrPVP('Location','[451, 237, 1357, 757]'),StrPVP('Open','off'),StrPVP('ZoomMode"
-      "','xonly'),MxPVP('AxesTitles',24,'struct(''axes1'',''%<SignalLabel>'',''axes2'',''%<SignalLabel>'',''axes3'',''%"
-      "<SignalLabel>'')'),MxPVP('ScopeGraphics',28,'struct(''FigureColor'',''[0.501960784313725 0.501960784313725 0.501"
+      "','xonly'),MxPVP('AxesTitles',53,'struct(''axes1'',''%<SignalLabel>'',''axes2'',''%<SignalLabel>'',''axes3'',''%"
+      "<SignalLabel>'')'),MxPVP('ScopeGraphics',56,'struct(''FigureColor'',''[0.501960784313725 0.501960784313725 0.501"
       "960784313725]'',''AxesColor'',''[0 0 0]'',''AxesTickColor'',''[1 1 1]'',''LineColors'',''[1 1 0;1 0 1;0 1 1;1 0 "
       "0;0 1 0;0 0 1]'',''LineStyles'',''-|-|-|-|-|-'',''LineWidths'',''[0.5 0.5 0.5 0.5 0.5 0.5]'',''MarkerStyles'',''"
       "none|none|none|none|none|none'')'),StrPVP('YMin','-0.1~-0.1~-0.1'),StrPVP('YMax','1.1~1.1~1.1'),StrPVP('DataForm"
@@ -1258,7 +1506,8 @@ Model {
       System {
 	Name			"Decode & Display"
 	Location		[2039, 127, 3421, 946]
-	Open			on
+	Open			off
+	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1307,9 +1556,11 @@ Model {
 	  Position		  [150, 273, 230, 317]
 	  ZOrder		  -4
 	  ShowName		  off
-	  LibraryVersion	  "1.278"
+	  LibraryVersion	  "1.279"
 	  SourceBlock		  "commutil2/Bit to Integer\nConverter"
 	  SourceType		  "Bit to Integer Converter"
+	  SourceProductName	  "Communications System Toolbox"
+	  SourceProductBaseCode	  "CM"
 	  nbits			  "4"
 	  bitOrder		  "MSB first"
 	  signedOutputValues	  "Unsigned"
@@ -1341,6 +1592,7 @@ Model {
 	    Name		    "Decode & Display Msg"
 	    Location		    [227, 345, 838, 789]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -1352,7 +1604,7 @@ Model {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "31"
+	    SIDHighWatermark	    "34"
 	    Block {
 	      BlockType		      Inport
 	      Name		      "u"
@@ -1364,49 +1616,49 @@ Model {
 	    Block {
 	      BlockType		      Demux
 	      Name		      " Demux "
-	      SID		      "300::30"
+	      SID		      "300::33"
 	      Ports		      [1, 1]
 	      Position		      [270, 100, 320, 140]
-	      ZOrder		      16
+	      ZOrder		      19
 	      Outputs		      "1"
 	    }
 	    Block {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
-	      SID		      "300::29"
+	      SID		      "300::32"
 	      Tag		      "Stateflow S-Function ModeS_Simulink_Decode 2"
 	      Ports		      [1, 1]
 	      Position		      [180, 100, 230, 140]
-	      ZOrder		      15
+	      ZOrder		      18
 	      FunctionName	      "sf_sfun"
 	      PortCounts	      "[1 1]"
 	      SFunctionDeploymentMode off
-	      EnableBusSupport	      on
+	      EnableBusSupport	      off
 	      SFcnIsStateOwnerBlock   off
 	    }
 	    Block {
 	      BlockType		      Terminator
 	      Name		      " Terminator "
-	      SID		      "300::31"
+	      SID		      "300::34"
 	      Position		      [460, 111, 480, 129]
-	      ZOrder		      17
+	      ZOrder		      20
 	    }
 	    Line {
-	      ZOrder		      10
+	      ZOrder		      13
 	      SrcBlock		      "u"
 	      SrcPort		      1
 	      DstBlock		      " SFunction "
 	      DstPort		      1
 	    }
 	    Line {
-	      ZOrder		      11
+	      ZOrder		      14
 	      SrcBlock		      " Demux "
 	      SrcPort		      1
 	      DstBlock		      " Terminator "
 	      DstPort		      1
 	    }
 	    Line {
-	      ZOrder		      12
+	      ZOrder		      15
 	      SrcBlock		      " SFunction "
 	      SrcPort		      1
 	      DstBlock		      " Demux "
@@ -1502,10 +1754,8 @@ Model {
 	Annotation {
 	  SID			  "308"
 	  Name			  "This block displays the decoded message in\nthe MATLAB Command Window"
-	  Position		  [147, 128, 344, 156]
+	  Position		  [147, 128, 344, 154]
 	  InternalMargins	  [0, 0, 0, 0]
-	  FixedHeight		  off
-	  FixedWidth		  off
 	  HorizontalAlignment	  "left"
 	  ZOrder		  -1
 	}
@@ -1524,8 +1774,6 @@ Model {
       Port {
 	PortNumber		1
 	Name			"BitClock"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
     }
     Block {
@@ -1541,44 +1789,33 @@ Model {
 	PortNumber		1
 	Name			"Reset"
 	PropagatedSignals	"Reset"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
       Port {
 	PortNumber		2
 	Name			"Bit Process"
 	PropagatedSignals	"ActivateBP"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
       Port {
 	PortNumber		3
 	Name			"Noise Floor"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
       Port {
 	PortNumber		4
 	Name			"Sync"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
       Port {
 	PortNumber		5
 	Name			"Bits"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
       Port {
 	PortNumber		7
 	Name			"ValidFrame"
-	RTWStorageClass		"Auto"
-	DataLoggingNameMode	"SignalName"
       }
       System {
 	Name			"Detector"
-	Location		[225, 124, 1614, 962]
+	Location		[2039, 127, 3421, 946]
 	Open			off
+	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -1589,7 +1826,7 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"128"
+	ZoomFactor		"125"
 	Block {
 	  BlockType		  Inport
 	  Name			  "In1"
@@ -1612,6 +1849,7 @@ Model {
 	    Name		    "Bit Process"
 	    Location		    [90, 393, 1325, 1211]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -1658,6 +1896,8 @@ Model {
 	      LibraryVersion	      "1.388"
 	      SourceBlock	      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 	      SourceType	      "Compare To Constant"
+	      SourceProductName	      "Simulink"
+	      SourceProductBaseCode   "SL"
 	      ContentPreviewEnabled   off
 	      relop		      "=="
 	      const		      "12"
@@ -1674,6 +1914,8 @@ Model {
 	      LibraryVersion	      "1.388"
 	      SourceBlock	      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
 	      SourceType	      "Compare To Constant"
+	      SourceProductName	      "Simulink"
+	      SourceProductBaseCode   "SL"
 	      ContentPreviewEnabled   off
 	      relop		      "=="
 	      const		      "25"
@@ -1690,6 +1932,8 @@ Model {
 	      LibraryVersion	      "1.283"
 	      SourceBlock	      "hdlsllib/HDL Operations/HDL Counter"
 	      SourceType	      "HDL Counter"
+	      SourceProductName	      "HDL Coder"
+	      SourceProductBaseCode   "HD"
 	      ContentPreviewEnabled   off
 	      CountType		      "Count limited"
 	      CountInit		      "1"
@@ -1753,6 +1997,8 @@ Model {
 	      LibraryVersion	      "1.462"
 	      SourceBlock	      "dspindex/Multiport\nSelector"
 	      SourceType	      "Multiport Selector"
+	      SourceProductName	      "DSP System Toolbox"
+	      SourceProductBaseCode   "DS"
 	      rowsOrCols	      "Rows"
 	      idxCellArray	      "{ 1:6,7:12}"
 	      idxErrMode	      "Clip Index"
@@ -1778,6 +2024,8 @@ Model {
 	      LibraryVersion	      "1.388"
 	      SourceBlock	      "simulink/Discrete/Tapped Delay"
 	      SourceType	      "Tapped Delay Line"
+	      SourceProductName	      "Simulink"
+	      SourceProductBaseCode   "SL"
 	      vinit		      "0.0"
 	      samptime		      "1"
 	      NumDelays		      "12"
@@ -1792,8 +2040,8 @@ Model {
 	      Position		      [805, 171, 850, 234]
 	      ZOrder		      -13
 	      ScopeSpecificationString "C++SS(StrPVP('Location','[49, 532, 1722, 1128]'),StrPVP('Open','off'),StrPVP('ZoomMod"
-	      "e','xonly'),MxPVP('AxesTitles',24,'struct(''axes1'',''%<SignalLabel>'',''axes2'',''%<SignalLabel>'',''axes3'','"
-	      "'%<SignalLabel>'',''axes4'',''%<SignalLabel>'')'),MxPVP('ScopeGraphics',28,'struct(''FigureColor'',''[0.5 0.5 0"
+	      "e','xonly'),MxPVP('AxesTitles',53,'struct(''axes1'',''%<SignalLabel>'',''axes2'',''%<SignalLabel>'',''axes3'','"
+	      "'%<SignalLabel>'',''axes4'',''%<SignalLabel>'')'),MxPVP('ScopeGraphics',56,'struct(''FigureColor'',''[0.5 0.5 0"
 	      ".5]'',''AxesColor'',''[0 0 0]'',''AxesTickColor'',''[1 1 1]'',''LineColors'',''[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0"
 	      " 0 1]'',''LineStyles'',''-|-|-|-|-|-'',''LineWidths'',''[0.5 0.5 0.5 0.5 0.5 0.5]'',''MarkerStyles'',''none|non"
 	      "e|none|none|none|none'')'),StrPVP('YMin','-5~-5~-5~-5'),StrPVP('YMax','5~5~5~5'),StrPVP('SaveName','ScopeData4'"
@@ -1973,6 +2221,7 @@ Model {
 	    Name		    "CRC_Check"
 	    Location		    [225, 124, 1489, 725]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -2034,6 +2283,7 @@ Model {
 		Name			"Check_CRC"
 		Location		[415, 531, 1155, 1099]
 		Open			off
+		PortBlocksUseCompactNotation off
 		ModelBrowserVisibility	off
 		ModelBrowserWidth	200
 		ScreenColor		"white"
@@ -2187,37 +2437,29 @@ Model {
 		  SID			  "328"
 		  Name			  "Compare received CRC with computed CRC\nIf there are any differences, output zero/false, one/true otherw"
 		  "ise."
-		  Position		  [184, 80, 474, 108]
+		  Position		  [184, 80, 474, 106]
 		  InternalMargins	  [0, 0, 0, 0]
-		  FixedHeight		  off
-		  FixedWidth		  off
 		  ZOrder		  -1
 		}
 		Annotation {
 		  SID			  "327"
 		  Name			  "Comparison"
-		  Position		  [149, 197, 204, 212]
+		  Position		  [149, 197, 204, 211]
 		  InternalMargins	  [0, 0, 0, 0]
-		  FixedHeight		  off
-		  FixedWidth		  off
 		  ZOrder		  -2
 		}
 		Annotation {
 		  SID			  "326"
 		  Name			  "Remember any difference"
-		  Position		  [271, 286, 387, 301]
+		  Position		  [271, 286, 387, 300]
 		  InternalMargins	  [0, 0, 0, 0]
-		  FixedHeight		  off
-		  FixedWidth		  off
 		  ZOrder		  -3
 		}
 		Annotation {
 		  SID			  "325"
 		  Name			  "Reset each time this block is enabled"
-		  Position		  [71, 8, 237, 23]
+		  Position		  [71, 8, 237, 22]
 		  InternalMargins	  [0, 0, 0, 0]
-		  FixedHeight		  off
-		  FixedWidth		  off
 		  ZOrder		  -4
 		}
 	      }
@@ -2244,6 +2486,7 @@ Model {
 		Name			"crc24f"
 		Location		[16, 52, 1894, 543]
 		Open			off
+		PortBlocksUseCompactNotation off
 		ModelBrowserVisibility	off
 		ModelBrowserWidth	200
 		ScreenColor		"white"
@@ -2490,6 +2733,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2504,6 +2749,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2518,6 +2765,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2532,6 +2781,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2546,6 +2797,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2560,6 +2813,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2574,6 +2829,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2588,6 +2845,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2602,6 +2861,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2616,6 +2877,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2630,6 +2893,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2644,6 +2909,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2658,6 +2925,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2672,6 +2941,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2686,6 +2957,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2700,6 +2973,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2714,6 +2989,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2728,6 +3005,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2742,6 +3021,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2756,6 +3037,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2770,6 +3053,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2784,6 +3069,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2798,6 +3085,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -2812,6 +3101,8 @@ Model {
 		  LibraryVersion	  "1.21"
 		  SourceBlock		  "simulink_need_slupdate/Unit Delay\nResettable"
 		  SourceType		  "Unit Delay Resettable"
+		  SourceProductName	  "Simulink"
+		  SourceProductBaseCode	  "SL"
 		  ContentPreviewEnabled	  off
 		  vinit			  "0.0"
 		  tsamp			  "-1"
@@ -3607,6 +3898,7 @@ Model {
 	    Name		    "CalcNF"
 	    Location		    [621, 402, 1399, 886]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -3638,6 +3930,8 @@ Model {
 	      UserData		      "DataTag0"
 	      SourceBlock	      "dspobslib/Digital Filter"
 	      SourceType	      "Digital Filter"
+	      SourceProductName	      "DSP System Toolbox"
+	      SourceProductBaseCode   "DS"
 	      TypePopup		      "FIR (all zeros)"
 	      IIRFiltStruct	      "Direct form II transposed"
 	      AllPoleFiltStruct	      "Direct form"
@@ -3736,6 +4030,7 @@ Model {
 	    Name		    "CalcSyncCorr"
 	    Location		    [403, 291, 957, 775]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -3767,6 +4062,8 @@ Model {
 	      UserData		      "DataTag1"
 	      SourceBlock	      "dspobslib/Digital Filter"
 	      SourceType	      "Digital Filter"
+	      SourceProductName	      "DSP System Toolbox"
+	      SourceProductBaseCode   "DS"
 	      TypePopup		      "FIR (all zeros)"
 	      IIRFiltStruct	      "Direct form II transposed"
 	      AllPoleFiltStruct	      "Direct form"
@@ -3871,6 +4168,7 @@ Model {
 	    Name		    "Chart"
 	    Location		    [227, 345, 838, 789]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -3882,7 +4180,7 @@ Model {
 	    TiledPageScale	    1
 	    ShowPageBoundaries	    off
 	    ZoomFactor		    "100"
-	    SIDHighWatermark	    "42"
+	    SIDHighWatermark	    "45"
 	    Block {
 	      BlockType		      Inport
 	      Name		      "NoiseFloor"
@@ -3903,68 +4201,56 @@ Model {
 	    Block {
 	      BlockType		      Demux
 	      Name		      " Demux "
-	      SID		      "98::41"
+	      SID		      "98::44"
 	      Ports		      [1, 1]
 	      Position		      [270, 350, 320, 390]
-	      ZOrder		      13
+	      ZOrder		      16
 	      Outputs		      "1"
 	    }
 	    Block {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
-	      SID		      "98::40"
+	      SID		      "98::43"
 	      Tag		      "Stateflow S-Function ModeS_Simulink_Decode 1"
 	      Ports		      [2, 7]
 	      Position		      [180, 100, 230, 260]
-	      ZOrder		      12
+	      ZOrder		      15
 	      FunctionName	      "sf_sfun"
 	      PortCounts	      "[2 7]"
 	      SFunctionDeploymentMode off
-	      EnableBusSupport	      on
+	      EnableBusSupport	      off
 	      SFcnIsStateOwnerBlock   off
 	      Port {
 		PortNumber		2
 		Name			"Reset"
-		RTWStorageClass		"Auto"
-		DataLoggingNameMode	"SignalName"
 	      }
 	      Port {
 		PortNumber		3
 		Name			"ActivateBP"
-		RTWStorageClass		"Auto"
-		DataLoggingNameMode	"SignalName"
 	      }
 	      Port {
 		PortNumber		4
 		Name			"EmptyReg"
-		RTWStorageClass		"Auto"
-		DataLoggingNameMode	"SignalName"
 	      }
 	      Port {
 		PortNumber		5
 		Name			"maxSync"
-		RTWStorageClass		"Auto"
-		DataLoggingNameMode	"SignalName"
 	      }
 	      Port {
 		PortNumber		6
 		Name			"T0Delay"
-		RTWStorageClass		"Auto"
-		DataLoggingNameMode	"SignalName"
 	      }
 	      Port {
 		PortNumber		7
 		Name			"Chk_CRC"
-		RTWStorageClass		"Auto"
-		DataLoggingNameMode	"SignalName"
 	      }
 	    }
 	    Block {
 	      BlockType		      Terminator
 	      Name		      " Terminator "
-	      SID		      "98::42"
+	      SID		      "98::45"
 	      Position		      [460, 361, 480, 379]
-	      ZOrder		      14
+	      ZOrder		      17
 	    }
 	    Block {
 	      BlockType		      Outport
@@ -4020,7 +4306,7 @@ Model {
 	      IconDisplay	      "Port number"
 	    }
 	    Line {
-	      ZOrder		      31
+	      ZOrder		      41
 	      SrcBlock		      "NoiseFloor"
 	      SrcPort		      1
 	      Points		      [120, 0]
@@ -4028,7 +4314,7 @@ Model {
 	      DstPort		      1
 	    }
 	    Line {
-	      ZOrder		      32
+	      ZOrder		      42
 	      SrcBlock		      "SyncCorr"
 	      SrcPort		      1
 	      DstBlock		      " SFunction "
@@ -4036,7 +4322,7 @@ Model {
 	    }
 	    Line {
 	      Name		      "Reset"
-	      ZOrder		      33
+	      ZOrder		      43
 	      Labels		      [0, 0]
 	      SrcBlock		      " SFunction "
 	      SrcPort		      2
@@ -4046,7 +4332,7 @@ Model {
 	    }
 	    Line {
 	      Name		      "ActivateBP"
-	      ZOrder		      34
+	      ZOrder		      44
 	      Labels		      [0, 0]
 	      SrcBlock		      " SFunction "
 	      SrcPort		      3
@@ -4055,7 +4341,7 @@ Model {
 	    }
 	    Line {
 	      Name		      "EmptyReg"
-	      ZOrder		      35
+	      ZOrder		      45
 	      Labels		      [0, 0]
 	      SrcBlock		      " SFunction "
 	      SrcPort		      4
@@ -4064,7 +4350,7 @@ Model {
 	    }
 	    Line {
 	      Name		      "maxSync"
-	      ZOrder		      36
+	      ZOrder		      46
 	      Labels		      [0, 0]
 	      SrcBlock		      " SFunction "
 	      SrcPort		      5
@@ -4073,7 +4359,7 @@ Model {
 	    }
 	    Line {
 	      Name		      "T0Delay"
-	      ZOrder		      37
+	      ZOrder		      47
 	      Labels		      [0, 0]
 	      SrcBlock		      " SFunction "
 	      SrcPort		      6
@@ -4082,7 +4368,7 @@ Model {
 	    }
 	    Line {
 	      Name		      "Chk_CRC"
-	      ZOrder		      38
+	      ZOrder		      48
 	      Labels		      [0, 0]
 	      SrcBlock		      " SFunction "
 	      SrcPort		      7
@@ -4090,14 +4376,14 @@ Model {
 	      DstPort		      1
 	    }
 	    Line {
-	      ZOrder		      39
+	      ZOrder		      49
 	      SrcBlock		      " Demux "
 	      SrcPort		      1
 	      DstBlock		      " Terminator "
 	      DstPort		      1
 	    }
 	    Line {
-	      ZOrder		      40
+	      ZOrder		      50
 	      SrcBlock		      " SFunction "
 	      SrcPort		      1
 	      Points		      [20, 0]
@@ -4409,10 +4695,8 @@ Model {
 	Annotation {
 	  SID			  "178"
 	  Name			  "Gets the message correct:\n8D400927.... "
-	  Position		  [165, 354, 284, 382]
+	  Position		  [165, 354, 284, 380]
 	  InternalMargins	  [0, 0, 0, 0]
-	  FixedHeight		  off
-	  FixedWidth		  off
 	  ZOrder		  -1
 	}
       }
@@ -4449,6 +4733,7 @@ Model {
 	Name			"Modified Buffer"
 	Location		[531, 186, 955, 553]
 	Open			off
+	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
 	ModelBrowserWidth	200
 	ScreenColor		"white"
@@ -4491,6 +4776,7 @@ Model {
 	    Name		    "Modified Buffer"
 	    Location		    [531, 186, 1059, 538]
 	    Open		    off
+	    PortBlocksUseCompactNotation off
 	    ModelBrowserVisibility  off
 	    ModelBrowserWidth	    200
 	    ScreenColor		    "white"
@@ -4532,6 +4818,8 @@ Model {
 	      UserData		      "DataTag2"
 	      SourceBlock	      "dspbuff3/Delay Line"
 	      SourceType	      "Delay Line"
+	      SourceProductName	      "DSP System Toolbox"
+	      SourceProductBaseCode   "DS"
 	      siz		      "bufSize"
 	      ic		      "0"
 	      directfeed	      on
@@ -4565,10 +4853,8 @@ Model {
 	    Annotation {
 	      SID		      "314"
 	      Name		      "This modified buffer always output the last\nbufSize samples."
-	      Position		      [49, 117, 237, 145]
+	      Position		      [49, 117, 237, 143]
 	      InternalMargins	      [0, 0, 0, 0]
-	      FixedHeight	      off
-	      FixedWidth	      off
 	      HorizontalAlignment     "left"
 	      ZOrder		      -1
 	    }
@@ -4613,9 +4899,11 @@ Model {
       Ports		      [0, 1]
       Position		      [35, 118, 90, 152]
       ZOrder		      -7
-      LibraryVersion	      "1.794"
+      LibraryVersion	      "1.795"
       SourceBlock	      "dspsrcs4/Signal From\nWorkspace"
       SourceType	      "Signal From Workspace"
+      SourceProductName	      "DSP System Toolbox"
+      SourceProductBaseCode   "DS"
       ContentPreviewEnabled   off
       X			      "DataIn"
       Ts		      "1"
@@ -4648,8 +4936,8 @@ Model {
       Position		      [560, 28, 605, 92]
       ZOrder		      1
       ScopeSpecificationString "C++SS(StrPVP('Location','[451, 89, 1357, 377]'),StrPVP('Open','off'),StrPVP('ZoomMode'"
-      ",'xonly'),MxPVP('AxesTitles',24,'struct(''axes1'',''%<SignalLabel>'',''axes2'',''%<SignalLabel>'')'),MxPVP('Scop"
-      "eGraphics',28,'struct(''FigureColor'',''[0.501960784313725 0.501960784313725 0.501960784313725]'',''AxesColor'',"
+      ",'xonly'),MxPVP('AxesTitles',53,'struct(''axes1'',''%<SignalLabel>'',''axes2'',''%<SignalLabel>'')'),MxPVP('Scop"
+      "eGraphics',56,'struct(''FigureColor'',''[0.501960784313725 0.501960784313725 0.501960784313725]'',''AxesColor'',"
       "''[0 0 0]'',''AxesTickColor'',''[1 1 1]'',''LineColors'',''[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]'',''LineStyles'"
       "',''-|-|-|-|-|-'',''LineWidths'',''[0.5 0.5 0.5 0.5 0.5 0.5]'',''MarkerStyles'',''none|none|none|none|none|none'"
       "')'),StrPVP('YMin','-0.1~-0.1'),StrPVP('YMax','1.1~1.1'),StrPVP('SaveName','ScopeData1'),StrPVP('DataFormat','St"
@@ -4783,10 +5071,8 @@ Model {
     Annotation {
       SID		      "406"
       Name		      " Copyright 2014 The MathWorks, Inc"
-      Position		      [230, 288, 394, 303]
+      Position		      [230, 288, 394, 302]
       InternalMargins	      [0, 0, 0, 0]
-      FixedHeight	      off
-      FixedWidth	      off
       ZOrder		      -3
     }
   }
@@ -4838,7 +5124,7 @@ MatData {
 }
 #Finite State Machines
 #
-#   Stateflow 80000010
+#   Stateflow 80000012
 #
 #
 Stateflow {
@@ -4847,7 +5133,7 @@ Stateflow {
     name		    "ModeS_Simulink_Decode"
     created		    "31-Mar-2011 21:06:57"
     isLibrary		    0
-    sfVersion		    80000010
+    sfVersion		    80000012
     firstTarget		    37
   }
   chart {
@@ -5198,6 +5484,7 @@ Stateflow {
     subviewer		    2
     drawStyle		    SMART
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
     }
     executionOrder	    1
@@ -5249,6 +5536,7 @@ Stateflow {
     stampAngle		    NaN
     subviewer		    2
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
       midPointSticky	      1
     }
@@ -5277,6 +5565,7 @@ Stateflow {
     subviewer		    2
     drawStyle		    SMART
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
       midPointSticky	      1
     }
@@ -5303,6 +5592,7 @@ Stateflow {
     stampAngle		    NaN
     subviewer		    2
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
       midPointSticky	      1
     }
@@ -5354,6 +5644,7 @@ Stateflow {
     stampAngle		    NaN
     subviewer		    2
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
       midPointSticky	      1
     }
@@ -5380,6 +5671,7 @@ Stateflow {
     stampAngle		    NaN
     subviewer		    2
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
       midPointSticky	      1
     }
@@ -5434,6 +5726,7 @@ Stateflow {
     subviewer		    2
     drawStyle		    SMART
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
     }
     executionOrder	    1
@@ -5458,6 +5751,7 @@ Stateflow {
     stampAngle		    NaN
     subviewer		    2
     slide {
+      mode		      MIRROR_SLIDE
       sticky		      BOTH_STICK
       midPointSticky	      1
     }
@@ -5480,9 +5774,6 @@ Stateflow {
     screen		    [1 -119 1920 1200 1.611111111111111]
     treeNode		    [0 32 0 0]
     viewObj		    31
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
