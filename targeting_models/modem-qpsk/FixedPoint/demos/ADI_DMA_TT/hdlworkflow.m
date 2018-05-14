@@ -1,8 +1,8 @@
 %--------------------------------------------------------------------------
 % HDL Workflow Script
-% Generated with MATLAB 9.3 (R2017b) at 17:40:49 on 17/04/2018
+% Generated with MATLAB 9.3 (R2017b) at 14:05:38 on 07/05/2018
 % This script was generated using the following parameter values:
-%     Filename  : '/tmp/modem-phy/FixedPoint/demos/ADI_AXIMM/hdlworkflow.m'
+%     Filename  : '/tmp/MathWorks_tools/targeting_models/modem-qpsk/FixedPoint/demos/ADI_DMA_TT/hdlworkflow.m'
 %     Overwrite : true
 %     Comments  : true
 %     Headers   : true
@@ -28,7 +28,7 @@ hdlset_param('combinedTxRx_ADIDMA', 'SynthesisToolPackageName', 'fbg676');
 hdlset_param('combinedTxRx_ADIDMA', 'SynthesisToolSpeedValue', '-2L');
 hdlset_param('combinedTxRx_ADIDMA', 'TargetDirectory', 'hdl_prj/hdlsrc');
 hdlset_param('combinedTxRx_ADIDMA', 'TargetLanguage', 'Verilog');
-hdlset_param('combinedTxRx_ADIDMA', 'TargetPlatform', 'AnalogDevices adrv9361z7035 box lvds (Rx & Tx)');
+hdlset_param('combinedTxRx_ADIDMA', 'TargetPlatform', 'AnalogDevices adrv9361z7035 box lvds (modem)');
 hdlset_param('combinedTxRx_ADIDMA', 'Workflow', 'IP Core Generation');
 
 % Set SubSystem HDL parameters
@@ -277,11 +277,11 @@ hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/syncRx', 'IOInterface', 'AD
 hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/syncRx', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/reRx', 'IOInterface', 'IP Debug 2 OUT [0:15]');
+hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/reRx', 'IOInterface', 'IP Debug 1 OUT [0:15]');
 hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/reRx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/imRx', 'IOInterface', 'IP Debug 3 OUT [0:15]');
+hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/imRx', 'IOInterface', 'IP Debug 2 OUT [0:15]');
 hdlset_param('combinedTxRx_ADIDMA/Combined TX and RX/imRx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
