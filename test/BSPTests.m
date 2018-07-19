@@ -13,7 +13,7 @@ classdef BSPTests < matlab.unittest.TestCase
     
     methods(Static)
         function cfg = extractConfigs(config)
-            s = strsplit(config,'.');mode = s{4};
+            s = strsplit(config,'.');mode = s{4};device = upper(s{2});
             if strcmp(s{2},'adrv9361z7035') && ~isempty(strfind(s{2},'modem'))
                 assert(0);
             end
@@ -24,7 +24,7 @@ classdef BSPTests < matlab.unittest.TestCase
             vivado_version = h2.SupportedToolVersion{:};
             cfg = struct('Board',h1,...
                 'ReferenceDesignName',ReferenceDesignName,...
-                'vivado_version',vivado_version,'mode',mode);
+                'vivado_version',vivado_version,'mode',mode,'device',device);
         end
         
         function setVivadoPath(vivado)
@@ -36,6 +36,15 @@ classdef BSPTests < matlab.unittest.TestCase
             assert(exist(pathname,'file')>0,'Correct version of Vivado is unavailable or in a non-standard location');
             hdlsetuptoolpath('ToolName', 'Xilinx Vivado', ...
                 'ToolPath', pathname);
+        end
+        
+        function str = devremap(str)
+            switch str
+                case 'ADRV9009'
+                    str = 'AD9009';
+                otherwise
+                    str = 'AD9361';
+            end
         end
     end
     
@@ -51,7 +60,7 @@ classdef BSPTests < matlab.unittest.TestCase
             % Build
             disp(['Building: ',cfg.Board.BoardName]);
             res = build_design(cfg.Board,cfg.ReferenceDesignName,...
-                cfg.vivado_version,cfg.mode);
+                cfg.vivado_version,cfg.mode,testCase.devremap(cfg.device));
             % Check
             testCase.assertEmpty(res,res);
         end

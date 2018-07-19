@@ -1,4 +1,4 @@
-function [rd, boardName] = hdlcoder_board_customization
+function [rd, boardName] = hdlcoder_ref_design_customization
 % Reference design plugin registration file
 % 1. The registration file with this name inside of a board plugin folder 
 %    will be picked up
