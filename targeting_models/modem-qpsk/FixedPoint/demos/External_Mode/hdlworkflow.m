@@ -1,8 +1,8 @@
 %--------------------------------------------------------------------------
 % HDL Workflow Script
-% Generated with MATLAB 9.3 (R2017b) at 19:52:50 on 23/04/2018
+% Generated with MATLAB 9.3 (R2017b) at 05:46:18 on 26/07/2018
 % This script was generated using the following parameter values:
-%     Filename  : 'C:\MathWorkSeminar\modem-phy\FixedPoint\demos\External_Mode\hdlworkflow_psp.m'
+%     Filename  : '/home/tcollins/git/mwt/targeting_models/modem-qpsk/FixedPoint/demos/External_Mode/hdlworkflow2.m'
 %     Overwrite : true
 %     Comments  : true
 %     Headers   : true
@@ -21,43 +21,42 @@ load_system('combinedTxRx_ExternalMode');
 %% Set Model 'combinedTxRx_ExternalMode' HDL parameters
 hdlset_param('combinedTxRx_ExternalMode', 'HDLSubsystem', 'combinedTxRx_ExternalMode/Combined TX and RX');
 hdlset_param('combinedTxRx_ExternalMode', 'ReferenceDesign', 'Receive and transmit path');
-hdlset_param('combinedTxRx_ExternalMode', 'ReferenceDesignParameter', {'boardName','ccfmc_lvds','project','adrv9361z7035','mw_hdl_dir','ipcore/mw','ad_hdl_dir','ipcore/adi','variant','rxtx','mw_board_name','adrv9361z7035','mw_adi_boardname','adrv9361z7035/ccfmc_lvds'});
+hdlset_param('combinedTxRx_ExternalMode', 'ReferenceDesignParameter', {'ChannelMapping','1','DUTSynthFreqMHz','1'});
 hdlset_param('combinedTxRx_ExternalMode', 'SynthesisTool', 'Xilinx Vivado');
 hdlset_param('combinedTxRx_ExternalMode', 'SynthesisToolChipFamily', 'Zynq');
 hdlset_param('combinedTxRx_ExternalMode', 'SynthesisToolDeviceName', 'xc7z035i');
 hdlset_param('combinedTxRx_ExternalMode', 'SynthesisToolPackageName', 'fbg676');
 hdlset_param('combinedTxRx_ExternalMode', 'SynthesisToolSpeedValue', '-2L');
-hdlset_param('combinedTxRx_ExternalMode', 'TargetDirectory', 'hdl_prj\hdlsrc');
-hdlset_param('combinedTxRx_ExternalMode', 'TargetFrequency', 20);
+hdlset_param('combinedTxRx_ExternalMode', 'TargetDirectory', 'hdl_prj/hdlsrc');
 hdlset_param('combinedTxRx_ExternalMode', 'TargetLanguage', 'Verilog');
-hdlset_param('combinedTxRx_ExternalMode', 'TargetPlatform', 'ADI RF SOM [LibIIO]');
+hdlset_param('combinedTxRx_ExternalMode', 'TargetPlatform', 'ADI RF SOM');
 hdlset_param('combinedTxRx_ExternalMode', 'Workflow', 'IP Core Generation');
 
 % Set SubSystem HDL parameters
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX', 'ProcessorFPGASynchronization', 'Free running');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/FromRadioR', 'IOInterface', 'Baseband Rx I1 In [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/FromRadioR', 'IOInterface', 'Rx data I1 In [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/FromRadioR', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/FromRadioI', 'IOInterface', 'Baseband Rx Q1 In [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/FromRadioI', 'IOInterface', 'Rx data Q1 In [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/FromRadioI', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/validIn', 'IOInterface', 'Baseband Rx Valid In');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/validIn', 'IOInterface', 'Rx data Valid In');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/validIn', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_R', 'IOInterface', 'DMA Tx I1 In [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_R', 'IOInterface', 'Tx data I1 In [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_R', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_I', 'IOInterface', 'DMA Tx Q1 In [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_I', 'IOInterface', 'Tx data Q1 In [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_I', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_valid', 'IOInterface', 'DMA Tx Valid In');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_valid', 'IOInterface', 'Tx data Valid In');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/TxDMA_valid', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
@@ -235,27 +234,27 @@ hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/Transmitter HDL/TxTra
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/Transmitter HDL/TxTransferComplete', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioR', 'IOInterface', 'Baseband Tx I1 Out [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioR', 'IOInterface', 'Tx data I1 Out [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioR', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioI', 'IOInterface', 'Baseband Tx Q1 Out [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioI', 'IOInterface', 'Tx data Q1 Out [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioI', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioValid', 'IOInterface', 'Baseband Tx Valid Out');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioValid', 'IOInterface', 'Tx data Valid Out');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/ToRadioValid', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/reRx', 'IOInterface', 'DMA Rx I1 Out [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/reRx', 'IOInterface', 'Rx data I1 Out [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/reRx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/imRx', 'IOInterface', 'DMA Rx Q1 Out [0:15]');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/imRx', 'IOInterface', 'Rx data Q1 Out [0:15]');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/imRx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/validRx', 'IOInterface', 'DMA Rx Valid Out');
+hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/validRx', 'IOInterface', 'Rx data Valid Out');
 hdlset_param('combinedTxRx_ExternalMode/Combined TX and RX/validRx', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
@@ -296,7 +295,7 @@ hWC.EnableIPCaching = false;
 hWC.OperatingSystem = 'Linux';
 
 % Set properties related to 'RunTaskBuildFPGABitstream' Task
-hWC.RunExternalBuild = true;
+hWC.RunExternalBuild = false;
 hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Default;
 hWC.CustomBuildTclFile = '';
 
