@@ -132,8 +132,10 @@ proc adi_project_xilinx {project_name project_dir update_tcl {mode 0}} {
   #Added
   create_bd_design "system"
   source $project_dir/system_bd.tcl
-  source $project_dir/$update_tcl
-  
+  if {$project_name != "adrv9361z7035_ccbox_lvds_modem"} {
+    source $project_dir/$update_tcl
+  }
+
   regenerate_bd_layout
   save_bd_design
   validate_bd_design
