@@ -83,6 +83,7 @@ proc adi_project_xilinx {project_name project_dir update_tcl {mode 0}} {
   }
 
   #Added
+  set project_name_org $project_name
   set project_name vivado_prj
   
   set VIVADO_VERSION [version -short]
@@ -132,8 +133,10 @@ proc adi_project_xilinx {project_name project_dir update_tcl {mode 0}} {
   #Added
   create_bd_design "system"
   source $project_dir/system_bd.tcl
-  source $project_dir/$update_tcl
-  
+  if {$project_name_org != "adrv9361z7035_ccbox_lvds_modem"} {
+    source $project_dir/$update_tcl
+  }
+
   regenerate_bd_layout
   save_bd_design
   validate_bd_design
