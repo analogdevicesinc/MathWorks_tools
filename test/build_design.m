@@ -25,7 +25,7 @@ hdlset_param(mdl, 'Workflow', 'IP Core Generation');
 hdlset_param([mdl,'/HDL_DUT'], 'ProcessorFPGASynchronization', 'Free running');
 
 %% Set port mapping based on design configuration
-setportmapping(mdl,mode,numChannels);
+setportmapping(mdl,mode,numChannels,ReferenceDesignName);
 
 %% Workflow Configuration Settings
 % Construct the Workflow Configuration Object with default settings

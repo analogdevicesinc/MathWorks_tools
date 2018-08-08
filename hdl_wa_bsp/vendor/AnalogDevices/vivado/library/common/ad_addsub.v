@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -59,7 +59,6 @@ module ad_addsub #(
   reg     [A_DATA_WIDTH:0]       out_d = 'b0;
   reg     [A_DATA_WIDTH:0]       out_d2 = 'b0;
   reg     [(A_DATA_WIDTH-1):0]   A_d = 'b0;
-  reg     [(A_DATA_WIDTH-1):0]   A_d2 = 'b0;
   reg     [(A_DATA_WIDTH-1):0]   Amax_d = 'b0;
   reg     [(A_DATA_WIDTH-1):0]   Amax_d2 = 'b0;
 
@@ -71,7 +70,6 @@ module ad_addsub #(
 
   always @(posedge clk) begin
       A_d <= A;
-      A_d2 <= A_d;
       Amax_d <= Amax;
       Amax_d2 <= Amax_d;
   end

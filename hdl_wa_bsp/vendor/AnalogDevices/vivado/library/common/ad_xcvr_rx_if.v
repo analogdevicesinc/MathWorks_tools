@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -50,7 +50,7 @@ module ad_xcvr_rx_if (
 
   reg     [31:0]  rx_ip_data_d = 'd0;
   reg     [ 3:0]  rx_ip_sof_hold = 'd0;
-  reg             rx_ip_sof_d = 'd0;
+  reg     [ 3:0]  rx_ip_sof_d = 'd0;
 
   // dword may contain more than one frame per clock
 

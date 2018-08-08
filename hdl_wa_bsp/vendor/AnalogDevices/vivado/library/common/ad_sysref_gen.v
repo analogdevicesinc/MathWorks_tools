@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -65,9 +65,9 @@ module ad_sysref_gen (
   // free running counter for periodic SYSREF generation
   always @(posedge core_clk) begin
     if (sysref_en_int) begin
-      counter <= (counter < SYSREF_HALFPERIOD) ? counter + 1 : 0;
+      counter <= (counter < SYSREF_HALFPERIOD) ? counter + 1'b1 : 8'h0;
     end else begin
-      counter <= 0;
+      counter <= 8'h0;
     end
   end
 
