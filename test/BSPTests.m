@@ -41,7 +41,7 @@ classdef BSPTests < matlab.unittest.TestCase
     
     methods(Test)
         function testMain(testCase, configs)
-            if exist('hdl_prj','dir')
+            if exist([pwd,'/hdl_prj'],'dir')
                 rmdir('hdl_prj','s');
             end
             % Extract board configuration

@@ -94,3 +94,4 @@ adi_if_ports  output   4  rx_gt_ilas_a
 adi_if_ports  output   4  rx_gt_ilas_r
 adi_if_ports  output   4  rx_gt_cgs_k
 
+ipx::archive_core {analog.com_user_interfaces_1.0.zip} [ipx::current_core]

@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -230,10 +230,14 @@ module ad_tdd_control#(
 
   // tdd burst counter
   always @(posedge clk) begin
-    if (tdd_cstate == ON) begin
-      tdd_burst_counter <= ((tdd_burst_counter > 0) && (tdd_endof_frame == 1'b1)) ? tdd_burst_counter - 1 : tdd_burst_counter;
+    if (rst == 1'b1) begin
+        tdd_burst_counter <= 6'b0;
     end else begin
-      tdd_burst_counter <= tdd_burst_count;
+      if (tdd_cstate == OFF) begin
+        tdd_burst_counter <= tdd_burst_count;
+      end else if ((tdd_burst_counter > 0) && (tdd_endof_frame == 1'b1)) begin
+        tdd_burst_counter <= tdd_burst_counter - 1'b1;
+      end
     end
   end
 

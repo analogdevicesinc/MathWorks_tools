@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -77,7 +77,7 @@ module up_xfer_cntrl #(
   assign up_xfer_done = up_xfer_done_int;
   assign up_xfer_enable_s = up_xfer_state ^ up_xfer_toggle;
 
-  always @(negedge up_rstn or posedge up_clk) begin
+  always @(posedge up_clk) begin
     if (up_rstn == 1'b0) begin
       up_xfer_state_m1 <= 'd0;
       up_xfer_state_m2 <= 'd0;

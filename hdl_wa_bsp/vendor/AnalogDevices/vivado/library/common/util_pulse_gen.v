@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -68,11 +68,11 @@ module util_pulse_gen #(
     if (rstn == 1'b0) begin
       pulse_period_cnt <= 32'h0;
     end else begin
-      pulse_period_cnt <= (pulse_period_cnt < pulse_period_d) ? (pulse_period_cnt + 1) : 32'b0;
+      pulse_period_cnt <= (pulse_period_cnt == pulse_period_d) ? 32'b0 : (pulse_period_cnt + 1);
     end
   end
 
-  assign  end_of_period_s = (pulse_period_cnt == (pulse_period_d - 1)) ? 1'b1 : 1'b0;
+  assign  end_of_period_s = (pulse_period_cnt == pulse_period_d) ? 1'b1 : 1'b0;
 
   // generate pulse with a specified width
 
