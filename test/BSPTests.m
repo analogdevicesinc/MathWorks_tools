@@ -1,7 +1,7 @@
 classdef BSPTests < matlab.unittest.TestCase
     properties(TestParameter)
         % Pull in board permutations
-        configs = hdlcoder_board_customization;
+        configs = hdlcoder_board_customization_local;
     end    
     
     methods(TestClassSetup)
