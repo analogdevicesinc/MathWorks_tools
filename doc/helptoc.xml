@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<toc>
+   <tocitem target="adi_bsp.html">Analog Devices Inc Board Support Packages
+      <tocitem target="SupportedHardware.html">Supported Hardware</tocitem>
+      <tocitem target="Examples.html">Examples</tocitem>
+      <tocitem target="Support.html">Support</tocitem>
+   </tocitem>
+</toc>
