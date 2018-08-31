@@ -40,7 +40,7 @@ hWC.IgnoreToolVersionMismatch = true;
 hWC.RunTaskGenerateRTLCodeAndIPCore = true;
 hWC.RunTaskCreateProject = true;
 hWC.RunTaskGenerateSoftwareInterfaceModel = false;
-hWC.RunTaskBuildFPGABitstream = false; % CHANGED
+hWC.RunTaskBuildFPGABitstream = true; % CHANGED
 hWC.RunTaskProgramTargetDevice = false;
 
 % Set properties related to 'RunTaskGenerateRTLCodeAndIPCore' Task
