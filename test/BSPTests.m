@@ -56,7 +56,7 @@ classdef BSPTests < matlab.unittest.TestCase
             % Build
             disp(['Building: ',cfg.Board.BoardName]);
             res = build_design(cfg.Board,cfg.ReferenceDesignName,...
-                cfg.vivado_version,cfg.mode);
+                cfg.vivado_version,cfg.mode,cfg.Board.BoardName);
             % Check
             if isfield(res,'message')
                 verifyEmpty(testCase,res,res.message);
