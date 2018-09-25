@@ -9,16 +9,13 @@
 Documentation: https://wiki.analog.com/resources/eval/user-guides/ad-fmcomms2-ebz/software/matlab_bsp
 Support: https://ez.analog.com/</param.description>
     <param.screenshot>/home/tcollins/Downloads/ADI-logos/ADI/ADI_Logo_AWP_Large.png</param.screenshot>
-    <param.version>17.2</param.version>
+    <param.version>18.1</param.version>
     <param.output>${PROJECT_ROOT}/Analog Devices Board Support Packages.mltbx</param.output>
     <param.products.name>
       <item>MATLAB</item>
       <item>Simulink</item>
-      <item>Communications System Toolbox</item>
+      <item>Communications Toolbox</item>
       <item>DSP System Toolbox</item>
-      <item>Embedded Coder</item>
-      <item>Filter Design HDL Coder</item>
-      <item>Fixed-Point Designer</item>
       <item>HDL Coder</item>
       <item>Signal Processing Toolbox</item>
       <item>Simulink Coder</item>
@@ -28,24 +25,18 @@ Support: https://ez.analog.com/</param.description>
       <item>2</item>
       <item>36</item>
       <item>24</item>
-      <item>65</item>
-      <item>88</item>
-      <item>91</item>
       <item>101</item>
       <item>8</item>
       <item>14</item>
     </param.products.id>
     <param.products.version>
-      <item>9.3</item>
-      <item>9.0</item>
-      <item>6.5</item>
       <item>9.5</item>
-      <item>6.13</item>
-      <item>3.1.2</item>
-      <item>6.0</item>
-      <item>3.11</item>
-      <item>7.5</item>
-      <item>8.13</item>
+      <item>9.2</item>
+      <item>7.0</item>
+      <item>9.7</item>
+      <item>3.13</item>
+      <item>8.1</item>
+      <item>9.0</item>
     </param.products.version>
     <param.platforms />
     <param.guid>40075943-d2d1-4d90-8e59-b3eff5f58180</param.guid>
@@ -74,113 +65,128 @@ hdl_prj/*
 slprj/*
 .git/*
 test/*
-*~</param.exclude.filters>
+*~
+.Xil/*</param.exclude.filters>
+    <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
     <param.examples />
     <param.demosxml />
     <param.apps />
     <param.registered.apps />
-    <param.docs>/var/lib/jenkins/workspace/matlab-bsp/info.xml</param.docs>
-    <param.getting.started.guide>/var/lib/jenkins/workspace/matlab-bsp/doc/GettingStarted.mlx</param.getting.started.guide>
-    <param.matlabpath.excludes>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/3P.instrset/analogdevices9361filterwizard.instrset/ad936x-filter-wizard-2016_R1/libiio</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/hdlverifier/supportpackages/fpgadebug</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/libiio/base</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual</item>
-      <item>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrz/sdrz</item>
-    </param.matlabpath.excludes>
+    <param.docs>/work/code/MathWorks_tools/info.xml</param.docs>
+    <param.getting.started.guide />
+    <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
+    <param.exported.on.package>false</param.exported.on.package>
+    <param.release.start>R2017b</param.release.start>
+    <param.release.end>latest</param.release.end>
+    <param.release.current.only>false</param.release.current.only>
+    <param.compatiblity.windows>true</param.compatiblity.windows>
+    <param.compatiblity.macos>false</param.compatiblity.macos>
+    <param.compatiblity.linux>true</param.compatiblity.linux>
+    <param.compatiblity.matlabonline>false</param.compatiblity.matlabonline>
+    <param.installation.map />
+    <param.additional.sw.names />
+    <param.additional.sw.licenses />
+    <param.additional.sw.win.url />
+    <param.additional.sw.mac.url />
+    <param.additional.sw.linux.url />
     <unset>
       <param.output />
       <param.platforms />
+      <param.exclude.pcodedmfiles />
       <param.examples />
       <param.demosxml />
       <param.apps />
       <param.registered.apps />
+      <param.getting.started.guide />
+      <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
+      <param.exported.on.package />
+      <param.release.current.only />
+      <param.compatiblity.windows />
+      <param.compatiblity.linux />
+      <param.installation.map />
+      <param.additional.sw.names />
+      <param.additional.sw.licenses />
+      <param.additional.sw.win.url />
+      <param.additional.sw.mac.url />
+      <param.additional.sw.linux.url />
     </unset>
     <fileset.rootdir>
-      <file>/var/lib/jenkins/workspace/matlab-bsp</file>
+      <file>/work/code/MathWorks_tools</file>
     </fileset.rootdir>
     <fileset.rootfiles>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/.git</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/.gitignore</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/CI</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/LICENSE</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/README.md</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/doc</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/hdl_wa_bsp</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/hil_models</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/info.xml</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/targeting_models</file>
-      <file>/var/lib/jenkins/workspace/matlab-bsp/test</file>
+      <file>/work/code/MathWorks_tools/.Xil</file>
+      <file>/work/code/MathWorks_tools/.git</file>
+      <file>/work/code/MathWorks_tools/.gitignore</file>
+      <file>/work/code/MathWorks_tools/CI</file>
+      <file>/work/code/MathWorks_tools/LICENSE</file>
+      <file>/work/code/MathWorks_tools/README.md</file>
+      <file>/work/code/MathWorks_tools/doc</file>
+      <file>/work/code/MathWorks_tools/hdl_wa_bsp</file>
+      <file>/work/code/MathWorks_tools/hil_models</file>
+      <file>/work/code/MathWorks_tools/info.xml</file>
+      <file>/work/code/MathWorks_tools/targeting_models</file>
+      <file>/work/code/MathWorks_tools/test</file>
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOPSP/code/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/base.m</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOPSP/code/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/read.m</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOPSP/code/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/write.m</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOPSP/code/toolbox/shared/libiio/base/+matlabshared/+libiio/base.p</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOSDRPSP/code/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/+comm/SDRRxPluto.p</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOSDRPSP/code/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/+comm/SDRTxPluto.p</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOSDRPSP/code/toolbox/shared/sdr/sdrplug/sdrplugins/zynqradio/+comm/SDRRxZynqRadioLibIIO.p</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOSDRPSP/code/toolbox/shared/sdr/sdrplug/sdrplugins/zynqradio/+comm/SDRTxZynqRadioLibIIO.p</file>
-      <file>/home/tcollins/Documents/MATLAB/Add-Ons/Toolboxes/LibIIOSDRPSP/code/toolbox/shared/sdr/sdrz/+sdr/+internal/SDRZFeature.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/3P.instrset/analogdevices9361filterwizard.instrset/ad936x-filter-wizard-2016_R1/libiio/iio_sys_obj_matlab.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/3P.instrset/analogdevices9361filterwizard.instrset/ad936x-filter-wizard-2016_R1/libiio/libiio_if.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/hdlverifier/supportpackages/fpgadebug/+hdlverifier/FPGADataReader.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/libiio/base/+matlabshared/+libiio/ExternalDependency.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/+comm/+internal/SDRSystemBaseUpdateBuildInfo.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/+sdrplugin/+internal/SDRPluginManager.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrdev.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrrx.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrtx.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/findPlutoRadio.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual/+comm/SDRRxADIRFSOM.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual/+comm/SDRTxADIRFSOM.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual/+comm/SDRRxZC706FMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual/+comm/SDRTxZC706FMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual/+comm/SDRRxZedBoardFMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual/+comm/SDRTxZedBoardFMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrz/sdrz/+comm/SDRRxZynqFMC234.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2017b/toolbox/shared/sdr/sdrz/sdrz/+comm/SDRTxZynqFMC234.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/hdlverifier/supportpackages/fpgadebug/+hdlverifier/FPGADataReader.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/read.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/write.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/+comm/+internal/SDRSystemBaseUpdateBuildInfo.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/+sdrplugin/+internal/SDRPluginManager.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrdev.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrrx.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrtx.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/e310/manual/+comm/SDRRxE310.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/e310/manual/+comm/SDRTxE310.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/+comm/SDRRxPluto.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/+comm/SDRTxPluto.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/findPlutoRadio.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual/+comm/SDRRxADIRFSOM.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual/+comm/SDRTxADIRFSOM.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual/+comm/SDRRxZC706FMC234.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual/+comm/SDRTxZC706FMC234.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual/+comm/SDRRxZedBoardFMC234.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual/+comm/SDRTxZedBoardFMC234.m</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/zynqradio/+comm/SDRRxAD936x.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/zynqradio/+comm/SDRTxAD936x.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrz/sdrz/+comm/SDRRxZynqFMC234.p</file>
+      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrz/sdrz/+comm/SDRTxZynqFMC234.p</file>
     </fileset.depfun.excluded>
     <fileset.package />
     <build-deliverables>
-      <file location="/var/lib/jenkins/workspace/matlab-bsp/CI/scripts" name="Analog Devices Board Support Packages.mltbx" optional="false">/var/lib/jenkins/workspace/matlab-bsp/CI/scripts/Analog Devices Board Support Packages.mltbx</file>
+      <file location="/work/code/MathWorks_tools/CI/scripts" name="Analog Devices Board Support Packages.mltbx" optional="false">/work/code/MathWorks_tools/CI/scripts/Analog Devices Board Support Packages.mltbx</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>/usr/local/MATLAB/R2017b</root>
+      <root>/usr/local/MATLAB/R2018b</root>
       <toolboxes>
-        <toolbox name="fixedpoint" />
         <toolbox name="matlabcoder" />
-        <toolbox name="matlabhdlcoder" />
         <toolbox name="embeddedcoder" />
+        <toolbox name="fixedpoint" />
+        <toolbox name="matlabhdlcoder" />
       </toolboxes>
-      <toolbox>
-        <fixedpoint>
-          <enabled>true</enabled>
-        </fixedpoint>
-      </toolbox>
       <toolbox>
         <matlabcoder>
           <enabled>true</enabled>
         </matlabcoder>
       </toolbox>
       <toolbox>
-        <matlabhdlcoder>
-          <enabled>true</enabled>
-        </matlabhdlcoder>
-      </toolbox>
-      <toolbox>
         <embeddedcoder>
           <enabled>true</enabled>
         </embeddedcoder>
+      </toolbox>
+      <toolbox>
+        <fixedpoint>
+          <enabled>true</enabled>
+        </fixedpoint>
+      </toolbox>
+      <toolbox>
+        <matlabhdlcoder>
+          <enabled>true</enabled>
+        </matlabhdlcoder>
       </toolbox>
     </matlab>
     <platform>
@@ -192,7 +198,7 @@ test/*
       <vista>false</vista>
       <linux>true</linux>
       <solaris>false</solaris>
-      <osver>4.15.0-29-generic</osver>
+      <osver>4.15.0-34-generic</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>glnxa64</arch>
