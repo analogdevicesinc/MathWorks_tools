@@ -77,9 +77,9 @@ test/*
     <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>false</param.exported.on.package>
-    <param.release.start>R2017b</param.release.start>
-    <param.release.end>latest</param.release.end>
-    <param.release.current.only>false</param.release.current.only>
+    <param.release.start>R2018b</param.release.start>
+    <param.release.end>R2018b</param.release.end>
+    <param.release.current.only>true</param.release.current.only>
     <param.compatiblity.windows>true</param.compatiblity.windows>
     <param.compatiblity.macos>false</param.compatiblity.macos>
     <param.compatiblity.linux>true</param.compatiblity.linux>
@@ -102,7 +102,6 @@ test/*
       <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
-      <param.release.current.only />
       <param.compatiblity.windows />
       <param.compatiblity.linux />
       <param.installation.map />
