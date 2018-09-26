@@ -1,12 +1,13 @@
 
-function out = build_design(config,ReferenceDesignName,vivado_version,mode)
+function out = build_design(config,ReferenceDesignName,vivado_version,mode,board_name)
+
 %% Load the Model
-mdl = 'testModel';
-load_system(mdl);
-numChannels = 4;
 
 %% Restore the Model to default HDL parameters
 %hdlrestoreparams('testModel/HDL_DUT');
+
+%% Set port mapping based on design configuration
+mdl = setportmapping(mode,ReferenceDesignName,board_name);
 
 %% Model HDL Parameters
 
@@ -23,9 +24,6 @@ hdlset_param(mdl, 'TargetLanguage', 'Verilog');
 hdlset_param(mdl, 'TargetDirectory', 'hdl_prj\hdlsrc');
 hdlset_param(mdl, 'Workflow', 'IP Core Generation');
 hdlset_param([mdl,'/HDL_DUT'], 'ProcessorFPGASynchronization', 'Free running');
-
-%% Set port mapping based on design configuration
-setportmapping(mdl,mode,numChannels);
 
 %% Workflow Configuration Settings
 % Construct the Workflow Configuration Object with default settings

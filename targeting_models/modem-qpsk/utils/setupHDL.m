@@ -4,7 +4,9 @@ switch Release
     case '(R2017a)'
         vivado = '2016.2';
     case '(R2017b)'
-        vivado = '2016.4';
+        vivado = '2017.4';
+    case '(R2018b)'
+        vivado = '2017.4';
 end
 
 if ispc

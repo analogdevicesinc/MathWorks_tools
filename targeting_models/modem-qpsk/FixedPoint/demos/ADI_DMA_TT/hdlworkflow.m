@@ -20,7 +20,7 @@ load_system('combinedTxRx_ADIDMA');
 %% Model HDL Parameters
 %% Set Model 'combinedTxRx_ADIDMA' HDL parameters
 hdlset_param('combinedTxRx_ADIDMA', 'HDLSubsystem', 'combinedTxRx_ADIDMA/Combined TX and RX');
-hdlset_param('combinedTxRx_ADIDMA', 'ReferenceDesign', 'adrv9361z7035 box lvds Base System (Vivado 2016.4)');
+hdlset_param('combinedTxRx_ADIDMA', 'ReferenceDesign', 'adrv9361z7035 box lvds Base System (Vivado 2017.4)');
 hdlset_param('combinedTxRx_ADIDMA', 'SynthesisTool', 'Xilinx Vivado');
 hdlset_param('combinedTxRx_ADIDMA', 'SynthesisToolChipFamily', 'Zynq');
 hdlset_param('combinedTxRx_ADIDMA', 'SynthesisToolDeviceName', 'xc7z035i');
@@ -311,7 +311,7 @@ hWC = hdlcoder.WorkflowConfig('SynthesisTool','Xilinx Vivado','TargetWorkflow','
 
 % Specify the top level project directory
 hWC.ProjectFolder = 'hdl_prj';
-hWC.ReferenceDesignToolVersion = '2016.4';
+hWC.ReferenceDesignToolVersion = '2017.4';
 hWC.IgnoreToolVersionMismatch = false;
 
 % Set Workflow tasks to run

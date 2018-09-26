@@ -249,7 +249,7 @@ hWC = hdlcoder.WorkflowConfig('SynthesisTool','Xilinx Vivado','TargetWorkflow','
 
 % Specify the top level project directory
 hWC.ProjectFolder = 'hdl_prj';
-hWC.ReferenceDesignToolVersion = '2016.4';
+hWC.ReferenceDesignToolVersion = '2017.4';
 hWC.IgnoreToolVersionMismatch = false;
 
 % Set Workflow tasks to run

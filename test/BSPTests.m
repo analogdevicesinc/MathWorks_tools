@@ -1,7 +1,8 @@
 classdef BSPTests < matlab.unittest.TestCase
     properties(TestParameter)
         % Pull in board permutations
-        configs = hdlcoder_board_customization;
+        configs = hdlcoder_board_customization_local;
+        ignored_builds = {'AnalogDevices.adrv9361z7035.ccbox_lvds.modem.plugin_board'};
     end    
     
     methods(TestClassSetup)
@@ -41,7 +42,11 @@ classdef BSPTests < matlab.unittest.TestCase
     
     methods(Test)
         function testMain(testCase, configs)
-            if exist('hdl_prj','dir')
+            % Filter out ignored configurations
+            if ismember(configs,testCase.ignored_builds)
+                assumeFail(testCase);
+            end
+            if exist([pwd,'/hdl_prj'],'dir')
                 rmdir('hdl_prj','s');
             end
             % Extract board configuration
@@ -51,9 +56,11 @@ classdef BSPTests < matlab.unittest.TestCase
             % Build
             disp(['Building: ',cfg.Board.BoardName]);
             res = build_design(cfg.Board,cfg.ReferenceDesignName,...
-                cfg.vivado_version,cfg.mode);
+                cfg.vivado_version,cfg.mode,cfg.Board.BoardName);
             % Check
-            testCase.assertEmpty(res,res);
+            if isfield(res,'message')
+                verifyEmpty(testCase,res,res.message);
+            end
         end
     end
 end
