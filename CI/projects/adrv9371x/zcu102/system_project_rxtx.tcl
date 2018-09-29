@@ -1,13 +1,3 @@
-### NEED TO COPY IP CORE MANUALLY (MATHWORKS BUG?)
-puts [pwd]
-cd ..
-exec cp {ipcore/HDL_DUT_ip_v1_0/HDL_DUT_ip_v1_0.zip} vivado_ip_prj/ipcore/
-cd vivado_ip_prj
-update_ip_catalog
-###
-
-#source ../../scripts/adi_env.tcl
-
 set ad_hdl_dir    	[pwd]
 set ad_phdl_dir   	[pwd]
 set proj_dir		$ad_hdl_dir/projects/adrv9371x/zcu102
