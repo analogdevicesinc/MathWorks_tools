@@ -59,7 +59,11 @@ cp scripts/adi_project.tcl hdl/projects/scripts/
 cp scripts/adi_build.tcl hdl/projects/scripts/
 cp ip/*.zip hdl/library/
 rm -fr hdl/.git
-cp -r hdl ../hdl_wa_bsp/vendor/AnalogDevices/vivado
+TARGET="../hdl_wa_bsp/vendor/AnalogDevices/vivado"
+if [ -d "$TARGET" ]; then
+    rm -rf "$TARGET"
+fi
+cp -r hdl $TARGET
 
 # Cleanup
 rm vivado_*
