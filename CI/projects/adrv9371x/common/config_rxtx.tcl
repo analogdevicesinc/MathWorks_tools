@@ -19,7 +19,12 @@ connect_bd_net [get_bd_pins util_ad9371_rx_cpack/adc_valid_0] [get_bd_pins util_
 
 }
 # Connect clock
+if {$ref_design eq "Rx" || $ref_design eq "Rx & Tx"} {
 connect_bd_net -net [get_bd_nets axi_ad9371_rx_clkgen] [get_bd_pins axi_cpu_interconnect/M13_ACLK] [get_bd_pins axi_ad9371_rx_clkgen/clk_0]
+}
+if {$ref_design eq "Tx"} {
+connect_bd_net -net [get_bd_nets axi_ad9371_tx_clkgen] [get_bd_pins axi_cpu_interconnect/M13_ACLK] [get_bd_pins axi_ad9371_tx_clkgen/clk_0]
+}
 
 ########################
 if {$ref_design eq "Tx" || $ref_design eq "Rx & Tx"} {
