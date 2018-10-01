@@ -18,6 +18,14 @@ elseif contains(lower(ReferenceDesignName),'fmcomms')
     end
 elseif contains(lower(ReferenceDesignName),'937')
     dev = 'AD9371';
+    if contains(lower(board_name),'tx')  || contains(lower(ReferenceDesignName),'tx')
+        mdl = 'testModel_Tx32';
+        portWidthTX = 32;
+    end
+    if contains(lower(board_name),'rx & tx')  || contains(lower(ReferenceDesignName),'rx & tx')
+        mdl = 'testModel_Rx16Tx32';
+        portWidthTX = 32;
+    end
 elseif contains(lower(ReferenceDesignName),'9009')
     dev = 'ADRV9009';
     if contains(lower(board_name),'tx')
