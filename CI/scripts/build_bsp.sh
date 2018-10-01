@@ -1,6 +1,8 @@
 #!/bin/bash
-
+if [ -z "${HDLBRANCH}" ]; then
 HDLBRANCH='hdl_2018_r1'
+fi
+
 
 # Script is designed to run from specific location
 scriptdir=`dirname "$BASH_SOURCE"`
@@ -19,10 +21,19 @@ VER=${VER:0:6}
 fi
 VIVADO=${VER}
 
+# Update vivado version
+DEFAULT_V_VERSION='2017.4'
+cd ..
+grep -rl ${DEFAULT_V_VERSION} hdl_wa_bsp/vendor/AnalogDevices/+AnalogDevices | xargs sed -i 's/${DEFAULT_V_VERSION}/$VIVADO/g'
+grep -rl ${DEFAULT_V_VERSION} CI/projects | xargs sed -i 's/${DEFAULT_V_VERSION}/$VIVADO/g'
+cd CI
+
 # Setup
 source /opt/Xilinx/Vivado/$VIVADO/settings64.sh
 
 cp scripts/adi_ip.tcl hdl/library/scripts/
+VERTMP=$(awk '/set REQUIRED_VIVADO_VERSION/ {print $3}' hdl/library/scripts/adi_ip.tcl | sed 's/"//g')
+grep -rl ${VERTMP} hdl/library/scripts | xargs sed -i -e "s/${VERTMP}/${VIVADO}/g"
 
 # Pack IP cores
 vivado -mode batch -source scripts/pack_all_ips.tcl

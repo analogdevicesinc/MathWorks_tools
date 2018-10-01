@@ -1,10 +1,22 @@
-results = run(BSPTests);
+import matlab.unittest.TestRunner;
+import matlab.unittest.TestSuite;
+import matlab.unittest.plugins.TestReportPlugin;
+import matlab.unittest.plugins.XMLPlugin
+
+suite = testsuite({'BSPTests'});
+runner = TestRunner.withNoPlugins;
+xmlFile = 'BSPTestResults.xml';
+plugin = XMLPlugin.producingJUnitFormat(xmlFile);
+
+runner.addPlugin(plugin);
+results = runner.run(suite);
+
 t = table(results);
 disp(t);
-disp('################################################################################');
+disp(repmat('#',1,80));
 for test = results
     if test.Failed
-        disp(results.Details.DiagnosticRecord.Report);
+        disp(test.Name);
     end
 end
 save(['BSPTest_',datestr(now,'dd_mm_yyyy-HH:MM:SS'),'.mat'],'t');
