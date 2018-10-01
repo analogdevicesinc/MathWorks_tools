@@ -34,6 +34,7 @@ rm analog.com_user_axi_i2s_adi_1.0.zip
 cp *.xml tmp/
 cd tmp
 zip -r analog.com_user_axi_i2s_adi_1.0.zip *
+cp analog.com_user_axi_i2s_adi_1.0.zip ../
 cd ../../../..
 
 cd hdl/library/util_i2c_mixer/
@@ -42,6 +43,7 @@ rm analog.com_user_util_i2c_mixer_1.0.zip
 cp *.xml tmp/
 cd tmp
 zip -r analog.com_user_util_i2c_mixer_1.0.zip *
+cp analog.com_user_util_i2c_mixer_1.0.zip ../
 cd ../../../..
 
 # Move all cores
@@ -57,7 +59,11 @@ cp scripts/adi_project.tcl hdl/projects/scripts/
 cp scripts/adi_build.tcl hdl/projects/scripts/
 cp ip/*.zip hdl/library/
 rm -fr hdl/.git
-cp -r hdl ../hdl_wa_bsp/vendor/AnalogDevices/vivado
+TARGET="../hdl_wa_bsp/vendor/AnalogDevices/vivado"
+if [ -d "$TARGET" ]; then
+    rm -rf "$TARGET"
+fi
+cp -r hdl $TARGET
 
 # Cleanup
 rm vivado_*

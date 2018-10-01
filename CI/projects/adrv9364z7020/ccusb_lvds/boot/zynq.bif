@@ -1,6 +1,0 @@
-the_ROM_image:
-{
-[bootloader]./vivado_prj.sdk/fsbl/Release/fsbl.elf
-./vivado_prj.sdk/hw_0/system_top.bit
-./boot/u-boot.elf
-}
