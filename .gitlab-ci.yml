@@ -1,0 +1,74 @@
+stages:
+  - build
+  - test
+  - deploy
+  
+# Default build
+build:2018_R1:
+    stage: build
+    script:
+     - cd CI/scripts
+     - make build
+     - make gen_tlbx
+
+# Future branches
+build:master:
+    stage: build
+    script:
+     - cd CI/scripts
+     - make build MLRELEASE=R2018b HDLBRANCH=master
+    allow_failure: true
+
+# Tests
+test:2018_R1:
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - cd CI/scripts
+     - make test
+     - make zip
+    artifacts:
+        reports:
+            junit: test/BSPTestResults.xml
+
+test:2018_R1_Installer:
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - cd CI/scripts
+     - make test_installer
+     - make zip
+    artifacts:
+        reports:
+            junit: itests/test/BSPTestResults.xml
+
+test:master:
+    stage: test
+    dependencies:
+     - build:master
+    script:
+     - cd CI/scripts
+     - make test MLRELEASE=R2018b HDLBRANCH=master
+     - make zip MLRELEASE=R2018b HDLBRANCH=master
+    artifacts:
+        reports:
+            junit: test/BSPTestResults.xml
+
+# Deploy
+deploy:
+    stage: deploy
+    dependencies:
+     - test:2018_R1
+     - test:2018_R1_Installer
+    script:
+     - cd CI/scripts
+     - make gen_tlbx
+     - cd ../..
+     - mkdir mltbx
+     - mv *.mltbx mltbx/ 
+    artifacts:
+        paths:
+            - mltbx/
+

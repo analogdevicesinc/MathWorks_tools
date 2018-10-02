@@ -18,6 +18,14 @@ build:
 	# Uses the HDLBRANCH variable
 	bash build_bsp.sh
 
+test_installer:
+	cd ../..
+	git clone --branch installer-tests https://github.com/analogdevicesinc/MathWorks_tools.git itests
+	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m itests/test/hdlcoder_board_customization_local.m
+	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" itests/test/hdlcoder_board_customization_local.m
+	cp *.mltbx itests/test/
+	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "rmpath(genpath('.'));cd('itests/test');runTests;bdclose('all');exit(any([results.Failed]));"
+
 test:
 	cd ../..
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m
