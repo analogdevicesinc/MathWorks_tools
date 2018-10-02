@@ -66,9 +66,9 @@ deploy:
      - cd CI/scripts
      - make gen_tlbx
      - cd ../..
+     - mkdir mltbx
+     - mv *.mltbx mltbx/ 
     artifacts:
         paths:
-            - *.mltbx
-
-
+            - mltbx/
 
