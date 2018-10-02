@@ -1,0 +1,31 @@
+stages:
+  - build
+  - test
+  - deploy
+
+# Default build
+job1:
+    stage: build
+    script:
+     - cd CI/scripts
+     - make build
+     - make test
+     - make zip
+    artifacts:
+        reports:
+            junit: test/BSPTestResults.xml
+
+# Future branches
+job2:
+    stage: build
+    script:
+     - cd CI/scripts
+     - make build MLRELEASE=R2018b HDLBRANCH=master
+     - make test MLRELEASE=R2018b HDLBRANCH=master
+     - make zip MLRELEASE=R2018b HDLBRANCH=master
+    allow_failure: true
+    artifacts:
+        reports:
+            junit: test/BSPTestResults.xml
+
+
