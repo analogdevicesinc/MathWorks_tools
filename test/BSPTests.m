@@ -3,21 +3,31 @@ classdef BSPTests < matlab.unittest.TestCase
         % Pull in board permutations
         configs = hdlcoder_board_customization_local;
         ignored_builds = {'AnalogDevices.adrv9361z7035.ccbox_lvds.modem.plugin_board'};
-    end    
+    end
     
     methods(TestClassSetup)
+        function removeinstalledbsp(~)
+            str = 'Analog Devices Board Support Packages';
+            ts = matlab.addons.toolbox.installedToolboxes;
+            for t = ts
+                if contains(t.Name,str)
+                    disp('Removing installed BSP');
+                    matlab.addons.toolbox.uninstallToolbox(t);
+                end
+            end
+        end
         % Add the necessary files to path
         function addbspfiles(~)
             addpath(genpath('../hdl_wa_bsp'));
         end
         function disableWarnings(~)
-           warning('off','hdlcommon:hdlcommon:InterfaceNotAssigned'); 
-        end
+            warning('off','hdlcommon:hdlcommon:InterfaceNotAssigned');
+        end 
     end
     
     methods(TestClassTeardown)
         function enableWarnings(~)
-           warning('on','hdlcommon:hdlcommon:InterfaceNotAssigned'); 
+            warning('on','hdlcommon:hdlcommon:InterfaceNotAssigned');
         end
     end
     
@@ -101,8 +111,10 @@ classdef BSPTests < matlab.unittest.TestCase
                 % Check
                 if isfield(res,'message') || isa(res,'MException')
                     disp(['Build error: ', cfgb.ReferenceDesignName]);
-                    system("find hdl_prj/ -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} /tmp/");
-                    movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,' ',cfgb.mode,'.log']);
+                    system("find hdl_prj/ -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} .");
+                    %if exist('workflow_task_CreateProject.log','file')
+                    %    movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,' ',cfgb.mode,'.log']);
+                    %end
                     verifyEmpty(testCase,res,res.message);
                 end
             end
