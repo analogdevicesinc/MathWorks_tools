@@ -24,8 +24,8 @@ VIVADO=${VER}
 # Update vivado version
 DEFAULT_V_VERSION='2017.4'
 cd ..
-grep -rl ${DEFAULT_V_VERSION} hdl_wa_bsp/vendor/AnalogDevices/+AnalogDevices | xargs sed -i 's/${DEFAULT_V_VERSION}/$VIVADO/g'
-grep -rl ${DEFAULT_V_VERSION} CI/projects | xargs sed -i 's/${DEFAULT_V_VERSION}/$VIVADO/g'
+grep -rl ${DEFAULT_V_VERSION} hdl_wa_bsp/vendor/AnalogDevices/+AnalogDevices | xargs sed -i "s/${DEFAULT_V_VERSION}/$VIVADO/g"
+grep -rl ${DEFAULT_V_VERSION} CI/projects | xargs sed -i "s/${DEFAULT_V_VERSION}/$VIVADO/g"
 cd CI
 
 # Setup
