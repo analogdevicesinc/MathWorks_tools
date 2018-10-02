@@ -3,11 +3,11 @@
 # Example
 #	make R2018b hdl_2018_r1
 
-ifeq ($(1),)
+ifeq ($(MLRELEASE),)
 MLRELEASE := R2018b
 endif
 
-ifeq ($(2),)
+ifeq ($(HDLBRANCH),)
 HDLBRANCH := hdl_2018_r1
 endif
 
