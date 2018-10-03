@@ -13,6 +13,17 @@ classdef BSPTests < matlab.unittest.TestCase
         function disableWarnings(~)
            warning('off','hdlcommon:hdlcommon:InterfaceNotAssigned'); 
         end
+        function removeinstalledbsp(~)
+            str = 'Analog Devices Board Support Packages';
+            ts = matlab.addons.toolbox.installedToolboxes;
+            for t = ts
+               if contains(t.Name,str)
+                   disp('Removing installed BSP');
+                   matlab.addons.toolbox.uninstallToolbox(t);
+               end
+            end
+            
+        end
     end
     
     methods(TestClassTeardown)
