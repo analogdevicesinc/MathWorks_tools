@@ -112,9 +112,9 @@ classdef BSPTests < matlab.unittest.TestCase
                 if isfield(res,'message') || isa(res,'MException')
                     disp(['Build error: ', cfgb.ReferenceDesignName]);
                     system("find hdl_prj/ -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} .");
-                    if exist('workflow_task_CreateProject.log','file')
-                        movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,' ',cfgb.mode,'.log']);
-                    end
+                    %if exist('workflow_task_CreateProject.log','file')
+                    %    movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,' ',cfgb.mode,'.log']);
+                    %end
                     verifyEmpty(testCase,res,res.message);
                 end
             end
