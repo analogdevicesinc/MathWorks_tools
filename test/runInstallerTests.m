@@ -22,8 +22,9 @@ try
     end
 catch e
     disp(getReport(e,'extended'));
+    bdclose('all');
     exit(1);
 end
 save(['BSPInstallerTest_',datestr(now,'dd_mm_yyyy-HH:MM:SS'),'.mat'],'t');
-
+bdclose('all');
 exit(any([results.Failed]));
