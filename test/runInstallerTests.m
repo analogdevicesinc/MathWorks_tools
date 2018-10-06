@@ -4,7 +4,7 @@ import matlab.unittest.plugins.TestReportPlugin;
 import matlab.unittest.plugins.XMLPlugin
 
 try
-    suite = testsuite({'BSPTests'});
+    suite = testsuite({'BSPInstallerTests'});
     runner = TestRunner.withNoPlugins;
     xmlFile = 'BSPTestResults.xml';
     plugin = XMLPlugin.producingJUnitFormat(xmlFile);
@@ -24,6 +24,6 @@ catch e
     disp(getReport(e,'extended'));
     exit(1);
 end
-save(['BSPTest_',datestr(now,'dd_mm_yyyy-HH:MM:SS'),'.mat'],'t');
+save(['BSPInstallerTest_',datestr(now,'dd_mm_yyyy-HH:MM:SS'),'.mat'],'t');
 
 exit(any([results.Failed]));

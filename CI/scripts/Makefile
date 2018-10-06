@@ -20,11 +20,16 @@ build:
 
 test_installer:
 	cd ../..
-	git clone --branch installer-tests https://github.com/analogdevicesinc/MathWorks_tools.git itests
-	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m itests/test/hdlcoder_board_customization_local.m
-	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" itests/test/hdlcoder_board_customization_local.m
-	cp *.mltbx itests/test/
-	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "rmpath(genpath('.'));cd('itests/test');runTests;bdclose('all');exit(any([results.Failed]));"
+	#git clone --branch installer-tests http://192.168.1.179/tcollins/MathWorks_tools_tci.git itests
+	#cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m itests/test/hdlcoder_board_customization_local.m
+	#sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" itests/test/hdlcoder_board_customization_local.m
+	#cp *.mltbx itests/test/
+	#ls itests/test/
+	#/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "rmpath(genpath('.'));cd('itests/test');runTests;bdclose('all');exit(any([results.Failed]));"
+	cp *.mltbx test/
+	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m
+	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m
+	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "cd('test');runInstallerTests;bdclose('all');exit(any([results.Failed]));"
 
 test:
 	cd ../..
@@ -33,8 +38,7 @@ test:
 	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "cd('test');runTests;bdclose('all');exit(any([results.Failed]));"
 
 gen_tlbx:
-	cd ../..
-	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('.'));cd('CI/scripts');genTlbx;"
+	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "genTlbx;exit();"
 
 zip:
 	cd ../..

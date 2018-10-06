@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - test_installer
   - deploy
   
 # Default build
@@ -10,6 +11,15 @@ build:2018_R1:
      - cd CI/scripts
      - make build
      - make gen_tlbx
+     - cd ../..
+     - mkdir mltbx
+     - ls *.mltbx
+     - cp *.mltbx mltbx/
+    artifacts:
+        paths:
+            - hdl_wa_bsp/
+            - mltbx/
+
 
 # Future branches
 build:master:
@@ -17,7 +27,11 @@ build:master:
     script:
      - cd CI/scripts
      - make build MLRELEASE=R2018b HDLBRANCH=master
+     - cd ../..
     allow_failure: true
+    artifacts:
+        paths:
+            - hdl_wa_bsp/
 
 # Tests
 test:2018_R1:
@@ -32,36 +46,40 @@ test:2018_R1:
         reports:
             junit: test/BSPTestResults.xml
 
-test:2018_R1_Installer:
-    stage: test
+test_installer:2018_R1_Installer:
+    stage: test_installer
     dependencies:
      - build:2018_R1
     script:
+     - cp mltbx/* .
+     - pwd
+     - ls
+     - ls *.mltbx
      - cd CI/scripts
      - make test_installer
      - make zip
     artifacts:
         reports:
-            junit: itests/test/BSPTestResults.xml
-
-test:master:
-    stage: test
-    dependencies:
-     - build:master
-    script:
-     - cd CI/scripts
-     - make test MLRELEASE=R2018b HDLBRANCH=master
-     - make zip MLRELEASE=R2018b HDLBRANCH=master
-    artifacts:
-        reports:
             junit: test/BSPTestResults.xml
+
+#test:master:
+#    stage: test
+#    dependencies:
+#     - build:master
+#    script:
+#     - cd CI/scripts
+#     - make test MLRELEASE=R2018b HDLBRANCH=master
+#     - make zip MLRELEASE=R2018b HDLBRANCH=master
+#    artifacts:
+#        reports:
+#            junit: test/BSPTestResults.xml
 
 # Deploy
 deploy:
     stage: deploy
     dependencies:
      - test:2018_R1
-     - test:2018_R1_Installer
+     - test_installer:2018_R1_Installer
     script:
      - cd CI/scripts
      - make gen_tlbx
@@ -71,4 +89,5 @@ deploy:
     artifacts:
         paths:
             - mltbx/
+
 
