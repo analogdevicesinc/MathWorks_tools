@@ -1,6 +1,8 @@
 #!/bin/bash
-
+if [ -z "${HDLBRANCH}" ]; then
 HDLBRANCH='hdl_2018_r1'
+fi
+
 
 # Script is designed to run from specific location
 scriptdir=`dirname "$BASH_SOURCE"`
@@ -13,6 +15,7 @@ git clone --single-branch -b $HDLBRANCH https://github.com/analogdevicesinc/hdl.
 # Get required vivado version needed for HDL
 VER=$(awk '/set REQUIRED_VIVADO_VERSION/ {print $3}' hdl/library/scripts/adi_ip.tcl | sed 's/"//g')
 echo "Required Vivado version ${VER}"
+VIVADOFULL=${VER}
 if [ ${#VER} = 8 ]
 then
 VER=${VER:0:6}
@@ -22,7 +25,10 @@ VIVADO=${VER}
 # Setup
 source /opt/Xilinx/Vivado/$VIVADO/settings64.sh
 
+# Update build scripts and force vivado versions
 cp scripts/adi_ip.tcl hdl/library/scripts/
+VERTMP=$(awk '/set REQUIRED_VIVADO_VERSION/ {print $3}' hdl/library/scripts/adi_ip.tcl | sed 's/"//g')
+grep -rl ${VERTMP} hdl/library/scripts | xargs sed -i -e "s/${VERTMP}/${VIVADOFULL}/g"
 
 # Pack IP cores
 vivado -mode batch -source scripts/pack_all_ips.tcl
@@ -58,7 +64,16 @@ cp -r projects hdl/
 cp scripts/adi_project.tcl hdl/projects/scripts/
 cp scripts/adi_build.tcl hdl/projects/scripts/
 cp ip/*.zip hdl/library/
-rm -fr hdl/.git
+
+# Update vivado version in MATLAB API and build script
+DEFAULT_V_VERSION='2017.4'
+cd ..
+grep -rl ${DEFAULT_V_VERSION} hdl_wa_bsp/vendor/AnalogDevices/+AnalogDevices | grep -v MODEM | xargs sed -i "s/${DEFAULT_V_VERSION}/$VIVADO/g"
+cd CI
+grep -rl ${DEFAULT_V_VERSION} hdl/projects/scripts | xargs sed -i "s/${DEFAULT_V_VERSION}/$VIVADOFULL/g"
+
+# Remove git directory move to bsp folder
+rm -fr hdl/.git*
 TARGET="../hdl_wa_bsp/vendor/AnalogDevices/vivado"
 if [ -d "$TARGET" ]; then
     rm -rf "$TARGET"
