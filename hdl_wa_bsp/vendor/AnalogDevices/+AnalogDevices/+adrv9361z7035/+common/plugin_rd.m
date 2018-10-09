@@ -14,7 +14,11 @@ hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2017.4)'
 hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
 
 % Tool information
-hRD.SupportedToolVersion = {'2017.4'};
+if contains(upper(design),'MODEM')
+	hRD.SupportedToolVersion = {'2016.4'};%MODEM
+else
+	hRD.SupportedToolVersion = {'2017.4'};
+end
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
