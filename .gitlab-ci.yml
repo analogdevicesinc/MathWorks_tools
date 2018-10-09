@@ -41,7 +41,11 @@ test:2018_R1:
      - cd CI/scripts
      - make test
      - make zip
+     - mkdir zip
+     - mv *.zip zip/
     artifacts:
+        paths:
+            - zip/
         reports:
             junit: test/BSPTestResults.xml
 
@@ -56,7 +60,6 @@ test_installer:2018_R1_Installer:
      - ls *.mltbx
      - cd CI/scripts
      - make test_installer
-     - make zip
     artifacts:
         paths:
             - mltbx/
