@@ -13,7 +13,7 @@ As with many open source packages, we use [GitHub](https://github.com/analogdevi
 
 | HDL Branch        | GitHub master status  | MATLAB Release |  Installer Package  |
 |:-----------------------:|:---------------------:|:-------:|:-------------------:|
-| 2018_R1                 | [![pipeline status](https://gitlab.com/tfcollins/MathWorks_tools/badges/master/pipeline.svg)](https://gitlab.com/tfcollins/MathWorks_tools/commits/master) | 2018b | [![Latest Windows installer](https://raw.githubusercontent.com/wiki/analogdevicesinc/libiio/img/win_box.png)](https://gitlab.com/tfcollins/MathWorks_tools/-/jobs/artifacts/master/download?job=build:2018_R1) |
+| 2018_R1                 | [![pipeline status](https://gitlab.com/tfcollins/MathWorks_tools/badges/master/pipeline.svg)](https://gitlab.com/tfcollins/MathWorks_tools/commits/master) | 2018b | [![Latest Windows installer](https://raw.githubusercontent.com/wiki/analogdevicesinc/libiio/img/win_box.png)](https://gitlab.com/tfcollins/MathWorks_tools/-/jobs/artifacts/master/download?job=deploy) |
 
 If you use it, and like it - please let us know. If you use it, and hate it - please let us know that too.
 
