@@ -1,4 +1,4 @@
-# mathworks_tools: 
+# mathworks_tools
 ### Analog Devices, Inc. Board Support Packages
 
 Scripts and tools created by ADI to be used with MATLAB and Simulink with ADI products.
@@ -13,14 +13,14 @@ As with many open source packages, we use [GitHub](https://github.com/analogdevi
 
 | HDL Branch        | GitHub master status  | MATLAB Release |  Installer Package  |
 |:-----------------------:|:---------------------:|:-------:|:-------------------:|
-| 2018_R1                 | [![pipeline status](https://gitlab.com/tfcollins/MathWorks_tools/badges/master/pipeline.svg)](https://gitlab.com/tfcollins/MathWorks_tools/commits/master) | 2018b | [![Latest Windows installer](https://raw.githubusercontent.com/wiki/analogdevicesinc/libiio/img/win_box.png)](https://gitlab.com/tfcollins/MathWorks_tools/-/jobs/artifacts/master/download?job=deploy) |
+| 2018_R1                 | [![pipeline status](https://gitlab.com/tfcollins/MathWorks_tools/badges/master/pipeline.svg)](https://gitlab.com/tfcollins/MathWorks_tools/commits/master) | 2018b | <a href="https://gitlab.com/tfcollins/MathWorks_tools/-/jobs/artifacts/master/download?job=deploy"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" height="40" /></a>|
 
 If you use it, and like it - please let us know. If you use it, and hate it - please let us know that too.
 
 
 ## Building & Installing
 
-should be a quick matter of `make build`:
+If you don't want to use the toolbox installers you can manually build the BSP. Should be a quick matter of `make build`:
 
 ```
 rgetz@pinky:~/MathWorks_tools$ make -C CI/scripts/ build 
