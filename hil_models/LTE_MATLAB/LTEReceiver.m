@@ -104,7 +104,14 @@ rmc = lteRMCDL(configuration);
 rmc.NCellID = 17;
 rmc.NFrame = 700;
 rmc.TotSubframes = 8*10; % 10 subframes per frame
-rmc.OCNG = 'On'; % Add noise to unallocated PDSCH resource elements
+
+% Add noise to unallocated PDSCH resource elements
+if verLessThan('matlab','9.2')
+    rmc.OCNG = 'On';
+else
+    rmc.OCNGPDSCHEnable = 'On';
+    rmc.OCNGPDCCHEnable = 'On';
+end
 
 % Generate RMC waveform
 trData = [1;0;0;1]; % Transport data
