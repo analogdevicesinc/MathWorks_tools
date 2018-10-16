@@ -133,6 +133,8 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods
+            setupLibad9361(obj);
+            
             obj.GainControlMode = obj.GainControlMode;
             obj.EnableQuadratureTracking = obj.EnableQuadratureTracking;
             obj.EnableRFDCTracking = obj.EnableRFDCTracking;
