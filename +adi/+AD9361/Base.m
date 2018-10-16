@@ -35,6 +35,7 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
         kernelBuffersCount = 2;
         dataTypeStr = 'int16';
         phyDevName = 'ad9361-phy';
+        iioDevPHY
     end
 
     
@@ -87,8 +88,9 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
                 '', 'SamplesPerFrame');
             obj.SamplingRate = value;
             if obj.ConnectedToDevice
-                id = 'voltage0';
-                obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value)); %#ok<MCSUP>
+                %id = 'voltage0';
+                %obj.setAttributeLongLong(id,'sampling_frequency',value,true);
             end
         end
     end
@@ -98,6 +100,16 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
         
         function icon = getIconImpl(obj)
             icon = sprintf(['AD9361 ',obj.Type]);
+        end
+        
+        function setupLibad9361(obj)
+            libName = 'libad9361';
+            if isunix
+            hfile = '/usr/local/include/ad9361-wrapper.h';
+            loadlibraryArgs = {hfile,'includepath','/usr/local/include','addheader','ad9361.h'};
+            end
+            [~, ~] = loadlibrary(libName, loadlibraryArgs{:});
+            obj.iioDevPHY = calllib('libiio', 'iio_context_find_device',obj.iioCtx,'ad9361-phy');
         end
         
         function setAttributeLongLong(obj,id,attr,value,output)
