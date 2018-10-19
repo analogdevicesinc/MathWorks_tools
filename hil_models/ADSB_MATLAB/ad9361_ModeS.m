@@ -76,15 +76,20 @@ input_content{s.getInChannel('TX_RF_BANDWIDTH')} = 10e6;
 fprintf('Starting transmission ...\n');
 for i = 1:20
     fprintf('Transmitting Data Block %i ...\n',i);
-    input_content{1} = (2^13).*newModeS./sqrt(2);
-    input_content{2} = (2^13).*newModeS./sqrt(2);
-    input_content{3} = (2^13).*newModeS./sqrt(2);
-    input_content{4} = (2^13).*newModeS./sqrt(2);
-    output_content = stepImpl(s, input_content);
     if channel == 1
+        input_content{1} = (2^13).*newModeS./sqrt(2);
+        input_content{2} = (2^13).*newModeS./sqrt(2);
+        input_content{3} = zeros(size(newModeS));
+        input_content{4} = zeros(size(newModeS));
+        output_content = stepImpl(s, input_content);
         I = output_content{1}.*(1/1024);
         Q = output_content{2}.*(1/1024);
     elseif channel == 2
+        input_content{3} = (2^13).*newModeS./sqrt(2);
+        input_content{4} = (2^13).*newModeS./sqrt(2);
+        input_content{1} = zeros(size(newModeS));
+        input_content{2} = zeros(size(newModeS));
+        output_content = stepImpl(s, input_content);
         I = output_content{3}.*(1/1024);
         Q = output_content{4}.*(1/1024);
     else
