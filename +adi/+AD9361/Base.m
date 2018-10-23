@@ -36,6 +36,10 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
         dataTypeStr = 'int16';
         phyDevName = 'ad9361-phy';
         iioDevPHY
+        Libad9361IncludePathUnix = '/usr/local/include';
+        Libad9361LibPathUnix = '/usr/local/lib';
+        Libad9361IncludePathWindows = 'C:\Windows\System32';
+        Libad9361LibPathWindows = 'C:\Windows\System32';
     end
 
     
@@ -44,6 +48,10 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
         function obj = Base(varargin)
             coder.allowpcode('plain');
             obj = obj@matlabshared.libiio.base(varargin{:});
+        end
+        % Destructor
+        function delete(obj)
+           teardownLibad9361(obj);
         end
         % Check SamplesPerFrame
         function set.SamplesPerFrame(obj, value)
@@ -88,9 +96,12 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
                 '', 'SamplesPerFrame');
             obj.SamplingRate = value;
             if obj.ConnectedToDevice
-                calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value)); %#ok<MCSUP>
-                %id = 'voltage0';
-                %obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value)); %#ok<MCSUP>
+                else
+                    id = 'voltage0';
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                end
             end
         end
     end
@@ -105,11 +116,23 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
         function setupLibad9361(obj)
             libName = 'libad9361';
             if isunix
-            hfile = '/usr/local/include/ad9361-wrapper.h';
-            loadlibraryArgs = {hfile,'includepath','/usr/local/include','addheader','ad9361.h'};
+                hfile = fullfile(obj.Libad9361IncludePathUnix ,'ad9361-wrapper.h');
+                loadlibraryArgs = {hfile,'includepath',obj.Libad9361IncludePathUnix,'addheader','ad9361.h'};
+            else
+                hfile = fullfile(obj.Libad9361IncludePathWindows,'ad9361-wrapper.h');
+                loadlibraryArgs = {hfile,'includepath',obj.Libad9361IncludePathWindows,'addheader','ad9361.h'};
             end
-            [~, ~] = loadlibrary(libName, loadlibraryArgs{:});
+            if ~libisloaded(libName)
+                [~, ~] = loadlibrary(libName, loadlibraryArgs{:});
+            end
             obj.iioDevPHY = calllib('libiio', 'iio_context_find_device',obj.iioCtx,'ad9361-phy');
+        end
+        
+        function teardownLibad9361(~)
+            libName = 'libad9361';
+            if libisloaded(libName)
+                unloadlibrary(libName);
+            end
         end
         
         function setAttributeLongLong(obj,id,attr,value,output)
