@@ -1,5 +1,5 @@
 classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
-        matlab.system.mixin.CustomIcon
+        matlab.system.mixin.CustomIcon & matlab.system.mixin.SampleTime
     %adi.AD9361.Base Class
     %   This class contains shared parameters and methods between TX and RX
     %   classes
@@ -108,6 +108,11 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
     
     %% API Functions
     methods (Hidden, Access = protected)
+        
+        function sts = getSampleTimeImpl(obj)
+            sts = createSampleTime(obj,'Type','Discrete',...
+                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
+        end
         
         function icon = getIconImpl(obj)
             icon = sprintf(['AD9361 ',obj.Type]);
