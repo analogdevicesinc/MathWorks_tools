@@ -1,6 +1,6 @@
 classdef (Abstract) RxTx < matlabshared.libiio.base
     
-    properties (Hidden)
+    properties (Nontunable, Hidden)
         enabledChannels = false;
         ConnectedToDevice = false;
     end
@@ -45,7 +45,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             
             obj.ConnectedToDevice = true;
             obj.bufIsCyclic = obj.EnableCyclicBuffers;
-            
+                       
             % Set attributes
             setupInit(obj);
             

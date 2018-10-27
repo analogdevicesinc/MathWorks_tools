@@ -47,7 +47,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         GainControlModeSet = matlab.system.StringSet({ ...
             'manual','fast_attack','slow_attack','hybrid'});
     end
-
+    
     properties (Hidden, Nontunable, Access = protected)
         isOutput = false;
     end
@@ -121,6 +121,56 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
                 ~strcmpi(obj.GainControlMode, 'manual');
             
         end
+        
+        function varargout = getOutputNamesImpl(obj)
+            % Return output port names for System block
+            numOut = obj.channelCount/2 + 1; % +1 for valid
+            varargout = cell(1,numOut);
+            for k=1:numOut-1
+                varargout{k} = ['out',num2str(k)];
+            end
+            varargout{numOut} = 'valid';
+        end
+        
+        function varargout = getOutputSizeImpl(obj)
+            % Return size for each output port
+            numOut = obj.channelCount/2 + 1; % +1 for valid
+            varargout = cell(1,numOut);
+            for k=1:numOut-1
+                varargout{k} = [obj.SamplesPerFrame,1];
+            end
+            varargout{numOut} = [1,1];
+        end
+        
+        function varargout = getOutputDataTypeImpl(obj)
+            % Return data type for each output port
+            numOut = obj.channelCount/2 + 1; % +1 for valid
+            varargout = cell(1,numOut);
+            for k=1:numOut-1
+                varargout{k} = "int16";
+            end
+            varargout{numOut} = "logical";
+        end
+        
+        function varargout = isOutputComplexImpl(obj)
+            % Return true for each output port with complex data
+            out = true;
+            numOut = obj.channelCount/2 + 1; % +1 for valid
+            varargout = cell(1,numOut);
+            for k=1:numOut-1
+                varargout{k} = true;
+            end
+            varargout{numOut} = false;
+        end
+        
+        function varargout = isOutputFixedSizeImpl(obj)
+            % Return true for each output port with fixed size
+            numOut = obj.channelCount/2 + 1; % +1 for valid
+            varargout = cell(1,numOut);
+            for k=1:numOut
+                varargout{k} = true;
+            end
+        end
     end
     
     %% API Functions
@@ -129,20 +179,27 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         function numOut = getNumOutputsImpl(obj)
             numOut = obj.channelCount/2 + 1; % +1 for valid
         end
-       
+        
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods
             setupLibad9361(obj);
-            
-            obj.GainControlMode = obj.GainControlMode;
-            obj.EnableQuadratureTracking = obj.EnableQuadratureTracking;
-            obj.EnableRFDCTracking = obj.EnableRFDCTracking;
-            obj.EnableBasebandDCTracking = obj.EnableBasebandDCTracking;
-            obj.CenterFrequency = obj.CenterFrequency;
-            obj.SamplingRate = obj.SamplingRate;
-            obj.Gain = obj.Gain;
-            obj.RFBandwidth = obj.RFBandwidth;
+            % Do writes directly to hardware without using set methods.
+            % This is required sine Simulink support doesn't support
+            % modification to nontunable variables at SetupImpl
+            obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlMode,false);
+            obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
+            obj.setAttributeBool('voltage0','rf_dc_offset_tracking_en',obj.EnableRFDCTracking,false);
+            obj.setAttributeBool('voltage0','bb_dc_offset_tracking_en',obj.EnableBasebandDCTracking,false);
+            id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
+            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
+            if libisloaded('libad9361')
+                calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
+            else
+                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true);
+            end
+            obj.setAttributeLongLong('voltage0','hardwaregain',obj.Gain,false);
+            obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
         end
         
     end
