@@ -52,7 +52,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         isOutput = false;
     end
     
-    properties(Nontunable, Hidden, Constant)
+    properties(Nontunable, Hidden)
         Type = 'Rx';
         channel_names = {'voltage0','voltage1','voltage2','voltage3'};
     end
@@ -124,37 +124,54 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         
         function varargout = getOutputNamesImpl(obj)
             % Return output port names for System block
-            numOut = obj.channelCount/2 + 1; % +1 for valid
+            if obj.channelCount~=0
+               numOut = obj.channelCount/2 + 1; % +1 for valid
+            else
+               numOut = 0; 
+            end
             varargout = cell(1,numOut);
             for k=1:numOut-1
                 varargout{k} = ['out',num2str(k)];
             end
-            varargout{numOut} = 'valid';
+            if obj.channelCount~=0
+                varargout{numOut} = 'valid';
+            end
         end
         
         function varargout = getOutputSizeImpl(obj)
             % Return size for each output port
-            numOut = obj.channelCount/2 + 1; % +1 for valid
+            if obj.channelCount~=0
+               numOut = obj.channelCount/2 + 1; % +1 for valid
+            else
+               numOut = 0; 
+            end
             varargout = cell(1,numOut);
             for k=1:numOut-1
                 varargout{k} = [obj.SamplesPerFrame,1];
             end
-            varargout{numOut} = [1,1];
+            if obj.channelCount~=0
+                varargout{numOut} = [1,1];
+            end
         end
         
         function varargout = getOutputDataTypeImpl(obj)
             % Return data type for each output port
-            numOut = obj.channelCount/2 + 1; % +1 for valid
+            if obj.channelCount~=0
+               numOut = obj.channelCount/2 + 1; % +1 for valid
+            else
+               numOut = 0; 
+            end
             varargout = cell(1,numOut);
             for k=1:numOut-1
                 varargout{k} = "int16";
             end
-            varargout{numOut} = "logical";
+            if obj.channelCount~=0
+                varargout{numOut} = "logical";
+            end
         end
         
         function varargout = isOutputComplexImpl(obj)
             % Return true for each output port with complex data
-            out = true;
             numOut = obj.channelCount/2 + 1; % +1 for valid
             varargout = cell(1,numOut);
             for k=1:numOut-1
@@ -177,7 +194,11 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
     methods (Hidden, Access = protected)
         
         function numOut = getNumOutputsImpl(obj)
-            numOut = obj.channelCount/2 + 1; % +1 for valid
+            if obj.channelCount>0
+                numOut = obj.channelCount/2 + 1; % +1 for valid
+            else
+                numOut = 0;
+            end
         end
         
         function setupInit(obj)

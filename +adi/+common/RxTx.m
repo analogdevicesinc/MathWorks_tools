@@ -9,7 +9,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         DataTimeout = 5;
     end
     
-    properties (Abstract, Hidden, Constant)
+    properties (Abstract, Hidden)
         Type
     end
     
@@ -26,7 +26,9 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         
         function releaseChanBuffers(obj)
             % Destroy the buffers
-            destroyBuf(obj);
+            if obj.channelCount>0
+                destroyBuf(obj);
+            end
             
             % Call the dev specific release
 %             streamDevRelease(obj);
@@ -56,12 +58,16 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             obj.enabledChannels = true;
             
             % Create the buffers
-            status = createBuf(obj);
-            if status
-%                 disableChannel(obj, obj.channel, obj.isOutput);
-                releaseChanBuffers(obj);
-                cerrmsg(obj,status,['Failed to create buffer for: ' obj.devName]);
-                return
+            if obj.channelCount>0
+                status = createBuf(obj);
+                if status
+                    %                 disableChannel(obj, obj.channel, obj.isOutput);
+                    releaseChanBuffers(obj);
+                    cerrmsg(obj,status,['Failed to create buffer for: ' obj.devName]);
+                    return
+                end
+            else
+                status = 0;
             end
             
         end
