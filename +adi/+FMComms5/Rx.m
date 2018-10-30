@@ -70,6 +70,10 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         EnableBasebandDCTrackingChipB = true;
     end
     
+    properties(Logical, Nontunable)
+        EnablePhaseSync = false;
+    end
+    
     properties(Constant, Hidden)
         GainControlModeSetChipA = matlab.system.StringSet({ ...
             'manual','fast_attack','slow_attack','hybrid'});
@@ -194,6 +198,25 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
                 obj.setAttributeBool(id,'bb_dc_offset_tracking_en',value,false);
             end
         end
+        function PhaseSyncChannels(obj)
+            %PhaseSyncChannels Phase Sync Channels
+            %   Synchronize TX and RX channels to be aligned in phase at the
+            %   current LO and sample rate. As a side effect this process will
+            %   also disable the AGC on all channels and configure a reasonable
+            %   analog filter bandwidth. The calling object (RX or TX) will
+            %   have their sample rate and LO applied to the related path
+            %   (RX or TX) on the hardware.
+            if obj.ConnectedToDevice
+                if libisloaded('libad9361')
+                    ret = calllib('libad9361','ad9361_fmcomms5_phase_sync',...
+                        obj.iioCtx,int64(obj.SamplingRate),int64(obj.CenterFrequency));
+                    disp(ret);
+                else
+                    error('libad9361 not loaded');
+                end
+            end
+        end
+        
     end
     
     methods (Access=protected)
@@ -308,7 +331,16 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
             end
             obj.AD9361_B_Rx.setAttributeLongLong('voltage0','hardwaregain',obj.GainChipB,false);
             obj.AD9361_B_Rx.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
-
+            
+            %% Sync
+            if obj.EnablePhaseSync
+                obj.setAttributeRAW('voltage0','gain_control_mode','manual',false);
+                obj.AD9361_B_Rx.setAttributeRAW('voltage0','gain_control_mode','manual',false);
+                obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChipA,false);
+                obj.AD9361_B_Rx.setAttributeLongLong('voltage0','hardwaregain',obj.GainChipA,false);
+                obj.PhaseSyncChannels();
+            end
+            
         end
         
     end
