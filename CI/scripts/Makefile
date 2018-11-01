@@ -18,6 +18,22 @@ build:
 	# Uses the HDLBRANCH variable
 	bash build_bsp.sh
 
+add_libad9361:
+	cd ../..
+	mkdir deps
+	cd deps
+	# Linux
+	mkdir linux
+	cd linux
+	curl --silent "https://api.github.com/repos/analogdevicesinc/libad9361-iio/releases/latest" | jq -r ".assets[] | select(.name | test(\"${spruce_type}\")) | .browser_download_url" | grep tar.gz | wget -i -
+	tar xvf *.tar.gz
+	mv usr/local/lib/* .
+	mv usr/local/include ../
+	rm -rf usr
+	rm *.tar.gz
+	cd ..	
+	# Windows
+
 test_installer:
 	cd ../..
 	cp *.mltbx test/
