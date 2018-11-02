@@ -1,4 +1,4 @@
-
+function setupHDL(override)
 v=ver('matlab'); Release = v.Release;
 switch Release
     case '(R2017a)'
@@ -7,6 +7,10 @@ switch Release
         vivado = '2017.4';
     case '(R2018b)'
         vivado = '2017.4';
+end
+
+if nargin>0
+   vivado = override; 
 end
 
 if ispc

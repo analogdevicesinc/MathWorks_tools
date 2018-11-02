@@ -1,8 +1,8 @@
 %--------------------------------------------------------------------------
 % HDL Workflow Script
-% Generated with MATLAB 9.3 (R2017b) at 12:21:43 on 23/04/2018
+% Generated with MATLAB 9.5 (R2018b) at 19:47:36 on 02/11/2018
 % This script was generated using the following parameter values:
-%     Filename  : 'C:\MathWorkSeminar\modem-phy\FixedPoint\demos\FPGA_Capture\hdlworkflow_rx_only.m'
+%     Filename  : '/tmp/mwt-modem-update2018b/targeting_models/modem-qpsk/FixedPoint/demos/FPGA_Capture/hdlworkflow.m'
 %     Overwrite : true
 %     Comments  : true
 %     Headers   : true
@@ -27,10 +27,10 @@ hdlset_param('Receiver_FPGACap', 'SynthesisToolChipFamily', 'Zynq');
 hdlset_param('Receiver_FPGACap', 'SynthesisToolDeviceName', 'xc7z035i');
 hdlset_param('Receiver_FPGACap', 'SynthesisToolPackageName', 'fbg676');
 hdlset_param('Receiver_FPGACap', 'SynthesisToolSpeedValue', '-2L');
-hdlset_param('Receiver_FPGACap', 'TargetDirectory', 'hdl_prj\hdlsrc');
+hdlset_param('Receiver_FPGACap', 'TargetDirectory', 'hdl_prj/hdlsrc');
 hdlset_param('Receiver_FPGACap', 'TargetFrequency', 20);
 hdlset_param('Receiver_FPGACap', 'TargetLanguage', 'Verilog');
-hdlset_param('Receiver_FPGACap', 'TargetPlatform', 'ADI RF SOM [LibIIO]');
+hdlset_param('Receiver_FPGACap', 'TargetPlatform', 'ADI RF SOM');
 hdlset_param('Receiver_FPGACap', 'Workflow', 'IP Core Generation');
 
 % Set SubSystem HDL parameters
@@ -257,7 +257,7 @@ hWC.RunTaskGenerateRTLCodeAndIPCore = true;
 hWC.RunTaskCreateProject = true;
 hWC.RunTaskGenerateSoftwareInterfaceModel = false;
 hWC.RunTaskBuildFPGABitstream = true;
-hWC.RunTaskProgramTargetDevice = false;
+hWC.RunTaskProgramTargetDevice = true;
 
 % Set properties related to 'RunTaskGenerateRTLCodeAndIPCore' Task
 hWC.IPCoreRepository = '';
@@ -269,10 +269,10 @@ hWC.AdditionalProjectCreationTclFiles = '';
 hWC.EnableIPCaching = false;
 
 % Set properties related to 'RunTaskGenerateSoftwareInterfaceModel' Task
-hWC.OperatingSystem = 'Linux';
+hWC.OperatingSystem = '';
 
 % Set properties related to 'RunTaskBuildFPGABitstream' Task
-hWC.RunExternalBuild = true;
+hWC.RunExternalBuild = false;
 hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Default;
 hWC.CustomBuildTclFile = '';
 
