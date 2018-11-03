@@ -99,26 +99,47 @@ classdef HardwareTests < LTETests
             evmMeanResultsStd = zeros(size(Frequencies));
             evmPeakResultsStd = zeros(size(Frequencies));
             
+            removeIndxs = [];
             for indx = 1:length(Frequencies)
                 txConfig.CenterFrequency = Frequencies(indx);
                 rxConfig.CenterFrequency = Frequencies(indx);
                 evmResults = zeros(runs,2);
+                removeRuns = [];
                 for k=1:runs
-                    s = repmat('#',1,10);
-                    fprintf('%s\nLO frequency %d | Run %d of %d\n%s\n',...
-                        s,Frequencies(indx),k,runs,s);
-                    % TX
-                    [eNodeBOutput, config] = testCase.TransmitterLTE(name);
-                    % Hardware
-                    burstCaptures = testCase.SDRToSDR(rxConfig,txConfig,eNodeBOutput);
-                    % RX
-                    evmResults(k,:) = testCase.ReceiverLTE(name, config, burstCaptures,eNodeBOutput);
+                    try
+                        s = repmat('#',1,10);
+                        fprintf('%s\nLO frequency %d (%d of %d) | Run %d of %d\n%s\n',...
+                            s,Frequencies(indx),indx,length(Frequencies),...
+                            k,runs,s);
+                        % TX
+                        [eNodeBOutput, config] = testCase.TransmitterLTE(name);
+                        % Hardware
+                        burstCaptures = testCase.SDRToSDR(rxConfig,txConfig,eNodeBOutput);
+                        % RX
+                        evmResults(k,:) = testCase.ReceiverLTE(name, config, burstCaptures,eNodeBOutput);
+                    catch
+                        warning(['Run failure at run ',num2str(k),', will remove in post processing']);
+                        removeRuns = [removeRuns;k]; %#ok<AGROW>
+                    end
+                end
+                evmResults(removeRuns,:) = [];
+                if isempty(evmResults)
+                    removeIndxs = [removeIndxs; indx]; %#ok<AGROW>
+                    warning(['Loop failure at loop ',num2str(indx),', will remove in post processing']);
+                    continue;
                 end
                 evmMeanResults(indx) = mean(evmResults(:,1));
                 evmPeakResults(indx) = mean(evmResults(:,2));
                 evmMeanResultsStd(indx) = std(evmResults(:,1));
                 evmPeakResultsStd(indx) = std(evmResults(:,2));
             end
+            
+            % Remove failed test cases
+            evmMeanResults(removeIndxs) = [];
+            evmPeakResults(removeIndxs) = [];
+            evmMeanResultsStd(removeIndxs) = [];
+            evmPeakResultsStd(removeIndxs) = [];
+            Frequencies(removeIndxs) = [];
             
             %% Logs
             data = struct;
@@ -160,7 +181,7 @@ classdef HardwareTests < LTETests
             DeviceTx = @()sdrtx('Pluto');
             DeviceRx = @()sdrrx('Pluto');
             testname = 'LTE_R4_Pluto';
-
+            
             %% Check hardware connected
             testCase.CheckDevice('usb',DeviceTx,[],true);
             testCase.CheckDevice('usb',DeviceRx,[],false);
@@ -181,14 +202,14 @@ classdef HardwareTests < LTETests
             DeviceTx = @()sdrtx('ADI RF SOM');
             DeviceRx = @()sdrrx('ADI RF SOM');
             testname = 'LTE_R4_RFSOM';
-
+            
             %% Check hardware connected
             testCase.CheckDevice('ip',DeviceTx,'192.168.3.2',true);
             testCase.CheckDevice('ip',DeviceRx,'192.168.3.2',false);
             
             %% Run Test
             data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
-
+            
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
             testCase.saveToJSON(json, data);
