@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - test_installer
+  - test_hardware
   - deploy
   
 # Default build
@@ -64,6 +65,18 @@ test_installer:2018_R1_Installer:
             - zip/
         reports:
             junit: test/BSPTestResults.xml
+
+test_hardware:Streaming_Hardware:
+    stage: test_hardware
+    dependencies:
+     - build:2018_R1
+    script:
+     - cd CI/scripts
+     - make test_streaming
+    artifacts:
+        paths:
+            - logs/
+
 
 #test:master:
 #    stage: test
