@@ -77,19 +77,6 @@ test_hardware:Streaming_Hardware:
         paths:
             - logs/
 
-
-#test:master:
-#    stage: test
-#    dependencies:
-#     - build:master
-#    script:
-#     - cd CI/scripts
-#     - make test MLRELEASE=R2018b HDLBRANCH=master
-#     - make zip MLRELEASE=R2018b HDLBRANCH=master
-#    artifacts:
-#        reports:
-#            junit: test/BSPTestResults.xml
-
 # Deploy
 deploy:
     stage: deploy
