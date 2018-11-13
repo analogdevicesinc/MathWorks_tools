@@ -11,40 +11,16 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
     %   See also adi.FMComms2.Tx, adi.FMComms3.Tx, adi.FMComms5.Tx
     
     properties
-        %Attenuation Attenuation
+        %AttenuationChannel0 Attenuation Channel 0
         %   Attentuation specified as a scalar from -89.75 to 0 dB with a
         %   resolution of 0.25 dB.
-        Attenuation = -30;
-        %DDSFrequencies DDS Frequencies
-        %   Frequencies values in Hz of the four DDS tone generators per
-        %   channel. Input is a [2x4] matrix.
-        DDSFrequencies = 5e5*ones(2,4);
-        %DDSScales DDS Scales
-        %   Scale of DDS tones in range [0,1]. Input is a [2x4] matrix.
-        DDSScales = [1,0,1,0;0,0,0,0];
-        %DDSPhases DDS Phases
-        %   Phases of DDS tones in range [0,360000]. Input is a [2x4] matrix.
-        DDSPhases = [0,0,90000,0;0,0,0,0];
+        AttenuationChannel0 = -30;
+        %AttenuationChannel1 Attenuation Channel 1
+        %   Attentuation specified as a scalar from -89.75 to 0 dB with a
+        %   resolution of 0.25 dB.
+        AttenuationChannel1 = -30;
     end
-    
-    properties (Nontunable)
-        %DataSource Data Source
-        %   Data source, specified as one of the following: 
-        %   'DMA' — Specify the host as the source of the data.
-        %   'DDS' — Specify the DDS on the radio hardware as the source 
-        %   of the data. In this case, each channel has two additive tones.
-        DataSource = 'DMA';
-        %EnableCyclicBuffers Enable Cyclic Buffers
-        %   Enable Cyclic Buffers, configures transmit buffers to be
-        %   cyclic, which makes them continuously repeat
-        EnableCyclicBuffers = false;
-    end
-    
-    properties(Constant, Hidden)
-        DataSourceSet = matlab.system.StringSet({ ...
-            'DMA','DDS'});
-    end
-    
+        
     properties (Hidden, Nontunable, Access = protected)
         isOutput = true;
     end
@@ -65,38 +41,47 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             obj = obj@adi.AD9361.Base(varargin{:});
         end
         % Check Attentuation
-        function set.Attenuation(obj, value)
+        function set.AttenuationChannel0(obj, value)
             validateattributes( value, { 'double','single' }, ...
                 { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -89.75,'<=', 0}, ...
                 '', 'Attenuation');
             assert(mod(value,1/4)==0, 'Attentuation must be a multiple of 0.25');
-            obj.Attenuation = value;
+            obj.AttenuationChannel0 = value;
             if obj.ConnectedToDevice
                 id = 'voltage0';
                 obj.setAttributeLongLong(id,'hardwaregain',value,true);
             end
         end
-        % Check DataSource
-        function set.DataSource(obj, value)
-            obj.DataSource = value;
+        % Check Attentuation
+        function set.AttenuationChannel1(obj, value)
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -89.75,'<=', 0}, ...
+                '', 'Attenuation');
+            assert(mod(value,1/4)==0, 'Attentuation must be a multiple of 0.25');
+            obj.AttenuationChannel1 = value;
             if obj.ConnectedToDevice
-                obj.ToggleDDS(strcmp(value,'DDS'));
+                id = 'voltage1';
+                obj.setAttributeLongLong(id,'hardwaregain',value,true);
             end
         end
         
     end
     
     methods (Access=protected)
-        % Only show DDS settings when DataSource set to
-        % 'DDS'
-        function flag = isInactivePropertyImpl(obj, prop)
-            flag = strcmpi(prop,'DDSFrequencies') &&...
-                ~strcmpi(obj.DataSource, 'DDS');
-            flag = flag || strcmpi(prop,'DDSScales') &&...
-                ~strcmpi(obj.DataSource, 'DDS');
-            flag = flag || strcmpi(prop,'DDSPhases') &&...
-                ~strcmpi(obj.DataSource, 'DDS');
+        function setupImpl(obj,data)
+            if strcmp(obj.DataSource,'DMA')
+                obj.SamplesPerFrame = size(data,1);
+            end
+            % Call the superclass method
+            setupImpl@matlabshared.libiio.base(obj);
         end
+
+        % Hide unused parameters when in specific modes
+        function flag = isInactivePropertyImpl(obj, prop)
+            % Call the superclass method
+            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
+        end
+        
     end
     
     %% API Functions
@@ -106,19 +91,30 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             if strcmp(obj.DataSource,'DDS')
                 numIn = 0;
             else
-                numIn = 1;
+                numIn = obj.channelCount/2;
             end
         end
         
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods
-            obj.CenterFrequency = obj.CenterFrequency;
-            obj.SamplingRate = obj.SamplingRate;
-            obj.Attenuation = obj.Attenuation;
-            obj.RFBandwidth = obj.RFBandwidth;
-            obj.DataSource = obj.DataSource;
-            obj.DDSUpdate();
+            % Do writes directly to hardware without using set methods.
+            % This is required sine Simulink support doesn't support
+            % modification to nontunable variables at SetupImpl
+            id = 'altvoltage1';
+            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
+            if libisloaded('libad9361')
+                calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
+            else
+                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true);
+            end
+            obj.setAttributeLongLong('voltage0','hardwaregain',obj.AttenuationChannel0,true);
+            obj.setAttributeLongLong('voltage1','hardwaregain',obj.AttenuationChannel1,true);
+            obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));            
+            obj.ToggleDDS(strcmp(obj.DataSource,'DDS'));
+            if strcmp(obj.DataSource,'DDS')
+                obj.DDSUpdate();
+            end
         end
         
     end

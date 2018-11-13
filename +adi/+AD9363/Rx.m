@@ -61,8 +61,12 @@ classdef Rx < adi.AD9361.Rx
                 '', 'SamplesPerFrame');
             obj.SamplingRate = value;
             if obj.ConnectedToDevice
-                id = 'voltage0';
-                obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
+                else
+                    id = 'voltage0';
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                end
             end
         end
     end

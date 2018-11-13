@@ -1,11 +1,24 @@
-classdef Tx < adi.AD9371.Base
-    %ADRV9009 Rx Summary of this class goes here
-    %   Detailed explanation goes here
+classdef Tx < adi.AD9371.Base & adi.common.Tx
+    % adi.AD9371.Tx Transmit data from the AD9371 transceiver
+    %   The adi.AD9371.Tx System object is a signal sink that can tranmsit
+    %   complex data from the AD9371.
+    %
+    %   tx = adi.AD9371.Tx;
+    %   tx = adi.AD9371.Tx('uri','192.168.2.1');
+    %
+    %   <a href="http://www.analog.com/media/en/technical-documentation/data-sheets/AD9371.pdf">AD9371 Datasheet</a>
     
-    properties (Nontunable)
-        Mode = 'DMA'; 
+    properties
+        %AttenuationChannel0 Attenuation Channel 0
+        %   Attentuation specified as a scalar from -89.75 to 0 dB with a
+        %   resolution of 0.25 dB.
+        AttenuationChannel0 = -30;
+        %AttenuationChannel1 Attenuation Channel 1
+        %   Attentuation specified as a scalar from -89.75 to 0 dB with a
+        %   resolution of 0.25 dB.
+        AttenuationChannel1 = -30;
     end
-    
+        
     properties (Hidden, Nontunable, Access = protected)
         isOutput = true;
     end
@@ -16,71 +29,87 @@ classdef Tx < adi.AD9371.Base
     end
     
     properties (Nontunable, Hidden)
-        devName = 'axi-adrv9009-tx-hpc';
+        devName = 'axi-ad9371-tx-hpc';
     end
     
     methods
         %% Constructor
         function obj = Tx(varargin)
-            % Returns the matlabshared.libiio.base object
             coder.allowpcode('plain');
-            obj = obj@adi.ADRV9009.Base(varargin{:});
+            obj = obj@adi.AD9371.Base(varargin{:});
         end
+        % Check Attentuation
+        function set.AttenuationChannel0(obj, value)
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -89.75,'<=', 0}, ...
+                '', 'Attenuation');
+            assert(mod(value,1/4)==0, 'Attentuation must be a multiple of 0.25');
+            obj.AttenuationChannel0 = value;
+            if obj.ConnectedToDevice
+                id = 'voltage0';
+                obj.setAttributeLongLong(id,'hardwaregain',value,true);
+            end
+        end
+        % Check Attentuation
+        function set.AttenuationChannel1(obj, value)
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -89.75,'<=', 0}, ...
+                '', 'Attenuation');
+            assert(mod(value,1/4)==0, 'Attentuation must be a multiple of 0.25');
+            obj.AttenuationChannel1 = value;
+            if obj.ConnectedToDevice
+                id = 'voltage1';
+                obj.setAttributeLongLong(id,'hardwaregain',value,true);
+            end
+        end
+        
+    end
+    
+    methods (Access=protected)
+        function setupImpl(obj,data)
+            if strcmp(obj.DataSource,'DMA')
+                obj.SamplesPerFrame = size(data,1);
+            end
+            % Call the superclass method
+            setupImpl@matlabshared.libiio.base(obj);
+        end
+
+        % Hide unused parameters when in specific modes
+        function flag = isInactivePropertyImpl(obj, prop)
+            % Call the superclass method
+            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
+        end
+        
     end
     
     %% API Functions
     methods (Hidden, Access = protected)
         
-        function stepImpl(obj,varargin)
-
-            if strcmp(obj.Mode,'DDS')
-                error('Cannot send data to DMA with DDS enabled');
+        function numIn = getNumInputsImpl(obj)
+            if strcmp(obj.DataSource,'DDS')
+                numIn = 0;
+            else
+                numIn = obj.channelCount/2;
             end
-            c = obj.channelCount/2;
-            N = c*length(varargin{1})*2;
-            outputData = complex(zeros(N,1));
-            % Convert to single vector
-            %%%% CAN TELL BLOCK COMPLEXITY
-%             for k = 1:nargin-1
-%                 outputData(2*k-1:obj.channelCount:end) = real(varargin{k});
-%                 outputData(2*k:obj.channelCount:end) = imag(varargin{k});
-%             end
-            sendData(obj,outputData);
         end
         
-        function releaseChanBuffers(obj)
-            % Destroy the buffers
-            destroyBuf(obj);
-            % Call the dev specific release
-            %             streamDevRelease(obj);
-
-            % Disable the channels
-            if obj.enabledChannels
-            for k=1:obj.channelCount
-                disableChannel(obj, obj.channel_names{k}, obj.isOutput);
-            end
-            obj.enabledChannels = false;
+        function setupInit(obj)
+            % Write all attributes to device once connected through set
+            % methods
+            % Do writes directly to hardware without using set methods.
+            % This is required sine Simulink support doesn't support
+            % modification to nontunable variables at SetupImpl
+            id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
+            obj.setAttributeLongLong(id,'TX_LO_frequency',obj.CenterFrequency ,true);
+            obj.setAttributeLongLong('voltage0','hardwaregain',obj.AttenuationChannel0,true);
+            obj.setAttributeLongLong('voltage1','hardwaregain',obj.AttenuationChannel1,true);
+            obj.ToggleDDS(strcmp(obj.DataSource,'DDS'));
+            if strcmp(obj.DataSource,'DDS')
+                obj.DDSUpdate();
             end
         end
         
     end
     
-    %% External Dependency Methods
-    methods (Hidden, Static)
-        
-        function tf = isSupportedContext(bldCfg)
-            tf = matlabshared.libiio.ExternalDependency.isSupportedContext(bldCfg);
-        end
-        
-        function updateBuildInfo(buildInfo, bldCfg)
-            % Call the matlabshared.libiio.method first
-            matlabshared.libiio.ExternalDependency.updateBuildInfo(buildInfo, bldCfg);
-        end
-        
-        function bName = getDescriptiveName(~)
-            bName = 'ADRV9009';
-        end
-        
-    end
 end
 

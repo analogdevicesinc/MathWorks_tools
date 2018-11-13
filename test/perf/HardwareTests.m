@@ -1,5 +1,9 @@
 classdef HardwareTests < LTETests
     
+    properties
+        SamplingRate = 1e6;
+    end
+    
     methods(Static)
         
         function saveToJSON(filename,data)
@@ -85,7 +89,7 @@ classdef HardwareTests < LTETests
             % TX
             txConfig = struct;
             txConfig.Dev = DeviceTx;
-            txConfig.SamplingRate = 1e6;
+            txConfig.SamplingRate = testCase.SamplingRate;
             txConfig.Gain = -10;
             txConfig.ChannelMapping = 1;
             % RX
