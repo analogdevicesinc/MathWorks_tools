@@ -4,7 +4,7 @@ classdef Tx < adi.AD9361.Tx
     %   transmit complex data from the AD9364.
     %
     %   tx = adi.AD9363.Tx;
-    %   tx = adi.AD93643Tx('uri','192.168.2.1');
+    %   tx = adi.AD9363.Tx('uri','192.168.2.1');
     %
     %   <a href="http://www.analog.com/media/en/technical-documentation/data-sheets/AD9363.pdf">AD9363 Datasheet</a>
     %
@@ -61,8 +61,12 @@ classdef Tx < adi.AD9361.Tx
                 '', 'SamplesPerFrame');
             obj.SamplingRate = value;
             if obj.ConnectedToDevice
-                id = 'voltage0';
-                obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
+                else
+                    id = 'voltage0';
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                end
             end
         end
     end

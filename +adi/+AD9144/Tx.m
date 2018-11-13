@@ -1,9 +1,20 @@
-classdef Tx < adi.AD9144.Base & adi.common.Tx
-    %ADRV9009 Rx Summary of this class goes here
-    %   Detailed explanation goes here
+classdef Tx < adi.AD9144.Base & adi.common.Tx & adi.common.DDS
+    % adi.AD9144.Tx Transmit data to the AD9144 high speed DAC
+    %   The adi.AD9144.Tx System object is a signal source that can send
+    %   complex data from the AD9144.
+    %
+    %   tx = adi.AD9144.Tx;
+    %   tx = adi.AD9144.Tx('uri','192.168.2.1');
+    %
+    %   <a href="http://www.analog.com/media/en/technical-documentation/data-sheets/AD9144.pdf">AD9144 Datasheet</a>
+    %
+    %   See also adi.DAQ2.Tx
     
-    properties (Nontunable)
-        Mode = 'DMA'; 
+    properties (Constant)
+        %SamplingRate Sampling Rate
+        %   Baseband sampling rate in Hz, specified as a scalar 
+        %   in samples per second. This value is constant
+        SamplingRate = 1e9;
     end
     
     properties (Hidden, Nontunable, Access = protected)
@@ -31,36 +42,18 @@ classdef Tx < adi.AD9144.Base & adi.common.Tx
     %% API Functions
     methods (Hidden, Access = protected)
         
-%         function stepImpl(obj,varargin)
-% 
-%             if strcmp(obj.Mode,'DDS')
-%                 error('Cannot send data to DMA with DDS enabled');
-%             end
-%             c = obj.channelCount/2;
-%             N = c*length(varargin{1})*2;
-%             outputData = complex(zeros(N,1));
-%             % Convert to single vector
-%             %%%% CAN TELL BLOCK COMPLEXITY
-% %             for k = 1:nargin-1
-% %                 outputData(2*k-1:obj.channelCount:end) = real(varargin{k});
-% %                 outputData(2*k:obj.channelCount:end) = imag(varargin{k});
-% %             end
-%             sendData(obj,outputData);
-%         end
+        function setupImpl(obj,data)
+            if strcmp(obj.DataSource,'DMA')
+                obj.SamplesPerFrame = size(data,1);
+            end
+            % Call the superclass method
+            setupImpl@matlabshared.libiio.base(obj);
+        end
         
-        function releaseChanBuffers(obj)
-            % Destroy the buffers
-            destroyBuf(obj);
-            % Call the dev specific release
-            %             streamDevRelease(obj);
-
-            % Disable the channels
-            if obj.enabledChannels
-            for k=1:obj.channelCount
-                disableChannel(obj, obj.channel_names{k}, obj.isOutput);
-            end
-            obj.enabledChannels = false;
-            end
+        % Hide unused parameters when in specific modes
+        function flag = isInactivePropertyImpl(obj, prop)
+            % Call the superclass method
+            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
         end
         
     end

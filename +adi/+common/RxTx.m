@@ -22,14 +22,40 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
     %% API Functions
     methods (Hidden, Access = protected)
         
-        
+        % Hide unused parameters when in specific modes
+        function flag = isInactivePropertyImpl(obj, prop)
+            flag = strcmpi(prop,'enIO');
+            % TX
+            flag = flag || strcmpi(prop,'DDSFrequencies') &&...
+                ~strcmpi(obj.DataSource, 'DDS');
+            flag = flag || strcmpi(prop,'DDSScales') &&...
+                ~strcmpi(obj.DataSource, 'DDS');
+            flag = flag || strcmpi(prop,'DDSPhases') &&...
+                ~strcmpi(obj.DataSource, 'DDS');
+            flag = flag || strcmpi(prop,'EnableCyclicBuffers') &&...
+                ~strcmpi(obj.DataSource, 'DMA');
+            flag = flag || strcmpi(prop,'SamplesPerFrame') && strcmp(obj.Type,'Tx');
+            if obj.channelCount < 3
+                flag = flag || strcmpi(prop,'AttenuationChannel1');
+            end
+            if obj.isInSimulink
+                flag = flag || strcmpi(prop,'EnableCyclicBuffers');
+            end
+            % RX
+            flag = flag || strcmpi(prop,'GainChannel0') &&...
+                ~strcmpi(obj.GainControlMode, 'manual');
+            flag = flag || strcmpi(prop,'GainChannel1') &&...
+                ~strcmpi(obj.GainControlMode, 'manual');
+            
+            if obj.channelCount < 3
+                flag = flag || strcmpi(prop,'GainChannel1');
+                flag = flag || strcmpi(prop,'EnableQuadratureTrackingChannel1');
+            end
+        end
         
         function releaseChanBuffers(obj)
             % Destroy the buffers
             destroyBuf(obj);
-            
-            % Call the dev specific release
-%             streamDevRelease(obj);
             
             % Disable the channels
             if obj.enabledChannels
@@ -58,7 +84,9 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             % Create the buffers
             status = createBuf(obj);
             if status
-%                 disableChannel(obj, obj.channel, obj.isOutput);
+                for k=1:obj.channelCount
+                    disableChannel(obj, obj.channel_names{k}, obj.isOutput);
+                end
                 releaseChanBuffers(obj);
                 cerrmsg(obj,status,['Failed to create buffer for: ' obj.devName]);
                 return

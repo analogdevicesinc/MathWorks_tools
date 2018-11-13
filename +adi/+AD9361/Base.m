@@ -1,5 +1,5 @@
-classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
-        matlab.system.mixin.CustomIcon & matlab.system.mixin.SampleTime
+classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.libiio.base & ...
+        matlab.system.mixin.CustomIcon
     %adi.AD9361.Base Class
     %   This class contains shared parameters and methods between TX and RX
     %   classes
@@ -108,12 +108,7 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
     
     %% API Functions
     methods (Hidden, Access = protected)
-        
-        function sts = getSampleTimeImpl(obj)
-            sts = createSampleTime(obj,'Type','Discrete',...
-                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
-        end
-        
+               
         function icon = getIconImpl(obj)
             icon = sprintf(['AD9361 ',obj.Type]);
         end
@@ -128,7 +123,10 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
                 loadlibraryArgs = {hfile,'includepath',obj.Libad9361IncludePathWindows,'addheader','ad9361.h'};
             end
             if ~libisloaded(libName)
+                msgID = 'MATLAB:loadlibrary:StructTypeExists';
+                warnStruct = warning('off',msgID);
                 [~, ~] = loadlibrary(libName, loadlibraryArgs{:});
+                warning(warnStruct);
             end
             obj.iioDevPHY = calllib('libiio', 'iio_context_find_device',obj.iioCtx,'ad9361-phy');
         end
@@ -139,31 +137,7 @@ classdef (Abstract, Hidden = true) Base < matlabshared.libiio.base & ...
                 unloadlibrary(libName);
             end
         end
-        
-        function setAttributeLongLong(obj,id,attr,value,output)
-            phydev = getDev(obj, obj.phyDevName);
-            chanPtr = iio_device_find_channel(obj,phydev,id,output);%FIXME (INVERSION)
-            status = cPtrCheck(obj,chanPtr);
-            cstatus(obj,status,['Channel: ' id ' not found']);
-            iio_channel_attr_write_longlong(obj,chanPtr,attr,value);
-        end
-        
-        function setAttributeBool(obj,id,attr,value,output)
-            phydev = getDev(obj, obj.phyDevName);
-            chanPtr = iio_device_find_channel(obj,phydev,id,output);%FIXME (INVERSION)
-            status = cPtrCheck(obj,chanPtr);
-            cstatus(obj,status,['Channel: ' id ' not found']);
-            iio_channel_attr_write_bool(obj,chanPtr,attr,value);
-        end
-        
-        function setAttributeRAW(obj,id,attr,value,output)
-            phydev = getDev(obj, obj.phyDevName);
-            chanPtr = iio_device_find_channel(obj,phydev,id,output);%FIXME (INVERSION)
-            status = cPtrCheck(obj,chanPtr);
-            cstatus(obj,status,['Channel: ' id ' not found']);
-            iio_channel_attr_write(obj,chanPtr,attr,value);
-        end
-        
+           
     end
     
     %% External Dependency Methods

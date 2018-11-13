@@ -6,7 +6,7 @@ classdef Tx < adi.AD9364.Tx
     %   tx = adi.FMComms4.Tx;
     %   tx = adi.FMComms4.Tx('uri','192.168.2.1');
     %
-    %   <a href="http://www.analog.com/media/en/technical-documentation/data-sheets/AD9364.pdf">AD9364 Datasheet</a>
+    %   <a href="https://www.analog.com/en/design-center/evaluation-hardware-and-software/evaluation-boards-kits/EVAL-AD-FMCOMMS4.html">Product Page</a>
     %
     %   See also adi.AD9364.Tx
     methods

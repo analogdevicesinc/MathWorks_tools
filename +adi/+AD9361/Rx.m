@@ -1,4 +1,4 @@
-classdef Rx < adi.AD9361.Base & adi.common.Rx
+classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
     % adi.AD9361.Rx Receive data from the AD9361 transceiver
     %   The adi.AD9361.Rx System object is a signal source that can receive
     %   complex data from the AD9361.
@@ -11,21 +11,33 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
     %   See also adi.FMComms2.Rx, adi.FMComms3.Rx, adi.FMComms5.Rx
     
     properties
-        %GainControlMode Gain Control Mode
+        %GainControlModeChannel0 Gain Control Mode Channel 0
         %   specified as one of the following:
         %   'slow_attack' — For signals with slowly changing power levels
         %   'fast_attack' — For signals with rapidly changing power levels
         %   'manual' — For setting the gain manually with the Gain property
         %   'hybrid' — For configuring hybrid AGC mode
-        GainControlMode = 'slow_attack';
-        %Gain Gain
-        %   Gain, specified as a scalar from -4 dB to 71 dB. The acceptable
+        GainControlModeChannel0 = 'slow_attack';
+        %GainChannel0 Gain Channel 0
+        %   Channel 0 gain, specified as a scalar from -4 dB to 71 dB. The acceptable
         %   minimum and maximum gain setting depends on the center
         %   frequency.
-        Gain = 10;
+        GainChannel0 = 10;
+        %GainControlModeChannel1 Gain Control Mode Channel 1
+        %   specified as one of the following:
+        %   'slow_attack' — For signals with slowly changing power levels
+        %   'fast_attack' — For signals with rapidly changing power levels
+        %   'manual' — For setting the gain manually with the Gain property
+        %   'hybrid' — For configuring hybrid AGC mode
+        GainControlModeChannel1 = 'slow_attack';
+        %GainChannel1 Gain Channel 1
+        %   Channel 1 gain, specified as a scalar from -4 dB to 71 dB. The acceptable
+        %   minimum and maximum gain setting depends on the center
+        %   frequency.
+        GainChannel1 = 10;
     end
     
-    properties (Logical)
+    properties (Nontunable, Logical) % MUST BE NONTUNABLE OR SIMULINK WARNS
         %EnableQuadratureTracking Enable Quadrature Tracking
         %   Option to enable quadrature tracking, specified as true or
         %   false. When this property is true, IQ imbalance compensation is
@@ -44,7 +56,9 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
     end
     
     properties(Constant, Hidden)
-        GainControlModeSet = matlab.system.StringSet({ ...
+        GainControlModeChannel0Set = matlab.system.StringSet({ ...
+            'manual','fast_attack','slow_attack','hybrid'});
+        GainControlModeChannel1Set = matlab.system.StringSet({ ...
             'manual','fast_attack','slow_attack','hybrid'});
     end
     
@@ -67,23 +81,43 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
             coder.allowpcode('plain');
             obj = obj@adi.AD9361.Base(varargin{:});
         end
-        % Check GainControlMode
-        function set.GainControlMode(obj, value)
-            obj.GainControlMode = value;
+        % Check GainControlModeChannel0
+        function set.GainControlModeChannel0(obj, value)
+            obj.GainControlModeChannel0 = value;
             if obj.ConnectedToDevice
                 id = 'voltage0';
                 obj.setAttributeRAW(id,'gain_control_mode',value,false);
             end
         end
-        % Check Gain
-        function set.Gain(obj, value)
+        % Check GainControlModeChannel1
+        function set.GainControlModeChannel1(obj, value)
+            obj.GainControlModeChannel1 = value;
+            if obj.ConnectedToDevice
+                id = 'voltage1';
+                obj.setAttributeRAW(id,'gain_control_mode',value,false);
+            end
+        end
+        % Check GainChannel0
+        function set.GainChannel0(obj, value)
             validateattributes( value, { 'double','single' }, ...
                 { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -4,'<=', 71}, ...
                 '', 'Gain');
             assert(mod(value,1/4)==0, 'Gain must be a multiple of 0.25');
-            obj.Gain = value;
-            if obj.ConnectedToDevice
+            obj.GainChannel0 = value;
+            if obj.ConnectedToDevice && strcmp(obj.GainControlModeChannel0,'manual') %#ok<MCSUP>
                 id = 'voltage0';
+                obj.setAttributeLongLong(id,'hardwaregain',value,false);
+            end
+        end
+        % Check GainChannel1
+        function set.GainChannel1(obj, value)
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -4,'<=', 71}, ...
+                '', 'Gain');
+            assert(mod(value,1/4)==0, 'Gain must be a multiple of 0.25');
+            obj.GainChannel1 = value;
+            if obj.ConnectedToDevice && strcmp(obj.GainControlModeChannel1,'manual') %#ok<MCSUP>
+                id = 'voltage1';
                 obj.setAttributeLongLong(id,'hardwaregain',value,false);
             end
         end
@@ -114,12 +148,10 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
     end
     
     methods (Access=protected)
-        % Only show Gain when GainControlMode set to
-        % 'manual'
+        % Hide unused parameters when in specific modes
         function flag = isInactivePropertyImpl(obj, prop)
-            flag = strcmpi(prop,'Gain') &&...
-                ~strcmpi(obj.GainControlMode, 'manual');
-            
+            % Call the superclass method
+            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
         end
         
         function varargout = getOutputNamesImpl(obj)
@@ -127,7 +159,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
             numOut = obj.channelCount/2 + 1; % +1 for valid
             varargout = cell(1,numOut);
             for k=1:numOut-1
-                varargout{k} = ['out',num2str(k)];
+                varargout{k} = ['chan',num2str(k)];
             end
             varargout{numOut} = 'valid';
         end
@@ -154,7 +186,6 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
         
         function varargout = isOutputComplexImpl(obj)
             % Return true for each output port with complex data
-            out = true;
             numOut = obj.channelCount/2 + 1; % +1 for valid
             varargout = cell(1,numOut);
             for k=1:numOut-1
@@ -176,6 +207,11 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
     %% API Functions
     methods (Hidden, Access = protected)
         
+        function sts = getSampleTimeImpl(obj)
+            sts = createSampleTime(obj,'Type','Discrete',...
+                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
+        end
+        
         function numOut = getNumOutputsImpl(obj)
             numOut = obj.channelCount/2 + 1; % +1 for valid
         end
@@ -187,7 +223,8 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
-            obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlMode,false);
+            obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlModeChannel0,false);
+            obj.setAttributeRAW('voltage1','gain_control_mode',obj.GainControlModeChannel1,false);
             obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
             obj.setAttributeBool('voltage0','rf_dc_offset_tracking_en',obj.EnableRFDCTracking,false);
             obj.setAttributeBool('voltage0','bb_dc_offset_tracking_en',obj.EnableBasebandDCTracking,false);
@@ -198,7 +235,12 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx
             else
                 obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true);
             end
-            obj.setAttributeLongLong('voltage0','hardwaregain',obj.Gain,false);
+            if strcmp(obj.GainControlModeChannel0,'manual')
+                obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
+            end
+            if strcmp(obj.GainControlModeChannel1,'manual')
+                obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);
+            end
             obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
         end
         

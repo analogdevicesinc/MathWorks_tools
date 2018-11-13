@@ -1,7 +1,8 @@
-classdef AD9364Tests < matlab.unittest.TestCase
+classdef AD9371Tests < matlab.unittest.TestCase
     
     properties
         uri = 'ip:192.168.3.2';
+        SamplingRateRX = 122.88e6;
     end
     
     methods (Static)
@@ -15,9 +16,9 @@ classdef AD9364Tests < matlab.unittest.TestCase
     
     methods (Test)
         
-        function testAD9363Rx(testCase)
+        function testAD9371Rx(testCase)
             % Test Rx DMA data output
-            rx = adi.AD9364.Rx('uri',testCase.uri);
+            rx = adi.AD9371.Rx('uri',testCase.uri);
             rx.channelCount = 2;
             [out, valid] = rx();
             rx.release();
@@ -25,16 +26,16 @@ classdef AD9364Tests < matlab.unittest.TestCase
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
         end
         
-        function testAD9364RxWithTxDDS(testCase)
+        function testAD9371RxWithTxDDS(testCase)
             % Test DDS output
-            tx = adi.AD9364.Tx('uri',testCase.uri);
+            tx = adi.AD9371.Tx('uri',testCase.uri);
             tx.DataSource = 'DDS';
-            toneFreq = 5e5;
+            toneFreq = 30e6;
             tx.DDSFrequencies = repmat(toneFreq,2,4);
             tx.AttenuationChannel0 = -10;
             tx();
             pause(1);
-            rx = adi.AD9364.Rx('uri',testCase.uri);
+            rx = adi.AD9371.Rx('uri',testCase.uri);
             rx.channelCount = 2;
             rx.kernelBuffersCount = 1;
             for k=1:10
@@ -46,8 +47,8 @@ classdef AD9364Tests < matlab.unittest.TestCase
             rx.release();
 
 %             plot(real(out));
-%             testCase.estFrequency(out,rx.SamplingRate);
-            freqEst = meanfreq(double(real(out)),rx.SamplingRate);
+%             testCase.estFrequency(out,testCase.SamplingRateRX);
+            freqEst = meanfreq(double(real(out)),testCase.SamplingRateRX);
 
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
@@ -56,24 +57,24 @@ classdef AD9364Tests < matlab.unittest.TestCase
             
         end
         
-        function testAD9364RxWithTxData(testCase)
+        function testAD9371RxWithTxData(testCase)
             % Test Tx DMA data output
-            amplitude = 2^15; frequency = 0.12e6;
+            amplitude = 2^15; frequency = 20e6;
             swv1 = dsp.SineWave(amplitude, frequency);
             swv1.ComplexOutput = true;
-            swv1.SamplesPerFrame = 1e4*10;
-            swv1.SampleRate = 3e6;
+            swv1.SamplesPerFrame = 2^20;
+            swv1.SampleRate = testCase.SamplingRateRX*2;
             y = swv1();
             
-            tx = adi.AD9364.Tx('uri',testCase.uri);
+            tx = adi.AD9371.Tx('uri',testCase.uri);
             tx.DataSource = 'DMA';
             tx.EnableCyclicBuffers = true;
             tx.AttenuationChannel0 = -10;
             tx(y);
-            rx = adi.AD9364.Rx('uri',testCase.uri);
+            rx = adi.AD9371.Rx('uri',testCase.uri);
             rx.channelCount = 2;
             rx.kernelBuffersCount = 1;
-            for k=1:10
+            for k=1:20
                 valid = false;
                 while ~valid
                     [out, valid] = rx();
@@ -82,8 +83,8 @@ classdef AD9364Tests < matlab.unittest.TestCase
             rx.release();
 
 %             plot(real(out));
-%             testCase.estFrequency(out,rx.SamplingRate);
-            freqEst = meanfreq(double(real(out)),rx.SamplingRate);
+%             testCase.estFrequency(out,testCase.SamplingRateRX);
+            freqEst = meanfreq(double(real(out)),testCase.SamplingRateRX);
             
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
