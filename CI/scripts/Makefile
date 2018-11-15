@@ -31,8 +31,16 @@ add_libad9361:
 	mv usr/local/include ../
 	rm -rf usr
 	rm *.tar.gz
-	cd ..	
+	cd ..
 	# Windows
+	mkdir win
+	cd win
+	wget "https://ci.appveyor.com/api/projects/analogdevicesinc/libad9361-iio/artifacts/libad9361-win64.zip?branch=master" -O lib.zip
+	unzip lib.zip
+	mv libad9361-win64/* .
+	rm -rf libad9361-win64
+	rm *.h
+	rm lib.zip
 
 test_installer:
 	cd ../..
