@@ -9,13 +9,7 @@ classdef Tx < adi.AD9361.Tx
     %   <a href="http://www.analog.com/media/en/technical-documentation/data-sheets/AD9364.pdf">AD9364 Datasheet</a>
     %
     %   See also adi.FMComms4.Tx
-    
-    properties (Nontunable)
-        %channelCount channel Count
-        %   Number of enabled IQ channels. 2 enables one I and one Q
-        %   channel
-        channelCount = 2;
-    end
+
     methods
         %% Constructor
         function obj = Tx(varargin)

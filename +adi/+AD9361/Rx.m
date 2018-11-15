@@ -11,6 +11,21 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
     %   See also adi.FMComms2.Rx, adi.FMComms3.Rx, adi.FMComms5.Rx
     
     properties
+        %CenterFrequency Center Frequency
+        %   RF center frequency, specified in Hz as a scalar. The
+        %   default is 2.4e9.  This property is tunable.
+        CenterFrequency = 2.4e9;
+        %SamplingRate Sampling Rate
+        %   Baseband sampling rate in Hz, specified as a scalar 
+        %   from 65105 to 61.44e6 samples per second.
+        SamplingRate = 3e6;
+        %RFBandwidth RF Bandwidth
+        %   RF Bandwidth of front-end analog filter in Hz, specified as a
+        %   scalar from 200 kHz to 56 MHz.
+        RFBandwidth = 3e6;
+    end
+    
+    properties
         %GainControlModeChannel0 Gain Control Mode Channel 0
         %   specified as one of the following:
         %   'slow_attack' — For signals with slowly changing power levels
@@ -145,6 +160,55 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 obj.setAttributeBool(id,'bb_dc_offset_tracking_en',value,false);
             end
         end
+        % Check CenterFrequency
+        function set.CenterFrequency(obj, value)
+            if isa(obj,'adi.AD9363.Rx')
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',325e6,'<=',3.8e9}, ...
+                    '', 'CenterFrequency');
+            else
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',70e6,'<=',6e9}, ...
+                    '', 'CenterFrequency');
+            end
+            obj.CenterFrequency = value;
+            if obj.ConnectedToDevice
+                id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
+                obj.setAttributeLongLong(id,'frequency',value,true);
+            end
+        end
+        % Check RFBandwidth
+        function set.RFBandwidth(obj, value)
+            if isa(obj,'adi.AD9363.Rx')
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',200e3,'<=',20e6}, ...
+                    '', 'RFBandwidth');
+            else
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',200e3,'<=',56e6}, ...
+                    '', 'RFBandwidth');
+            end
+            obj.RFBandwidth = value;
+            if obj.ConnectedToDevice
+                id = 'voltage0';
+                obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'));
+            end
+        end
+        % Check SampleRate
+        function set.SamplingRate(obj, value)
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',2083333,'<=',61.44e6}, ...
+                '', 'SamplesPerFrame');
+            obj.SamplingRate = value;
+            if obj.ConnectedToDevice
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
+                else
+                    id = 'voltage0';
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                end
+            end
+        end
     end
     
     methods (Access=protected)
@@ -224,21 +288,23 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
             obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlModeChannel0,false);
-            obj.setAttributeRAW('voltage1','gain_control_mode',obj.GainControlModeChannel1,false);
+            if obj.channelCount>2
+                obj.setAttributeRAW('voltage1','gain_control_mode',obj.GainControlModeChannel1,false);
+            end
             obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
             obj.setAttributeBool('voltage0','rf_dc_offset_tracking_en',obj.EnableRFDCTracking,false);
             obj.setAttributeBool('voltage0','bb_dc_offset_tracking_en',obj.EnableBasebandDCTracking,false);
             id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
-            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
+            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
             if libisloaded('libad9361')
                 calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
             else
-                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true);
+                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
             end
             if strcmp(obj.GainControlModeChannel0,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
             end
-            if strcmp(obj.GainControlModeChannel1,'manual')
+            if strcmp(obj.GainControlModeChannel1,'manual') && (obj.channelCount>2)
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);
             end
             obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));

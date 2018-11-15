@@ -1,7 +1,7 @@
 classdef AD9361Tests < matlab.unittest.TestCase
     
     properties
-        uri = 'ip:192.168.3.2';
+        uri = 'ip:192.168.2.1';
     end
     
     methods (Static)

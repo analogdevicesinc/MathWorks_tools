@@ -26,14 +26,16 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         function flag = isInactivePropertyImpl(obj, prop)
             flag = strcmpi(prop,'enIO');
             % TX
-            flag = flag || strcmpi(prop,'DDSFrequencies') &&...
-                ~strcmpi(obj.DataSource, 'DDS');
-            flag = flag || strcmpi(prop,'DDSScales') &&...
-                ~strcmpi(obj.DataSource, 'DDS');
-            flag = flag || strcmpi(prop,'DDSPhases') &&...
-                ~strcmpi(obj.DataSource, 'DDS');
-            flag = flag || strcmpi(prop,'EnableCyclicBuffers') &&...
-                ~strcmpi(obj.DataSource, 'DMA');
+            if isprop(obj,'DataSource')
+                flag = flag || strcmpi(prop,'DDSFrequencies') &&...
+                    ~strcmpi(obj.DataSource, 'DDS');
+                flag = flag || strcmpi(prop,'DDSScales') &&...
+                    ~strcmpi(obj.DataSource, 'DDS');
+                flag = flag || strcmpi(prop,'DDSPhases') &&...
+                    ~strcmpi(obj.DataSource, 'DDS');
+                flag = flag || strcmpi(prop,'EnableCyclicBuffers') &&...
+                    ~strcmpi(obj.DataSource, 'DMA');
+            end
             flag = flag || strcmpi(prop,'SamplesPerFrame') && strcmp(obj.Type,'Tx');
             if obj.channelCount < 3
                 flag = flag || strcmpi(prop,'AttenuationChannel1');
@@ -42,13 +44,20 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
                 flag = flag || strcmpi(prop,'EnableCyclicBuffers');
             end
             % RX
-            flag = flag || strcmpi(prop,'GainChannel0') &&...
-                ~strcmpi(obj.GainControlMode, 'manual');
-            flag = flag || strcmpi(prop,'GainChannel1') &&...
-                ~strcmpi(obj.GainControlMode, 'manual');
-            
+            if isprop(obj,'GainControlMode')
+                flag = flag || strcmpi(prop,'GainChannel0') &&...
+                    ~strcmpi(obj.GainControlMode, 'manual');
+                flag = flag || strcmpi(prop,'GainChannel1') &&...
+                    ~strcmpi(obj.GainControlMode, 'manual');
+            elseif isprop(obj,'GainControlModeChannel0')
+                flag = flag || strcmpi(prop,'GainChannel0') &&...
+                    ~strcmpi(obj.GainControlModeChannel0, 'manual');
+                flag = flag || strcmpi(prop,'GainChannel1') &&...
+                    ~strcmpi(obj.GainControlModeChannel1, 'manual');
+            end
             if obj.channelCount < 3
                 flag = flag || strcmpi(prop,'GainChannel1');
+                flag = flag || strcmpi(prop,'GainControlModeChannel1');
                 flag = flag || strcmpi(prop,'EnableQuadratureTrackingChannel1');
             end
         end

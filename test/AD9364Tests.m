@@ -1,7 +1,7 @@
 classdef AD9364Tests < matlab.unittest.TestCase
     
     properties
-        uri = 'ip:192.168.3.2';
+        uri = 'ip:192.168.2.1';
     end
     
     methods (Static)
@@ -15,7 +15,7 @@ classdef AD9364Tests < matlab.unittest.TestCase
     
     methods (Test)
         
-        function testAD9363Rx(testCase)
+        function testAD9364Rx(testCase)
             % Test Rx DMA data output
             rx = adi.AD9364.Rx('uri',testCase.uri);
             rx.channelCount = 2;
@@ -23,6 +23,14 @@ classdef AD9364Tests < matlab.unittest.TestCase
             rx.release();
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
+        function testAD9364TooManyChannels(testCase)
+            rx = adi.AD9364.Rx();
+            testCase.verifyError(@SetchanelCount4,?MException);
+            function SetchanelCount4
+                rx.channelCount = 4;
+            end
         end
         
         function testAD9364RxWithTxDDS(testCase)
