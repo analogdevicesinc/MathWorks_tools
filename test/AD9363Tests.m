@@ -1,7 +1,7 @@
 classdef AD9363Tests < matlab.unittest.TestCase
     
     properties
-        uri = 'ip:192.168.3.2';
+        uri = 'ip:192.168.2.1';
     end
     
     methods (Static)
@@ -23,6 +23,14 @@ classdef AD9363Tests < matlab.unittest.TestCase
             rx.release();
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
+        function testAD9363LoOutOfRange(testCase)
+            rx = adi.AD9363.Rx();
+            testCase.verifyError(@LoOutOfRange,?MException);
+            function LoOutOfRange
+                rx.CenterFrequency = 5e9;
+            end
         end
         
         function testAD9363RxWithTxDDS(testCase)

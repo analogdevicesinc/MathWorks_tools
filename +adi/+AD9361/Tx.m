@@ -11,6 +11,21 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
     %   See also adi.FMComms2.Tx, adi.FMComms3.Tx, adi.FMComms5.Tx
     
     properties
+        %CenterFrequency Center Frequency
+        %   RF center frequency, specified in Hz as a scalar. The
+        %   default is 2.4e9.  This property is tunable.
+        CenterFrequency = 2.4e9;
+        %SamplingRate Sampling Rate
+        %   Baseband sampling rate in Hz, specified as a scalar 
+        %   from 65105 to 61.44e6 samples per second.
+        SamplingRate = 3e6;
+        %RFBandwidth RF Bandwidth
+        %   RF Bandwidth of front-end analog filter in Hz, specified as a
+        %   scalar from 200 kHz to 56 MHz.
+        RFBandwidth = 3e6;
+    end
+    
+    properties
         %AttenuationChannel0 Attenuation Channel 0
         %   Attentuation specified as a scalar from -89.75 to 0 dB with a
         %   resolution of 0.25 dB.
@@ -64,7 +79,63 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
                 obj.setAttributeLongLong(id,'hardwaregain',value,true);
             end
         end
-        
+        % Check CenterFrequency
+        function set.CenterFrequency(obj, value)
+            if isa(obj,'adi.AD9363.Tx')
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',325e6,'<=',3.8e9}, ...
+                    '', 'CenterFrequency');
+            else
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',70e6,'<=',6e9}, ...
+                    '', 'CenterFrequency');
+            end
+            obj.CenterFrequency = value;
+            if obj.ConnectedToDevice
+                id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
+                obj.setAttributeLongLong(id,'frequency',value,true);
+            end
+        end
+        % Check RFBandwidth
+        function set.RFBandwidth(obj, value)
+            if isa(obj,'adi.AD9363.Tx')
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',200e3,'<=',20e6}, ...
+                    '', 'RFBandwidth');
+            else
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',200e3,'<=',40e6}, ...
+                    '', 'RFBandwidth');
+                
+            end
+            obj.RFBandwidth = value;
+            if obj.ConnectedToDevice
+                id = 'voltage0';
+                obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'));
+            end
+        end
+        % Check SampleRate
+        function set.SamplingRate(obj, value)
+            if isa(obj,'adi.AD9363.Tx')
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',2083333,'<=',20e6}, ...
+                    '', 'SamplingRate');
+            else
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',2083333,'<=',61.44e6}, ...
+                    '', 'SamplingRate');
+                
+            end
+            obj.SamplingRate = value;
+            if obj.ConnectedToDevice
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
+                else
+                    id = 'voltage0';
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                end
+            end
+        end
     end
     
     methods (Access=protected)
@@ -102,14 +173,16 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
             id = 'altvoltage1';
-            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
+            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
             if libisloaded('libad9361')
                 calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
             else
                 obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true);
             end
             obj.setAttributeLongLong('voltage0','hardwaregain',obj.AttenuationChannel0,true);
-            obj.setAttributeLongLong('voltage1','hardwaregain',obj.AttenuationChannel1,true);
+            if obj.channelCount>2
+                obj.setAttributeLongLong('voltage1','hardwaregain',obj.AttenuationChannel1,true);
+            end
             obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));            
             obj.ToggleDDS(strcmp(obj.DataSource,'DDS'));
             if strcmp(obj.DataSource,'DDS')
