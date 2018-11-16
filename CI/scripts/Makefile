@@ -25,7 +25,8 @@ add_libad9361:
 	# Linux
 	mkdir linux
 	cd linux
-	curl --silent "https://api.github.com/repos/analogdevicesinc/libad9361-iio/releases/latest" | jq -r ".assets[] | select(.name | test(\"${spruce_type}\")) | .browser_download_url" | grep tar.gz | wget -i -
+	#curl --silent "https://api.github.com/repos/analogdevicesinc/libad9361-iio/releases/latest" | jq -r ".assets[] | select(.name | test(\"${spruce_type}\")) | .browser_download_url" | grep tar.gz | wget -i -
+	wget http://swdownloads.analog.com/cse/travis_builds/master_latest_libad9361-iio-trusty.tar.gz
 	tar xvf *.tar.gz
 	mv usr/local/lib/* .
 	mv usr/local/include ../
@@ -69,5 +70,5 @@ gen_tlbx:
 zip:
 	cd ../..
 	mkdir zip
-	zip -r zip/AnalogDevicesBSP_$(GITTAG).zip doc hdl_wa_bsp hil_models targeting_models info.xml LICENSE README.md test/*.log
+	zip -r zip/AnalogDevicesBSP_$(GITTAG).zip deps doc hdl_wa_bsp hil_models targeting_models info.xml LICENSE README.md test/*.log
 
