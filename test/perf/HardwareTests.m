@@ -2,6 +2,8 @@ classdef HardwareTests < LTETests
     
     properties
         SamplingRate = 1e6;
+        author = 'MathWorks';
+        uri = 'usb:0';
     end
     
     methods(Static)
@@ -15,26 +17,46 @@ classdef HardwareTests < LTETests
             fclose(fid);
         end
         
-        function dataRX = SDRToSDR(rxConfig, txConfig, dataTX)
+    end
+    
+    methods
+        
+        function dataRX = SDRToSDR(testCase, rxConfig, txConfig, dataTX)
             
             %% TX
             sdrTransmitter = txConfig.Dev();
-            sdrTransmitter.BasebandSampleRate = txConfig.SamplingRate;
             sdrTransmitter.CenterFrequency = txConfig.CenterFrequency;
-            sdrTransmitter.ShowAdvancedProperties = true;
-            sdrTransmitter.Gain = txConfig.Gain;
-            sdrTransmitter.ChannelMapping = txConfig.ChannelMapping;
             
-            sdrTransmitter.transmitRepeat(dataTX);
+            if strcmp(testCase.author,'MathWorks')
+                sdrTransmitter.RadioID = testCase.uri;
+                sdrTransmitter.ShowAdvancedProperties = true;
+                sdrTransmitter.BasebandSampleRate = txConfig.SamplingRate;
+                sdrTransmitter.ChannelMapping = txConfig.ChannelMapping;
+                sdrTransmitter.Gain = txConfig.Gain;
+                sdrTransmitter.transmitRepeat(dataTX);
+            else
+                sdrTransmitter.uri = testCase.uri;
+                sdrTransmitter.SamplingRate = txConfig.SamplingRate;
+                sdrTransmitter.EnableCyclicBuffers = true;
+                sdrTransmitter.AttenuationChannel0 = txConfig.Gain;
+                sdrTransmitter(dataTX);
+            end
             
             %% RX
             samplesPerFrame = length(dataTX)*10;
             sdrReceiver = rxConfig.Dev();
-            sdrReceiver.BasebandSampleRate = rxConfig.SamplingRate;
             sdrReceiver.CenterFrequency = rxConfig.CenterFrequency;
-            sdrReceiver.OutputDataType = 'double';
-            sdrReceiver.ChannelMapping = rxConfig.ChannelMapping;
             sdrReceiver.SamplesPerFrame = samplesPerFrame;
+            
+            if strcmp(testCase.author,'MathWorks')
+                sdrReceiver.RadioID = testCase.uri;
+                sdrReceiver.BasebandSampleRate = rxConfig.SamplingRate;
+                sdrReceiver.OutputDataType = 'double';
+                sdrReceiver.ChannelMapping = rxConfig.ChannelMapping;
+            else
+                sdrReceiver.uri = testCase.uri;
+                sdrReceiver.SamplingRate = rxConfig.SamplingRate;
+            end
             
             % SDR Capture
             fprintf('\nStarting a new RF capture.\n\n')
@@ -50,10 +72,13 @@ classdef HardwareTests < LTETests
             sdrReceiver.release();
             clear sdrTransmitter sdrReceiver
             
+            if ~strcmp(testCase.author,'MathWorks')
+               dataRX = double(dataRX)./max(abs(double(dataRX)));
+            end
+            
+            
         end
-    end
-    
-    methods
+
         
         function CheckDevice(testCase,type,Dev,ip,istx)
             
@@ -62,7 +87,12 @@ classdef HardwareTests < LTETests
                     case 'usb'
                         d = Dev();
                     case 'ip'
-                        d= Dev('RadioID',['ip:',ip]);
+                        if strcmp(testCase.author,'MathWorks')
+                            d= Dev('RadioID',['ip:',ip]);
+                        else
+                            d= Dev();
+                            d.uri = ['ip:',ip];
+                        end
                     otherwise
                         error('Unknown interface type');
                 end
@@ -72,7 +102,7 @@ classdef HardwareTests < LTETests
                     d();
                 end
                 
-            catch
+            catch ME
                 assumeFail(testCase);
             end
             
@@ -121,7 +151,7 @@ classdef HardwareTests < LTETests
                         burstCaptures = testCase.SDRToSDR(rxConfig,txConfig,eNodeBOutput);
                         % RX
                         evmResults(k,:) = testCase.ReceiverLTE(name, config, burstCaptures,eNodeBOutput);
-                    catch
+                    catch ME
                         warning(['Run failure at run ',num2str(k),', will remove in post processing']);
                         removeRuns = [removeRuns;k]; %#ok<AGROW>
                     end
@@ -184,7 +214,7 @@ classdef HardwareTests < LTETests
             Frequencies = (0.4:0.1:5).*1e9;
             DeviceTx = @()sdrtx('Pluto');
             DeviceRx = @()sdrrx('Pluto');
-            testname = 'LTE_R4_Pluto';
+            testname = 'LTE_R4_PlutoMW';
             
             %% Check hardware connected
             testCase.CheckDevice('usb',DeviceTx,[],true);
@@ -205,11 +235,34 @@ classdef HardwareTests < LTETests
             Frequencies = (0.4:0.1:5).*1e9;
             DeviceTx = @()sdrtx('ADI RF SOM');
             DeviceRx = @()sdrrx('ADI RF SOM');
-            testname = 'LTE_R4_RFSOM';
+            testname = 'LTE_R4_RFSOMMW';
             
             %% Check hardware connected
             testCase.CheckDevice('ip',DeviceTx,'192.168.3.2',true);
             testCase.CheckDevice('ip',DeviceRx,'192.168.3.2',false);
+            
+            %% Run Test
+            data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            
+            %% Log data
+            json = [testname,'_',num2str(int32(now)),'.json'];
+            testCase.saveToJSON(json, data);
+            
+        end
+        
+        function LTE_R4_AD9361(testCase)
+            
+            %% Test configs
+            Frequencies = (0.4:0.1:5).*1e9;
+            DeviceTx = @()adi.AD9361.Tx();
+            DeviceRx = @()adi.AD9361.Rx();
+            testname = 'LTE_R4_AD9361MW';
+            testCase.uri = 'ip:192.168.2.1';
+            testCase.author = 'ADI';
+            
+            %% Check hardware connected
+            testCase.CheckDevice('ip',DeviceTx,'192.168.2.1',true);
+            testCase.CheckDevice('ip',DeviceRx,'192.168.2.1',false);
             
             %% Run Test
             data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
