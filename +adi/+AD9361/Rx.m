@@ -196,9 +196,16 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
         end
         % Check SampleRate
         function set.SamplingRate(obj, value)
-            validateattributes( value, { 'double','single' }, ...
-                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',2083333,'<=',61.44e6}, ...
-                '', 'SamplesPerFrame');
+            if isa(obj,'adi.AD9363.Rx')
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',520833,'<=',20e6}, ...
+                    '', 'SamplesPerFrame');
+            else
+                validateattributes( value, { 'double','single' }, ...
+                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',520833,'<=',61.44e6}, ...
+                    '', 'SamplesPerFrame');
+            end
+            
             obj.SamplingRate = value;
             if obj.ConnectedToDevice
                 if libisloaded('libad9361')
