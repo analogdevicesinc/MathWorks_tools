@@ -19,7 +19,8 @@ fprintf(fid,'%s',f);
 fclose(fid);
 
 cd('../..');
-pwd
+addpath(matlabshared.supportpkg.getSupportPackageRoot);
+addpath(genpath('.'));
 rmpath(genpath('.'));
 ps = {'doc','hdl_wa_bsp','hil_models','targeting_models','deps'};
 paths = '';
