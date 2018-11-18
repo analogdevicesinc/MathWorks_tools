@@ -19,13 +19,9 @@ fprintf(fid,'%s',f);
 fclose(fid);
 
 cd('../..');
-disp('--');
-disp(matlabshared.supportpkg.getSupportPackageRoot());
-disp('--');
 addpath(genpath(matlabshared.supportpkg.getSupportPackageRoot()));
 addpath(genpath('.'));
 rmpath(genpath('.'));
-which findPlutoRadio
 ps = {'doc','hdl_wa_bsp','hil_models','targeting_models','deps'};
 paths = '';
 for p = ps
@@ -37,10 +33,6 @@ for p = ps
     addpath(ppF);
 end
 rehash
-which findPlutoRadio
-addpath(genpath(matlabshared.supportpkg.getSupportPackageRoot()));
-findPlutoRadio
-!cat bsp.prj
 projectFile = 'bsp.prj';
 currentVersion = matlab.addons.toolbox.toolboxVersion(projectFile);
 outputFile = ['AnalogDevicesBSP_v',currentVersion];
