@@ -38,6 +38,8 @@ for p = ps
 end
 rehash
 which findPlutoRadio
+addpath(genpath(matlabshared.supportpkg.getSupportPackageRoot()));
+findPlutoRadio
 !cat bsp.prj
 projectFile = 'bsp.prj';
 currentVersion = matlab.addons.toolbox.toolboxVersion(projectFile);
