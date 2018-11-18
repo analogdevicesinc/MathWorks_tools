@@ -21,7 +21,7 @@ build:2018_R1:
     stage: build
     script:
      - cd CI/scripts
-#     - make build
+     - make build
      - make add_libad9361
      - make gen_tlbx
      - cd ../..
