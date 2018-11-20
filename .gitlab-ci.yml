@@ -98,7 +98,7 @@ test_hardware:Streaming_Hardware:
             - logs/
 
 # Test streaming interfaces with hardware manual
-test_hardware:Streaming_Hardware_Manual:
+test_manual:Streaming_Hardware_Manual:
     when: manual
     tags:
      - matlab
