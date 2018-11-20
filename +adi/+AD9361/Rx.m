@@ -174,7 +174,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             obj.CenterFrequency = value;
             if obj.ConnectedToDevice
                 id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
-                obj.setAttributeLongLong(id,'frequency',value,true);
+                obj.setAttributeLongLong(id,'frequency',value,true,4);
             end
         end
         % Check RFBandwidth
@@ -191,7 +191,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             obj.RFBandwidth = value;
             if obj.ConnectedToDevice
                 id = 'voltage0';
-                obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'));
+                obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'),30);
             end
         end
         % Check SampleRate
@@ -212,7 +212,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                     calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
                 else
                     id = 'voltage0';
-                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true,4);
                 end
             end
         end

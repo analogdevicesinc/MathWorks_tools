@@ -58,7 +58,7 @@ test:
 
 test_streaming:
 	cd ../..
-	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('test'));hwTestRunner;"
+	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('test'));addpath(genpath('deps'));hwTestRunner;"
 
 test_modem:
 	cd ../..
