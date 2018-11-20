@@ -68,8 +68,8 @@ test_installer:2018_R1_Installer:
             junit: test/BSPTestResults.xml
 
 test_hardware:Streaming_Hardware:
-    only:
-     - schedules
+#    only:
+#     - schedules
     stage: test_hardware
     dependencies:
      - build:2018_R1
