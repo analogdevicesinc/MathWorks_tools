@@ -28,7 +28,11 @@ classdef HardwareTests < LTETests
             sdrTransmitter.CenterFrequency = txConfig.CenterFrequency;
             
             if strcmp(testCase.author,'MathWorks')
-                sdrTransmitter.RadioID = testCase.uri;
+                if isprop(sdrTransmitter,'RadioID')
+                    sdrTransmitter.RadioID = testCase.uri;
+                else
+                    sdrTransmitter.IPAddress = testCase.uri;
+                end
                 sdrTransmitter.ShowAdvancedProperties = true;
                 sdrTransmitter.BasebandSampleRate = txConfig.SamplingRate;
                 sdrTransmitter.ChannelMapping = txConfig.ChannelMapping;
@@ -49,9 +53,14 @@ classdef HardwareTests < LTETests
             sdrReceiver.SamplesPerFrame = samplesPerFrame;
             
             if strcmp(testCase.author,'MathWorks')
-                sdrReceiver.RadioID = testCase.uri;
+                if isprop(sdrReceiver,'RadioID')
+                    sdrReceiver.RadioID = testCase.uri;
+                else
+                    sdrReceiver.IPAddress = testCase.uri;
+                end
                 sdrReceiver.BasebandSampleRate = rxConfig.SamplingRate;
-                sdrReceiver.OutputDataType = 'double';
+                %sdrReceiver.OutputDataType = 'double';
+                sdrReceiver.OutputDataType = 'int16';
                 sdrReceiver.ChannelMapping = rxConfig.ChannelMapping;
             else
                 sdrReceiver.uri = testCase.uri;
@@ -72,9 +81,7 @@ classdef HardwareTests < LTETests
             sdrReceiver.release();
             clear sdrTransmitter sdrReceiver
             
-            if ~strcmp(testCase.author,'MathWorks')
-               dataRX = double(dataRX)./max(abs(double(dataRX)));
-            end
+            dataRX = double(dataRX)./max(abs(double(dataRX)));
             
             
         end
@@ -88,7 +95,8 @@ classdef HardwareTests < LTETests
                         d = Dev();
                     case 'ip'
                         if strcmp(testCase.author,'MathWorks')
-                            d= Dev('RadioID',['ip:',ip]);
+                            d= Dev();
+                            d.IPAddress = ip;
                         else
                             d= Dev();
                             d.uri = ['ip:',ip];
@@ -103,6 +111,7 @@ classdef HardwareTests < LTETests
                 end
                 
             catch ME
+                disp(ME.message);
                 assumeFail(testCase);
             end
             
@@ -214,7 +223,7 @@ classdef HardwareTests < LTETests
             Frequencies = (0.4:0.1:5).*1e9;
             DeviceTx = @()sdrtx('Pluto');
             DeviceRx = @()sdrrx('Pluto');
-            testname = 'LTE_R4_PlutoMW';
+            testname = 'LTE_R4_Pluto_MW';
             
             %% Check hardware connected
             testCase.CheckDevice('usb',DeviceTx,[],true);
@@ -235,7 +244,8 @@ classdef HardwareTests < LTETests
             Frequencies = (0.4:0.1:5).*1e9;
             DeviceTx = @()sdrtx('ADI RF SOM');
             DeviceRx = @()sdrrx('ADI RF SOM');
-            testname = 'LTE_R4_RFSOMMW';
+            testname = 'LTE_R4_RFSOM_MW';
+            testCase.uri = 'ip:192.168.3.2';
             
             %% Check hardware connected
             testCase.CheckDevice('ip',DeviceTx,'192.168.3.2',true);
@@ -256,7 +266,7 @@ classdef HardwareTests < LTETests
             Frequencies = (0.4:0.1:5).*1e9;
             DeviceTx = @()adi.AD9361.Tx();
             DeviceRx = @()adi.AD9361.Rx();
-            testname = 'LTE_R4_AD9361MW';
+            testname = 'LTE_R4_AD9361_ADI';
             testCase.uri = 'ip:192.168.2.1';
             testCase.author = 'ADI';
             

@@ -93,7 +93,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             obj.CenterFrequency = value;
             if obj.ConnectedToDevice
                 id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
-                obj.setAttributeLongLong(id,'frequency',value,true);
+                obj.setAttributeLongLong(id,'frequency',value,true,4);
             end
         end
         % Check RFBandwidth
@@ -111,7 +111,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             obj.RFBandwidth = value;
             if obj.ConnectedToDevice
                 id = 'voltage0';
-                obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'));
+                obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'),30);
             end
         end
         % Check SampleRate
@@ -132,7 +132,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
                     calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
                 else
                     id = 'voltage0';
-                    obj.setAttributeLongLong(id,'sampling_frequency',value,true);
+                    obj.setAttributeLongLong(id,'sampling_frequency',value,true,4);
                 end
             end
         end
@@ -169,6 +169,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods
+            setupLibad9361(obj);
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
@@ -177,7 +178,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             if libisloaded('libad9361')
                 calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
             else
-                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true);
+                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
             end
             obj.setAttributeLongLong('voltage0','hardwaregain',obj.AttenuationChannel0,true);
             if obj.channelCount>2
