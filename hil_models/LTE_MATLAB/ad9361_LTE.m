@@ -48,7 +48,13 @@ rmc = lteRMCDL(txsim.RC);
 rmc.NCellID = txsim.NCellID;
 rmc.NFrame = txsim.NFrame;
 rmc.TotSubframes = txsim.TotFrames*10; % 10 subframes per frame
-rmc.OCNG = 'On'; % Add noise to unallocated PDSCH resource elements
+% Add noise to unallocated PDSCH resource elements
+if verLessThan('matlab','9.2')
+    rmc.OCNG = 'On';
+else
+    rmc.OCNGPDSCHEnable = 'On';
+    rmc.OCNGPDCCHEnable = 'On';
+end
 
 % Generate RMC waveform
 trData = [1;0;0;1]; % Transport data
@@ -64,57 +70,85 @@ eNodeBOutput = int16(eNodeBOutput*2^15);
 
 %% Transmit and Receive using MATLAB libiio
 
-% System Object Configuration
-s = iio_sys_obj_matlab; % MATLAB libiio Constructor
-s.ip_address = ip;
-s.dev_name = 'ad9361';
-s.in_ch_no = 2;
-s.out_ch_no = 2;
-s.in_ch_size = length(eNodeBOutput);
-s.out_ch_size = length(eNodeBOutput)*4;
+% System Object Configurations
+rx = iio_sys_obj_matlab; % MATLAB libiio Constructor
+rx.ip_address = ip;
+rx.dev_name = 'ad9361';
+rx.in_ch_no = 0;
+rx.out_ch_no = 2;
+rx.in_ch_size = 0;
+rx.out_ch_size = length(eNodeBOutput)*5;
 
-s = s.setupImpl();
+rx = rx.setupImpl();
 
-% Configure the FIR filter on AD9361
-s.writeFirData(fir_data_file);
+tx = iio_sys_obj_matlab; % MATLAB libiio Constructor
+tx.ip_address = ip;
+tx.dev_name = 'ad9361';
+tx.in_ch_no = 2;
+tx.out_ch_no = 0;
+tx.in_ch_size = length(eNodeBOutput);
+tx.out_ch_size = 0;
 
-input = cell(1, s.in_ch_no + length(s.iio_dev_cfg.cfg_ch));
-output = cell(1, s.out_ch_no + length(s.iio_dev_cfg.mon_ch));
+tx = tx.setupImpl();
+
+inputTX = cell(1, tx.in_ch_no + length(tx.iio_dev_cfg.cfg_ch));
+inputRX = cell(1, rx.in_ch_no + length(rx.iio_dev_cfg.cfg_ch));
 
 % Set the attributes of AD9361
-input{s.getInChannel('RX_LO_FREQ')} = 2.45e9;
-input{s.getInChannel('RX_SAMPLING_FREQ')} = samplingrate;
-input{s.getInChannel('RX_RF_BANDWIDTH')} = bandwidth;
-input{s.getInChannel('RX1_GAIN_MODE')} = 'slow_attack';
-input{s.getInChannel('RX1_GAIN')} = 0;
-input{s.getInChannel('RX2_GAIN_MODE')} = 'slow_attack';
-input{s.getInChannel('RX2_GAIN')} = 0;
-input{s.getInChannel('TX_LO_FREQ')} = 2.45e9;
-input{s.getInChannel('TX_SAMPLING_FREQ')} = samplingrate;
-input{s.getInChannel('TX_RF_BANDWIDTH')} = bandwidth;
+inputTX{tx.getInChannel('RX_LO_FREQ')} = 2.45e9;
+inputTX{tx.getInChannel('RX_RF_BANDWIDTH')} = bandwidth;
+inputTX{tx.getInChannel('RX1_GAIN_MODE')} = 'slow_attack';
+inputTX{tx.getInChannel('RX1_GAIN')} = 0;
+inputTX{tx.getInChannel('RX2_GAIN_MODE')} = 'slow_attack';
+inputTX{tx.getInChannel('RX2_GAIN')} = 0;
+inputTX{tx.getInChannel('TX_LO_FREQ')} = 2.45e9;
+inputTX{tx.getInChannel('TX_SAMPLING_FREQ')} = samplingrate;
+inputTX{tx.getInChannel('TX_RF_BANDWIDTH')} = bandwidth;
 
-% Keep transmiting and receiving the LTE signal
+inputRX{rx.getInChannel('RX_LO_FREQ')} = 2.45e9;
+inputRX{rx.getInChannel('RX_RF_BANDWIDTH')} = bandwidth;
+inputRX{rx.getInChannel('RX1_GAIN_MODE')} = 'slow_attack';
+inputRX{rx.getInChannel('RX1_GAIN')} = 0;
+inputRX{rx.getInChannel('RX2_GAIN_MODE')} = 'slow_attack';
+inputRX{rx.getInChannel('RX2_GAIN')} = 0;
+inputRX{rx.getInChannel('TX_LO_FREQ')} = 2.45e9;
+inputRX{rx.getInChannel('TX_SAMPLING_FREQ')} = samplingrate;
+inputRX{rx.getInChannel('TX_RF_BANDWIDTH')} = bandwidth;
+
+% Configure the FIR filter on AD9361
+rx.writeFirData(fir_data_file);
+tx.writeFirData(fir_data_file);
+
+% Transmit waveform in cyclic mode
 fprintf('Starting transmission at Fs = %g MHz\n',txsim.SamplingRate/1e6);
-for i = 1:4
-    fprintf('Transmitting Data Block %i ...\n',i);
-    input{1} = real(eNodeBOutput);
-    input{2} = imag(eNodeBOutput);
-    output = stepImpl(s, input);
-    fprintf('Data Block %i Received...\n',i);
+fprintf('Transmitting Data Block\n');
+inputTX{1} = real(eNodeBOutput);
+inputTX{2} = imag(eNodeBOutput);
+stepImpl(tx, inputTX);
+
+% Flush buffers
+for i = 1:20
+    stepImpl(rx, inputRX);
 end
+fprintf('Receiving Data Block\n');
+output = stepImpl(rx, inputRX);
 fprintf('Transmission and reception finished\n');
 
 % Read the RSSI attributes of both channels
-rssi1 = output{s.getOutChannel('RX1_RSSI')};
-rssi2 = output{s.getOutChannel('RX2_RSSI')};
+rssi1 = output{rx.getOutChannel('RX1_RSSI')};
+rssi2 = output{rx.getOutChannel('RX2_RSSI')};
 
-s.releaseImpl();
+tx.releaseImpl();
+rx.releaseImpl();
 
 %% Post Processing of Captured Data
 
 I = output{1};
 Q = output{2};
 Rx = I+1i*Q;
+
+% Remove AGC convergence
+Rx = Rx(floor(length(Rx)*0.25):end);
 
 % Call LTE Reciever Function
 [plots]=LTEReceiver(Rx,samplingrate,configuration);
