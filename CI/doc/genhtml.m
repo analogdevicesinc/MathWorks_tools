@@ -4,7 +4,7 @@ files = dir(filepath);
 
 target = '../../doc/';
 
-skip = {'SupportedHardware.mlx'};
+skip = {'NA'};
 
 for f = {files.name}
     if strfind(f{:},'.mlx')>=0
