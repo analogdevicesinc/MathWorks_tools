@@ -81,8 +81,10 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         
         function setupLibad9361(obj)
             libName = 'libad9361';
-            hfile = 'ad9361-wrapper.h';
-            loadlibraryArgs = {hfile,'addheader','ad9361.h'};
+            ad9361wrapperh = 'ad9361-wrapper.h';
+            ad9361h = 'ad9361.h';
+            fp = fileparts(which(ad9361h));
+            loadlibraryArgs = {ad9361wrapperh,'includepath',fp,'addheader',ad9361h};
             if ~libisloaded(libName)
                 msgID = 'MATLAB:loadlibrary:StructTypeExists';
                 warnStruct = warning('off',msgID);
