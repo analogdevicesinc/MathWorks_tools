@@ -2,14 +2,19 @@ stages:
   - build
   - test
   - test_installer
+  - test_hardware
   - deploy
   
 # Default build
 build:2018_R1:
+    tags:
+     - vivado
+     - matlab
     stage: build
     script:
      - cd CI/scripts
      - make build
+     - make add_libad9361
      - make gen_tlbx
      - cd ../..
      - mkdir mltbx
@@ -22,6 +27,9 @@ build:2018_R1:
 
 # Future branches
 build:master:
+    tags:
+     - vivado
+     - matlab
     stage: build
     script:
      - cd CI/scripts
@@ -32,8 +40,11 @@ build:master:
         paths:
             - hdl_wa_bsp/
 
-# Tests
+# Test HWA no install
 test:2018_R1:
+    tags:
+     - vivado
+     - matlab
     stage: test
     dependencies:
      - build:2018_R1
@@ -47,7 +58,11 @@ test:2018_R1:
         reports:
             junit: test/BSPTestResults.xml
 
+# Test HWA with install
 test_installer:2018_R1_Installer:
+    tags:
+     - vivado
+     - matlab
     stage: test_installer
     dependencies:
      - build:2018_R1
@@ -65,20 +80,42 @@ test_installer:2018_R1_Installer:
         reports:
             junit: test/BSPTestResults.xml
 
-#test:master:
-#    stage: test
-#    dependencies:
-#     - build:master
-#    script:
-#     - cd CI/scripts
-#     - make test MLRELEASE=R2018b HDLBRANCH=master
-#     - make zip MLRELEASE=R2018b HDLBRANCH=master
-#    artifacts:
-#        reports:
-#            junit: test/BSPTestResults.xml
+# Test streaming interfaces with hardware
+test_hardware:Streaming_Hardware:
+    only:
+     - schedules
+    tags:
+     - matlab
+     - hardware
+    stage: test_hardware
+    dependencies:
+     - build:2018_R1
+    script:
+     - cd CI/scripts
+     - make test_streaming
+    artifacts:
+        paths:
+            - logs/
+
+# Test streaming interfaces with hardware manual
+test_manual:Streaming_Hardware_Manual:
+    when: manual
+    tags:
+     - matlab
+     - hardware
+    script:
+     - cd CI/scripts
+     - make add_libad9361
+     - make test_streaming
+    artifacts:
+        paths:
+            - logs/
+            - Report.pdf
 
 # Deploy
 deploy:
+    tags:
+     - matlab
     stage: deploy
     dependencies:
      - test:2018_R1
