@@ -16,6 +16,18 @@ classdef HardwareTests < LTETests
             fwrite(fid, jsonStr, 'char');
             fclose(fid);
         end
+
+        function saveToJSONExtended(filename,data)
+            jsonStr = [];
+            for line = 1:length(data)
+                jsonStr = [jsonStr newline jsonencode(data(line))]; %#ok<AGROW>
+            end
+            filename = fullfile('logs',filename);
+            fid = fopen(filename, 'w');
+            if fid == -1, error('Cannot create JSON file'); end
+            fwrite(fid, jsonStr, 'char');
+            fclose(fid);
+        end
         
     end
     
@@ -117,7 +129,7 @@ classdef HardwareTests < LTETests
             
         end
         
-        function data = SDRLoopbackLTEEVMTest(testCase,name,Frequencies,DeviceTx,DeviceRx,testname)
+        function [data,logs] = SDRLoopbackLTEEVMTest(testCase,name,Frequencies,DeviceTx,DeviceRx,testname)
             
             import matlab.unittest.diagnostics.FigureDiagnostic
             import matlab.unittest.diagnostics.FileArtifact;
@@ -137,10 +149,12 @@ classdef HardwareTests < LTETests
             rxConfig.Dev = DeviceRx;
             
             %% Run test
-            evmMeanResults = zeros(size(Frequencies));
-            evmPeakResults = zeros(size(Frequencies));
+            evmMeanResults = zeros(length(Frequencies),runs);
+            evmPeakResults = zeros(length(Frequencies),runs);
             evmMeanResultsStd = zeros(size(Frequencies));
             evmPeakResultsStd = zeros(size(Frequencies));
+            
+            logs = [];
             
             removeIndxs = [];
             for indx = 1:length(Frequencies)
@@ -171,15 +185,28 @@ classdef HardwareTests < LTETests
                     warning(['Loop failure at loop ',num2str(indx),', will remove in post processing']);
                     continue;
                 end
-                evmMeanResults(indx) = mean(evmResults(:,1));
-                evmPeakResults(indx) = mean(evmResults(:,2));
+                evmMeanResults(indx,:) = evmResults(:,1);
+                evmPeakResults(indx,:) = evmResults(:,2);
                 evmMeanResultsStd(indx) = std(evmResults(:,1));
                 evmPeakResultsStd(indx) = std(evmResults(:,2));
+                
+                % Log
+                for k = 1:size(evmResults,1)
+                    data = struct;
+                    data.testname = testname;
+                    data.testdate = datestr(now);
+                    data.Frequency = Frequencies(indx);
+                    data.evmMeanResults = evmResults(k,1);
+                    data.evmPeakResults = evmResults(k,2);
+                    ml = ver('MATLAB'); data.matlab_version = ml.Release(2:end-1);
+                    logs = [logs;data]; %#ok<AGROW>
+                end
+                
             end
             
             % Remove failed test cases
-            evmMeanResults(removeIndxs) = [];
-            evmPeakResults(removeIndxs) = [];
+            evmMeanResults(removeIndxs,:) = [];
+            evmPeakResults(removeIndxs,:) = [];
             evmMeanResultsStd(removeIndxs) = [];
             evmPeakResultsStd(removeIndxs) = [];
             Frequencies(removeIndxs) = [];
@@ -199,11 +226,11 @@ classdef HardwareTests < LTETests
             fig1 = figure;
             fig2 = figure;
             figure(fig1);
-            errorbar(Frequencies./1e9, evmMeanResults,evmMeanResultsStd);
+            errorbar(Frequencies./1e9, mean(evmMeanResults,2),evmMeanResultsStd);
             xlabel('LO Frequency (GHz)');
             ylabel('EVM % Mean');
             figure(fig2);
-            errorbar(Frequencies./1e9, evmPeakResults,evmPeakResultsStd);
+            errorbar(Frequencies./1e9, mean(evmPeakResults,2),evmPeakResultsStd);
             xlabel('LO Frequency (GHz)');
             ylabel('EVM % Peak');
             testCase.verifyEmpty([], ...
@@ -230,11 +257,11 @@ classdef HardwareTests < LTETests
             testCase.CheckDevice('usb',DeviceRx,[],false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            [data, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            testCase.saveToJSONExtended(json, logs);
             
         end
         
@@ -252,11 +279,12 @@ classdef HardwareTests < LTETests
             testCase.CheckDevice('ip',DeviceRx,'192.168.3.2',false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            [data, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            testCase.saveToJSONExtended(json, logs);
+            %testCase.saveToJSON(json, data);
             
         end
         
@@ -275,11 +303,12 @@ classdef HardwareTests < LTETests
             testCase.CheckDevice('ip',DeviceRx,'192.168.2.1',false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            [data,logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            %testCase.saveToJSON(json, data);
+            testCase.saveToJSONExtended(json, logs);
             
         end
         
