@@ -67,6 +67,9 @@ test_modem:
 gen_tlbx:
 	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "genTlbx;exit();"
 
+linter:
+	/usr/local/MATLAB/$(MLRELEASE)/bin/matlab -nodisplay -r "linter;exit();"
+
 zip:
 	cd ../..
 	mkdir zip
