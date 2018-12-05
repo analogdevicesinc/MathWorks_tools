@@ -24,6 +24,7 @@ build:2018_R1:
         paths:
             - hdl_wa_bsp/
             - mltbx/
+            - deps/
 
 # Future branches
 build:master:
