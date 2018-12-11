@@ -307,6 +307,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
             else
                 obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
+                obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
             end
             if strcmp(obj.GainControlModeChannel0,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
@@ -314,7 +315,6 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             if strcmp(obj.GainControlModeChannel1,'manual') && (obj.channelCount>2)
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);
             end
-            obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
         end
         
     end
