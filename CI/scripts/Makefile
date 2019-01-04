@@ -44,6 +44,16 @@ add_libad9361:
 	rm -rf usr ; \
 	rm *.tar.gz ; \
 	cd .. ; \
+	mkdir osx ; \
+	cd osx ; \
+	wget http://swdownloads.analog.com/cse/travis_builds/master_latest_libad9361-iio-osx_10.12.tar.gz ; \
+	tar xvf *.tar.gz ; \
+	cd ad9361* ; \
+	mv usr/local/lib/ad9361.framework/Versions/Current/ad9361 ../libad9361.dylib ; \
+	cd .. ; \
+	rm -rf ad9361-*-Darwin ; \
+	rm *.tar.gz ; \
+	cd .. ; \
 	mkdir win ; \
 	cd win ; \
 	wget "https://ci.appveyor.com/api/projects/analogdevicesinc/libad9361-iio/artifacts/libad9361-win64.zip?branch=master" -O lib.zip ; \
