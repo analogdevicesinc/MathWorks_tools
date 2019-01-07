@@ -267,6 +267,11 @@ classdef HardwareTests < LTETests
         
         function LTE_R4_RFSOM(testCase)
             
+            if ismac
+                % RF SOM is not supported on OSX from MathWorks 
+                assumeFail(testCase);
+            end
+            
             %% Test configs
             Frequencies = (0.4:0.1:5).*1e9;
             DeviceTx = @()sdrtx('ADI RF SOM');
