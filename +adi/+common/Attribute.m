@@ -50,5 +50,14 @@ classdef (Abstract) Attribute < matlabshared.libiio.base
             end
         end
         
+        function setDeviceAttributeRAW(obj,attr,value)
+            phydev = getDev(obj, obj.phyDevName);
+            bytes = iio_device_attr_write(obj,phydev,attr,value);
+            if bytes <= 0
+                status = -1;
+                cstatus(obj,status,['Attribute write failed for : ' attr ' with value ' value]);
+            end
+        end
+        
     end
 end

@@ -25,6 +25,18 @@ classdef AD9361Tests < matlab.unittest.TestCase
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
         end
         
+        function testAD9361RxCustomFilter(testCase)
+            % Test Rx DMA data output
+            rx = adi.AD9361.Rx('uri',testCase.uri);
+            rx.channelCount = 2;
+            rx.EnableCustomFilter = true;
+            rx.CustomFilterFileName = 'customAD9361filter.ftr';
+            [out, valid] = rx();
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
         function testAD9361RxWithTxDDS(testCase)
             % Test DDS output
             tx = adi.AD9361.Tx('uri',testCase.uri);

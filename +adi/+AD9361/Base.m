@@ -15,6 +15,19 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         channelCount = 2;
     end
     
+    properties (Nontunable, Logical)
+        %EnableCustomFilter Enable Custom Filter
+        %   Enable use of custom filter file to set SamplingRate, 
+        %   RFBandwidth, and FIR in datapaths
+        EnableCustomFilter = false;
+    end
+    
+    properties (Nontunable)
+        %CustomFilterFileName Custom Filter File Name
+        %   Path to custom filter file created from filter wizard
+        CustomFilterFileName = '';
+    end
+    
     properties (Abstract)
         %CenterFrequency Center Frequency
         %   RF center frequency, specified in Hz as a scalar. The
@@ -69,7 +82,23 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
             end
             obj.channelCount = value;
         end
-        
+        % Check EnableCustomFilter
+        function set.EnableCustomFilter(obj, value)
+            validateattributes( value, { 'logical' }, ...
+                { }, ...
+                '', 'EnableCustomFilter');
+            obj.EnableCustomFilter = value;
+        end
+        % Check CustomFilterFileName
+        function set.CustomFilterFileName(obj, value)
+            validateattributes( value, { 'char' }, ...
+                { }, ...
+                '', 'CustomFilterFileName');
+            obj.CustomFilterFileName = value;
+            if obj.EnableCustomFilter && obj.ConnectedToDevice %#ok<MCSUP>
+                writeFilterFile(obj);
+            end
+        end
     end
     
     %% API Functions
@@ -99,6 +128,16 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
             if libisloaded(libName)
                 unloadlibrary(libName);
             end
+        end
+        
+        function writeFilterFile(obj)
+            fir_data_file = obj.CustomFilterFileName;
+            fir_data_str = fileread(fir_data_file);
+            obj.setAttributeRAW('voltage0','filter_fir_en','0',false);
+            obj.setAttributeRAW('voltage0','filter_fir_en','0',true);
+            obj.setDeviceAttributeRAW('filter_fir_config',fir_data_str);
+            obj.setAttributeRAW('voltage0','filter_fir_en','1',true);
+            obj.setAttributeRAW('voltage0','filter_fir_en','1',false);
         end
         
     end
