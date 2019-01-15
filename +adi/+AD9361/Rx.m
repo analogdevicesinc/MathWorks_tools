@@ -90,6 +90,10 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
         devName = 'cf-ad9361-lpc';
     end
     
+    properties (Hidden)
+        AGCParams
+    end
+    
     methods
         %% Constructor
         function obj = Rx(varargin)
@@ -216,6 +220,150 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 end
             end
         end
+        % Tune AGCSettings
+        function set.AGCParams(obj, agc_settings)
+           fnames = fieldnames(agc_settings);
+            for n = 1:numel(fnames)
+                agc_settings.(fnames{n}) = num2cell(agc_settings.(fnames{n}));
+                switch fnames{n}
+                    case {'peak_overload_wait_time'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',31}, ...
+                            '', 'peak_overload_wait_time');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '0FE'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11100000'; % mask                        
+                    case {'agc_lock_level'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',127}, ...
+                            '', 'agc_lock_level');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '101'; % address in hex
+                        agc_settings.(fnames{n}){4} = '10000000'; % mask                      
+                    case {'dec_step_size_full_table_case3'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',7}, ...
+                            '', 'dec_step_size_full_table_case3');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '103'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11100011'; % mask
+                        agc_settings.(fnames{n}){5} = 2; % bit shift
+                    case {'gc_adc_large_overload_thresh'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',255}, ...
+                            '', 'gc_adc_large_overload_thresh');                        
+                        agc_settings.(fnames{n}){2} = false; % write to HW register directly
+                        gc_adc_large_overload_thresh_val = agc_settings.(fnames{n}){1};
+                    case {'gc_adc_small_overload_thresh'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',gc_adc_large_overload_thresh_val}, ...
+                            '', 'gc_adc_small_overload_thresh');                        
+                        agc_settings.(fnames{n}){2} = false; % write to HW register directly
+                    case {'dec_step_size_full_table_case2'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',7}, ...
+                            '', 'dec_step_size_full_table_case2');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '106'; % address in hex
+                        agc_settings.(fnames{n}){4} = '00001111'; % mask  
+                        agc_settings.(fnames{n}){5} = 4; % bit shift
+                    case {'dec_step_size_full_table_case1'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',15}, ...
+                            '', 'dec_step_size_full_table_case1');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '106'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11110000'; % mask                      
+                    case {'large_LMT_overload_thresh'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',31}, ...
+                            '', 'large_LMT_overload_thresh');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '108'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11100000'; % mask
+                        large_LMT_overload_thresh_val = agc_settings.(fnames{n}){1};
+                    case {'small_LMT_overload_thresh'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',large_LMT_overload_thresh_val}, ...
+                            '', 'small_LMT_overload_thresh');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '107'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11100000'; % mask                      
+                    case {'settling_delay'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',31}, ...
+                            '', 'settling_delay');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '111'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11100000'; % mask                      
+                    case {'energy_lost_thresh'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',63}, ...
+                            '', 'energy_lost_thresh');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '112'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11000000'; % mask                      
+                    case {'gc_low_power_thresh'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',63}, ...
+                            '', 'gc_low_power_thresh');                        
+                        agc_settings.(fnames{n}){2} = false; % write to HW register directly                        
+                    case {'increment_gain_step'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',7}, ...
+                            '', 'increment_gain_step');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '117'; % address in hex
+                        agc_settings.(fnames{n}){4} = '00011111'; % mask  
+                        agc_settings.(fnames{n}){5} = 5; % bit shift
+                    case {'energy_detect_count'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',31}, ...
+                            '', 'energy_detect_count');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '117'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11100000'; % mask                      
+                    case {'fagc_lock_level_gain_increase_upper_limit'} % AGCLL Max Increase
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',255}, ...
+                            '', 'fagc_lock_level_gain_increase_upper_limit');                        
+                        agc_settings.(fnames{n}){2} = false; % write to HW register directly                        
+                    case {'fagc_lp_thresh_increment_time'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',255}, ...
+                            '', 'fagc_lp_thresh_increment_time');                        
+                        agc_settings.(fnames{n}){2} = false; % write to HW register directly                        
+                    case {'dec_pow_measurement_duration'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',15}, ...
+                            '', 'dec_pow_measurement_duration');                        
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '15C'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11110000'; % mask                      
+                    case {'attack_delay'}
+                        validateattributes( agc_settings.(fnames{n}){1}, { 'double','single' }, ...
+                            { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',63}, ...
+                            '', 'attack_delay');    
+                        agc_settings.(fnames{n}){2} = true; % write to HW register directly
+                        agc_settings.(fnames{n}){3} = '022'; % address in hex
+                        agc_settings.(fnames{n}){4} = '11000000'; % mask                      
+                    otherwise
+                        error('Invalid AGC setting found!');
+                end
+            end
+            obj.AGCParams = agc_settings;
+            if obj.ConnectedToDevice
+                for n = 1:numel(fnames)
+                    if (agc_settings.(fnames{n}){2})
+                        obj.setRegister(agc_settings.(fnames{n}));    
+                    else
+                        attr_name = ['adi,',regexprep(fnames{n},'_','-')];
+                        obj.setDebugAttributeLongLong(attr_name,agc_settings.(fnames{n}){1});                    
+                    end     
+                end
+            end
+        end
+        
     end
     
     methods (Access=protected)
