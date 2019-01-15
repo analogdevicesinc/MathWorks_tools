@@ -25,6 +25,14 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         % Hide unused parameters when in specific modes
         function flag = isInactivePropertyImpl(obj, prop)
             flag = strcmpi(prop,'enIO');
+            % TX/RX
+            if isprop(obj,'EnableCustomFilter')
+                flag = flag || strcmpi(prop,'CustomFilterFileName') && ~obj.EnableCustomFilter;
+                if obj.EnableCustomFilter
+                    flag = flag || strcmpi(prop,'RFBandwidth');
+                    flag = flag || strcmpi(prop,'SamplingRate');
+                end
+            end
             % TX
             if isprop(obj,'DataSource')
                 flag = flag || strcmpi(prop,'DDSFrequencies') &&...

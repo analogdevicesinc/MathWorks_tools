@@ -189,7 +189,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                     '', 'RFBandwidth');
             end
             obj.RFBandwidth = value;
-            if obj.ConnectedToDevice
+            if obj.ConnectedToDevice && ~obj.EnableCustomFilter
                 id = 'voltage0';
                 obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'),30);
             end
@@ -207,7 +207,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             end
             
             obj.SamplingRate = value;
-            if obj.ConnectedToDevice
+            if obj.ConnectedToDevice && ~obj.EnableCustomFilter
                 if libisloaded('libad9361')
                     calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
                 else
@@ -294,20 +294,11 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
+            
+            % Gains
             obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlModeChannel0,false);
             if obj.channelCount>2
                 obj.setAttributeRAW('voltage1','gain_control_mode',obj.GainControlModeChannel1,false);
-            end
-            obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
-            obj.setAttributeBool('voltage0','rf_dc_offset_tracking_en',obj.EnableRFDCTracking,false);
-            obj.setAttributeBool('voltage0','bb_dc_offset_tracking_en',obj.EnableBasebandDCTracking,false);
-            id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
-            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
-            if libisloaded('libad9361')
-                calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
-            else
-                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
-                obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
             end
             if strcmp(obj.GainControlModeChannel0,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
@@ -315,6 +306,24 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             if strcmp(obj.GainControlModeChannel1,'manual') && (obj.channelCount>2)
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);
             end
+            % Trackings
+            obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
+            obj.setAttributeBool('voltage0','rf_dc_offset_tracking_en',obj.EnableRFDCTracking,false);
+            obj.setAttributeBool('voltage0','bb_dc_offset_tracking_en',obj.EnableBasebandDCTracking,false);
+            id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
+            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
+            % Sample rates and RF bandwidth
+            if  ~obj.EnableCustomFilter
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
+                else
+                    obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
+                    obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
+                end
+            else
+                writeFilterFile(obj);
+            end
+
         end
         
     end

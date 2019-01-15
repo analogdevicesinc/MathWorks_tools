@@ -109,7 +109,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
                 
             end
             obj.RFBandwidth = value;
-            if obj.ConnectedToDevice
+            if obj.ConnectedToDevice && ~obj.EnableCustomFilter
                 id = 'voltage0';
                 obj.setAttributeLongLong(id,'rf_bandwidth',value,strcmp(obj.Type,'Tx'),30);
             end
@@ -127,7 +127,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
                 
             end
             obj.SamplingRate = value;
-            if obj.ConnectedToDevice
+            if obj.ConnectedToDevice && ~obj.EnableCustomFilter
                 if libisloaded('libad9361')
                     calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(value));
                 else
