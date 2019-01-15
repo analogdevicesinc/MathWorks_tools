@@ -4,6 +4,9 @@ classdef (Abstract) RegisterReadWrite < matlabshared.libiio.base
         function setRegister(obj,settings)
             phydev = getDev(obj, obj.phyDevName);
             value = settings{1};
+            if (numel(settings) == 5)
+                value = value*2^(settings{5});
+            end
             addr_dec = hex2dec(settings{3});
             mask = bin2dec(settings{4});
             [status, curr_val] = iio_device_reg_read(obj,phydev,addr_dec);
