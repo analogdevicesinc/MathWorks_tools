@@ -15,6 +15,19 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         channelCount = 2;
     end
     
+    properties (Nontunable, Logical)
+        %EnableCustomProfile Enable Custom Profile
+        %   Enable use of custom Profile file to set SamplingRate, 
+        %   RFBandwidth, and FIR in datapaths
+        EnableCustomProfile = false;
+    end
+    
+    properties (Nontunable)
+        %CustomProfileFileName Custom Profile File Name
+        %   Path to custom Profile file created from profile wizard
+        CustomProfileFileName = '';
+    end
+    
     properties (Hidden, Constant)
         %SamplingRate Sampling Rate
         %   Baseband sampling rate in Hz, specified as a scalar 
@@ -72,6 +85,23 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
                 obj.setAttributeLongLong(id,'frequency',value,true);
             end
         end
+        % Check EnableCustomProfile
+        function set.EnableCustomProfile(obj, value)
+            validateattributes( value, { 'logical' }, ...
+                { }, ...
+                '', 'EnableCustomProfile');
+            obj.EnableCustomProfile = value;
+        end
+        % Check CustomFilterFileName
+        function set.CustomProfileFileName(obj, value)
+            validateattributes( value, { 'char' }, ...
+                { }, ...
+                '', 'CustomProfileFileName');
+            obj.CustomProfileFileName = value;
+            if obj.EnableCustomProfile && obj.ConnectedToDevice %#ok<MCSUP>
+                writeProfileFile(obj);
+            end
+        end
     end
     
     %% API Functions
@@ -79,6 +109,12 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
                
         function icon = getIconImpl(obj)
             icon = sprintf(['AD9371 ',obj.Type]);
+        end
+        
+        
+        function writeProfileFile(obj)
+            profle_data_str = fileread(obj.CustomProfileFileName);
+            obj.setDeviceAttributeRAW('profile_config',profle_data_str);
         end
                    
     end

@@ -196,6 +196,10 @@ classdef Rx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
             obj.setAttributeLongLong(id,'RX_LO_frequency',obj.CenterFrequency ,true);
 
+            if obj.EnableCustomProfile
+                writeProfileFile(obj);
+            end
+            
             if strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);
