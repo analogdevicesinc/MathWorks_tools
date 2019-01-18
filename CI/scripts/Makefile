@@ -78,6 +78,10 @@ test:
 
 test_streaming:
 	cd ../.. ; \
+	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('test'));addpath(genpath('deps'));runHWTests;"
+
+test_evm:
+	cd ../.. ; \
 	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('test'));addpath(genpath('deps'));hwTestRunner;"
 
 test_modem:

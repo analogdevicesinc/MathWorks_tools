@@ -1,7 +1,16 @@
-classdef DAQ2Tests < matlab.unittest.TestCase
+classdef DAQ2Tests < HardwareTests
     
     properties
         uri = 'ip:192.168.3.2';
+        author = 'ADI';
+    end
+    
+    methods(TestClassSetup)
+        % Check hardware connected
+        function CheckForHardware(testCase)
+            Device = @()adi.ADRV9009.Rx;
+            testCase.CheckDevice('ip',Device,testCase.uri(4:end),false);
+        end
     end
     
     methods (Test)
