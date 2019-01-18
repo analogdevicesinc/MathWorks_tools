@@ -12,7 +12,7 @@ HDLBRANCH := hdl_2018_r1
 endif
 
 ifeq ($(OS),Windows_NT)
-$(error Build system does not currently support Windows)
+MLPATH := /cygdrive/c/Program\ Files/MATLAB
 else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -68,27 +68,27 @@ test_installer:
 	cp *.mltbx test/ ; \
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m ; \
 	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "cd('test');runInstallerTests;"
+	${MLPATH}/$(MLRELEASE)/bin/matlab -wait -nodesktop -r "cd('test');runInstallerTests;"
 
 test:
 	cd ../.. ; \
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m ; \
 	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "cd('test');runTests;"
+	${MLPATH}/$(MLRELEASE)/bin/matlab -wait -nodesktop -r "cd('test');runTests;"
 
 test_streaming:
 	cd ../.. ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('test'));addpath(genpath('deps'));hwTestRunner;"
+	${MLPATH}/$(MLRELEASE)/bin/matlab -wait -nodesktop -r "addpath(genpath('test'));addpath(genpath('deps'));hwTestRunner;"
 
 test_modem:
 	cd ../.. ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('hdl_wa_bsp'));cd('targeting_models');addpath(genpath('modem-qpsk'))"
+	${MLPATH}/$(MLRELEASE)/bin/matlab -wait -nodesktop -r "addpath(genpath('hdl_wa_bsp'));cd('targeting_models');addpath(genpath('modem-qpsk'))"
 
 gen_tlbx:
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "genTlbx;exit();"
+	${MLPATH}/$(MLRELEASE)/bin/matlab -wait -nodesktop -r "genTlbx;exit();"
 
 linter:
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "linter;exit();"
+	${MLPATH}/$(MLRELEASE)/bin/matlab -wait -nodesktop -r "linter;exit();"
 
 zip:
 	cd ../.. ; \
