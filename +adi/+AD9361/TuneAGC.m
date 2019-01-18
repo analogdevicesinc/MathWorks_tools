@@ -1,5 +1,7 @@
 classdef TuneAGC < adi.common.DebugAttribute & adi.common.RegisterReadWrite        
     properties (Nontunable, Hidden)
+        CustomAGC = 0;
+        
         AttackDelay = 1;
         PeakOverloadWaitTime = 10;
         AGCLockLevel = 10;
@@ -215,6 +217,15 @@ classdef TuneAGC < adi.common.DebugAttribute & adi.common.RegisterReadWrite
                 obj.setRegister(value, obj.DecPowMeasurementDuration_Reg, obj.DecPowMeasurementDuration_Mask);                
             end
         end     
+        function WriteDebugAttributes(obj)
+            if obj.ConnectedToDevice
+                obj.setDebugAttributeLongLong('adi,gc-adc-large-overload-thresh',obj.ADCLargeOverloadThresh);                                
+                obj.setDebugAttributeLongLong('adi,gc-adc-small-overload-thresh',obj.ADCSmallOverloadThresh);
+                obj.setDebugAttributeLongLong('adi,gc-low-power-thresh',obj.LowPowerThresh);                    
+                obj.setDebugAttributeLongLong('adi,fagc-lock-level-gain-increase-upper-limit',obj.FAGCLockLevelGainIncreaseUpperLimit);                          
+                obj.setDebugAttributeLongLong('adi,fagc-lp-thresh-increment-time',obj.FAGCLPThreshIncrementTime);
+            end
+        end
         function WriteToRegisters(obj)
             if obj.ConnectedToDevice
                 obj.setRegister(obj.AttackDelay, obj.AttackDelay_Reg, obj.AttackDelay_Mask);  

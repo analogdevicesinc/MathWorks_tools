@@ -36,6 +36,7 @@ classdef AD9363Tests < matlab.unittest.TestCase
         function testAD9363AGCSettings(testCase)
             rx = adi.AD9363.Rx('uri',testCase.uri);
             % Update AGC settings
+            rx.CustomAGC = 1;
             rx.AttackDelay = 47;      
             rx.PeakOverloadWaitTime = 20;
             rx.AGCLockLevel = 101;
