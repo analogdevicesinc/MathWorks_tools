@@ -325,11 +325,13 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
                 writeFilterFile(obj);
             end
 
-            % Initialize hardware to reflect debug attribute changes
-            obj.setDebugAttributeLongLong();
-            obj.setDebugAttributeBool();
-            obj.WriteToRegisters();
-            
+            if (obj.CustomAGC)
+                % Initialize hardware to reflect debug attribute changes
+                obj.WriteDebugAttributes();
+                obj.setDebugAttributeLongLong();
+                obj.setDebugAttributeBool();                
+                obj.WriteToRegisters();
+            end
             
         end
         
