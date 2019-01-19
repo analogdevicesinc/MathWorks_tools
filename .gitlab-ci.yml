@@ -80,6 +80,22 @@ test_installer:2018_R1_Installer:
 
 # Test streaming interfaces with hardware
 test_hardware:Streaming_Hardware:
+    tags:
+     - matlab
+     - hardware
+    stage: test_hardware
+    dependencies:
+     - build:2018_R1
+    script:
+     - cd CI/scripts
+     - make test_streaming
+    artifacts:
+        paths:
+            - logs/
+            - Report.pdf
+
+# Test EVM performance with hardware
+test_hardware:EVM_Hardware:
     only:
      - schedules
     tags:
@@ -89,20 +105,8 @@ test_hardware:Streaming_Hardware:
     dependencies:
      - build:2018_R1
     script:
-     - ./CI/scripts/dockermake test_streaming
-    artifacts:
-        paths:
-            - logs/
-
-# Test streaming interfaces with hardware manual
-test_manual:Streaming_Hardware_Manual:
-    when: manual
-    tags:
-     - matlab
-     - hardware
-    script:
-     - ./CI/scripts/dockermake add_libad9361
-     - ./CI/scripts/dockermake test_streaming
+     - cd CI/scripts
+     - make test_evm
     artifacts:
         paths:
             - logs/
@@ -121,5 +125,4 @@ deploy:
     artifacts:
         paths:
             - mltbx/
-
 

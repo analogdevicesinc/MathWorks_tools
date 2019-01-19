@@ -7,7 +7,7 @@ runner.addPlugin(TestReportPlugin.producingPDF('Report.pdf',...
     'IncludingPassingDiagnostics',true,'IncludingCommandWindowText',true));
 runner.ArtifactsRootFolder = pwd;
 
-suite = testsuite('HardwareTests');
+suite = testsuite('HardwarePerformanceTests');
 
 if ~exist('logs', 'dir')
     mkdir('logs')

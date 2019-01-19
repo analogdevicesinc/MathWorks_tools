@@ -1,7 +1,16 @@
-classdef AD9364Tests < matlab.unittest.TestCase
+classdef AD9364Tests < HardwareTests
     
     properties
         uri = 'ip:192.168.2.1';
+        author = 'ADI';
+    end
+    
+    methods(TestClassSetup)
+        % Check hardware connected
+        function CheckForHardware(testCase)
+            Device = @()adi.AD9364.Rx;
+            testCase.CheckDevice('ip',Device,testCase.uri(4:end),false);
+        end
     end
     
     methods (Static)
