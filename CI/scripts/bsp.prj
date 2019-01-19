@@ -130,29 +130,6 @@ test/*
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/hdlverifier/supportpackages/fpgadebug/+hdlverifier/FPGADataReader.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/read.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/libiio/axi/+matlabshared/+libiio/+aximm/write.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/+comm/+internal/SDRSystemBaseUpdateBuildInfo.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/+sdrplugin/+internal/SDRPluginManager.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrdev.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrrx.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrpluginbase/host/funcs/sdrtx.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/e310/manual/+comm/SDRRxE310.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/e310/manual/+comm/SDRTxE310.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/+comm/SDRRxPluto.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/+comm/SDRTxPluto.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/plutoradio/findPlutoRadio.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual/+comm/SDRRxADIRFSOM.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xpicozedsdr/manual/+comm/SDRTxADIRFSOM.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual/+comm/SDRRxZC706FMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzc706afmc3/manual/+comm/SDRTxZC706FMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual/+comm/SDRRxZedBoardFMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/xzedboardafmc3/manual/+comm/SDRTxZedBoardFMC234.m</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/zynqradio/+comm/SDRRxAD936x.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrplug/sdrplugins/zynqradio/+comm/SDRTxAD936x.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrz/sdrz/+comm/SDRRxZynqFMC234.p</file>
-      <file>/home/tcollins/Documents/MATLAB/SupportPackages/R2018b/toolbox/shared/sdr/sdrz/sdrz/+comm/SDRTxZynqFMC234.p</file>
     </fileset.depfun.excluded>
     <fileset.package />
     <build-deliverables>
