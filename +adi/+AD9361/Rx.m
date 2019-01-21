@@ -1,4 +1,5 @@
-classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
+classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
+        adi.common.Rx & matlab.system.mixin.SampleTime
     % adi.AD9361.Rx Receive data from the AD9361 transceiver
     %   The adi.AD9361.Rx System object is a signal source that can receive
     %   complex data from the AD9361.
@@ -215,7 +216,7 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                     obj.setAttributeLongLong(id,'sampling_frequency',value,true,4);
                 end
             end
-        end
+        end            
     end
     
     methods (Access=protected)
@@ -324,6 +325,14 @@ classdef Rx < adi.AD9361.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 writeFilterFile(obj);
             end
 
+            if (obj.CustomAGC)
+                % Initialize hardware to reflect debug attribute changes
+                obj.WriteDebugAttributes();
+                obj.setDebugAttributeLongLong();
+                obj.setDebugAttributeBool();                
+                obj.WriteToRegisters();
+            end
+            
         end
         
     end
