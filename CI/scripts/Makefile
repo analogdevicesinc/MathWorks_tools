@@ -14,7 +14,8 @@ HDLBRANCH := hdl_2018_r1
 endif
 
 ifeq ($(OS),Windows_NT)
-$(error Build system does not currently support Windows)
+MLPATH := /cygdrive/c/Program\ Files/MATLAB
+MLFLAGS := $(MLFLAGS) -wait
 else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)

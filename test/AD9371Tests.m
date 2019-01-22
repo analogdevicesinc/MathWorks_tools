@@ -1,7 +1,7 @@
 classdef AD9371Tests < HardwareTests
     
     properties
-        uri = 'ip:192.168.3.2';
+        uri = 'ip:192.168.1.208';
         SamplingRateRX = 122.88e6;
         author = 'ADI';
     end
@@ -33,6 +33,40 @@ classdef AD9371Tests < HardwareTests
             rx.release();
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
+        function testAD9371RxCustomProfile1(testCase)
+            % Test Rx custom profiles
+            rx = adi.AD9371.Rx('uri',testCase.uri);
+            rx.channelCount = 2;
+            rx.EnableCustomProfile = true;
+            rx.CustomProfileFileName = ...
+                'profile_TxBW50_ORxBW50_RxBW50.txt';
+            [out, valid] = rx();
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+            testCase.verifyEqual(rxSampleRate,int64(61440000),...
+                'Invalid sample rate after profile write');
+        end
+        
+        function testAD9371RxCustomProfile2(testCase)
+            % Test Rx custom profiles
+            rx = adi.AD9371.Rx('uri',testCase.uri);
+            rx.channelCount = 2;
+            rx.EnableCustomProfile = true;
+            rx.CustomProfileFileName = ...
+                'profile_TxBW100_ORxBW100_RxBW100.txt';
+            [out, valid] = rx();
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+            testCase.verifyEqual(rxSampleRate,int64(122880000),...
+                'Invalid sample rate after profile write');
         end
         
         function testAD9371RxWithTxDDS(testCase)

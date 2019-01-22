@@ -42,6 +42,68 @@ classdef AD9363Tests < HardwareTests
             end
         end
         
+        function testAD9363AGCSettings(testCase)
+            rx = adi.AD9363.Rx('uri',testCase.uri);
+            % Update AGC settings
+            rx.CustomAGC = 1;
+            rx.AttackDelay = 47;      
+            rx.PeakOverloadWaitTime = 20;
+            rx.AGCLockLevel = 101;
+            rx.DecStepSizeFullTableCase3 = 5;
+            rx.ADCLargeOverloadThresh = 199;
+            rx.ADCSmallOverloadThresh = 21;
+            rx.DecStepSizeFullTableCase2 = 5;
+            rx.DecStepSizeFullTableCase1 = 12;
+            rx.LargeLMTOverloadThresh = 12;
+            rx.SmallLMTOverloadThresh = 11;
+            rx.SettlingDelay = 4;
+            rx.EnergyLostThresh = 47;
+            rx.LowPowerThresh = 34;
+            rx.IncrementGainStep = 4;
+            rx.FAGCLockLevelGainIncreaseUpperLimit = 63;
+            rx.FAGCLPThreshIncrementTime = 102;
+            rx.DecPowMeasurementDuration = 7;
+            
+            rx();
+            % Read AGC settings from hardware
+            rAttackDelay = ReadFromRegister(rx, 'AttackDelay');
+            testCase.verifyEqual(rAttackDelay,rx.AttackDelay,'Unexpected value for AttackDelay returned');
+            rPeakOverloadWaitTime = ReadFromRegister(rx, 'PeakOverloadWaitTime');
+            testCase.verifyEqual(rPeakOverloadWaitTime,rx.PeakOverloadWaitTime,'Unexpected value for PeakOverloadWaitTime returned');
+            rAGCLockLevel = ReadFromRegister(rx, 'AGCLockLevel');
+            testCase.verifyEqual(rAGCLockLevel,rx.AGCLockLevel,'Unexpected value for AGCLockLevel returned');
+            rDecStepSizeFullTableCase3 = ReadFromRegister(rx, 'DecStepSizeFullTableCase3');
+            testCase.verifyEqual(rDecStepSizeFullTableCase3,rx.DecStepSizeFullTableCase3,'Unexpected value for DecStepSizeFullTableCase3 returned');
+            rADCLargeOverloadThresh = ReadFromRegister(rx, 'ADCLargeOverloadThresh');
+            testCase.verifyEqual(rADCLargeOverloadThresh,rx.ADCLargeOverloadThresh,'Unexpected value for ADCLargeOverloadThresh returned');
+            rADCSmallOverloadThresh = ReadFromRegister(rx, 'ADCSmallOverloadThresh');
+            testCase.verifyEqual(rADCSmallOverloadThresh,rx.ADCSmallOverloadThresh,'Unexpected value for ADCSmallOverloadThresh returned');
+            rDecStepSizeFullTableCase2 = ReadFromRegister(rx, 'DecStepSizeFullTableCase2');
+            testCase.verifyEqual(rDecStepSizeFullTableCase2,rx.DecStepSizeFullTableCase2,'Unexpected value for DecStepSizeFullTableCase2 returned');
+            rDecStepSizeFullTableCase1 = ReadFromRegister(rx, 'DecStepSizeFullTableCase1');
+            testCase.verifyEqual(rDecStepSizeFullTableCase1,rx.DecStepSizeFullTableCase1,'Unexpected value for DecStepSizeFullTableCase1 returned');
+            rLargeLMTOverloadThresh = ReadFromRegister(rx, 'LargeLMTOverloadThresh');
+            testCase.verifyEqual(rLargeLMTOverloadThresh,rx.LargeLMTOverloadThresh,'Unexpected value for LargeLMTOverloadThresh returned');
+            rSmallLMTOverloadThresh = ReadFromRegister(rx, 'SmallLMTOverloadThresh');
+            testCase.verifyEqual(rSmallLMTOverloadThresh,rx.SmallLMTOverloadThresh,'Unexpected value for SmallLMTOverloadThresh returned');
+            rSettlingDelay = ReadFromRegister(rx, 'SettlingDelay');
+            testCase.verifyEqual(rSettlingDelay,rx.SettlingDelay,'Unexpected value for SettlingDelay returned');
+            rEnergyLostThresh = ReadFromRegister(rx, 'EnergyLostThresh');
+            testCase.verifyEqual(rEnergyLostThresh,rx.EnergyLostThresh,'Unexpected value for EnergyLostThresh returned');
+            rLowPowerThresh = ReadFromRegister(rx, 'LowPowerThresh');
+            testCase.verifyEqual(rLowPowerThresh/2,rx.LowPowerThresh,'Unexpected value for LowPowerThresh returned');
+            rIncrementGainStep = ReadFromRegister(rx, 'IncrementGainStep');
+            testCase.verifyEqual(rIncrementGainStep,rx.IncrementGainStep,'Unexpected value for IncrementGainStep returned');
+            rFAGCLockLevelGainIncreaseUpperLimit = ReadFromRegister(rx, 'FAGCLockLevelGainIncreaseUpperLimit');
+            testCase.verifyEqual(rFAGCLockLevelGainIncreaseUpperLimit,rx.FAGCLockLevelGainIncreaseUpperLimit,'Unexpected value for FAGCLockLevelGainIncreaseUpperLimit returned');
+            rFAGCLPThreshIncrementTime = ReadFromRegister(rx, 'FAGCLPThreshIncrementTime');
+            testCase.verifyEqual(rFAGCLPThreshIncrementTime,rx.FAGCLPThreshIncrementTime,'Unexpected value for FAGCLPThreshIncrementTime returned');
+            rDecPowMeasurementDuration = ReadFromRegister(rx, 'DecPowMeasurementDuration');
+            testCase.verifyEqual(rDecPowMeasurementDuration,rx.DecPowMeasurementDuration,'Unexpected value for DecPowMeasurementDuration returned');
+            
+            rx.release();
+        end
+        
         function testAD9363RxWithTxDDS(testCase)
             % Test DDS output
             tx = adi.AD9363.Tx('uri',testCase.uri);
