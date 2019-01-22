@@ -1,4 +1,4 @@
-classdef HardwareTests < LTETests
+classdef HardwarePerformanceTests < LTETests
     
     properties
         SamplingRate = 1e6;
