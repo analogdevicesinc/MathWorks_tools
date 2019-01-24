@@ -1,5 +1,6 @@
 
 global ref_design
+global fpga_board
 
 if {$ref_design eq "Rx" || $ref_design eq "Rx & Tx"} {
 # Disconnect the ADC PACK pins
@@ -18,12 +19,24 @@ connect_bd_net [get_bd_pins util_ad9371_rx_cpack/adc_valid_0] [get_bd_pins util_
 connect_bd_net [get_bd_pins util_ad9371_rx_cpack/adc_valid_0] [get_bd_pins util_ad9371_rx_cpack/adc_valid_3]
 
 }
+
 # Connect clock
+if {$fpga_board eq "ZC706"} { 
+if {$ref_design eq "Rx" || $ref_design eq "Rx & Tx"} {
+connect_bd_net -net [get_bd_nets axi_ad9371_rx_clkgen] [get_bd_pins axi_cpu_interconnect/M18_ACLK] [get_bd_pins axi_ad9371_rx_clkgen/clk_0]
+}
+if {$ref_design eq "Tx"} {
+connect_bd_net -net [get_bd_nets axi_ad9371_tx_clkgen] [get_bd_pins axi_cpu_interconnect/M18_ACLK] [get_bd_pins axi_ad9371_tx_clkgen/clk_0]
+}
+}
+
+if {$fpga_board eq "ZCU102"} { 
 if {$ref_design eq "Rx" || $ref_design eq "Rx & Tx"} {
 connect_bd_net -net [get_bd_nets axi_ad9371_rx_clkgen] [get_bd_pins axi_cpu_interconnect/M13_ACLK] [get_bd_pins axi_ad9371_rx_clkgen/clk_0]
 }
 if {$ref_design eq "Tx"} {
 connect_bd_net -net [get_bd_nets axi_ad9371_tx_clkgen] [get_bd_pins axi_cpu_interconnect/M13_ACLK] [get_bd_pins axi_ad9371_tx_clkgen/clk_0]
+}
 }
 
 ########################
