@@ -3,6 +3,8 @@
 # Example
 #	make build MLRELEASE=R2018b HDLBRANCH=hdl_2018_r1
 
+SHELL := /bin/bash
+
 MLFLAGS := -nodisplay -nodesktop -nosplash
 
 ifeq ($(MLRELEASE),)
@@ -91,6 +93,9 @@ test_evm:
 test_modem:
 	cd ../.. ; \
 	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "addpath(genpath('hdl_wa_bsp'));cd('targeting_models');addpath(genpath('modem-qpsk'))"
+
+test_synth:
+	bash synth_designs.sh
 
 gen_tlbx:
 	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "genTlbx;exit();"
