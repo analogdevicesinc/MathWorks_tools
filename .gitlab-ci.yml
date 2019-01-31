@@ -80,8 +80,7 @@ test_installer:2018_R1_Installer:
 
 # Test weekly fully sythesized design
 test:Synthesize:
-    only:
-     - schedules
+    when: manual
     tags:
      - matlab
      - vivado

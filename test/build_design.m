@@ -75,6 +75,9 @@ try
     bdclose('all');
     out = [];
 catch ME
+    if SynthesizeDesign && exist('hdl_prj/vivado_ip_prj/boot/BOOT.BIN','file')
+       ME = []; 
+    end
     out = ME;%.identifier
 end
 
