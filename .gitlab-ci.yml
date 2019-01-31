@@ -82,8 +82,6 @@ test_installer:2018_R1_Installer:
 test:Synthesize:
     only:
      - schedules
-    schedules:
-     - cron 0 1 * * 6
     tags:
      - matlab
      - vivado
