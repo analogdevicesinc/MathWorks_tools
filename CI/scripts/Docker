@@ -3,4 +3,4 @@ FROM ubuntu:18.04
 MAINTAINER Travis Collins <travis.collins@analog.com>
 RUN apt update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libpng-dev libfreetype6-dev libblas-dev liblapack-dev gfortran build-essential xorg
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jre openjdk-8-jdk libgtk2.0-0 libxss1 libxt6 zip unzip curl wget tar git
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-8-jre openjdk-8-jdk libgtk2.0-0 libxss1 libxt6 zip unzip curl wget tar git xvfb
