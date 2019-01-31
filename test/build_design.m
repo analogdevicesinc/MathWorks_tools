@@ -1,5 +1,5 @@
 
-function out = build_design(config,ReferenceDesignName,vivado_version,mode,board_name)
+function out = build_design(config,ReferenceDesignName,vivado_version,mode,board_name,SynthesizeDesign)
 
 %% Load the Model
 
@@ -38,7 +38,7 @@ hWC.IgnoreToolVersionMismatch = true;
 hWC.RunTaskGenerateRTLCodeAndIPCore = true;
 hWC.RunTaskCreateProject = true;
 hWC.RunTaskGenerateSoftwareInterfaceModel = false;
-hWC.RunTaskBuildFPGABitstream = false; % CHANGED
+hWC.RunTaskBuildFPGABitstream = SynthesizeDesign;
 hWC.RunTaskProgramTargetDevice = false;
 
 % Set properties related to 'RunTaskGenerateRTLCodeAndIPCore' Task
@@ -57,6 +57,7 @@ hWC.OperatingSystem = 'Linux';
 hWC.RunExternalBuild = false;
 %hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Default;
 %hWC.CustomBuildTclFile = '';
+
 hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Custom;
 hWC.CustomBuildTclFile = '../hdl_wa_bsp/vendor/AnalogDevices/vivado/projects/scripts/adi_build.tcl';
 
