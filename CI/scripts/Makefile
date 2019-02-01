@@ -96,7 +96,11 @@ test_synth:
 	cd ../.. ; \
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m ; \
 	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m ; \
-	xvfb-run ${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "cd('test');runSynthTests;"
+	Xvfb :77 &
+	export DISPLAY=:77
+	export SWT_GTK3=0
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "cd('test');runSynthTests;"
+	kill -9 `pidof Xvfb`
 
 gen_tlbx:
 	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "genTlbx;exit();"

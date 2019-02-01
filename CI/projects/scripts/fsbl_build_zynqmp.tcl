@@ -31,3 +31,4 @@ file copy -force $cdir/pmufw/executable.elf $cdir/boot/pmufw.elf
 ### Build BOOT.BIN
 cd $cdir/boot
 exec bootgen -arch zynqmp -image zynqmp.bif -o BOOT.BIN -w
+exit

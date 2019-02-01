@@ -25,4 +25,5 @@ file copy -force $sdk_loc/hw_0/system_top.bit $cdir/boot/system_top.bit
 ### Build BOOT.BIN
 cd $cdir/boot
 exec bootgen -arch zynq -image zynq.bif -o BOOT.BIN -w
+exit
 
