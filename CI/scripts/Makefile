@@ -3,6 +3,8 @@
 # Example
 #	make build MLRELEASE=R2018b HDLBRANCH=hdl_2018_r1
 
+SHELL := /bin/bash
+
 MLFLAGS := -nodisplay -nodesktop -nosplash
 
 ifeq ($(MLRELEASE),)
@@ -96,10 +98,11 @@ test_synth:
 	cd ../.. ; \
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m ; \
 	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m ; \
-	Xvfb :77 &
-	export DISPLAY=:77
-	export SWT_GTK3=0
-	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "cd('test');runSynthTests;"
+	Xvfb :77 &  \
+	export DISPLAY=:77 ; \
+	export SWT_GTK3=0 ; \
+	source /opt/Xilinx/Vivado/2017.4/settings64.sh ; \
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "cd('test');runSynthTests;" ; \
 	kill -9 `pidof Xvfb`
 
 gen_tlbx:
