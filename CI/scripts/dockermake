@@ -1,3 +1,3 @@
 #!/bin/bash
 docker build . -t matlabci -f CI/scripts/Docker
-docker run --rm -e "MLRELEASE=$MLRELEASE"  -e "HDLBRANCH=$HDLBRANCH" -v "$(pwd):/work"  -v /mlhsp:/mlhspro:ro -v /usr/local/MATLAB:/usr/local/MATLAB  -v /root/.matlab:/root/.matlabro:ro -v /opt/Xilinx:/opt/Xilinx --mac-address="$ADDR" matlabci /bin/bash -c "cd /work && chmod +x CI/scripts/setupDocker.sh && ./CI/scripts/setupDocker.sh && make -C CI/scripts '$@'"
+docker run --rm -e "XILINXD_LICENSE_FILE=$XILINXD_LICENSE_FILE" -e "MLRELEASE=$MLRELEASE"  -e "HDLBRANCH=$HDLBRANCH" -v "$(pwd):/work"  -v /mlhsp:/mlhspro:ro -v /usr/local/MATLAB:/usr/local/MATLAB  -v /root/.matlab:/root/.matlabro:ro -v /root/.Xilinx:/root/.Xilinxro:ro -v /opt/Xilinx:/opt/Xilinx --mac-address="$ADDR" matlabci /bin/bash -c "cd /work && chmod +x CI/scripts/setupDocker.sh && ./CI/scripts/setupDocker.sh && make -C CI/scripts '$@'"
