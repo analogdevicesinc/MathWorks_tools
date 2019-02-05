@@ -3,7 +3,8 @@ classdef HardwareTests < LTETests
     properties
         SamplingRate = 1e6;
         author = 'MathWorks';
-        uri = 'usb:0';
+        uriRX = 'usb:0';
+        uriTX = 'usb:0';
     end
     
     methods(Static)
@@ -41,9 +42,9 @@ classdef HardwareTests < LTETests
             
             if strcmp(testCase.author,'MathWorks')
                 if isprop(sdrTransmitter,'RadioID')
-                    sdrTransmitter.RadioID = testCase.uri;
+                    sdrTransmitter.RadioID = testCase.uriTX;
                 else
-                    sdrTransmitter.IPAddress = testCase.uri;
+                    sdrTransmitter.IPAddress = testCase.uriTX;
                 end
                 sdrTransmitter.ShowAdvancedProperties = true;
                 sdrTransmitter.BasebandSampleRate = txConfig.SamplingRate;
@@ -51,7 +52,7 @@ classdef HardwareTests < LTETests
                 sdrTransmitter.Gain = txConfig.Gain;
                 sdrTransmitter.transmitRepeat(dataTX);
             else
-                sdrTransmitter.uri = testCase.uri;
+                sdrTransmitter.uri = testCase.uriTX;
                 sdrTransmitter.SamplingRate = txConfig.SamplingRate;
                 sdrTransmitter.EnableCyclicBuffers = true;
                 sdrTransmitter.AttenuationChannel0 = txConfig.Gain;
@@ -66,9 +67,9 @@ classdef HardwareTests < LTETests
             
             if strcmp(testCase.author,'MathWorks')
                 if isprop(sdrReceiver,'RadioID')
-                    sdrReceiver.RadioID = testCase.uri;
+                    sdrReceiver.RadioID = testCase.uriRX;
                 else
-                    sdrReceiver.IPAddress = testCase.uri;
+                    sdrReceiver.IPAddress = testCase.uriRX;
                 end
                 sdrReceiver.BasebandSampleRate = rxConfig.SamplingRate;
                 %sdrReceiver.OutputDataType = 'double';
@@ -99,19 +100,22 @@ classdef HardwareTests < LTETests
         end
 
         
-        function CheckDevice(testCase,type,Dev,ip,istx)
+        function CheckDevice(testCase,type,Dev,id,istx)
             
             try
                 switch type
                     case 'usb'
                         d = Dev();
+                        if ~isempty(id)
+                            d.RadioID = id;
+                        end
                     case 'ip'
                         if strcmp(testCase.author,'MathWorks')
                             d= Dev();
-                            d.IPAddress = ip;
+                            d.IPAddress = id;
                         else
                             d= Dev();
-                            d.uri = ['ip:',ip];
+                            d.uri = ['ip:',id];
                         end
                     otherwise
                         error('Unknown interface type');
@@ -316,6 +320,32 @@ classdef HardwareTests < LTETests
             testCase.saveToJSONExtended(json, logs);
             
         end
+        
+        function LTE_R4_TwoPluto(testCase)
+            
+            %% Test configs
+            Frequencies = (0.4:0.1:5).*1e9;
+            DeviceTx = @()sdrtx('Pluto');
+            DeviceRx = @()sdrrx('Pluto');
+            testname = 'LTE_R4_AD9361_ADI';
+            testCase.author = 'MathWorks';
+            testCase.uriRX = 'usb:0';
+            testCase.uriTX = 'usb:1';
+            
+            %% Check hardware connected
+            testCase.CheckDevice('usb',DeviceTx,testCase.uriTX,true);
+            testCase.CheckDevice('usb',DeviceRx,testCase.uriRX,false);
+            
+            %% Run Test
+            [data,logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            
+            %% Log data
+            json = [testname,'_',num2str(int32(now)),'.json'];
+            %testCase.saveToJSON(json, data);
+            testCase.saveToJSONExtended(json, logs);
+            
+        end
+        
         
     end
     
