@@ -6,15 +6,40 @@ classdef BSPTestsBase < matlab.unittest.TestCase
         SynthesizeDesign = {false};
     end
     
+    properties
+        Count = 0;
+        TotalTests = 0;
+    end
+    
     methods(TestClassSetup)
         function disableWarnings(~)
             warning('off','hdlcommon:hdlcommon:InterfaceNotAssigned');
+        end
+        function testCount(testCase)
+            testCase.TotalTests = length(testCase.configs);
+            CountS = 0;
+            save('tc.mat','CountS');
         end
     end
     
     methods(TestClassTeardown)
         function enableWarnings(~)
             warning('on','hdlcommon:hdlcommon:InterfaceNotAssigned');
+        end
+        function collectLogs(~)
+            if ~exist([pwd,'../logs'],'dir')
+                mkdir('../logs','s');
+            end
+            system('cp *.log ../logs');
+        end
+    end
+    
+    methods(TestMethodSetup)
+        function loadTestCount(testCase)
+            l = load('tc.mat');
+            CountS = l.CountS + 1;
+            testCase.Count = CountS;
+            save('tc.mat','CountS');
         end
     end
     
@@ -93,7 +118,8 @@ classdef BSPTestsBase < matlab.unittest.TestCase
                 testCase.setVivadoPath(cfgb.vivado_version);
                 % Build
                 disp(repmat('/',1,80));
-                disp(['Building: ',cfgb.Board.BoardName,' | ',cfgb.mode]);
+                disp(['Building: ',cfgb.Board.BoardName,' | ',cfgb.mode,...
+                    ' (',num2str(testCase.Count),' of ',num2str(testCase.TotalTests),')']);
                 res = build_design(cfgb.Board,cfgb.ReferenceDesignName,...
                     cfgb.vivado_version,cfgb.mode,cfgb.Board.BoardName,...
                     SynthesizeDesign);
