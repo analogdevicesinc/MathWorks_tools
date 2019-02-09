@@ -3,17 +3,43 @@ classdef BSPTestsBase < matlab.unittest.TestCase
         % Pull in board permutations
         configs = hdlcoder_board_customization_local;
         ignored_builds = {'AnalogDevices.adrv9361z7035.ccbox_lvds.modem.plugin_board'};
+        SynthesizeDesign = {false};
+    end
+    
+    properties
+        Count = 0;
+        TotalTests = 0;
     end
     
     methods(TestClassSetup)
         function disableWarnings(~)
             warning('off','hdlcommon:hdlcommon:InterfaceNotAssigned');
         end
+        function testCount(testCase)
+            testCase.TotalTests = length(testCase.configs);
+            CountS = 0;
+            save('tc.mat','CountS');
+        end
     end
     
     methods(TestClassTeardown)
         function enableWarnings(~)
             warning('on','hdlcommon:hdlcommon:InterfaceNotAssigned');
+        end
+        function collectLogs(~)
+            if ~exist([pwd,'../logs'],'dir')
+                mkdir('../logs','s');
+            end
+            system('cp *.log ../logs');
+        end
+    end
+    
+    methods(TestMethodSetup)
+        function loadTestCount(testCase)
+            l = load('tc.mat');
+            CountS = l.CountS + 1;
+            testCase.Count = CountS;
+            save('tc.mat','CountS');
         end
     end
     
@@ -76,7 +102,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
     end
     
     methods(Test)
-        function testMain(testCase, configs)
+        function testMain(testCase, configs, SynthesizeDesign)
             % Filter out ignored configurations
             if ismember(configs,testCase.ignored_builds)
                 assumeFail(testCase);
@@ -91,18 +117,26 @@ classdef BSPTestsBase < matlab.unittest.TestCase
                 % Set up vivado
                 testCase.setVivadoPath(cfgb.vivado_version);
                 % Build
-                disp(['Building: ',cfgb.Board.BoardName]);
+                disp(repmat('/',1,80));
+                disp(['Building: ',cfgb.Board.BoardName,' | ',cfgb.mode,...
+                    ' (',num2str(testCase.Count),' of ',num2str(testCase.TotalTests),')']);
                 res = build_design(cfgb.Board,cfgb.ReferenceDesignName,...
-                    cfgb.vivado_version,cfgb.mode,cfgb.Board.BoardName);
+                    cfgb.vivado_version,cfgb.mode,cfgb.Board.BoardName,...
+                    SynthesizeDesign);
                 % Check
                 if isfield(res,'message') || isa(res,'MException')
                     disp(['Build error: ', cfgb.ReferenceDesignName]);
-                    res
-                    res.message
+                    disp(res);
+                    disp(res.message);
+                    disp(res.stack);
                     system("find hdl_prj/ -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} .");
-                    %if exist('workflow_task_CreateProject.log','file')
-                    %    movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,' ',cfgb.mode,'.log']);
-                    %end
+                    if exist('workflow_task_CreateProject.log','file')
+                       movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,'_CreateProject_',cfgb.mode,'.log']);
+                    end
+                    system("find hdl_prj/ -name 'workflow_task_BuildFPGABitstream.log' | xargs -I '{}' cp {} .");
+                    if exist('workflow_task_BuildFPGABitstream.log','file')
+                       movefile('workflow_task_BuildFPGABitstream.log',[cfgb.ReferenceDesignName,'_BuildFPGABitstream_',cfgb.mode,'.log']);
+                    end
                     verifyEmpty(testCase,res,res.message);
                 end
             end
