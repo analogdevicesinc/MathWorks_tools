@@ -8,7 +8,7 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2017.4)', board);
+hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System',board);
 
 % Determine the board name based on the design
 hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
@@ -17,7 +17,8 @@ hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
 if contains(upper(design),'MODEM')
 	hRD.SupportedToolVersion = {'2016.4'};%MODEM
 else
-	hRD.SupportedToolVersion = {'2017.4'};
+	v = adi.Version;
+	hRD.SupportedToolVersion = {v.VivadoShort};
 end
 
 % Get the root directory
@@ -39,11 +40,11 @@ switch(upper(board))
 	case 'FMC CMOS'
 		board = 'ccfmc_cmos';
 	case 'PCI LVDS'
-		board = 'ccpci_lvds';		
+		board = 'ccpci_lvds';
 	case 'USB LVDS'
-		board = 'ccusb_lvds';		
+		board = 'ccusb_lvds';
 	otherwise
-		board = 'ccbrk_lvds';	
+		board = 'ccbrk_lvds';
 end
 
 %% Add custom design files
@@ -60,20 +61,20 @@ switch(upper(design))
 	case 'RX & TX'
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_rx_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));		
+			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
 	case 'MODEM'
 		board = 'ccbox_lvds_modem';
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_rx_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));	
+			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
 	otherwise
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project.tcl'), ...
 			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
-end	
+end
 
-hRD.BlockDesignName = 'system';	
-	
+hRD.BlockDesignName = 'system';
+
 % custom constraint files
 board_type = strsplit(board,'_');
 hRD.CustomConstraints = {...
@@ -91,11 +92,10 @@ hRD.CustomFiles = {...
 	fullfile('projects','fmcomms2')...,
 	fullfile('projects','adrv9361z7035', 'common')...,
     fullfile('projects','adrv9361z7035', lower(board))...,
-    };	
-	
+    };
+
 %% Add interfaces
 % add clock interface
 hRD.addClockInterface( ...
     'ClockConnection',   'util_ad9361_divclk/clk_out', ...
     'ResetConnection',   'util_ad9361_divclk_reset/peripheral_aresetn');
-	

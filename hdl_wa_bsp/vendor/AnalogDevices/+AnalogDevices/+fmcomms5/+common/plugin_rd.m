@@ -8,13 +8,14 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('FMCOMMS5 %s Base System (Vivado 2017.4)', upper(board));
+hRD.ReferenceDesignName = sprintf('FMCOMMS5 %s Base System', upper(board));
 
 % Determine the board name based on the design
 hRD.BoardName = sprintf('AnalogDevices FMCOMMS5 %s (%s)', upper(board), design);
 
 % Tool information
-hRD.SupportedToolVersion = {'2017.4'};
+v = adi.Version;
+hRD.SupportedToolVersion = {v.VivadoShort};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
@@ -42,10 +43,10 @@ switch(upper(design))
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'fmcomms5', lower(board), 'system_project.tcl'), ...
 			'CustomTopLevelHDL',    fullfile('projects', 'fmcomms5', lower(board), 'system_top.v'));
-end	
+end
 
-hRD.BlockDesignName = 'system';	
-	
+hRD.BlockDesignName = 'system';
+
 % custom constraint files
 hRD.CustomConstraints = {...
     fullfile('projects', 'fmcomms5', lower(board), 'system_constr.xdc'), ...
@@ -56,11 +57,10 @@ hRD.CustomConstraints = {...
 hRD.CustomFiles = {...
     fullfile('projects')...,
 	fullfile('library')...,
-    };	
-	
+    };
+
 %% Add interfaces
 % add clock interface
 hRD.addClockInterface( ...
     'ClockConnection',   'util_ad9361_divclk/clk_out', ...
     'ResetConnection',   'util_ad9361_divclk_reset/peripheral_aresetn');
-	

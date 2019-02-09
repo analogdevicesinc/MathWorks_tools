@@ -5,13 +5,14 @@ function hRD = plugin_rd(board, design)
 hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('ADRV9009 %s Base System (Vivado 2017.4)', upper(board));
+hRD.ReferenceDesignName = sprintf('ADRV9009 %s Base System', upper(board));
 
 % Determine the board name based on the design
 hRD.BoardName = sprintf('AnalogDevices ADRV9009 %s (%s)', upper(board), design);
 
 % Tool information
-hRD.SupportedToolVersion = {'2017.4'};
+v = adi.Version;
+hRD.SupportedToolVersion = {v.VivadoShort};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
@@ -39,10 +40,10 @@ switch(upper(design))
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9009', lower(board), 'system_project.tcl'), ...
 			'CustomTopLevelHDL',    fullfile('projects', 'adrv9009', lower(board), 'system_top.v'));
-end	
+end
 
-hRD.BlockDesignName = 'system';	
-	
+hRD.BlockDesignName = 'system';
+
 % custom constraint files
 hRD.CustomConstraints = {...
     fullfile('projects', 'adrv9009', lower(board), 'system_constr.xdc'), ...
@@ -59,7 +60,7 @@ hRD.addParameter( ...
     'ParameterID',   'fpga_board', ...
     'DisplayName',   'FPGA Boad', ...
     'DefaultValue',  upper(board));
-	
+
 %% Add interfaces
 % add clock interface
 switch(upper(design))
@@ -82,4 +83,3 @@ switch(upper(design))
     otherwise
         error('Unknown reference design');
 end
-	

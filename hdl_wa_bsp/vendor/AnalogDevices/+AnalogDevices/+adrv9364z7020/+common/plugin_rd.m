@@ -8,13 +8,14 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('adrv9364z7020 %s Base System (Vivado 2017.4)', board);
+hRD.ReferenceDesignName = sprintf('adrv9364z7020 %s Base System', board);
 
 % Determine the board name based on the design
 hRD.BoardName = sprintf('AnalogDevices adrv9364z7020 %s (%s)', board, design);
 
 % Tool information
-hRD.SupportedToolVersion = {'2017.4'};
+v = adi.Version;
+hRD.SupportedToolVersion = {v.VivadoShort};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
@@ -31,9 +32,9 @@ switch(upper(board))
 	case 'BOB CMOS'
 		board = 'ccbob_cmos';
 	case 'USB LVDS'
-		board = 'ccusb_lvds';		
+		board = 'ccusb_lvds';
 	otherwise
-		board = 'ccbob_lvds';	
+		board = 'ccbob_lvds';
 end
 
 %% Add custom design files
@@ -50,15 +51,15 @@ switch(upper(design))
 	case 'RX & TX'
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9364z7020', lower(board), 'system_project_rx_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9364z7020', lower(board), 'system_top.v'));		
+			'CustomTopLevelHDL',    fullfile('projects', 'adrv9364z7020', lower(board), 'system_top.v'));
 	otherwise
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9364z7020', lower(board), 'system_project.tcl'), ...
 			'CustomTopLevelHDL',    fullfile('projects', 'adrv9364z7020', lower(board), 'system_top.v'));
-end	
+end
 
-hRD.BlockDesignName = 'system';	
-	
+hRD.BlockDesignName = 'system';
+
 % custom constraint files
 board_type = strsplit(board,'_');
 hRD.CustomConstraints = {...
@@ -74,11 +75,10 @@ hRD.CustomFiles = {...
 	fullfile('projects','fmcomms2')...,
 	fullfile('projects','adrv9364z7020', 'common')...,
     fullfile('projects','adrv9364z7020', lower(board))...,
-    };	
-	
+    };
+
 %% Add interfaces
 % add clock interface
 hRD.addClockInterface( ...
     'ClockConnection',   'util_ad9361_divclk/clk_out', ...
     'ResetConnection',   'util_ad9361_divclk_reset/peripheral_aresetn');
-	
