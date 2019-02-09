@@ -6,6 +6,7 @@ stages:
   
 # Default build
 build:2018_R1:
+    when: manual
     tags:
      - vivado
      - matlab
@@ -25,6 +26,7 @@ build:2018_R1:
 
 # Future branches
 build:master:
+    when: manual
     tags:
      - vivado
      - matlab
@@ -42,6 +44,7 @@ build:master:
 
 # Test HWA no install
 test:2018_R1:
+    when: manual
     tags:
      - vivado
      - matlab
@@ -59,6 +62,7 @@ test:2018_R1:
 
 # Test HWA with install
 test_installer:2018_R1_Installer:
+    when: manual
     tags:
      - vivado
      - matlab
@@ -98,6 +102,7 @@ test:Synthesize:
 
 # Test streaming interfaces with hardware
 test_hardware:Streaming_Hardware:
+    when: manual
     tags:
      - matlab
      - hardware
@@ -114,6 +119,7 @@ test_hardware:Streaming_Hardware:
 
 # Test EVM performance with hardware
 test_hardware:EVM_Hardware:
+    when: manual
     only:
      - schedules
     tags:
@@ -131,7 +137,8 @@ test_hardware:EVM_Hardware:
             - Report.pdf
 
 # Deploy
-deploy:
+deploy:mltbx:
+    when: manual
     tags:
      - matlab
     stage: deploy
@@ -143,4 +150,19 @@ deploy:
     artifacts:
         paths:
             - mltbx/
+# Doc
+pages:
+    tags:
+     - matlab
+    stage: deploy
+    script:
+     - mkdir public
+     - cp -r doc/*.html public
+     - cd public
+     - tree -H '.' -L 1 --noreport --charset utf-8 > index.html
+    artifacts:
+        paths:
+         - public
+    only:
+     - doc
 
