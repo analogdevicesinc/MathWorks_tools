@@ -3,6 +3,10 @@
 # Example
 #	make build MLRELEASE=R2018b HDLBRANCH=hdl_2018_r1
 
+SHELL := /bin/bash
+
+MLFLAGS := -nodisplay -nodesktop -nosplash
+
 ifeq ($(MLRELEASE),)
 MLRELEASE := R2018b
 endif
@@ -12,7 +16,8 @@ HDLBRANCH := hdl_2018_r1
 endif
 
 ifeq ($(OS),Windows_NT)
-$(error Build system does not currently support Windows)
+MLPATH := /cygdrive/c/Program\ Files/MATLAB
+MLFLAGS := $(MLFLAGS) -wait
 else
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -23,6 +28,7 @@ MLPATH := /Applications
 MLRELEASE := MATLAB_${MLRELEASE}.app
 endif
 endif
+
 
 GITTAG := $(shell git describe --tags HEAD)
 
@@ -68,27 +74,34 @@ test_installer:
 	cp *.mltbx test/ ; \
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m ; \
 	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "cd('test');runInstallerTests;"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "cd('test');runInstallerTests;"
 
 test:
 	cd ../.. ; \
 	cp hdl_wa_bsp/vendor/AnalogDevices/hdlcoder_board_customization.m test/hdlcoder_board_customization_local.m ; \
 	sed -i "s/hdlcoder_board_customization/hdlcoder_board_customization_local/g" test/hdlcoder_board_customization_local.m ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "cd('test');runTests;"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "cd('test');runTests;"
 
 test_streaming:
 	cd ../.. ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('test'));addpath(genpath('deps'));hwTestRunner;"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "addpath(genpath('test'));addpath(genpath('deps'));runHWTests;"
+
+test_evm:
+	cd ../.. ; \
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "addpath(genpath('test'));addpath(genpath('deps'));hwTestRunner;"
 
 test_modem:
 	cd ../.. ; \
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "addpath(genpath('hdl_wa_bsp'));cd('targeting_models');addpath(genpath('modem-qpsk'))"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "addpath(genpath('hdl_wa_bsp'));cd('targeting_models');addpath(genpath('modem-qpsk'))"
+
+test_synth:
+	bash synth_designs.sh
 
 gen_tlbx:
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "genTlbx;exit();"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "genTlbx;exit();"
 
 linter:
-	${MLPATH}/$(MLRELEASE)/bin/matlab -nodisplay -r "linter;exit();"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "linter;exit();"
 
 zip:
 	cd ../.. ; \

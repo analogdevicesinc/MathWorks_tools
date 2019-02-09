@@ -1,7 +1,6 @@
 stages:
   - build
   - test
-  - test_installer
   - test_hardware
   - deploy
   
@@ -12,11 +11,9 @@ build:2018_R1:
      - matlab
     stage: build
     script:
-     - cd CI/scripts
-     - make build
-     - make add_libad9361
-     - make gen_tlbx
-     - cd ../..
+     - ./CI/scripts/dockermake build
+     - ./CI/scripts/dockermake add_libad9361
+     - ./CI/scripts/dockermake gen_tlbx
      - mkdir mltbx
      - ls *.mltbx
      - cp *.mltbx mltbx/
@@ -33,9 +30,11 @@ build:master:
      - matlab
     stage: build
     script:
-     - cd CI/scripts
-     - make build MLRELEASE=R2018b HDLBRANCH=master
-     - cd ../..
+     - export HDLBRANCH=master
+     - export MLRELEASE=R2018b
+     - ./CI/scripts/dockermake build
+     - export HDLBRANCH=
+     - export MLRELEASE=
     allow_failure: true
     artifacts:
         paths:
@@ -50,9 +49,8 @@ test:2018_R1:
     dependencies:
      - build:2018_R1
     script:
-     - cd CI/scripts
-     - make test
-     - make zip
+     - ./CI/scripts/dockermake test
+     - ./CI/scripts/dockermake zip
     artifacts:
         paths:
             - zip/
@@ -64,7 +62,7 @@ test_installer:2018_R1_Installer:
     tags:
      - vivado
      - matlab
-    stage: test_installer
+    stage: test
     dependencies:
      - build:2018_R1
     script:
@@ -72,8 +70,7 @@ test_installer:2018_R1_Installer:
      - pwd
      - ls
      - ls *.mltbx
-     - cd CI/scripts
-     - make test_installer
+     - ./CI/scripts/dockermake test_installer
     artifacts:
         paths:
             - mltbx/
@@ -81,10 +78,26 @@ test_installer:2018_R1_Installer:
         reports:
             junit: test/BSPTestResults.xml
 
+# Test weekly fully sythesized design
+test:Synthesize:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test_synth
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
 # Test streaming interfaces with hardware
 test_hardware:Streaming_Hardware:
-    only:
-     - schedules
     tags:
      - matlab
      - hardware
@@ -97,17 +110,21 @@ test_hardware:Streaming_Hardware:
     artifacts:
         paths:
             - logs/
+            - Report.pdf
 
-# Test streaming interfaces with hardware manual
-test_manual:Streaming_Hardware_Manual:
-    when: manual
+# Test EVM performance with hardware
+test_hardware:EVM_Hardware:
+    only:
+     - schedules
     tags:
      - matlab
      - hardware
+    stage: test_hardware
+    dependencies:
+     - build:2018_R1
     script:
      - cd CI/scripts
-     - make add_libad9361
-     - make test_streaming
+     - make test_evm
     artifacts:
         paths:
             - logs/
@@ -126,5 +143,4 @@ deploy:
     artifacts:
         paths:
             - mltbx/
-
 

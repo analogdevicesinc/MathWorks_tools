@@ -11,7 +11,14 @@ filename = 'system_wrapper_timing_summary_routed.rpt';
 full = [path,'/',filename];
 
 if ~isfile(full)
-   error(['No timing report found under: ',full]); 
+    full1 = full;
+    % Try ZYNQMP naming
+    path = [hdl_prj,'/vivado_ip_prj/vivado_prj.runs/impl_1'];
+    filename = 'system_top_timing_summary_routed.rpt';
+    full = [path,'/',filename];
+    if ~isfile(full)
+        error(['No timing report found under: ',full,' or ',full1]);
+    end
 end
 
 fid = fopen(full);

@@ -26,6 +26,13 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         function flag = isInactivePropertyImpl(obj, prop)
             flag = strcmpi(prop,'enIO');
             % TX/RX
+            if isprop(obj,'EnableCustomProfile')
+                flag = flag || strcmpi(prop,'CustomProfileFileName') && ~obj.EnableCustomProfile;
+                if obj.EnableCustomProfile
+                    flag = flag || strcmpi(prop,'RFBandwidth');
+                    flag = flag || strcmpi(prop,'SamplingRate');
+                end
+            end
             if isprop(obj,'EnableCustomFilter')
                 flag = flag || strcmpi(prop,'CustomFilterFileName') && ~obj.EnableCustomFilter;
                 if obj.EnableCustomFilter

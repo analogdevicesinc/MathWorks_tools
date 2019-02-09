@@ -1,7 +1,7 @@
 classdef (Abstract) Attribute < matlabshared.libiio.base 
     % Attribute IIO attribute function calls
     
-    methods (Hidden, Access = protected)
+    methods (Hidden)
         
         function setAttributeLongLong(obj,id,attr,value,isOutput,tol)
             phydev = getDev(obj, obj.phyDevName);
@@ -22,6 +22,15 @@ classdef (Abstract) Attribute < matlabshared.libiio.base
             end
         end
         
+        function rValue = getAttributeLongLong(obj,id,attr,isOutput)
+            phydev = getDev(obj, obj.phyDevName);
+            chanPtr = iio_device_find_channel(obj,phydev,id,isOutput);%FIXME (INVERSION)
+            status = cPtrCheck(obj,chanPtr);
+            cstatus(obj,status,['Channel: ' id ' not found']);
+            [status, rValue] = iio_channel_attr_read_longlong(obj,chanPtr,attr);
+            cstatus(obj,status,['Error reading attribute: ' attr]);
+        end
+        
         function setAttributeBool(obj,id,attr,value,isOutput)
             phydev = getDev(obj, obj.phyDevName);
             chanPtr = iio_device_find_channel(obj,phydev,id,isOutput);%FIXME (INVERSION)
@@ -38,6 +47,15 @@ classdef (Abstract) Attribute < matlabshared.libiio.base
             end
         end
         
+        function rValue = getAttributeBool(obj,id,attr,isOutput)
+            phydev = getDev(obj, obj.phyDevName);
+            chanPtr = iio_device_find_channel(obj,phydev,id,isOutput);%FIXME (INVERSION)
+            status = cPtrCheck(obj,chanPtr);
+            cstatus(obj,status,['Channel: ' id ' not found']);
+            [status, rValue] = iio_channel_attr_read_bool(obj,chanPtr,attr);
+            cstatus(obj,status,['Error reading attribute: ' attr]);
+        end
+        
         function setAttributeRAW(obj,id,attr,value,isOutput)
             phydev = getDev(obj, obj.phyDevName);
             chanPtr = iio_device_find_channel(obj,phydev,id,isOutput);%FIXME (INVERSION)
@@ -50,6 +68,15 @@ classdef (Abstract) Attribute < matlabshared.libiio.base
             end
         end
         
+        function rValue = getAttributeRAW(obj,id,attr,isOutput)
+            phydev = getDev(obj, obj.phyDevName);
+            chanPtr = iio_device_find_channel(obj,phydev,id,isOutput);%FIXME (INVERSION)
+            status = cPtrCheck(obj,chanPtr);
+            cstatus(obj,status,['Channel: ' id ' not found']);
+            [status, rValue] = iio_channel_attr_read(obj,chanPtr,attr);
+            cstatus(obj,status,['Error reading attribute: ' attr]);
+        end
+        
         function setDeviceAttributeRAW(obj,attr,value)
             phydev = getDev(obj, obj.phyDevName);
             bytes = iio_device_attr_write(obj,phydev,attr,value);
@@ -57,6 +84,12 @@ classdef (Abstract) Attribute < matlabshared.libiio.base
                 status = -1;
                 cstatus(obj,status,['Attribute write failed for : ' attr ' with value ' value]);
             end
+        end
+        
+        function rValue = getDeviceAttributeRAW(obj,attr)
+            phydev = getDev(obj, obj.phyDevName);
+            [status, rValue] = iio_device_attr_read(obj,phydev,attr);
+            cstatus(obj,status,['Error reading attribute: ' attr]);
         end
         
     end
