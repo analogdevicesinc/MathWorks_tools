@@ -1,9 +1,13 @@
 
-version = '18.2';
 
 %%
 cd(fileparts((mfilename('fullpath'))));
 cd('../..');
+% Update doc to current release
+updateRelease;
+version = adi.Version.Release;
+
+% Now build mltbx file
 p = pwd;
 cd(fileparts((mfilename('fullpath'))));
 
