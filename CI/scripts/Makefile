@@ -97,6 +97,24 @@ test_modem:
 test_synth:
 	bash synth_designs.sh
 
+test_synth_zed:
+	bash synth_designs_zed.sh
+
+test_synth_zc702:
+	bash synth_designs_zc702.sh
+
+test_synth_zc706:
+	bash synth_designs_zc706.sh
+
+test_synth_zcu102:
+	bash synth_designs_zcu102.sh
+
+test_synth_adrv9361:
+	bash synth_designs_adrv9361.sh
+
+test_synth_adrv9364:
+	bash synth_designs_adrv9364.sh
+
 gen_tlbx:
 	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "genTlbx;exit();"
 

@@ -79,7 +79,7 @@ test_installer:2018_R1_Installer:
             junit: test/BSPTestResults.xml
 
 # Test weekly fully sythesized design
-test:Synthesize:
+test:Synthesize_zed:
     when: manual
     tags:
      - matlab
@@ -88,7 +88,92 @@ test:Synthesize:
     dependencies:
      - build:2018_R1
     script:
-     - ./CI/scripts/dockermake test_synth
+     - ./CI/scripts/dockermake test_synth_zed
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
+test:Synthesize_zc702:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test_synth_zc702
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
+test:Synthesize_zc706:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test_synth_zc706
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
+test:Synthesize_zcu102:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test_synth_zcu102
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
+test:Synthesize_adrv9361:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test_synth_adrv9361
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
+test:Synthesize_adrv9364:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test_synth_adrv9364
     artifacts:
         when: always
         name: "$CI_COMMIT_REF_NAME"
