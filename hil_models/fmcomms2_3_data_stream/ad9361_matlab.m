@@ -18,16 +18,16 @@ t = 1/Fs:1/Fs:s.in_ch_size/Fs;
 for i=1:s.in_ch_no
     input{i} = sin(2*pi*Fc*t+(i-1)*pi/2)*1024;
 end
-input{s.in_ch_no+1} = 2.4e9;
-input{s.in_ch_no+2} = 30.72e6;
-input{s.in_ch_no+3} = 18.0e6;
-input{s.in_ch_no+4} = 'slow_attack';
-input{s.in_ch_no+5} = 0;
-input{s.in_ch_no+6} = 'slow_attack';
-input{s.in_ch_no+7} = 0;
-input{s.in_ch_no+8} = 2.4e9;
-input{s.in_ch_no+9} = 30.72e6;
-input{s.in_ch_no+10} = 18.0e6;
+input{s.getInChannel('RX_LO_FREQ')} = 2.4e9;
+input{s.getInChannel('RX_SAMPLING_FREQ')} = 30.72e6;
+input{s.getInChannel('RX_RF_BANDWIDTH')} = 18.0e6;
+input{s.getInChannel('RX1_GAIN_MODE')} = 'slow_attack';
+input{s.getInChannel('RX1_GAIN')} = 0;
+input{s.getInChannel('RX2_GAIN_MODE')} = 'slow_attack';
+input{s.getInChannel('RX2_GAIN')} = 0;
+input{s.getInChannel('TX_LO_FREQ')} = 2.4e9;
+input{s.getInChannel('TX_SAMPLING_FREQ')} = 30.72e6;
+input{s.getInChannel('TX_RF_BANDWIDTH')} = 18.0e6;
 
 output = cell(1, s.out_ch_no + length(s.iio_dev_cfg.mon_ch));
 
