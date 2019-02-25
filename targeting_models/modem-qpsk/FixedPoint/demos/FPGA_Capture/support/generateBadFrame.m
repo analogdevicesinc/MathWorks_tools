@@ -147,4 +147,14 @@ save('bits.mat','bits','frame','txDataEnc');
 % words64bits = bi2de(reshape([HeaderBytes;txData],64,length([HeaderBytes;txData])/64).','right-msb');
 % save('words16bits.mat','words16bits');
 % save('words64bits.mat','words64bits');
-% save('IQData.mat','fullFrameFilt');
+
+powerScaleFactor = 0.8;
+fullFrameFiltint16 = fullFrameFilt.*(1/max(abs(fullFrameFilt))*powerScaleFactor);
+
+% Cast the transmit signal to int16 ---
+% this is the native format for the SDR hardware.
+fullFrameFiltint16 = int16(fullFrameFiltint16*2^15);
+
+BBW = comm.BasebandFileWriter('CRCErrorData.bb', 20e6, 900e6);
+BBW(fullFrameFiltint16);
+BBW.release();

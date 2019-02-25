@@ -6,241 +6,241 @@
 %     Overwrite : true
 %     Comments  : true
 %     Headers   : true
-%     DUT       : 'Receiver_FPGACap/Receiver HDL'
+%     DUT       : 'Receiver_FPGACapture/Receiver HDL'
 % To view changes after modifying the workflow, run the following command:
-% >> hWC.export('DUT','Receiver_FPGACap/Receiver HDL');
+% >> hWC.export('DUT','Receiver_FPGACapture/Receiver HDL');
 %--------------------------------------------------------------------------
 
 %% Load the Model
-load_system('Receiver_FPGACap');
+load_system('Receiver_FPGACapture');
 
 %% Restore the Model to default HDL parameters
-%hdlrestoreparams('Receiver_FPGACap/Receiver HDL');
+%hdlrestoreparams('Receiver_FPGACapture/Receiver HDL');
 
 %% Model HDL Parameters
-%% Set Model 'Receiver_FPGACap' HDL parameters
-hdlset_param('Receiver_FPGACap', 'HDLSubsystem', 'Receiver_FPGACap/Receiver HDL');
-hdlset_param('Receiver_FPGACap', 'ReferenceDesign', 'Receive path');
-hdlset_param('Receiver_FPGACap', 'ReferenceDesignParameter', {'boardName','ccfmc_lvds','project','adrv9361z7035','mw_hdl_dir','ipcore/mw','ad_hdl_dir','ipcore/adi','variant','rx','mw_board_name','adrv9361z7035','mw_adi_boardname','adrv9361z7035/ccfmc_lvds'});
-hdlset_param('Receiver_FPGACap', 'SynthesisTool', 'Xilinx Vivado');
-hdlset_param('Receiver_FPGACap', 'SynthesisToolChipFamily', 'Zynq');
-hdlset_param('Receiver_FPGACap', 'SynthesisToolDeviceName', 'xc7z035i');
-hdlset_param('Receiver_FPGACap', 'SynthesisToolPackageName', 'fbg676');
-hdlset_param('Receiver_FPGACap', 'SynthesisToolSpeedValue', '-2L');
-hdlset_param('Receiver_FPGACap', 'TargetDirectory', 'hdl_prj\hdlsrc');
-hdlset_param('Receiver_FPGACap', 'TargetFrequency', 20);
-hdlset_param('Receiver_FPGACap', 'TargetLanguage', 'Verilog');
-hdlset_param('Receiver_FPGACap', 'TargetPlatform', 'ADI RF SOM [LibIIO]');
-hdlset_param('Receiver_FPGACap', 'Workflow', 'IP Core Generation');
+%% Set Model 'Receiver_FPGACapture' HDL parameters
+hdlset_param('Receiver_FPGACapture', 'HDLSubsystem', 'Receiver_FPGACapture/Receiver HDL');
+hdlset_param('Receiver_FPGACapture', 'ReferenceDesign', 'Receive path');
+hdlset_param('Receiver_FPGACapture', 'ReferenceDesignParameter', {'boardName','ccfmc_lvds','project','adrv9361z7035','mw_hdl_dir','ipcore/mw','ad_hdl_dir','ipcore/adi','variant','rx','mw_board_name','adrv9361z7035','mw_adi_boardname','adrv9361z7035/ccfmc_lvds'});
+hdlset_param('Receiver_FPGACapture', 'SynthesisTool', 'Xilinx Vivado');
+hdlset_param('Receiver_FPGACapture', 'SynthesisToolChipFamily', 'Zynq');
+hdlset_param('Receiver_FPGACapture', 'SynthesisToolDeviceName', 'xc7z035i');
+hdlset_param('Receiver_FPGACapture', 'SynthesisToolPackageName', 'fbg676');
+hdlset_param('Receiver_FPGACapture', 'SynthesisToolSpeedValue', '-2L');
+hdlset_param('Receiver_FPGACapture', 'TargetDirectory', 'hdl_prj\hdlsrc');
+hdlset_param('Receiver_FPGACapture', 'TargetFrequency', 20);
+hdlset_param('Receiver_FPGACapture', 'TargetLanguage', 'Verilog');
+hdlset_param('Receiver_FPGACapture', 'TargetPlatform', 'ADI RF SOM');
+hdlset_param('Receiver_FPGACapture', 'Workflow', 'IP Core Generation');
 
 % Set SubSystem HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL', 'ProcessorFPGASynchronization', 'Free running');
+hdlset_param('Receiver_FPGACapture/Receiver HDL', 'ProcessorFPGASynchronization', 'Free running');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/FromRadioR', 'IOInterface', 'Baseband Rx I1 In [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/FromRadioR', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/FromRadioR', 'IOInterface', 'Baseband Rx I1 In [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/FromRadioR', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/FromRadioI', 'IOInterface', 'Baseband Rx Q1 In [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/FromRadioI', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/FromRadioI', 'IOInterface', 'Baseband Rx Q1 In [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/FromRadioI', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/validIn', 'IOInterface', 'Baseband Rx Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/validIn', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/validIn', 'IOInterface', 'Baseband Rx Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/validIn', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/FRLoopBw', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/FRLoopBw', 'IOInterfaceMapping', 'x"100"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/FRLoopBw', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/FRLoopBw', 'IOInterfaceMapping', 'x"100"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/EQmu', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/EQmu', 'IOInterfaceMapping', 'x"104"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/EQmu', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/EQmu', 'IOInterfaceMapping', 'x"104"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Scope Select', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Scope Select', 'IOInterfaceMapping', 'x"108"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Scope Select', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Scope Select', 'IOInterfaceMapping', 'x"108"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/DebugSelector', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/DebugSelector', 'IOInterfaceMapping', 'x"10C"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/DebugSelector', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/DebugSelector', 'IOInterfaceMapping', 'x"10C"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/BypassEQ', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/BypassEQ', 'IOInterfaceMapping', 'x"114"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/BypassEQ', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/BypassEQ', 'IOInterfaceMapping', 'x"114"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/EnableDecode', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/EnableDecode', 'IOInterfaceMapping', 'x"118"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/EnableDecode', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/EnableDecode', 'IOInterfaceMapping', 'x"118"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/PDThreshold', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/PDThreshold', 'IOInterfaceMapping', 'x"11C"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/PDThreshold', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/PDThreshold', 'IOInterfaceMapping', 'x"11C"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/TransmitToggle', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/TransmitToggle', 'IOInterfaceMapping', 'x"120"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/TransmitToggle', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/TransmitToggle', 'IOInterfaceMapping', 'x"120"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/TransmitAlways', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/TransmitAlways', 'IOInterfaceMapping', 'x"124"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/TransmitAlways', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/TransmitAlways', 'IOInterfaceMapping', 'x"124"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Loopback', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Loopback', 'IOInterfaceMapping', 'x"12C"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Loopback', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Loopback', 'IOInterfaceMapping', 'x"12C"');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/BypassCoding', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/BypassCoding', 'IOInterfaceMapping', 'x"130"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/BypassCoding', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/BypassCoding', 'IOInterfaceMapping', 'x"130"');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/IQ Interface Mapper/real', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/IQ Interface Mapper/real', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/IQ Interface Mapper/real', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/IQ Interface Mapper/real', 'IOInterfaceMapping', '');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/IQ Interface Mapper/imag', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/IQ Interface Mapper/imag', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/IQ Interface Mapper/imag', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/IQ Interface Mapper/imag', 'IOInterfaceMapping', '');
 
 % Set SubSystem HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL', 'ProcessorFPGASynchronization', 'Free running');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL', 'ProcessorFPGASynchronization', 'Free running');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/re', 'IOInterface', 'Rx data I1 In [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/re', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/re', 'IOInterface', 'Rx data I1 In [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/re', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/Im', 'IOInterface', 'Rx data Q1 In [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/Im', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/Im', 'IOInterface', 'Rx data Q1 In [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/Im', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/Enable', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/Enable', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/Enable', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/Enable', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/FRLoopBW', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/FRLoopBW', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/FRLoopBW', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/FRLoopBW', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/EQmu', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/EQmu', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/EQmu', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/EQmu', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/Scope Select', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/Scope Select', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/Scope Select', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/Scope Select', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/DebugSelector', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/DebugSelector', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/DebugSelector', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/DebugSelector', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/EQBypass', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/EQBypass', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/EQBypass', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/EQBypass', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/EnableDecode', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/EnableDecode', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/EnableDecode', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/EnableDecode', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/PDThreshold', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/PDThreshold', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/PDThreshold', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/PDThreshold', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/BypassCoding', 'IOInterface', 'Rx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/BypassCoding', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/BypassCoding', 'IOInterface', 'Rx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/BypassCoding', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/bytesOut', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/bytesOut', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/bytesOut', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/bytesOut', 'IOInterfaceMapping', '');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/validOut', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/validOut', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/validOut', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/validOut', 'IOInterfaceMapping', '');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/sync', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/sync', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/sync', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/sync', 'IOInterfaceMapping', '');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/payloadLenOut', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/payloadLenOut', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/payloadLenOut', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/payloadLenOut', 'IOInterfaceMapping', '');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/dataRe', 'IOInterface', 'Rx data I1 Out [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/dataRe', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/dataRe', 'IOInterface', 'Rx data I1 Out [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/dataRe', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/dataIm', 'IOInterface', 'Rx data Q1 Out [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/dataIm', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/dataIm', 'IOInterface', 'Rx data Q1 Out [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/dataIm', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/validIQ', 'IOInterface', 'Rx data Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/validIQ', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/validIQ', 'IOInterface', 'Rx data Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/validIQ', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/DebugSelection', 'IOInterface', 'Rx data Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/DebugSelection', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/DebugSelection', 'IOInterface', 'Rx data Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/DebugSelection', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/RxTransferComplete', 'IOInterface', 'Rx data Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Receiver HDL/RxTransferComplete', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/RxTransferComplete', 'IOInterface', 'Rx data Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Receiver HDL/RxTransferComplete', 'IOInterfaceMapping', '[0]');
 
 % Set SubSystem HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL', 'ProcessorFPGASynchronization', 'Free running');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL', 'ProcessorFPGASynchronization', 'Free running');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/bytesIn', 'IOInterface', 'Tx data I1 In [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/bytesIn', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/bytesIn', 'IOInterface', 'Tx data I1 In [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/bytesIn', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/validIn', 'IOInterface', 'Tx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/validIn', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/validIn', 'IOInterface', 'Tx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/validIn', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/BypassEncode', 'IOInterface', 'Tx data Valid In');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/BypassEncode', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/BypassEncode', 'IOInterface', 'Tx data Valid In');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/BypassEncode', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/Packet Generation/trueData', 'IOInterface', 'Tx data Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/Packet Generation/trueData', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/Packet Generation/trueData', 'IOInterface', 'Tx data Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/Packet Generation/trueData', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/real', 'IOInterface', 'Tx data I1 Out [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/real', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/real', 'IOInterface', 'Tx data I1 Out [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/real', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/imag', 'IOInterface', 'Tx data Q1 Out [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/imag', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/imag', 'IOInterface', 'Tx data Q1 Out [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/imag', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/validOut', 'IOInterface', 'Tx data Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/validOut', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/validOut', 'IOInterface', 'Tx data Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/validOut', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/Need Data', 'IOInterface', 'No Interface Specified');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/Need Data', 'IOInterfaceMapping', '');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/Need Data', 'IOInterface', 'No Interface Specified');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/Need Data', 'IOInterfaceMapping', '');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/TxTransferComplete', 'IOInterface', 'Tx data Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/Transmitter HDL/TxTransferComplete', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/TxTransferComplete', 'IOInterface', 'Tx data Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/Transmitter HDL/TxTransferComplete', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/reRx', 'IOInterface', 'DMA Rx I1 Out [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/reRx', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/reRx', 'IOInterface', 'DMA Rx I1 Out [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/reRx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/imRx', 'IOInterface', 'DMA Rx Q1 Out [0:15]');
-hdlset_param('Receiver_FPGACap/Receiver HDL/imRx', 'IOInterfaceMapping', '[0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/imRx', 'IOInterface', 'DMA Rx Q1 Out [0:15]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/imRx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/validRx', 'IOInterface', 'DMA Rx Valid Out');
-hdlset_param('Receiver_FPGACap/Receiver HDL/validRx', 'IOInterfaceMapping', '[0]');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/validRx', 'IOInterface', 'DMA Rx Valid Out');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/validRx', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/payloadLenOutRx', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/payloadLenOutRx', 'IOInterfaceMapping', 'x"110"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/payloadLenOutRx', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/payloadLenOutRx', 'IOInterfaceMapping', 'x"110"');
 
 % Set Outport HDL parameters
-hdlset_param('Receiver_FPGACap/Receiver HDL/debugSelectionAXI', 'IOInterface', 'AXI4-Lite');
-hdlset_param('Receiver_FPGACap/Receiver HDL/debugSelectionAXI', 'IOInterfaceMapping', 'x"140"');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/debugSelectionAXI', 'IOInterface', 'AXI4-Lite');
+hdlset_param('Receiver_FPGACapture/Receiver HDL/debugSelectionAXI', 'IOInterfaceMapping', 'x"140"');
 
 
 %% Workflow Configuration Settings
@@ -283,4 +283,4 @@ hWC.ProgrammingMethod = hdlcoder.ProgrammingMethod.Download;
 hWC.validate;
 
 %% Run the workflow
-hdlcoder.runWorkflow('Receiver_FPGACap/Receiver HDL', hWC);
+hdlcoder.runWorkflow('Receiver_FPGACapture/Receiver HDL', hWC);
