@@ -30,7 +30,7 @@ hdlset_param('combinedTxRx_ExternalMode', 'SynthesisToolSpeedValue', '-2L');
 hdlset_param('combinedTxRx_ExternalMode', 'TargetDirectory', 'hdl_prj\hdlsrc');
 hdlset_param('combinedTxRx_ExternalMode', 'TargetFrequency', 20);
 hdlset_param('combinedTxRx_ExternalMode', 'TargetLanguage', 'Verilog');
-hdlset_param('combinedTxRx_ExternalMode', 'TargetPlatform', 'ADI RF SOM [LibIIO]');
+hdlset_param('combinedTxRx_ExternalMode', 'TargetPlatform', 'ADI RF SOM');
 hdlset_param('combinedTxRx_ExternalMode', 'Workflow', 'IP Core Generation');
 
 % Set SubSystem HDL parameters

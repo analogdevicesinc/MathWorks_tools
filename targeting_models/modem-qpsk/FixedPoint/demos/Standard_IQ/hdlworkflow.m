@@ -21,13 +21,14 @@ load_system('combinedTxRx_StandardIQ');
 %% Set Model 'combinedTxRx_StandardIQ' HDL parameters
 hdlset_param('combinedTxRx_StandardIQ', 'HDLSubsystem', 'combinedTxRx_StandardIQ/Combined TX and RX');
 hdlset_param('combinedTxRx_StandardIQ', 'ReferenceDesign', 'Receive and transmit path');
-hdlset_param('combinedTxRx_StandardIQ', 'ReferenceDesignParameter', {'ChannelMapping','1','DUTSynthFreqMHz','20'});
+hdlset_param('combinedTxRx_StandardIQ', 'ReferenceDesignParameter', {'boardName','ccfmc_lvds','project','adrv9361z7035','mw_hdl_dir','ipcore/mw','ad_hdl_dir','ipcore/adi','variant','rxtx','mw_board_name','adrv9361z7035','mw_adi_boardname','adrv9361z7035/ccfmc_lvds'});
 hdlset_param('combinedTxRx_StandardIQ', 'SynthesisTool', 'Xilinx Vivado');
 hdlset_param('combinedTxRx_StandardIQ', 'SynthesisToolChipFamily', 'Zynq');
 hdlset_param('combinedTxRx_StandardIQ', 'SynthesisToolDeviceName', 'xc7z035i');
 hdlset_param('combinedTxRx_StandardIQ', 'SynthesisToolPackageName', 'fbg676');
 hdlset_param('combinedTxRx_StandardIQ', 'SynthesisToolSpeedValue', '-2L');
 hdlset_param('combinedTxRx_StandardIQ', 'TargetDirectory', 'hdl_prj\hdlsrc');
+hdlset_param('combinedTxRx_StandardIQ', 'TargetFrequency', 20);
 hdlset_param('combinedTxRx_StandardIQ', 'TargetPlatform', 'ADI RF SOM');
 hdlset_param('combinedTxRx_StandardIQ', 'Workflow', 'IP Core Generation');
 
@@ -35,27 +36,27 @@ hdlset_param('combinedTxRx_StandardIQ', 'Workflow', 'IP Core Generation');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX', 'ProcessorFPGASynchronization', 'Free running');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ValidInTx', 'IOInterface', 'Tx data Valid In');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ValidInTx', 'IOInterface', 'DMA Tx Valid In');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ValidInTx', 'IOInterfaceMapping', '[0]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/rInTx', 'IOInterface', 'Tx data I1 In [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/rInTx', 'IOInterface', 'DMA Tx I1 In [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/rInTx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/iInTx', 'IOInterface', 'Tx data Q1 In [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/iInTx', 'IOInterface', 'DMA Tx Q1 In [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/iInTx', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioR', 'IOInterface', 'Rx data I1 In [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioR', 'IOInterface', 'Baseband Rx I1 In [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioR', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioI', 'IOInterface', 'Rx data Q1 In [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioI', 'IOInterface', 'Baseband Rx Q1 In [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioI', 'IOInterfaceMapping', '[0:15]');
 
 % Set Inport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioValidIn', 'IOInterface', 'Rx data Valid In');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioValidIn', 'IOInterface', 'Baseband Rx Valid In');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromRadioValidIn', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
@@ -169,15 +170,15 @@ hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/Packet 
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/Packet Generation/trueData', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/real', 'IOInterface', 'Tx data I1 Out [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/real', 'IOInterface', 'Baseband Tx I1 Out [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/real', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/imag', 'IOInterface', 'Tx data Q1 Out [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/imag', 'IOInterface', 'Baseband Tx Q1 Out [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/imag', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/validOut', 'IOInterface', 'Tx data Valid Out');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/validOut', 'IOInterface', 'Baseband Tx Valid Out');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/validOut', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
@@ -189,27 +190,27 @@ hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/TxTrans
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/Transmitter HDL/TxTransferComplete', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioR', 'IOInterface', 'Tx data I1 Out [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioR', 'IOInterface', 'Baseband Tx I1 Out [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioR', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioI', 'IOInterface', 'Tx data Q1 Out [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioI', 'IOInterface', 'Baseband Tx Q1 Out [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioI', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioValid', 'IOInterface', 'Tx data Valid Out');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioValid', 'IOInterface', 'Baseband Tx Valid Out');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/ToRadioValid', 'IOInterfaceMapping', '[0]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPR', 'IOInterface', 'Rx data I1 Out [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPR', 'IOInterface', 'DMA Rx I1 Out [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPR', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPI', 'IOInterface', 'Rx data Q1 Out [0:15]');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPI', 'IOInterface', 'DMA Rx Q1 Out [0:15]');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPI', 'IOInterfaceMapping', '[0:15]');
 
 % Set Outport HDL parameters
-hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPvalid', 'IOInterface', 'Rx data Valid Out');
+hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPvalid', 'IOInterface', 'DMA Rx Valid Out');
 hdlset_param('combinedTxRx_StandardIQ/Combined TX and RX/FromIPvalid', 'IOInterfaceMapping', '[0]');
 
 
