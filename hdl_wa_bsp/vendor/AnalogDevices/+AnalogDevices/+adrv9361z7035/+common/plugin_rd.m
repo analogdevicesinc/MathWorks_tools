@@ -8,10 +8,10 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2017.4)', board);
+hRD.ReferenceDesignName = sprintf('%s (%s)', upper(board), design);
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
+hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035');
 
 % Tool information
 if contains(upper(design),'MODEM')
