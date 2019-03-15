@@ -2,7 +2,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
     properties(TestParameter)
         % Pull in board permutations
         configs = hdlcoder_board_customization_local;
-        ignored_builds = {'AnalogDevices.adrv9361z7035.ccbox_lvds.modem.plugin_board'};
+        ignored_builds = {'AnalogDevices.adrv9361z7035.ccbox_lvds.modem.plugin_board','AnalogDevices.adrv9361z7035.ccfmc_lvds_agc.rx.plugin_board','AnalogDevices.adrv9361z7035.ccfmc_lvds_agc.tx.plugin_board','AnalogDevices.adrv9361z7035.ccfmc_lvds_agc.rx_tx.plugin_board'};
         SynthesizeDesign = {false};
     end
     

@@ -201,6 +201,8 @@ create_bd_port -dir I tdd_sync_i
 create_bd_port -dir O tdd_sync_t
 create_bd_port -dir I gps_pps
 
+#create_bd_port -dir O gpio_en_agc
+
 # ad9361 core
 
 ad_ip_instance axi_ad9361 axi_ad9361
