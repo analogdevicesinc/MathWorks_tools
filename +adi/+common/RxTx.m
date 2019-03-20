@@ -69,11 +69,31 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
                     ~strcmpi(obj.GainControlModeChannel0, 'manual');
                 flag = flag || strcmpi(prop,'GainChannel1') &&...
                     ~strcmpi(obj.GainControlModeChannel1, 'manual');
+            elseif isprop(obj,'GainControlModeChipA')
+                flag = flag || strcmpi(prop,'GainChannel0') &&...
+                    ~strcmpi(obj.GainControlModeChipA, 'manual');
+                flag = flag || strcmpi(prop,'GainChannel1') &&...
+                    ~strcmpi(obj.GainControlModeChipA, 'manual');
+                flag = flag || strcmpi(prop,'GainChannel2') &&...
+                    ~strcmpi(obj.GainControlModeChipB, 'manual');
+                flag = flag || strcmpi(prop,'GainChannel3') &&...
+                    ~strcmpi(obj.GainControlModeChipB, 'manual');
+                
             end
             if obj.channelCount < 3
                 flag = flag || strcmpi(prop,'GainChannel1');
                 flag = flag || strcmpi(prop,'GainControlModeChannel1');
                 flag = flag || strcmpi(prop,'EnableQuadratureTrackingChannel1');
+                flag = flag || strcmpi(prop,'GainChannel2');
+                flag = flag || strcmpi(prop,'GainControlModeChannel2');
+                flag = flag || strcmpi(prop,'EnableQuadratureTrackingChannel2'); 
+                flag = flag || strcmpi(prop,'GainChannel3');
+                flag = flag || strcmpi(prop,'GainControlModeChannel3');
+                flag = flag || strcmpi(prop,'EnableQuadratureTrackingChannel3'); 
+            elseif obj.channelCount < 5
+                flag = flag || strcmpi(prop,'GainChannel3');
+                flag = flag || strcmpi(prop,'GainControlModeChannel3');
+                flag = flag || strcmpi(prop,'EnableQuadratureTrackingChannel3');               
             end
         end
         

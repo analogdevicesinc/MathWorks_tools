@@ -26,7 +26,11 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         %CenterFrequency Center Frequency
         %   RF center frequency, specified in Hz as a scalar. The
         %   default is 2.4e9.  This property is tunable.
-        CenterFrequency = 2.4e9;
+        CenterFrequencyChipA = 2.4e9;
+        %CenterFrequency Center Frequency
+        %   RF center frequency, specified in Hz as a scalar. The
+        %   default is 2.4e9.  This property is tunable.
+        CenterFrequencyChipB = 2.4e9;
     end
     
     properties(Nontunable, Hidden)
@@ -56,24 +60,28 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         end
         % Check channelCount
         function set.channelCount(obj, value)
-            if strcmpi(class(obj),'adi.ADRV9009ZU11EG.Rx') || ...
-                    strcmpi(class(obj),'adi.ADRV9009ZU11EG.Tx')
-                validateattributes( value, { 'double','single' }, ...
-                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','even','>',1,'<=',8}, ...
-                    '', 'channelCount');
-            else
-                validateattributes( value, { 'double','single' }, ...
-                    { 'real', 'scalar', 'finite', 'nonnan', 'nonempty','integer','even','>=',0,'<=',4}, ...
-                    '', 'channelCount');
-            end
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','even','>',1,'<=',8}, ...
+                '', 'channelCount');
             obj.channelCount = value;
         end
-        % Check CenterFrequency
-        function set.CenterFrequency(obj, value)
+        % Check CenterFrequencyChipA
+        function set.CenterFrequencyChipA(obj, value)
             validateattributes( value, { 'double','single' }, ...
                 { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',70e6,'<=',6e9}, ...
-                '', 'CenterFrequency');
-            obj.CenterFrequency = value;
+                '', 'CenterFrequencyChipA');
+            obj.CenterFrequencyChipA = value;
+            if obj.ConnectedToDevice
+                id = 'altvoltage0';
+                obj.setAttributeLongLong(id,'frequency',value,true);
+            end
+        end
+        % Check CenterFrequencyChipB
+        function set.CenterFrequencyChipB(obj, value)
+            validateattributes( value, { 'double','single' }, ...
+                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',70e6,'<=',6e9}, ...
+                '', 'CenterFrequencyChipB');
+            obj.CenterFrequencyChipB = value;
             if obj.ConnectedToDevice
                 id = 'altvoltage0';
                 obj.setAttributeLongLong(id,'frequency',value,true);
