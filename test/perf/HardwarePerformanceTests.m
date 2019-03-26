@@ -4,6 +4,18 @@ classdef HardwarePerformanceTests < LTETests
         SamplingRate = 1e6;
         author = 'MathWorks';
         uri = 'usb:0';
+        uriRX = 'usb:1';
+        uriTX = 'usb:0';
+        TxGain = -30;
+        EnableCustomFilter = false;
+        FilterFilename = '';
+        LoopIterationsPerFrequency = 3;
+    end
+
+    properties (Hidden)
+        RxFrequencyCorrectionFactor = 0;
+        CalibrationLoopIterations = 10;
+        CalibrationFrequencyToleranceHz = 0.1;
     end
     
     methods(Static)
@@ -11,6 +23,9 @@ classdef HardwarePerformanceTests < LTETests
         function saveToJSON(filename,data)
             jsonStr = jsonencode(data);
             filename = fullfile('logs',filename);
+            if exist('logs','dir') ~= 7
+                mkdir('log');
+            end
             fid = fopen(filename, 'w');
             if fid == -1, error('Cannot create JSON file'); end
             fwrite(fid, jsonStr, 'char');
@@ -33,6 +48,147 @@ classdef HardwarePerformanceTests < LTETests
     
     methods
         
+        function CalibratePluto(testCase,rxConfig,txConfig)
+            
+            
+            [rx,tx] = ConfigureSDRs(testCase, rxConfig, txConfig);   
+            
+            % Transmit tone at known location
+            if strcmpi(testCase.author,'MathWorks')
+                fs = tx.BasebandSampleRate;
+            else
+                fs = tx.SamplingRate;
+%                 fs = 15360000;
+            end
+            centerFreq = rx.CenterFrequency;
+            fRef = fix(fs/4);
+            N = 1e3;
+            s = exp(1j*2*pi*fRef*[0:N-1]'/fs); %#ok<NBRAK>
+            s = 0.9*s/max(abs(s)); % Scale signal to avoid clipping in the time domain
+            s = int16(s*2^15);
+            if strcmpi(testCase.author,'MathWorks')
+                transmitRepeat(tx, s);
+            else
+                tx(s);
+            end
+            pause(1);
+            % Configure RX with additional settings
+            nSamp = 1024*1024;
+            rx.SamplesPerFrame = nSamp;
+            rx.kernelBuffersCount = 1;
+            if strcmpi(testCase.author,'MathWorks')
+                rx.ShowAdvancedProperties = true;
+            end
+            
+            for loop = 1:testCase.CalibrationLoopIterations
+                % Measure tone location
+                testCase.log(1,'Collecting data for calibration');
+                for k=1:10
+                    valid = false;
+                    while ~valid
+                        [receivedSig, valid] = rx();
+                    end
+                end
+                
+                % Estimate tone
+                y = fftshift(abs(fft(receivedSig)));
+                [~,idx] = max(y);
+                fReceived = (max(idx)-nSamp/2)/nSamp*fs;
+
+%                 figure(1);
+%                 df = fs/nSamp;  x = (-fs/2:df:fs/2-df).'/1000;
+%                 plot(x,10*log10(y))
+%                 hold on; stem(x(idx),10*log10(y(idx)),'r'); hold off;
+                
+                correctionFactor = (fReceived - fRef) / (centerFreq + fRef) * 1e6;
+                errorHz = fReceived - fRef;
+                                
+                if strcmpi(testCase.author,'MathWorks')
+                    rx.FrequencyCorrection = rx.FrequencyCorrection + 0.3*correctionFactor;
+                    testCase.RxFrequencyCorrectionFactor = rx.FrequencyCorrection;
+                else
+                    if abs(errorHz) < 20
+                        cc = sign(errorHz);
+                    else
+                        cc = fix(0.3*correctionFactor*100);
+                    end
+                    v = rx.getDeviceAttributeLongLong('xo_correction') - ...
+                        cc;
+                    rx.setDeviceAttributeLongLong('xo_correction',v);
+                    testCase.RxFrequencyCorrectionFactor = rx.getDeviceAttributeLongLong('xo_correction');%rx.FrequencyCorrection;
+                end
+
+
+                msg = sprintf([...
+                    '    Tone Freq: %.6f\n',...
+                    'Est Tone Freq: %.6f\n',...
+                    '        Error: %.6f\n'],fRef,fReceived,errorHz);
+                
+                testCase.log(msg);
+                if abs(errorHz) < testCase.CalibrationFrequencyToleranceHz
+                    testCase.log(1,'Tolerance met... calibration complete');
+                    break
+                end
+                
+            end
+            
+            
+        end
+        
+        function [sdrReceiver,sdrTransmitter] = ConfigureSDRs(testCase, rxConfig, txConfig)
+            
+            %% TX
+            sdrTransmitter = txConfig.Dev();
+            sdrTransmitter.CenterFrequency = txConfig.CenterFrequency;
+            
+            if strcmp(testCase.author,'MathWorks')
+                if isprop(sdrTransmitter,'RadioID')
+                    sdrTransmitter.RadioID = testCase.uriTX;
+                else
+                    sdrTransmitter.IPAddress = testCase.uriTX;
+                end
+                sdrTransmitter.ShowAdvancedProperties = true;
+                sdrTransmitter.BasebandSampleRate = txConfig.SamplingRate;
+                sdrTransmitter.ChannelMapping = txConfig.ChannelMapping;
+                sdrTransmitter.Gain = txConfig.Gain;
+            else
+                sdrTransmitter.uri = testCase.uriTX;
+                sdrTransmitter.SamplingRate = txConfig.SamplingRate;
+                sdrTransmitter.EnableCyclicBuffers = true;
+                sdrTransmitter.AttenuationChannel0 = txConfig.Gain;
+                if testCase.EnableCustomFilter
+                    sdrTransmitter.EnableCustomFilter = true;
+                    sdrTransmitter.CustomFilterFileName = testCase.FilterFilename;
+                end
+            end
+            
+            %% RX
+            sdrReceiver = rxConfig.Dev();
+            sdrReceiver.CenterFrequency = rxConfig.CenterFrequency;
+            
+            if strcmp(testCase.author,'MathWorks')
+                if isprop(sdrReceiver,'RadioID')
+                    sdrReceiver.RadioID = testCase.uriRX;
+                else
+                    sdrReceiver.IPAddress = testCase.uriRX;
+                end
+                sdrReceiver.BasebandSampleRate = rxConfig.SamplingRate;
+                %sdrReceiver.OutputDataType = 'double';
+                sdrReceiver.OutputDataType = 'int16';
+                sdrReceiver.ChannelMapping = rxConfig.ChannelMapping;
+                sdrReceiver.FrequencyCorrection = ... 
+                    testCase.RxFrequencyCorrectionFactor;
+            else
+                sdrReceiver.uri = testCase.uriRX;
+                sdrReceiver.SamplingRate = rxConfig.SamplingRate;
+                if testCase.EnableCustomFilter
+                    sdrReceiver.EnableCustomFilter = true;
+                    sdrReceiver.CustomFilterFileName = testCase.FilterFilename;
+                end
+            end
+        end
+
+        
         function dataRX = SDRToSDR(testCase, rxConfig, txConfig, dataTX)
             
             %% TX
@@ -51,15 +207,19 @@ classdef HardwarePerformanceTests < LTETests
                 sdrTransmitter.Gain = txConfig.Gain;
                 sdrTransmitter.transmitRepeat(dataTX);
             else
-                sdrTransmitter.uri = testCase.uri;
+                sdrTransmitter.uri = testCase.uriTX;
                 sdrTransmitter.SamplingRate = txConfig.SamplingRate;
                 sdrTransmitter.EnableCyclicBuffers = true;
                 sdrTransmitter.AttenuationChannel0 = txConfig.Gain;
+                if testCase.EnableCustomFilter
+                    sdrTransmitter.EnableCustomFilter = true;
+                    sdrTransmitter.CustomFilterFileName = testCase.FilterFilename;
+                end
                 sdrTransmitter(dataTX);
             end
             
             %% RX
-            samplesPerFrame = length(dataTX)*10;
+            samplesPerFrame = 2^18;%length(dataTX)*10;
             sdrReceiver = rxConfig.Dev();
             sdrReceiver.CenterFrequency = rxConfig.CenterFrequency;
             sdrReceiver.SamplesPerFrame = samplesPerFrame;
@@ -74,13 +234,20 @@ classdef HardwarePerformanceTests < LTETests
                 %sdrReceiver.OutputDataType = 'double';
                 sdrReceiver.OutputDataType = 'int16';
                 sdrReceiver.ChannelMapping = rxConfig.ChannelMapping;
+                sdrReceiver.FrequencyCorrection = ... 
+                    testCase.RxFrequencyCorrectionFactor;
             else
-                sdrReceiver.uri = testCase.uri;
+                sdrReceiver.uri = testCase.uriRX;
                 sdrReceiver.SamplingRate = rxConfig.SamplingRate;
+                if testCase.EnableCustomFilter
+                    sdrReceiver.EnableCustomFilter = true;
+                    sdrReceiver.CustomFilterFileName = testCase.FilterFilename;
+                end
+                sdrReceiver.kernelBuffersCount = 1;
             end
             
             % SDR Capture
-            fprintf('\nStarting a new RF capture.\n\n')
+            testCase.log(1,'Starting a new RF capture.');
             for k=1:20
                 len = 0;
                 while len == 0
@@ -99,19 +266,26 @@ classdef HardwarePerformanceTests < LTETests
         end
 
         
-        function CheckDevice(testCase,type,Dev,ip,istx)
+        function CheckDevice(testCase,type,Dev,address,istx)
             
             try
                 switch type
                     case 'usb'
                         d = Dev();
+                        if ~isempty(address)
+                            if strcmp(testCase.author,'MathWorks')
+                                d.RadioID = ['usb:',address];
+                            else
+                                d.uri = ['usb:',address];
+                            end
+                        end
                     case 'ip'
                         if strcmp(testCase.author,'MathWorks')
                             d= Dev();
-                            d.IPAddress = ip;
+                            d.IPAddress = address;
                         else
                             d= Dev();
-                            d.uri = ['ip:',ip];
+                            d.uri = ['ip:',address];
                         end
                     otherwise
                         error('Unknown interface type');
@@ -134,14 +308,14 @@ classdef HardwarePerformanceTests < LTETests
             import matlab.unittest.diagnostics.FigureDiagnostic
             import matlab.unittest.diagnostics.FileArtifact;
             
-            runs = 10;
+            runs = testCase.LoopIterationsPerFrequency;
             
             %% Device specific config
             % TX
             txConfig = struct;
             txConfig.Dev = DeviceTx;
             txConfig.SamplingRate = testCase.SamplingRate;
-            txConfig.Gain = -10;
+            txConfig.Gain = testCase.TxGain;
             txConfig.ChannelMapping = 1;
             % RX
             rxConfig = txConfig;
@@ -149,8 +323,8 @@ classdef HardwarePerformanceTests < LTETests
             rxConfig.Dev = DeviceRx;
             
             %% Run test
-            evmMeanResults = zeros(length(Frequencies),runs);
-            evmPeakResults = zeros(length(Frequencies),runs);
+            evmMeanResults = zeros(size(Frequencies));
+            evmPeakResults = zeros(size(Frequencies));
             evmMeanResultsStd = zeros(size(Frequencies));
             evmPeakResultsStd = zeros(size(Frequencies));
             
@@ -158,16 +332,20 @@ classdef HardwarePerformanceTests < LTETests
             
             removeIndxs = [];
             for indx = 1:length(Frequencies)
-                txConfig.CenterFrequency = Frequencies(indx);
-                rxConfig.CenterFrequency = Frequencies(indx);
+                txConfig.CenterFrequency = fix(Frequencies(indx));
+                rxConfig.CenterFrequency = fix(Frequencies(indx));
                 evmResults = zeros(runs,2);
                 removeRuns = [];
+                
+                % Calibrate
+                testCase.CalibratePluto(rxConfig,txConfig)
+                
                 for k=1:runs
                     try
                         s = repmat('#',1,10);
-                        fprintf('%s\nLO frequency %d (%d of %d) | Run %d of %d\n%s\n',...
+                        testCase.log(1,sprintf('%s\nLO frequency %d (%d of %d) | Run %d of %d\n%s\n',...
                             s,Frequencies(indx),indx,length(Frequencies),...
-                            k,runs,s);
+                            k,runs,s));
                         % TX
                         [eNodeBOutput, config] = testCase.TransmitterLTE(name);
                         % Hardware
@@ -176,6 +354,7 @@ classdef HardwarePerformanceTests < LTETests
                         evmResults(k,:) = testCase.ReceiverLTE(name, config, burstCaptures,eNodeBOutput);
                     catch ME
                         warning(['Run failure at run ',num2str(k),', will remove in post processing']);
+                        disp(ME);
                         removeRuns = [removeRuns;k]; %#ok<AGROW>
                     end
                 end
@@ -185,28 +364,17 @@ classdef HardwarePerformanceTests < LTETests
                     warning(['Loop failure at loop ',num2str(indx),', will remove in post processing']);
                     continue;
                 end
-                evmMeanResults(indx,:) = evmResults(:,1);
-                evmPeakResults(indx,:) = evmResults(:,2);
+                
+                evmMeanResults(indx) = mean(evmResults(:,1));
+                evmPeakResults(indx) = mean(evmResults(:,2));
                 evmMeanResultsStd(indx) = std(evmResults(:,1));
                 evmPeakResultsStd(indx) = std(evmResults(:,2));
-                
-                % Log
-                for k = 1:size(evmResults,1)
-                    data = struct;
-                    data.testname = testname;
-                    data.testdate = datestr(now);
-                    data.Frequency = Frequencies(indx);
-                    data.evmMeanResults = evmResults(k,1);
-                    data.evmPeakResults = evmResults(k,2);
-                    ml = ver('MATLAB'); data.matlab_version = ml.Release(2:end-1);
-                    logs = [logs;data]; %#ok<AGROW>
-                end
                 
             end
             
             % Remove failed test cases
-            evmMeanResults(removeIndxs,:) = [];
-            evmPeakResults(removeIndxs,:) = [];
+            evmMeanResults(removeIndxs) = [];
+            evmPeakResults(removeIndxs) = [];
             evmMeanResultsStd(removeIndxs) = [];
             evmPeakResultsStd(removeIndxs) = [];
             Frequencies(removeIndxs) = [];
@@ -226,18 +394,17 @@ classdef HardwarePerformanceTests < LTETests
             fig1 = figure;
             fig2 = figure;
             figure(fig1);
-            errorbar(Frequencies./1e9, mean(evmMeanResults,2),evmMeanResultsStd);
+            errorbar(Frequencies./1e9, evmMeanResults, evmMeanResultsStd);
             xlabel('LO Frequency (GHz)');
             ylabel('EVM % Mean');
             figure(fig2);
-            errorbar(Frequencies./1e9, mean(evmPeakResults,2),evmPeakResultsStd);
+            errorbar(Frequencies./1e9, evmPeakResults, evmPeakResultsStd);
             xlabel('LO Frequency (GHz)');
             ylabel('EVM % Peak');
-            testCase.verifyEmpty([], ...
-                FigureDiagnostic(fig1,'Formats',{'png'},'Prefix',[testname,'_MeanEVM_']))
-            testCase.verifyEmpty([], ...
-                FigureDiagnostic(fig2,'Formats',{'png'},'Prefix',[testname,'_PeakEVM_']))
-            
+            testCase.log(FigureDiagnostic(fig1,'Formats',{'fig'},'Prefix',[testname,'_MeanEVM_']));
+            testCase.log(FigureDiagnostic(fig2,'Formats',{'fig'},'Prefix',[testname,'_PeakEVM_']));
+            savefig(fig1,['logs/',testname,'_MeanEVM'])
+            savefig(fig2,['logs/',testname,'_PeakEVM'])
             
         end
     end
@@ -257,7 +424,7 @@ classdef HardwarePerformanceTests < LTETests
             testCase.CheckDevice('usb',DeviceRx,[],false);
             
             %% Run Test
-            [data, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            [~, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
@@ -284,7 +451,7 @@ classdef HardwarePerformanceTests < LTETests
             testCase.CheckDevice('ip',DeviceRx,'192.168.3.2',false);
             
             %% Run Test
-            [data, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            [~, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
@@ -308,12 +475,40 @@ classdef HardwarePerformanceTests < LTETests
             testCase.CheckDevice('ip',DeviceRx,'192.168.2.1',false);
             
             %% Run Test
-            [data,logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
+            [~,logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
             json = [testname,'_',num2str(int32(now)),'.json'];
             %testCase.saveToJSON(json, data);
             testCase.saveToJSONExtended(json, logs);
+            
+        end
+        
+        function LTE_R4_Two_Pluto(testCase)
+            
+            import matlab.unittest.plugins.DiagnosticsRecordingPlugin
+            
+            %% Test configs
+            Frequencies = (0.4:0.1:5).*1e9;
+            DeviceTx = @()adi.Pluto.Tx();
+            DeviceRx = @()adi.Pluto.Rx();
+            testname = 'LTE_LTE10_Two_Pluto_MW';
+            testCase.author = 'ADI';
+            testCase.uriTX = 'usb:2.13.5';
+            testCase.uriRX = 'usb:3.3.5';
+            testCase.EnableCustomFilter = true;
+            testCase.FilterFilename = 'LTE10_MHz.ftr';
+                        
+            %% Check hardware connected
+            testCase.CheckDevice('usb',DeviceTx,'2.13.5',true);
+            testCase.CheckDevice('usb',DeviceRx,'3.3.5',false);
+
+            %% Run Test
+            data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,DeviceTx,DeviceRx,testname);
+            
+            %% Log data
+            json = [testname,'_',num2str(int32(now)),'.json'];
+            testCase.saveToJSON(json, data);
             
         end
         
