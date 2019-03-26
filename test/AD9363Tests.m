@@ -1,5 +1,5 @@
-classdef AD9363Tests < HardwareTests
-    
+classdef AD9363Tests < HardwareTests 
+       
     properties
         uri = 'ip:192.168.2.1';
         author = 'ADI';
@@ -45,29 +45,29 @@ classdef AD9363Tests < HardwareTests
         function testAD9363AGCSettings(testCase)
             rx = adi.AD9363.Rx('uri',testCase.uri);
             % Update AGC settings
-            rx.CustomAGC = 1;
-            rx.AttackDelay = 47;      
-            rx.PeakOverloadWaitTime = 20;
-            rx.AGCLockLevel = 101;
-            rx.DecStepSizeFullTableCase3 = 5;
-            rx.ADCLargeOverloadThresh = 199;
-            rx.ADCSmallOverloadThresh = 21;
-            rx.DecStepSizeFullTableCase2 = 5;
-            rx.DecStepSizeFullTableCase1 = 12;
-            rx.LargeLMTOverloadThresh = 12;
-            rx.SmallLMTOverloadThresh = 11;
-            rx.SettlingDelay = 4;
-            rx.EnergyLostThresh = 47;
-            rx.LowPowerThresh = 34;
-            rx.IncrementGainStep = 4;
-            rx.FAGCLockLevelGainIncreaseUpperLimit = 63;
-            rx.FAGCLPThreshIncrementTime = 102;
-            rx.DecPowMeasurementDuration = 7;
+            rx.CustomAGC = uint32(1);
+            rx.AttackDelay = uint32(47);      
+            rx.PeakOverloadWaitTime = uint32(20);
+            rx.AGCLockLevel = uint32(101);
+            rx.DecStepSizeFullTableCase3 = uint32(5);
+            rx.ADCLargeOverloadThresh = uint32(199);
+            rx.ADCSmallOverloadThresh = uint32(21);
+            rx.DecStepSizeFullTableCase2 = uint32(5);
+            rx.DecStepSizeFullTableCase1 = uint32(12);
+            rx.LargeLMTOverloadThresh = uint32(12);
+            rx.SmallLMTOverloadThresh = uint32(11);
+            rx.SettlingDelay = uint32(4);
+            rx.EnergyLostThresh = uint32(47);
+            rx.LowPowerThresh = uint32(34);
+            rx.IncrementGainStep = uint32(4);
+            rx.FAGCLockLevelGainIncreaseUpperLimit = uint32(63);
+            rx.FAGCLPThreshIncrementTime = uint32(102);
+            rx.DecPowMeasurementDuration = uint32(7);
             
             rx();
             % Read AGC settings from hardware
             rAttackDelay = ReadFromRegister(rx, 'AttackDelay');
-            testCase.verifyEqual(rAttackDelay,rx.AttackDelay,'Unexpected value for AttackDelay returned');
+            testCase.verifyEqual(rAttackDelay,rx.AttackDelay,'Unexpected value for PeakOverloadWaitTime returned');
             rPeakOverloadWaitTime = ReadFromRegister(rx, 'PeakOverloadWaitTime');
             testCase.verifyEqual(rPeakOverloadWaitTime,rx.PeakOverloadWaitTime,'Unexpected value for PeakOverloadWaitTime returned');
             rAGCLockLevel = ReadFromRegister(rx, 'AGCLockLevel');
