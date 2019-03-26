@@ -135,6 +135,7 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
         function writeFilterFile(obj)
             fir_data_file = obj.CustomFilterFileName;
             fir_data_str = fileread(fir_data_file);
+            obj.setAttributeLongLong('voltage0','sampling_frequency',3e6,true,4);
             obj.setAttributeRAW('voltage0','filter_fir_en','0',false);
             obj.setAttributeRAW('voltage0','filter_fir_en','0',true);
             obj.setDeviceAttributeRAW('filter_fir_config',fir_data_str);

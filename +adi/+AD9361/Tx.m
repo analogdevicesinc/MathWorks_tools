@@ -173,18 +173,26 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
-            id = 'altvoltage1';
-            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
-            if libisloaded('libad9361')
-                calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
-            else
-                obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
-            end
+
+            % Gains
             obj.setAttributeLongLong('voltage0','hardwaregain',obj.AttenuationChannel0,true);
             if obj.channelCount>2
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.AttenuationChannel1,true);
             end
+            % LO
+            id = 'altvoltage1';
+            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
+            % Sample rates and RF bandwidth
             obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));            
+            if  ~obj.EnableCustomFilter
+                if libisloaded('libad9361')
+                    calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
+                else
+                    obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
+                end
+            else
+                writeFilterFile(obj);
+            end
             obj.ToggleDDS(strcmp(obj.DataSource,'DDS'));
             if strcmp(obj.DataSource,'DDS')
                 obj.DDSUpdate();

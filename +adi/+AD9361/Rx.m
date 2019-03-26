@@ -314,12 +314,12 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
             id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
             obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
             % Sample rates and RF bandwidth
+            obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
             if  ~obj.EnableCustomFilter
                 if libisloaded('libad9361')
                     calllib('libad9361','ad9361_set_bb_rate',obj.iioDevPHY,int32(obj.SamplingRate));
                 else
                     obj.setAttributeLongLong('voltage0','sampling_frequency',obj.SamplingRate,true,4);
-                    obj.setAttributeLongLong('voltage0','rf_bandwidth',obj.RFBandwidth ,strcmp(obj.Type,'Tx'));
                 end
             else
                 writeFilterFile(obj);
