@@ -92,5 +92,28 @@ classdef (Abstract) Attribute < matlabshared.libiio.base
             cstatus(obj,status,['Error reading attribute: ' attr]);
         end
         
+        function setDeviceAttributeLongLong(obj,attr,value,tol)
+            phydev = getDev(obj, obj.phyDevName);
+            status = iio_device_attr_write_longlong(obj,phydev,attr,value);
+            cstatus(obj,status,['Device Attribute write failed for : ' attr ' with value ' num2str(value)]);
+            % Check
+            [status, rValue] = iio_device_attr_read_longlong(obj,phydev,attr);
+            cstatus(obj,status,['Error reading attribute: ' attr]);
+            if nargin<6
+                tol = sqrt(eps);
+            end
+            if abs(value - rValue) > tol
+                status = -1;
+                cstatus(obj,status,['Device Attribute ' attr ' return value ' num2str(rValue) ', expected ' num2str(value)]);
+            end
+        end
+
+        function rValue = getDeviceAttributeLongLong(obj,attr)
+            phydev = getDev(obj, obj.phyDevName);
+            [status, rValue] = iio_device_attr_read_longlong(obj,phydev,attr);
+            cstatus(obj,status,['Error reading attribute: ' attr]);
+        end
+
+
     end
 end
