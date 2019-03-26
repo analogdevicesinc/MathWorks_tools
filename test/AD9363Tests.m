@@ -67,7 +67,7 @@ classdef AD9363Tests < HardwareTests
             rx();
             % Read AGC settings from hardware
             rAttackDelay = ReadFromRegister(rx, 'AttackDelay');
-            testCase.verifyEqual(rAttackDelay,rx.AttackDelay,'Unexpected value for PeakOverloadWaitTime returned');
+            testCase.verifyEqual(rAttackDelay,rx.AttackDelay,'Unexpected value for AttackDelay returned');
             rPeakOverloadWaitTime = ReadFromRegister(rx, 'PeakOverloadWaitTime');
             testCase.verifyEqual(rPeakOverloadWaitTime,rx.PeakOverloadWaitTime,'Unexpected value for PeakOverloadWaitTime returned');
             rAGCLockLevel = ReadFromRegister(rx, 'AGCLockLevel');
