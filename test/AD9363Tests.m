@@ -101,7 +101,6 @@ classdef AD9363Tests < HardwareTests
             rx.release();
             
             % then, assign default values
-            rx.CustomAGC = 0;
             for ii = 1:length(fnames)
                 if (strcmp(fnames{ii},'LowPowerThresh'))
                     rx.(fnames{ii}) = default_settings.(fnames{ii})/2;
