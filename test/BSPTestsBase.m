@@ -1,7 +1,7 @@
 classdef BSPTestsBase < matlab.unittest.TestCase
     properties(TestParameter)
         % Pull in board permutations
-        configs = hdlcoder_board_customization_local;
+        configs = board_variants;
         ignored_builds = {'AnalogDevices.adrv9361z7035.ccbox_lvds.modem.plugin_board'};
         SynthesizeDesign = {false};
     end
@@ -9,6 +9,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
     properties
         Count = 0;
         TotalTests = 0;
+        Folder = pwd;
     end
     
     methods(TestClassSetup)
@@ -20,6 +21,9 @@ classdef BSPTestsBase < matlab.unittest.TestCase
             CountS = 0;
             save('tc.mat','CountS');
         end
+        function setRuntimeFolder(testCase)
+            testCase.Folder = tempname(pwd);
+        end
     end
     
     methods(TestClassTeardown)
@@ -27,10 +31,10 @@ classdef BSPTestsBase < matlab.unittest.TestCase
             warning('on','hdlcommon:hdlcommon:InterfaceNotAssigned');
         end
         function collectLogs(~)
-            if ~exist([pwd,'../logs'],'dir')
-                mkdir('../logs','s');
+            if ~exist([pwd,'/logs'],'dir')
+                mkdir('logs');
             end
-            system('cp *.log ../logs');
+            system('cp *.log logs/');
         end
     end
     
@@ -43,27 +47,42 @@ classdef BSPTestsBase < matlab.unittest.TestCase
         end
     end
     
-    methods(Static)
+
+    
+    methods
         
-        function cfg = extractConfigs(config)
-            s = strsplit(config,'.');mode = s{4};
-            if strcmp(s{2},'adrv9361z7035') && ~isempty(strfind(s{2},'modem'))
-                assert(0);
+        function CollectLogs(testCase,cfgb)
+            disp('Log collector called');
+            system(["find '",testCase.Folder,"' -name 'workflow_task_VivadoIPPackager.log' | xargs -I '{}' cp {} ."]);
+            if exist('workflow_task_VivadoIPPackager.log','file')
+                disp('Found workflow_task_VivadoIPPackager... copying');
+                %movefile('workflow_task_VivadoIPPackager.log',[cfgb.ReferenceDesignName,'_VivadoIPPackager_',cfgb.mode,'.log']);
             end
-            s = strjoin(s(1:end-1),'.');
-            h1 = str2func([s,'.plugin_board']);h1 = h1();
-            try
-                h2 = str2func([s,'.plugin_rd']);h2 = h2();
-                ReferenceDesignName = h2.ReferenceDesignName;
-                vivado_version = h2.SupportedToolVersion{:};
-                cfg = struct('Board',h1,...
-                    'ReferenceDesignName',ReferenceDesignName,...
-                    'vivado_version',vivado_version,'mode',mode);
-                cfg = {cfg};
-                return
-            catch
+            system(["find '",testCase.Folder,"' -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} ."]);
+            if exist('workflow_task_CreateProject.log','file')
+                disp('Found workflow_task_CreateProject... copying');
+                %movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,'_CreateProject_',cfgb.mode,'.log']);
+            end
+            system(["find '",testCase.Folder,"' -name 'workflow_task_BuildFPGABitstream.log' | xargs -I '{}' cp {} ."]);
+            if exist('workflow_task_BuildFPGABitstream.log','file')
+                disp('Found workflow_task_BuildFPGABitstream... copying');
+                %movefile('workflow_task_BuildFPGABitstream.log',[cfgb.ReferenceDesignName,'_BuildFPGABitstream_',cfgb.mode,'.log']);
+            end
+        end
+        
+        function cfg = ADRV9361_Variants(testCase,s)
+            
+            variants = {...
+                'ccbob_cmos','ccbob_lvds',...
+                'ccbox_lvds','ccfmc_lvds'};
+            cfg = {};
+            s = strjoin(s(1:end-2),'.');
+            h1 = str2func([s,'.common.plugin_board']);h1 = h1();
+            
+            for k = 1:length(variants)
+                
                 mode = 'rx';
-                h2 = str2func([s,'.plugin_rd_rx']);h2 = h2();
+                h2 = str2func([s,'.',variants{k},'.plugin_rd_rx']);h2 = h2();
                 ReferenceDesignName = h2.ReferenceDesignName;
                 vivado_version = h2.SupportedToolVersion{:};
                 cfg1 = struct('Board',h1,...
@@ -71,7 +90,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
                     'vivado_version',vivado_version,'mode',mode);
                 
                 mode = 'tx';
-                h2 = str2func([s,'.plugin_rd_tx']);h2 = h2();
+                h2 = str2func([s,'.',variants{k},'.plugin_rd_tx']);h2 = h2();
                 ReferenceDesignName = h2.ReferenceDesignName;
                 vivado_version = h2.SupportedToolVersion{:};
                 cfg2 = struct('Board',h1,...
@@ -79,17 +98,43 @@ classdef BSPTestsBase < matlab.unittest.TestCase
                     'vivado_version',vivado_version,'mode',mode);
                 
                 mode = 'rx_tx';
-                h2 = str2func([s,'.plugin_rd_rxtx']);h2 = h2();
+                h2 = str2func([s,'.',variants{k},'.plugin_rd_rxtx']);h2 = h2();
                 ReferenceDesignName = h2.ReferenceDesignName;
                 vivado_version = h2.SupportedToolVersion{:};
                 cfg3 = struct('Board',h1,...
                     'ReferenceDesignName',ReferenceDesignName,...
                     'vivado_version',vivado_version,'mode',mode);
-                cfg = {cfg1,cfg2,cfg3};
+                cfg = [cfg(:)',{cfg1},{cfg2},{cfg3}];
+                
             end
+            
         end
         
-        function setVivadoPath(vivado)
+        
+        function cfg = extractConfigs(testCase,config)
+            s = strsplit(config,'.');
+            modes = strsplit(s{4},'_');
+            mode = modes{end};
+            h1 = str2func(config);h1 = h1();
+            
+            if strcmp(s{2},'adrv9361z7035') && ~isempty(strfind(s{2},'modem'))
+                assert(0);
+            elseif strcmp(s{2},'adrv9361z7035') || ...
+                    strcmp(s{2},'adrv9364z7020')
+                h = str2func([strjoin(s(1:2),'.'),'.common.plugin_board']);
+            else
+                h = str2func([strjoin(s(1:end-1),'.'),'.plugin_board']);
+            end
+            board = h();
+            
+            ReferenceDesignName = h1.ReferenceDesignName;
+            vivado_version = h1.SupportedToolVersion{:};
+            cfg = struct('Board',board,...
+                'ReferenceDesignName',ReferenceDesignName,...
+                'vivado_version',vivado_version,'mode',mode);
+        end
+        
+        function setVivadoPath(~,vivado)
             if ispc
                 pathname = ['C:\Xilinx\Vivado\',vivado,'\bin\vivado.bat'];
             elseif isunix
@@ -98,6 +143,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
             assert(exist(pathname,'file')>0,'Correct version of Vivado is unavailable or in a non-standard location');
             hdlsetuptoolpath('ToolName', 'Xilinx Vivado', ...
                 'ToolPath', pathname);
+            pause(4);
         end
     end
     
@@ -108,37 +154,29 @@ classdef BSPTestsBase < matlab.unittest.TestCase
                 assumeFail(testCase);
             end
             % Extract board configuration
-            cfgs = testCase.extractConfigs(configs);
-            for cfg = cfgs
-                if exist([pwd,'/hdl_prj'],'dir')
-                    rmdir('hdl_prj','s');
-                end
-                cfgb = cfg{:};
-                % Set up vivado
-                testCase.setVivadoPath(cfgb.vivado_version);
-                % Build
-                disp(repmat('/',1,80));
-                disp(['Building: ',cfgb.Board.BoardName,' | ',cfgb.mode,...
-                    ' (',num2str(testCase.Count),' of ',num2str(testCase.TotalTests),')']);
-                res = build_design(cfgb.Board,cfgb.ReferenceDesignName,...
-                    cfgb.vivado_version,cfgb.mode,cfgb.Board.BoardName,...
-                    SynthesizeDesign);
-                % Check
-                if isfield(res,'message') || isa(res,'MException')
-                    disp(['Build error: ', cfgb.ReferenceDesignName]);
-                    disp(res);
-                    disp(res.message);
-                    disp(res.stack);
-                    system("find hdl_prj/ -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} .");
-                    if exist('workflow_task_CreateProject.log','file')
-                       movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,'_CreateProject_',cfgb.mode,'.log']);
-                    end
-                    system("find hdl_prj/ -name 'workflow_task_BuildFPGABitstream.log' | xargs -I '{}' cp {} .");
-                    if exist('workflow_task_BuildFPGABitstream.log','file')
-                       movefile('workflow_task_BuildFPGABitstream.log',[cfgb.ReferenceDesignName,'_BuildFPGABitstream_',cfgb.mode,'.log']);
-                    end
-                    verifyEmpty(testCase,res,res.message);
-                end
+            cfgb = testCase.extractConfigs(configs);
+            %             for cfg = cfgs
+            if exist(testCase.Folder,'dir')
+                rmdir(testCase.Folder,'s');
+                pause(1);
+            end
+            % Set up vivado
+            testCase.setVivadoPath(cfgb.vivado_version);
+            % Build
+            disp(repmat('/',1,80));
+            disp(['Building: ',cfgb.Board.BoardName,' | ',cfgb.mode,...
+                ' (',num2str(testCase.Count),' of ',num2str(testCase.TotalTests),')']);
+            res = build_design(cfgb.Board,cfgb.ReferenceDesignName,...
+                cfgb.vivado_version,cfgb.mode,cfgb.Board.BoardName,...
+                SynthesizeDesign,testCase.Folder);
+            % Check
+            if isfield(res,'message') || isa(res,'MException')
+                disp(['Build error: ', cfgb.ReferenceDesignName]);
+                disp(res);
+                disp(res.message);
+                disp(res.stack);
+                testCase.CollectLogs(cfgb);
+                verifyEmpty(testCase,res,res.message);
             end
         end
     end

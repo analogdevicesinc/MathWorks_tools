@@ -18,21 +18,21 @@ elseif contains(lower(ReferenceDesignName),'fmcomms')
     end
 elseif contains(lower(ReferenceDesignName),'937')
     dev = 'AD9371';
-    if contains(lower(board_name),'tx')  || contains(lower(ReferenceDesignName),'tx')
+    if contains(lower(board_name),'tx') || contains(lower(ReferenceDesignName),'tx')
         mdl = 'testModel_Tx32';
         portWidthTX = 32;
     end
-    if contains(lower(board_name),'rx & tx')  || contains(lower(ReferenceDesignName),'rx & tx')
+    if contains(lower(board_name),'rx & tx') || contains(lower(ReferenceDesignName),'rx & tx')
         mdl = 'testModel_Rx16Tx32';
         portWidthTX = 32;
     end
 elseif contains(lower(ReferenceDesignName),'9009')
     dev = 'ADRV9009';
-    if contains(lower(board_name),'tx')
+    if contains(lower(board_name),'tx') || contains(lower(ReferenceDesignName),'tx')
         mdl = 'testModel_Tx32';
         portWidthTX = 32;
     end
-    if contains(lower(board_name),'rx & tx')
+    if contains(lower(board_name),'rx & tx') || contains(lower(ReferenceDesignName),'rx & tx')
         mdl = 'testModel_Rx16Tx32';
         portWidthTX = 32;
     end
@@ -91,7 +91,7 @@ switch mode
             hdlset_param([mdl,'/HDL_DUT/out4'], 'IOInterface', ['IP Data 3 OUT [0:',num2str(portWidthRX-1),']']);
             hdlset_param([mdl,'/HDL_DUT/out4'], 'IOInterfaceMapping', ['[0:',num2str(portWidthRX-1),']']);
         end
-    case 'rx_tx'
+    case 'rxtx'
         % RX
         hdlset_param([mdl,'/HDL_DUT/in1'], 'IOInterface', [dev,' ADC Data I0 [0:',num2str(portWidthRX-1),']']);
         hdlset_param([mdl,'/HDL_DUT/in1'], 'IOInterfaceMapping', ['[0:',num2str(portWidthRX-1),']']);
