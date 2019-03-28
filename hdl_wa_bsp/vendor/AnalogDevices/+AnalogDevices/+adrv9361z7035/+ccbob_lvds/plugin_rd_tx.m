@@ -3,4 +3,4 @@ function hRD = plugin_rd_tx
 
 % Call the common reference design definition function
 hRD = AnalogDevices.adrv9361z7035.common.plugin_rd('ccbob_lvds','Tx');
-AnalogDevices.adrv9361z7035.common.add_io(hRD, 'Tx');
+AnalogDevices.adrv9361z7035.common.add_io(hRD, 'Tx', 'ccbob_lvds');

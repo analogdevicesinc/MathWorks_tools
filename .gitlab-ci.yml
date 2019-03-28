@@ -52,8 +52,10 @@ test:2018_R1:
      - ./CI/scripts/dockermake test
      - ./CI/scripts/dockermake zip
     artifacts:
+        when: always
         paths:
             - zip/
+            - test/logs/
         reports:
             junit: test/BSPTestResults.xml
 
@@ -72,9 +74,11 @@ test_installer:2018_R1_Installer:
      - ls *.mltbx
      - ./CI/scripts/dockermake test_installer
     artifacts:
+        when: always
         paths:
             - mltbx/
             - zip/
+            - test/logs/
         reports:
             junit: test/BSPTestResults.xml
 
