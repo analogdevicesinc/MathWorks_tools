@@ -8,10 +8,10 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('FMCOMMS2/3 %s Base System (Vivado 2017.4)', upper(board));
+hRD.ReferenceDesignName = sprintf('FMCOMMS2/3 %s (%s)', upper(board), upper(design));
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices FMCOMMS2/3 %s (%s)', upper(board), design);
+hRD.BoardName = sprintf('AnalogDevices FMCOMMS2/3 %s', upper(board));
 
 % Tool information
 hRD.SupportedToolVersion = {'2017.4'};
@@ -25,24 +25,9 @@ hRD.SharedRDFolder = fullfile(rootDir, 'vivado');
 
 %% Add custom design files
 % add custom Vivado design
-switch(upper(design))
-	case 'RX'
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'fmcomms2', lower(board), 'system_project_rx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'fmcomms2', lower(board), 'system_top.v'));
-	case 'TX'
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'fmcomms2', lower(board), 'system_project_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'fmcomms2', lower(board), 'system_top.v'));
-	case 'RX & TX'
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'fmcomms2', lower(board), 'system_project_rx_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'fmcomms2', lower(board), 'system_top.v'));
-	otherwise
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'fmcomms2', lower(board), 'system_project.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'fmcomms2', lower(board), 'system_top.v'));
-end	
+hRD.addCustomVivadoDesign( ...
+    'CustomBlockDesignTcl', fullfile('projects', 'fmcomms2', lower(board), 'system_project_rxtx.tcl'), ...
+    'CustomTopLevelHDL',    fullfile('projects', 'fmcomms2', lower(board), 'system_top.v'));
 
 hRD.BlockDesignName = 'system';	
 	
@@ -56,7 +41,17 @@ hRD.CustomConstraints = {...
 hRD.CustomFiles = {...
     fullfile('projects')...,
 	fullfile('library')...,
-    };	
+    };
+
+hRD.addParameter( ...
+    'ParameterID',   'ref_design', ...
+    'DisplayName',   'Reference Type', ...
+    'DefaultValue',  design);
+
+hRD.addParameter( ...
+    'ParameterID',   'fpga_board', ...
+    'DisplayName',   'FPGA Boad', ...
+    'DefaultValue',  upper(board));
 	
 %% Add interfaces
 % add clock interface
