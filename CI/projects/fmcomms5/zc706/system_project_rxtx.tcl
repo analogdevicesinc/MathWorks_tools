@@ -5,7 +5,7 @@ set proj_dir		$ad_hdl_dir/projects/fmcomms5/zc706
 source $ad_hdl_dir/projects/scripts/adi_project.tcl
 source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
-adi_project_xilinx fmcomms5_zc706 $proj_dir config_rx_tx.tcl
+adi_project_xilinx fmcomms5_zc706 $proj_dir config_rxtx.tcl
 
 adi_project_files fmcomms5_zc706 [list \
   "system_top.v" \
