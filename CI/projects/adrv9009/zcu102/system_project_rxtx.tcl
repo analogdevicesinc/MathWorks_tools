@@ -5,7 +5,7 @@ set proj_dir		$ad_hdl_dir/projects/adrv9009/zcu102
 source $ad_hdl_dir/projects/scripts/adi_project.tcl
 source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
-adi_project_xilinx adrv9009_zcu102 $proj_dir config_rx.tcl
+adi_project_xilinx adrv9009_zcu102 $proj_dir config_rxtx.tcl
 adi_project_files adrv9009_zcu102 [list \
   "system_top.v" \
   "system_constr.xdc"\
