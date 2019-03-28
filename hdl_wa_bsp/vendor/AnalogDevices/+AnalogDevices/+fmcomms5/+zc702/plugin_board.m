@@ -5,5 +5,5 @@ function hP = plugin_board()
 %   Copyright 2015 The MathWorks, Inc.
 
 % Call the common board definition function
-hP = AnalogDevices.fmcomms5.common.plugin_board('ZC702', 'Tx');
+hP = AnalogDevices.fmcomms5.common.plugin_board('ZC702');
 
