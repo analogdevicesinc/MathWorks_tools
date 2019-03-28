@@ -8,10 +8,10 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('adrv9364z7020 %s Base System (Vivado 2017.4)', board);
+hRD.ReferenceDesignName = sprintf('ADRV9364 %s (%s)', upper(board), design);
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices adrv9364z7020 %s (%s)', board, design);
+hRD.BoardName = sprintf('AnalogDevices ADRV9364-Z7020');
 
 % Tool information
 hRD.SupportedToolVersion = {'2017.4'};
@@ -29,9 +29,7 @@ switch(upper(board))
 	case 'BOB LVDS'
 		board = 'ccbob_lvds';
 	case 'BOB CMOS'
-		board = 'ccbob_cmos';
-	case 'USB LVDS'
-		board = 'ccusb_lvds';		
+		board = 'ccbob_cmos';		
 	otherwise
 		board = 'ccbob_lvds';	
 end
@@ -69,6 +67,7 @@ hRD.CustomConstraints = {...
 % custom source files
 hRD.CustomFiles = {...
 	fullfile('library')...,
+	fullfile('library','xilinx')...,
 	fullfile('projects','common')...,
 	fullfile('projects','scripts')...,
 	fullfile('projects','fmcomms2')...,
