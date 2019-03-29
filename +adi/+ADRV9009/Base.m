@@ -85,6 +85,23 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
                 obj.setAttributeLongLong(id,'frequency',value,true);
             end
         end
+        % Check EnableCustomProfile
+        function set.EnableCustomProfile(obj, value)
+            validateattributes( value, { 'logical' }, ...
+                { }, ...
+                '', 'EnableCustomProfile');
+            obj.EnableCustomProfile = value;
+        end
+        % Check CustomFilterFileName
+        function set.CustomProfileFileName(obj, value)
+            validateattributes( value, { 'char' }, ...
+                { }, ...
+                '', 'CustomProfileFileName');
+            obj.CustomProfileFileName = value;
+            if obj.EnableCustomProfile && obj.ConnectedToDevice %#ok<MCSUP>
+                writeProfileFile(obj);
+            end
+        end
     end
     
     %% API Functions
