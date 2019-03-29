@@ -11,3 +11,7 @@ ad_ip_parameter axi_ad9361 CONFIG.ADC_INIT_DELAY 29
 
 # Add external pin for EN_AGC
 create_bd_port -dir O gpio_en_agc
+
+
+# Add external pin for EN_AGC
+create_bd_port -from 0 -to 7 -dir I gpio_status 

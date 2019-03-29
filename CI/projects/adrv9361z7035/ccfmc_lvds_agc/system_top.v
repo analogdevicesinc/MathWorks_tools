@@ -148,7 +148,7 @@ module system_top (
   inout           gpio_sync,
   output          gpio_en_agc,
   inout   [ 3:0]  gpio_ctl,
-  inout   [ 7:0]  gpio_status,
+  input  [ 7:0]  gpio_status,
 
   output          spi_csn,
   output          spi_clk,
@@ -280,14 +280,22 @@ module system_top (
 //              gpio_ctl,           // 43:40
 //              gpio_status}));     // 39:32
 
-  ad_iobuf #(.DATA_WIDTH(14)) i_iobuf_ad9361 (
-    .dio_t ({gpio_t[46:45], gpio_t[43:32]}),
-    .dio_i ({gpio_o[46:45], gpio_o[43:32]}),
-    .dio_o ({gpio_i[46:45], gpio_i[43:32]}),
+//  ad_iobuf #(.DATA_WIDTH(14)) i_iobuf_ad9361 (
+//    .dio_t ({gpio_t[46:45], gpio_t[43:32]}),
+//    .dio_i ({gpio_o[46:45], gpio_o[43:32]}),
+//    .dio_o ({gpio_i[46:45], gpio_i[43:32]}),
+//    .dio_p ({ gpio_resetb,        // 46:46
+//              gpio_sync,          // 45:45
+//              gpio_ctl,           // 43:40
+//              gpio_status}));     // 39:32
+
+  ad_iobuf #(.DATA_WIDTH(6)) i_iobuf_ad9361 (
+    .dio_t ({gpio_t[46:45], gpio_t[43:40]}),
+    .dio_i ({gpio_o[46:45], gpio_o[43:40]}),
+    .dio_o ({gpio_i[46:45], gpio_i[43:40]}),
     .dio_p ({ gpio_resetb,        // 46:46
               gpio_sync,          // 45:45
-              gpio_ctl,           // 43:40
-              gpio_status}));     // 39:32
+              gpio_ctl}));        // 43:40
 
   // ad9361 input protection
 
@@ -412,7 +420,8 @@ module system_top (
     .txnrx (txnrx),
     .up_enable (gpio_o[47]),
     .up_txnrx (gpio_o[48]),
-    .gpio_en_agc (gpio_en_agc));
+    .gpio_en_agc (gpio_en_agc),
+    .gpio_status (gpio_status) );
 
 endmodule
 
