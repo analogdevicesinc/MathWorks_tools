@@ -1,7 +1,5 @@
 
-function out = build_design(config,ReferenceDesignName,vivado_version,mode,board_name,SynthesizeDesign)
-
-%% Load the Model
+function out = build_design(config,ReferenceDesignName,vivado_version,mode,board_name,SynthesizeDesign,folder)
 
 %% Restore the Model to default HDL parameters
 %hdlrestoreparams('testModel/HDL_DUT');
@@ -21,7 +19,7 @@ hdlset_param(mdl, 'SynthesisToolPackageName', config.FPGAPackage);
 hdlset_param(mdl, 'SynthesisToolSpeedValue', config.FPGASpeed);
 hdlset_param(mdl, 'TargetPlatform', config.BoardName);
 hdlset_param(mdl, 'TargetLanguage', 'Verilog');
-hdlset_param(mdl, 'TargetDirectory', 'hdl_prj\hdlsrc');
+hdlset_param(mdl, 'TargetDirectory', [folder,'\hdlsrc']);
 hdlset_param(mdl, 'Workflow', 'IP Core Generation');
 hdlset_param([mdl,'/HDL_DUT'], 'ProcessorFPGASynchronization', 'Free running');
 
@@ -30,7 +28,7 @@ hdlset_param([mdl,'/HDL_DUT'], 'ProcessorFPGASynchronization', 'Free running');
 hWC = hdlcoder.WorkflowConfig('SynthesisTool','Xilinx Vivado','TargetWorkflow','IP Core Generation');
 
 % Specify the top level project directory
-hWC.ProjectFolder = 'hdl_prj';
+hWC.ProjectFolder = folder;
 hWC.ReferenceDesignToolVersion = vivado_version;
 hWC.IgnoreToolVersionMismatch = true;
 
@@ -75,7 +73,7 @@ try
     bdclose('all');
     out = [];
 catch ME
-    if SynthesizeDesign && exist('hdl_prj/vivado_ip_prj/boot/BOOT.BIN','file')
+    if SynthesizeDesign && exist([folder,'/vivado_ip_prj/boot/BOOT.BIN'],'file')
        ME = []; 
     end
     out = ME;%.identifier

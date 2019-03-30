@@ -8,10 +8,10 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2017.4)', board);
+hRD.ReferenceDesignName = sprintf('ADRV9361 %s (%s)', upper(board), design);
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
+hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035');
 
 % Tool information
 if contains(upper(design),'MODEM')
@@ -27,24 +27,24 @@ rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
 hRD.SharedRD = true;
 hRD.SharedRDFolder = fullfile(rootDir, 'vivado');
 
-switch(upper(board))
-	case 'BOX LVDS'
-		board = 'ccbox_lvds';
-	case 'BOB LVDS'
-		board = 'ccbob_lvds';
-	case 'BOB CMOS'
-		board = 'ccbob_cmos';
-	case 'FMC LVDS'
-		board = 'ccfmc_lvds';
-	case 'FMC CMOS'
-		board = 'ccfmc_cmos';
-	case 'PCI LVDS'
-		board = 'ccpci_lvds';		
-	case 'USB LVDS'
-		board = 'ccusb_lvds';		
-	otherwise
-		board = 'ccbrk_lvds';	
-end
+% switch(upper(board))
+% 	case 'BOX LVDS'
+% 		board = 'ccbox_lvds';
+% 	case 'BOB LVDS'
+% 		board = 'ccbob_lvds';
+% 	case 'BOB CMOS'
+% 		board = 'ccbob_cmos';
+% 	case 'FMC LVDS'
+% 		board = 'ccfmc_lvds';
+% 	case 'FMC CMOS'
+% 		board = 'ccfmc_cmos';
+% 	case 'PCI LVDS'
+% 		board = 'ccpci_lvds';		
+% 	case 'USB LVDS'
+% 		board = 'ccusb_lvds';		
+% 	otherwise
+% 		board = 'ccbrk_lvds';	
+% end
 
 %% Add custom design files
 % add custom Vivado design
