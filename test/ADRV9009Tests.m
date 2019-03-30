@@ -1,7 +1,7 @@
 classdef ADRV9009Tests < HardwareTests
     
     properties
-        uri = 'ip:192.168.3.2';
+        uri = 'ip:192.168.86.242';
         SamplingRateRX = 245.76e6;
         author = 'ADI';
     end
@@ -33,6 +33,57 @@ classdef ADRV9009Tests < HardwareTests
             rx.release();
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
+        function testADRV9009RxCustomProfile1(testCase)
+            % Test Rx custom profiles
+            rx = adi.ADRV9009.Rx('uri',testCase.uri);
+            rx.channelCount = 2;
+            rx.EnableCustomProfile = true;
+            rx.CustomProfileFileName = ...
+                'Tx_BW200_IR245p76_Rx_BW200_OR245p76_ORx_BW200_OR245p76_ADRV9009.txt';
+            [out, valid] = rx();
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+            testCase.verifyEqual(rxSampleRate,int64(245.76e6),...
+                'Invalid sample rate after profile write');
+        end
+        
+        function testADRV9009RxCustomProfile2(testCase)
+            % Test Rx custom profiles
+            rx = adi.ADRV9009.Rx('uri',testCase.uri);
+            rx.channelCount = 2;
+            rx.EnableCustomProfile = true;
+            rx.CustomProfileFileName = ...
+                'Tx_BW200_IR245p76_Rx_BW100_OR122p88_ORx_BW200_OR245p76_ADRV9009.txt';
+            [out, valid] = rx();
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+            testCase.verifyEqual(rxSampleRate,int64(122880000),...
+                'Invalid sample rate after profile write');
+        end
+        
+        function testADRV9009RxCustomProfileZC706(testCase)
+            % Test Rx custom profiles
+            rx = adi.ADRV9009.Rx('uri',testCase.uri);
+            rx.channelCount = 2;
+            rx.EnableCustomProfile = true;
+            rx.CustomProfileFileName = ...
+                'Tx_BW100_IR122p88_Rx_BW100_OR122p88_ORx_BW100_OR122p88_DC122p88.txt';
+            [out, valid] = rx();
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+            testCase.verifyEqual(rxSampleRate,int64(122880000),...
+                'Invalid sample rate after profile write');
         end
         
         function testADRV9009RxWithTxDDS(testCase)
