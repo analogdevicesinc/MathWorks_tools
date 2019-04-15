@@ -15,6 +15,19 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         channelCount = 2;
     end
     
+    properties (Nontunable, Logical)
+        %EnableCustomProfile Enable Custom Profile
+        %   Enable use of custom Profile file to set SamplingRate, 
+        %   RFBandwidth, and FIR in datapaths
+        EnableCustomProfile = false;
+    end
+    
+    properties (Nontunable)
+        %CustomProfileFileName Custom Profile File Name
+        %   Path to custom Profile file created from profile wizard
+        CustomProfileFileName = '';
+    end
+    
     properties (Hidden, Constant)
         %SamplingRate Sampling Rate
         %   Baseband sampling rate in Hz, specified as a scalar 
@@ -50,22 +63,15 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         % Check SamplesPerFrame
         function set.SamplesPerFrame(obj, value)
             validateattributes( value, { 'double','single' }, ...
-                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>',0,'<=',2^20}, ...
+                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>',0,'<=',2^23-1}, ...
                 '', 'SamplesPerFrame');
             obj.SamplesPerFrame = value;
         end
         % Check channelCount
         function set.channelCount(obj, value)
-            if strcmpi(class(obj),'adi.ADRV9009ZU11EG.Rx') || ...
-                    strcmpi(class(obj),'adi.ADRV9009ZU11EG.Tx')
-                validateattributes( value, { 'double','single' }, ...
-                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','even','>',1,'<=',8}, ...
-                    '', 'channelCount');
-            else
-                validateattributes( value, { 'double','single' }, ...
-                    { 'real', 'scalar', 'finite', 'nonnan', 'nonempty','integer','even','>=',0,'<=',4}, ...
-                    '', 'channelCount');
-            end
+            validateattributes( value, { 'double','single' }, ...
+                { 'real','scalar', 'finite', 'nonnan', 'nonempty','integer','even','>=',0,'<=',4}, ...
+                '', 'channelCount');
             obj.channelCount = value;
         end
         % Check CenterFrequency
@@ -79,6 +85,23 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
                 obj.setAttributeLongLong(id,'frequency',value,true);
             end
         end
+        % Check EnableCustomProfile
+        function set.EnableCustomProfile(obj, value)
+            validateattributes( value, { 'logical' }, ...
+                { }, ...
+                '', 'EnableCustomProfile');
+            obj.EnableCustomProfile = value;
+        end
+        % Check CustomFilterFileName
+        function set.CustomProfileFileName(obj, value)
+            validateattributes( value, { 'char' }, ...
+                { }, ...
+                '', 'CustomProfileFileName');
+            obj.CustomProfileFileName = value;
+            if obj.EnableCustomProfile && obj.ConnectedToDevice %#ok<MCSUP>
+                writeProfileFile(obj);
+            end
+        end
     end
     
     %% API Functions
@@ -87,7 +110,12 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         function icon = getIconImpl(obj)
             icon = sprintf(['ADRV9009 ',obj.Type]);
         end
-                   
+           
+        function writeProfileFile(obj)
+            profle_data_str = fileread(obj.CustomProfileFileName);
+            obj.setDeviceAttributeRAW('profile_config',profle_data_str);
+        end
+        
     end
     
     %% External Dependency Methods

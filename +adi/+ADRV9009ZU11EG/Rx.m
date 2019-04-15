@@ -271,7 +271,7 @@ classdef Rx < adi.ADRV9009ZU11EG.Base & adi.common.Rx & matlab.system.mixin.Samp
             obj.ADRV9009_B_Rx();
             
             obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlModeChipA,false);
-%             obj.ADRV9009_B_Rx.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlModeChipB,false);
+            obj.ADRV9009_B_Rx.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlModeChipB,false);
             obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel0,false);
             obj.setAttributeBool('voltage1','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel1,false);
             obj.setAttributeBool('voltage2','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel2,false);
