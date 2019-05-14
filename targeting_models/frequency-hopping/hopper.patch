@@ -1,0 +1,413 @@
+commit 0909bedc1a1a096463a714d18a57aae02ccff8a1
+Author: Travis Collins <travis.collins@analog.com>
+Date:   Tue May 14 16:08:49 2019 -0400
+
+    Add IIO driver for AD936x frequency hopping controller
+    
+    Signed-off-by: Travis Collins <travis.collins@analog.com>
+
+diff --git a/arch/arm/configs/zynq_xcomm_adv7511_defconfig b/arch/arm/configs/zynq_xcomm_adv7511_defconfig
+index 173e195..25bac3a 100644
+--- a/arch/arm/configs/zynq_xcomm_adv7511_defconfig
++++ b/arch/arm/configs/zynq_xcomm_adv7511_defconfig
+@@ -359,6 +359,8 @@ CONFIG_ADXRS450=y
+ CONFIG_ADIS16400=y
+ CONFIG_ADIS16460=y
+ CONFIG_ADIS16480=y
++# Custom IP
++CONFIG_HOPPER=y
+ CONFIG_JESD204=y
+ CONFIG_AXI_ADXCVR=y
+ CONFIG_AXI_JESD204B=y
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 9a3b28d..368a492 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -80,6 +80,7 @@ source "drivers/iio/gyro/Kconfig"
+ source "drivers/iio/health/Kconfig"
+ source "drivers/iio/humidity/Kconfig"
+ source "drivers/iio/imu/Kconfig"
++source "drivers/iio/ip/Kconfig"
+ source "drivers/iio/jesd204/Kconfig"
+ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/logic/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 68971fe..f568551 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -25,6 +25,7 @@ obj-y += frequency/
+ obj-y += health/
+ obj-y += humidity/
+ obj-y += imu/
++obj-y += ip/
+ obj-y += jesd204/
+ obj-y += light/
+ obj-y += logic/
+diff --git a/drivers/iio/ip/Kconfig b/drivers/iio/ip/Kconfig
+new file mode 100644
+index 0000000..f8dd3af
+--- /dev/null
++++ b/drivers/iio/ip/Kconfig
+@@ -0,0 +1,16 @@
++#
++# Custom IP
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Custom IP"
++
++config HOPPER
++	tristate "Analog Devices Custom IP"
++	help
++	  Say yes here to build support for Analog Devices Hopper
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called hopper.
++
++endmenu
+diff --git a/drivers/iio/ip/Makefile b/drivers/iio/ip/Makefile
+new file mode 100644
+index 0000000..7f78566
+--- /dev/null
++++ b/drivers/iio/ip/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile iio/amplifiers
++#
++
++# When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_HOPPER) += hopper.o
+diff --git a/drivers/iio/ip/hopper.c b/drivers/iio/ip/hopper.c
+new file mode 100644
+index 0000000..eba8fa9
+--- /dev/null
++++ b/drivers/iio/ip/hopper.c
+@@ -0,0 +1,328 @@
++/*
++ * Frequency Hopping HDL CORE driver
++ *
++ * Copyright 2019 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/module.h>
++// #include <linux/kernel.h>
++#include <linux/interrupt.h>
++#include <linux/errno.h>
++#include <linux/device.h>
++#include <linux/slab.h>
++#include <linux/init.h>
++#include <linux/list.h>
++#include <linux/io.h>
++#include <linux/sched.h>
++#include <linux/wait.h>
++#include <linux/delay.h>
++#include <linux/clk.h>
++
++#include <linux/of_device.h>
++#include <linux/of_dma.h>
++#include <linux/of_platform.h>
++#include <linux/of_address.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++/* Transceiver Frequency Hopping Control */
++
++// Writable
++#define HOPPER_DWELL_SAMPLES		 		 	0x100
++#define HOPPER_ENABLE_HOPPING					0x104
++#define HOPPER_FORCE_OUT_ENABLE				0x108
++#define HOPPER_MANUAL_PROFILE					0x120
++#define HOPPER_MANUAL_PROFILE_ENABLE	0x124
++// Read only
++#define HOPPER_PROFILE								0x10C
++#define HOPPER_HOPE_DELAY							0x110
++#define HOPPER_PLL_STATUS							0x114
++#define HOPPER_HOP_COUNT							0x118
++#define HOPPER_STATE									0x11C
++#define HOPPER_PLL_UNLOCK_COUNT				0x128
++
++struct cf_axi_hopper_state {
++	struct iio_info		iio_info;
++	void __iomem		*regs;
++	unsigned int dwell_samples;
++	bool hopping_enable;
++	bool forced_enable;
++	bool manual_profile_enable;
++	unsigned int manual_profile_indx;
++};
++
++enum {
++	CF_AXI_HOPPER_DWELL_SAMPLES,
++	CF_AXI_HOPPER_HOPPING_ENABLE,
++	CF_AXI_HOPPER_FORCED_ENABLE,
++	CF_AXI_HOPPER_MANUAL_PROFILE_ENABLE,
++	CF_AXI_HOPPER_PROFILE_INDEX,
++};
++
++static inline void hopper_write(struct cf_axi_hopper_state *st,
++			     unsigned reg, unsigned val)
++{
++	iowrite32(val, st->regs + reg);
++}
++
++static inline unsigned int hopper_read(struct cf_axi_hopper_state *st, unsigned reg)
++{
++	return ioread32(st->regs + reg);
++}
++
++static inline void hopper_write_config(struct cf_axi_hopper_state *st)
++{
++	// Set defaults
++	st->dwell_samples = 1024;
++	st->hopping_enable = false;
++	st->forced_enable = true;
++	st->manual_profile_enable = false;
++	st->manual_profile_indx = 0;
++
++	hopper_write(st, HOPPER_DWELL_SAMPLES, st->dwell_samples);
++	hopper_write(st, HOPPER_ENABLE_HOPPING, st->hopping_enable);
++	hopper_write(st, HOPPER_FORCE_OUT_ENABLE, st->forced_enable);
++	hopper_write(st, HOPPER_MANUAL_PROFILE, st->manual_profile_indx);
++	hopper_write(st, HOPPER_MANUAL_PROFILE_ENABLE, st->manual_profile_enable);
++}
++
++static ssize_t cf_axi_hopper_store(struct device *dev,
++				struct device_attribute *attr,
++				const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct cf_axi_hopper_state *st = iio_priv(indio_dev);
++	bool state;
++	unsigned long readin;
++	int ret = 0;
++
++	mutex_lock(&indio_dev->mlock);
++	switch ((u32)this_attr->address) {
++		case CF_AXI_HOPPER_DWELL_SAMPLES:
++			ret = kstrtoul(buf, 0, &readin);
++			if (ret)
++				break;
++			if (readin > 2147483648)
++			{
++				ret = -EINVAL;
++				break;
++			}
++			st->dwell_samples = readin;
++			hopper_write(st, HOPPER_DWELL_SAMPLES, readin);
++			break;
++		case CF_AXI_HOPPER_HOPPING_ENABLE:
++			ret = strtobool(buf, &state);
++			if (ret < 0)
++				break;
++			st->hopping_enable = (state ? 1 : 0);
++			hopper_write(st, HOPPER_ENABLE_HOPPING, st->hopping_enable);
++			break;
++		case CF_AXI_HOPPER_FORCED_ENABLE:
++			ret = strtobool(buf, &state);
++			if (ret < 0)
++				break;
++			st->forced_enable = (state ? 1 : 0);
++			hopper_write(st, HOPPER_FORCE_OUT_ENABLE, st->forced_enable);
++			break;
++		case CF_AXI_HOPPER_MANUAL_PROFILE_ENABLE:
++			ret = strtobool(buf, &state);
++			if (ret < 0)
++				break;
++			st->manual_profile_enable = (state ? 1 : 0);
++			hopper_write(st, HOPPER_MANUAL_PROFILE_ENABLE, st->manual_profile_enable);
++			break;
++		case CF_AXI_HOPPER_PROFILE_INDEX:
++			ret = kstrtoul(buf, 0, &readin);
++			if (ret)
++				break;
++			if (readin > 7)
++			{
++				ret = -EINVAL;
++				break;
++			}
++			st->manual_profile_indx = readin;
++			hopper_write(st, HOPPER_MANUAL_PROFILE, readin+readin);// Indexes go in two's
++			break;
++		default:
++			ret = -ENODEV;
++	}
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret ? ret : len;
++}
++
++static ssize_t cf_axi_hopper_show(struct device *dev,
++			struct device_attribute *attr,
++			char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct cf_axi_hopper_state *st = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&indio_dev->mlock);
++	switch ((u32)this_attr->address) {
++	case CF_AXI_HOPPER_DWELL_SAMPLES:
++		ret = sprintf(buf, "%d\n", st->dwell_samples);
++		break;
++	case CF_AXI_HOPPER_HOPPING_ENABLE:
++		ret = sprintf(buf, "%d\n", st->hopping_enable);
++		break;
++	case CF_AXI_HOPPER_FORCED_ENABLE:
++		ret = sprintf(buf, "%d\n", st->forced_enable);
++		break;
++	case CF_AXI_HOPPER_MANUAL_PROFILE_ENABLE:
++		ret = sprintf(buf, "%d\n", st->manual_profile_enable);
++		break;
++	case CF_AXI_HOPPER_PROFILE_INDEX:
++		ret = sprintf(buf, "%d\n", st->manual_profile_indx);
++		break;
++	default:
++		ret = -ENODEV;
++	}
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static IIO_DEVICE_ATTR(dwell_samples, S_IRUGO | S_IWUSR,
++			cf_axi_hopper_show,
++			cf_axi_hopper_store,
++			CF_AXI_HOPPER_DWELL_SAMPLES);
++
++static IIO_DEVICE_ATTR(hopping_enable, S_IRUGO | S_IWUSR,
++			cf_axi_hopper_show,
++			cf_axi_hopper_store,
++			CF_AXI_HOPPER_HOPPING_ENABLE);
++
++static IIO_DEVICE_ATTR(forced_enable, S_IRUGO | S_IWUSR,
++			cf_axi_hopper_show,
++			cf_axi_hopper_store,
++			CF_AXI_HOPPER_FORCED_ENABLE);
++
++static IIO_DEVICE_ATTR(manual_profile_enable, S_IRUGO | S_IWUSR,
++			cf_axi_hopper_show,
++			cf_axi_hopper_store,
++			CF_AXI_HOPPER_MANUAL_PROFILE_ENABLE);
++
++static IIO_DEVICE_ATTR(manual_profile_indx, S_IRUGO | S_IWUSR,
++			cf_axi_hopper_show,
++			cf_axi_hopper_store,
++			CF_AXI_HOPPER_PROFILE_INDEX);
++
++static struct attribute *cf_axi_hopper_attributes[] = {
++	&iio_dev_attr_dwell_samples.dev_attr.attr,
++	&iio_dev_attr_hopping_enable.dev_attr.attr,
++	&iio_dev_attr_forced_enable.dev_attr.attr,
++	&iio_dev_attr_manual_profile_enable.dev_attr.attr,
++	&iio_dev_attr_manual_profile_indx.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group cf_axi_hopper_attribute_group = {
++	.attrs = cf_axi_hopper_attributes,
++};
++
++static int cf_axi_hopper_reg_access(struct iio_dev *indio_dev,
++			      unsigned reg, unsigned writeval,
++			      unsigned *readval)
++{
++	struct cf_axi_hopper_state *st = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&indio_dev->mlock);
++	if (readval == NULL) {
++		hopper_write(st, reg & 0xFFFF, writeval);
++		ret = 0;
++	} else {
++		ret = hopper_read(st, reg & 0xFFFF);
++		*readval = ret;
++		ret = 0;
++	}
++
++	mutex_unlock(&indio_dev->mlock);
++
++	return ret;
++}
++
++static const struct iio_info cf_axi_hopper_info = {
++	.driver_module = THIS_MODULE,
++	.debugfs_reg_access = &cf_axi_hopper_reg_access,
++	.attrs = &cf_axi_hopper_attribute_group,
++};
++
++/* Match table for of_platform binding */
++static const struct of_device_id cf_axi_hopper_of_match[] = {
++	{ .compatible = "adi,axi-hopper-1.00", .data = 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(of, cf_axi_hopper_of_match);
++
++static int cf_axi_hopper_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct cf_axi_hopper_state *st;
++	struct iio_dev *indio_dev;
++	struct resource *res;
++	int ret;
++
++	dev_err(&pdev->dev, "Device Tree Probing \'%s\'\n",
++			np->name);
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	st->regs = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	if (!st->regs)
++		return -ENOMEM;
++
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->name = np->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	indio_dev->info = &cf_axi_hopper_info;
++
++	hopper_write_config(st);
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	dev_info(&pdev->dev, "Analog Devices CF_AXI_HOPPER Mapped\n");
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	return 0;
++}
++
++static int cf_axi_hopper_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static struct platform_driver cf_axi_hopper_driver = {
++	.driver = {
++		.name = "cf_axi_hopper",
++		.owner = THIS_MODULE,
++		.of_match_table = cf_axi_hopper_of_match,
++	},
++	.probe		= cf_axi_hopper_probe,
++	.remove		= cf_axi_hopper_remove,
++};
++module_platform_driver(cf_axi_hopper_driver);
++
++MODULE_AUTHOR("Travis Collins <travis.collins@analog.com>");
++MODULE_DESCRIPTION("Analog Devices Frequency Hopper HDL CORE driver");
++MODULE_LICENSE("GPL v2");

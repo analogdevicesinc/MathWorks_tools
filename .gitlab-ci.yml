@@ -30,7 +30,7 @@ build:master:
      - matlab
     stage: build
     script:
-     - export HDLBRANCH=master
+     - export HDLBRANCH=hdl_2018_r2
      - export MLRELEASE=R2018b
      - ./CI/scripts/dockermake build
      - export HDLBRANCH=
@@ -82,9 +82,27 @@ test_installer:2018_R1_Installer:
         reports:
             junit: test/BSPTestResults.xml
 
-# Test weekly fully sythesized design
-test:Synthesize:
-    when: manual
+# Test HWA no install
+test:2018_R1:
+    tags:
+     - vivado
+     - matlab
+    stage: test
+    dependencies:
+     - build:2018_R1
+    script:
+     - ./CI/scripts/dockermake test
+     - ./CI/scripts/dockermake zip
+    artifacts:
+        when: always
+        paths:
+            - zip/
+            - test/logs/
+        reports:
+            junit: test/BSPTestResults.xml
+
+# Test targeting demos (no hardware)
+test:targeting_demos:
     tags:
      - matlab
      - vivado
@@ -92,7 +110,7 @@ test:Synthesize:
     dependencies:
      - build:2018_R1
     script:
-     - ./CI/scripts/dockermake test_synth
+     - ./CI/scripts/dockermake test_targeting_demos
     artifacts:
         when: always
         name: "$CI_COMMIT_REF_NAME"
