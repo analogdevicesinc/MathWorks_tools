@@ -7,15 +7,20 @@ classdef (Abstract) Rx  < adi.common.RxTx
         
         function varargout = stepImpl(obj)
             % Get the data
-            [dataRAW, valid] = getData(obj);
-            index = 1;
             c = obj.channelCount/2;
-            varargout = cell(c+1,1);
-            for k = 1:c
-                varargout{k} = complex(dataRAW(index,:),dataRAW(index+1,:)).';
-                index = index+2;
+            if c > 0
+                [dataRAW, valid] = getData(obj);
+                index = 1;
+                varargout = cell(c+1,1);
+                for k = 1:c
+                    varargout{k} = complex(dataRAW(index,:),dataRAW(index+1,:)).';
+                    index = index+2;
+                end
+                varargout{end} = valid;
+            else
+                varargout = cell(1,1);
+                varargout{1} = true;
             end
-            varargout{end} = valid;
         end
         
     end

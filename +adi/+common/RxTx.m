@@ -106,14 +106,18 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             obj.enabledChannels = true;
             
             % Create the buffers
-            status = createBuf(obj);
-            if status
-                for k=1:obj.channelCount
-                    disableChannel(obj, obj.channel_names{k}, obj.isOutput);
+            if obj.channelCount>0
+                status = createBuf(obj);
+                if status
+                    for k=1:obj.channelCount
+                        disableChannel(obj, obj.channel_names{k}, obj.isOutput);
+                    end
+                    releaseChanBuffers(obj);
+                    cerrmsg(obj,status,['Failed to create buffer for: ' obj.devName]);
+                    return
                 end
-                releaseChanBuffers(obj);
-                cerrmsg(obj,status,['Failed to create buffer for: ' obj.devName]);
-                return
+            else
+                status = 0;
             end
             
         end
