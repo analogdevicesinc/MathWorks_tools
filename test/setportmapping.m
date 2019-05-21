@@ -11,6 +11,9 @@ end
 
 if contains(lower(ReferenceDesignName),'936')
     dev = 'AD9361';
+elseif contains(lower(ReferenceDesignName),'pluto') 
+    dev = 'AD9361';
+    numChannels = 2;
 elseif contains(lower(ReferenceDesignName),'fmcomms')
     dev = 'AD9361';
     if contains(lower(ReferenceDesignName),'fmcomms5')
