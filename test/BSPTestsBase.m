@@ -51,7 +51,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
     
     methods
         
-        function CollectLogs(testCase,cfgb)
+        function CollectLogs(testCase,~)
             disp('Log collector called');
             system(["find '",testCase.Folder,"' -name 'workflow_task_VivadoIPPackager.log' | xargs -I '{}' cp {} ."]);
             if exist('workflow_task_VivadoIPPackager.log','file')
@@ -70,7 +70,7 @@ classdef BSPTestsBase < matlab.unittest.TestCase
             end
         end
         
-        function cfg = ADRV9361_Variants(testCase,s)
+        function cfg = ADRV9361_Variants(~,s)
             
             variants = {...
                 'ccbob_cmos','ccbob_lvds',...
@@ -111,9 +111,9 @@ classdef BSPTestsBase < matlab.unittest.TestCase
         end
         
         
-        function cfg = extractConfigs(testCase,config)
+        function cfg = extractConfigs(~,config)
             s = strsplit(config,'.');
-            modes = strsplit(s{4},'_');
+            modes = strsplit(s{end},'_');
             mode = modes{end};
             h1 = str2func(config);h1 = h1();
             
