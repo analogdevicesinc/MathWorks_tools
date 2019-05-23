@@ -48,6 +48,7 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
         dataTypeStr = 'int16';
         phyDevName = 'ad9371-phy';
         iioDevPHY
+        ComplexData = true;
     end
 
     

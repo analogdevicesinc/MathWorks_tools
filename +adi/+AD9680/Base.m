@@ -18,6 +18,7 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
         Timeout = Inf;
         kernelBuffersCount = 2;
         dataTypeStr = 'int16';
+        ComplexData = false;
     end
     
     properties (Abstract, Hidden, Constant)
