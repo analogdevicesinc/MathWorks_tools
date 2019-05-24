@@ -11,6 +11,7 @@ build:2018_R1:
      - matlab
     stage: build
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake build
      - ./CI/scripts/dockermake add_libad9361
      - ./CI/scripts/dockermake gen_tlbx
@@ -31,7 +32,7 @@ build:master:
     stage: build
     script:
      - export HDLBRANCH=hdl_2018_r2
-     - export MLRELEASE=R2018b
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake build
      - export HDLBRANCH=
      - export MLRELEASE=
@@ -49,6 +50,7 @@ test:2018_R1:
     dependencies:
      - build:2018_R1
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake test
      - ./CI/scripts/dockermake zip
     artifacts:
@@ -68,6 +70,7 @@ test_installer:2018_R1_Installer:
     dependencies:
      - build:2018_R1
     script:
+     - export MLRELEASE=R2019a
      - cp mltbx/* .
      - pwd
      - ls
@@ -91,6 +94,7 @@ test:2018_R1:
     dependencies:
      - build:2018_R1
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake test
      - ./CI/scripts/dockermake zip
     artifacts:
@@ -110,6 +114,7 @@ test:targeting_demos:
     dependencies:
      - build:2018_R1
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake test_targeting_demos
     artifacts:
         when: always
@@ -127,6 +132,7 @@ test_hardware:Streaming_Hardware:
     dependencies:
      - build:2018_R1
     script:
+     - export MLRELEASE=R2019a
      - cd CI/scripts
      - make test_streaming
     artifacts:
@@ -145,6 +151,7 @@ test_hardware:EVM_Hardware:
     dependencies:
      - build:2018_R1
     script:
+     - export MLRELEASE=R2019a
      - cd CI/scripts
      - make test_evm
     artifacts:

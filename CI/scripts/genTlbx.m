@@ -1,5 +1,7 @@
 
-version = '18.2.1';
+version = '19.1';
+ml = ver('MATLAB');
+ml = ml.Release(2:end-1);
 
 %%
 cd(fileparts((mfilename('fullpath'))));
@@ -13,6 +15,7 @@ fclose(fid);
 
 f = strrep(f,'__REPO-ROOT__',p);
 f = strrep(f,'__VERSION__',version);
+f = strrep(f,'__ML-RELEASE__',ml);
 
 fid  = fopen('../../bsp.prj','w');
 fprintf(fid,'%s',f);
