@@ -1,6 +1,7 @@
-classdef (Abstract) Base < matlabshared.libiio.base & ...
+classdef (Abstract) Base < adi.common.Attribute & ...
+        matlabshared.libiio.base & ...
         matlab.system.mixin.CustomIcon
-    %AD9680 Base Class
+    %AD9467 Base Class
     
     properties (Nontunable)
         %SamplesPerFrame Samples Per Frame
@@ -8,17 +9,15 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
         %   integer from 2 to 16,777,216. Using values less than 3660 can
         %   yield poor performance.
         SamplesPerFrame = 2^15;
-        %channelCount channel Count
-        %   Number of enabled IQ channels. 2 enables one I and one Q
-        %   channel
-        channelCount = 2;
     end
     
     properties(Nontunable, Hidden)
         Timeout = Inf;
         kernelBuffersCount = 2;
         dataTypeStr = 'int16';
+        channelCount = 1;
         ComplexData = false;
+        phyDevName = 'cf-ad9467-core-lpc';
     end
     
     properties (Abstract, Hidden, Constant)
@@ -42,7 +41,7 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
         % Check channelCount
         function set.channelCount(obj, value)
             validateattributes( value, { 'double','single' }, ...
-                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',2,'<=',2}, ...
+                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',1,'<=',1}, ...
                 '', 'channelCount');
             obj.channelCount = value;
         end
@@ -52,11 +51,7 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
     methods (Hidden, Access = protected)
                 
         function icon = getIconImpl(obj)
-            icon = sprintf(['AD9680 ',obj.Type]);
-        end
-        
-        function setupInit(~)
-            % Unused
+            icon = sprintf(['AD9467 ',obj.Type]);
         end
         
     end
@@ -74,7 +69,7 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
         end
         
         function bName = getDescriptiveName(~)
-            bName = 'AD9680';
+            bName = 'AD9467';
         end
         
     end

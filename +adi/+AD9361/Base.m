@@ -51,6 +51,7 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
         dataTypeStr = 'int16';
         phyDevName = 'ad9361-phy';
         iioDevPHY
+        ComplexData = true;
     end
     
     
