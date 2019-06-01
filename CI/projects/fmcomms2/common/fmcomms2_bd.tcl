@@ -28,6 +28,10 @@ create_bd_port -dir O tdd_sync_t
 
 ad_ip_instance axi_ad9361 axi_ad9361
 ad_ip_parameter axi_ad9361 CONFIG.ID 0
+
+# set to 1 for CORDIC or 2 for POLYNOMIAL
+ad_ip_parameter axi_ad9361 CONFIG.DAC_DDS_TYPE 1
+ad_ip_parameter axi_ad9361 CONFIG.DAC_DDS_CORDIC_DW 14
 ad_connect sys_200m_clk axi_ad9361/delay_clk
 ad_connect axi_ad9361/l_clk axi_ad9361/clk
 ad_connect rx_clk_in_p axi_ad9361/rx_clk_in_p
@@ -72,13 +76,13 @@ ad_ip_parameter util_ad9361_divclk_sel CONFIG.C_SIZE 2
 ad_connect util_ad9361_divclk_sel_concat/dout util_ad9361_divclk_sel/Op1
 
 ad_ip_instance util_clkdiv util_ad9361_divclk
-ad_connect util_ad9361_divclk_sel/Res util_ad9361_divclk/clk_sel 
+ad_connect util_ad9361_divclk_sel/Res util_ad9361_divclk/clk_sel
 ad_connect axi_ad9361/l_clk util_ad9361_divclk/clk
 
 # resets at divided clock
 
 ad_ip_instance proc_sys_reset util_ad9361_divclk_reset
-ad_connect sys_rstgen/peripheral_aresetn util_ad9361_divclk_reset/ext_reset_in 
+ad_connect sys_rstgen/peripheral_aresetn util_ad9361_divclk_reset/ext_reset_in
 ad_connect util_ad9361_divclk/clk_out util_ad9361_divclk_reset/slowest_sync_clk
 
 # adc-path wfifo
@@ -197,7 +201,6 @@ ad_ip_instance axi_dmac axi_ad9361_dac_dma
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_TYPE_SRC 0
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_TYPE_DEST 2
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.CYCLIC 1
-ad_ip_parameter axi_ad9361_dac_dma CONFIG.SYNC_TRANSFER_START 0
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.AXI_SLICE_DEST 1
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_2D_TRANSFER 0

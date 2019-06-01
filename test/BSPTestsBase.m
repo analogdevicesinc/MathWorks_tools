@@ -51,22 +51,25 @@ classdef BSPTestsBase < matlab.unittest.TestCase
     
     methods
         
-        function CollectLogs(testCase,~)
+        function CollectLogs(testCase,cfgb)
             disp('Log collector called');
-            system(["find '",testCase.Folder,"' -name 'workflow_task_VivadoIPPackager.log' | xargs -I '{}' cp {} ."]);
+            rdn = strrep(cfgb.ReferenceDesignName,'/','_');
+            rdn = strrep(rdn,'(','');
+            rdn = strrep(rdn,')','');
+            system(join(["find '",testCase.Folder,"' -name 'workflow_task_VivadoIPPackager.log' | xargs -I '{}' cp {} ."],''));
             if exist('workflow_task_VivadoIPPackager.log','file')
                 disp('Found workflow_task_VivadoIPPackager... copying');
-                %movefile('workflow_task_VivadoIPPackager.log',[cfgb.ReferenceDesignName,'_VivadoIPPackager_',cfgb.mode,'.log']);
+                movefile('workflow_task_VivadoIPPackager.log',[rdn,'_VivadoIPPackager_',cfgb.mode,'.log']);
             end
-            system(["find '",testCase.Folder,"' -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} ."]);
+            system(join(["find '",testCase.Folder,"' -name 'workflow_task_CreateProject.log' | xargs -I '{}' cp {} ."],''));
             if exist('workflow_task_CreateProject.log','file')
                 disp('Found workflow_task_CreateProject... copying');
-                %movefile('workflow_task_CreateProject.log',[cfgb.ReferenceDesignName,'_CreateProject_',cfgb.mode,'.log']);
+                movefile('workflow_task_CreateProject.log',[rdn,'_CreateProject_',cfgb.mode,'.log']);
             end
-            system(["find '",testCase.Folder,"' -name 'workflow_task_BuildFPGABitstream.log' | xargs -I '{}' cp {} ."]);
+            system(join(["find '",testCase.Folder,"' -name 'workflow_task_BuildFPGABitstream.log' | xargs -I '{}' cp {} ."],''));
             if exist('workflow_task_BuildFPGABitstream.log','file')
                 disp('Found workflow_task_BuildFPGABitstream... copying');
-                %movefile('workflow_task_BuildFPGABitstream.log',[cfgb.ReferenceDesignName,'_BuildFPGABitstream_',cfgb.mode,'.log']);
+                movefile('workflow_task_BuildFPGABitstream.log',[rdn,'_BuildFPGABitstream_',cfgb.mode,'.log']);
             end
         end
         

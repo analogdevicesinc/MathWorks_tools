@@ -1,6 +1,6 @@
 
 # Create zip of IP cores
-proc pack_ip_cores {} {
+proc pack_ip_core {} {
 
   set folder_list [glob -types d *]
 
@@ -15,7 +15,7 @@ proc pack_ip_cores {} {
   	close $fp
 
   	set fp [open ${dir}_ip.tcl a+]
-  	puts -nonewline $fp "ipx::archive_core {analog.com_user_"
+  	puts -nonewline $fp "ipx::archive_core -verbose {analog.com_user_"
   	puts -nonewline $fp "$dir"
   	puts -nonewline $fp "_1.0.zip} \[ipx::current_core\]"
   	close $fp

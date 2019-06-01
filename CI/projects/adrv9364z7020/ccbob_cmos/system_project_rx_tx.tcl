@@ -14,7 +14,6 @@ adi_project_files adrv9364z7020_ccbob_cmos [list \
   "$ad_hdl_dir/projects/adrv9364z7020/common/ccbob_constr.xdc" \
   "system_top.v" ]
 
-set_property is_enabled false [get_files  *axi_gpreg_constr.xdc]
 adi_project_run adrv9364z7020_ccbob_cmos
 #source $ad_hdl_dir/library/analog.com_user_axi_ad9361_1.0/axi_ad9361_delay.tcl
 # Copy the boot file to the root directory

@@ -50,7 +50,8 @@ classdef (Abstract) ReceiverModelTests < matlab.unittest.TestCase
         function findRadio(testCase)
             try
                 d1 = sdrdev('Pluto'); setupSession(d1);
-                r = findPlutoRadio;
+                %r = findPlutoRadio;% (Remove untested)
+		r = sdrrx('Pluto');r();
             catch
                 r = [];
             end

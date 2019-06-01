@@ -1,5 +1,5 @@
 
-# constraints (adrv9364z7020.b)
+# constraints (pzsdr1.b)
 # ad9361
 
 set_property  -dict {PACKAGE_PIN  K19  IOSTANDARD LVCMOS25} [get_ports enable]                            ; ## IO_L10P_T1_AD11P_35          U1,K19,IO_L10_35_ENABLE
