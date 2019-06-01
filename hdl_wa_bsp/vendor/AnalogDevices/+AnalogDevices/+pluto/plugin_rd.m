@@ -14,7 +14,7 @@ hRD.ReferenceDesignName = sprintf('AnalogDevices ADALM-PLUTO (%s)', upper(design
 hRD.BoardName = 'AnalogDevices ADALM-PLUTO';
 
 % Tool information
-hRD.SupportedToolVersion = {'2017.4'};
+hRD.SupportedToolVersion = {'2018.2'};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));

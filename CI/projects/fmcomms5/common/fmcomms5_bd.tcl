@@ -252,8 +252,8 @@ ad_ip_parameter util_ad9361_dac_upack CONFIG.CHANNEL_DATA_WIDTH 16
 ad_ip_parameter util_ad9361_dac_upack CONFIG.NUM_OF_CHANNELS 8
 ad_connect util_ad9361_divclk/clk_out util_ad9361_dac_upack/dac_clk
 ad_connect util_ad9361_dac_upack/dac_enable_0 axi_ad9361_dac_fifo/din_enable_0
-ad_connect util_ad9361_dac_upack/dac_valid_0 axi_ad9361_dac_fifo/din_valid_0 
-ad_connect util_ad9361_dac_upack/dac_valid_out_0 axi_ad9361_dac_fifo/din_valid_in_0 
+ad_connect util_ad9361_dac_upack/dac_valid_0 axi_ad9361_dac_fifo/din_valid_0
+ad_connect util_ad9361_dac_upack/dac_valid_out_0 axi_ad9361_dac_fifo/din_valid_in_0
 ad_connect util_ad9361_dac_upack/dac_data_0 axi_ad9361_dac_fifo/din_data_0
 ad_connect util_ad9361_dac_upack/dac_enable_1 axi_ad9361_dac_fifo/din_enable_1
 ad_connect util_ad9361_dac_upack/dac_valid_1 axi_ad9361_dac_fifo/din_valid_1
@@ -290,7 +290,6 @@ ad_ip_instance axi_dmac axi_ad9361_dac_dma
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_TYPE_SRC 0
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_TYPE_DEST 2
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.CYCLIC 1
-ad_ip_parameter axi_ad9361_dac_dma CONFIG.SYNC_TRANSFER_START 0
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.AXI_SLICE_DEST 1
 ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_2D_TRANSFER 0
@@ -299,6 +298,7 @@ ad_ip_parameter axi_ad9361_dac_dma CONFIG.DMA_DATA_WIDTH_SRC 64
 ad_connect util_ad9361_divclk/clk_out axi_ad9361_dac_dma/fifo_rd_clk
 ad_connect axi_ad9361_dac_dma/fifo_rd_en util_ad9361_dac_upack/dac_valid
 ad_connect axi_ad9361_dac_dma/fifo_rd_dout util_ad9361_dac_upack/dac_data
+ad_connect axi_ad9361_dac_dma/fifo_rd_underflow axi_ad9361_dac_fifo/din_unf
 ad_connect sys_cpu_resetn axi_ad9361_dac_dma/m_src_axi_aresetn
 
 # address map

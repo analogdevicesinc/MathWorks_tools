@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -166,21 +166,10 @@ module system_top (
     .gpio_i (gpio_i),
     .gpio_o (gpio_o),
     .gpio_t (gpio_t),
+    .gps_pps (1'b0),
     .iic_main_scl_io (iic_scl),
     .iic_main_sda_io (iic_sda),
     .otg_vbusoc (1'b0),
-    .ps_intr_00 (1'b0),
-    .ps_intr_01 (1'b0),
-    .ps_intr_02 (1'b0),
-    .ps_intr_03 (1'b0),
-    .ps_intr_04 (1'b0),
-    .ps_intr_05 (1'b0),
-    .ps_intr_06 (1'b0),
-    .ps_intr_07 (1'b0),
-    .ps_intr_08 (1'b0),
-    .ps_intr_09 (1'b0),
-    .ps_intr_10 (1'b0),
-    .ps_intr_15 (1'b0),
     .rx_clk_in (rx_clk_in),
     .rx_data_in (rx_data_in),
     .rx_frame_in (rx_frame_in),

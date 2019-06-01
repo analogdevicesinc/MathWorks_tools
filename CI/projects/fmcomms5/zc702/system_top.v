@@ -8,7 +8,7 @@
 // terms.
 //
 // The user should read each of these license terms, and understand the
-// freedoms and responsabilities that he or she has by using this source/core.
+// freedoms and responsibilities that he or she has by using this source/core.
 //
 // This core is distributed in the hope that it will be useful, but WITHOUT ANY
 // WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
@@ -144,8 +144,6 @@ module system_top (
   wire    [ 63:0] gpio_i;
   wire    [ 63:0] gpio_o;
   wire    [ 63:0] gpio_t;
-  wire            gpio_open_45_45;
-  wire            gpio_open_44_44;
   wire    [ 2:0]  spi0_csn;
   wire            spi0_clk;
   wire            spi0_mosi;
@@ -154,10 +152,6 @@ module system_top (
   wire            spi1_clk;
   wire            spi1_mosi;
   wire            spi1_miso;
-  wire            txnrx_0;
-  wire            enable_0;
-  wire            txnrx_1;
-  wire            enable_1;
 
   // multi-chip synchronization
 
@@ -184,10 +178,10 @@ module system_top (
     .I (ref_clk_s),
     .O (ref_clk));
 
-  ad_iobuf #(.DATA_WIDTH(44)) i_iobuf (
-    .dio_t (gpio_t[59:16]),
-    .dio_i (gpio_o[59:16]),
-    .dio_o (gpio_i[59:16]),
+  ad_iobuf #(.DATA_WIDTH(42)) i_iobuf (
+    .dio_t ({gpio_t[59:46], gpio_t[43:16]}),
+    .dio_i ({gpio_o[59:46], gpio_o[43:16]}),
+    .dio_o ({gpio_i[59:46], gpio_i[43:16]}),
     .dio_p ({ gpio_resetb_1,    // 59
               gpio_ad5355_lock, // 58
               gpio_ad5355_rfen, // 57
@@ -202,16 +196,14 @@ module system_top (
               gpio_enable_0,    // 48
               gpio_en_agc_0,    // 47
               gpio_resetb_0,    // 46
-              gpio_open_45_45,  // 45
-              gpio_open_44_44,  // 44
               gpio_debug_4_1,   // 43
               gpio_debug_3_1,   // 42
               gpio_debug_2_0,   // 41
               gpio_debug_1_0,   // 40
-              gpio_ctl_1,       // 36
-              gpio_ctl_0,       // 32
-              gpio_status_1,    // 24
-              gpio_status_0})); // 16
+              gpio_ctl_1,       // 39:36
+              gpio_ctl_0,       // 35:32
+              gpio_status_1,    // 31:24
+              gpio_status_0})); // 23:16
 
   ad_iobuf #(.DATA_WIDTH(16)) i_gpio_bd (
     .dio_t (gpio_t[15:0]),
@@ -225,6 +217,8 @@ module system_top (
   assign spi_clk = spi0_clk;
   assign spi_mosi = spi0_mosi;
   assign spi0_miso = spi_miso;
+  assign gpio_i[63:60] = gpio_o[63:60];
+  assign gpio_i[45:44] = gpio_o[45:44];
 
   system_wrapper i_system_wrapper (
     .ddr_addr (ddr_addr),
@@ -258,18 +252,6 @@ module system_top (
     .hdmi_vsync (hdmi_vsync),
     .iic_main_scl_io (iic_scl),
     .iic_main_sda_io (iic_sda),
-    .ps_intr_00 (1'b0),
-    .ps_intr_01 (1'b0),
-    .ps_intr_02 (1'b0),
-    .ps_intr_03 (1'b0),
-    .ps_intr_04 (1'b0),
-    .ps_intr_05 (1'b0),
-    .ps_intr_06 (1'b0),
-    .ps_intr_07 (1'b0),
-    .ps_intr_08 (1'b0),
-    .ps_intr_09 (1'b0),
-    .ps_intr_10 (1'b0),
-    .ps_intr_11 (1'b0),
     .rx_clk_in_0_n (rx_clk_in_0_n),
     .rx_clk_in_0_p (rx_clk_in_0_p),
     .rx_clk_in_1_n (rx_clk_in_1_n),
