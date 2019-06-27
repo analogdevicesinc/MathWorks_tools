@@ -1,5 +1,5 @@
 % Analog Devices Inc. Board Support Packages
-% Version 18.2 (R2018b)
+% Version 18.2.1 (R2018b)
 %
 % ==== Table of Contents (TOC) ====
 %
