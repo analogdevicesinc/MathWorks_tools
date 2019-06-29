@@ -51,7 +51,7 @@ classdef (Abstract) DDS < matlabshared.libiio.base
     methods (Hidden, Access=protected)
         
         function ToggleDDS(obj,value)
-            chanPtr = getChan(obj,'altvoltage0',true);
+            chanPtr = getChan(obj,obj.iioDev,'altvoltage0',true);
             iio_channel_attr_write_bool(obj,chanPtr,'raw',value);
         end
         
@@ -60,7 +60,7 @@ classdef (Abstract) DDS < matlabshared.libiio.base
             for g=1:obj.channelCount/2
                 for k=1:4
                     id = sprintf('altvoltage%d',k-1);
-                    chanPtr = getChan(obj,id,true);
+                    chanPtr = getChan(obj,obj.iioDev,id,true);
                     iio_channel_attr_write_double(obj,chanPtr,'frequency',obj.DDSFrequencies(g,k));
                     iio_channel_attr_write_double(obj,chanPtr,'scale',obj.DDSScales(g,k));
                     iio_channel_attr_write_double(obj,chanPtr,'phase',obj.DDSPhases(g,k));

@@ -17,7 +17,7 @@ hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035');
 if contains(upper(design),'MODEM')
 	hRD.SupportedToolVersion = {'2016.4'};%MODEM
 else
-	hRD.SupportedToolVersion = {'2017.4'};
+	hRD.SupportedToolVersion = {'2018.2'};
 end
 
 % Get the root directory

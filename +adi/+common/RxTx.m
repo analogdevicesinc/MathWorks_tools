@@ -84,7 +84,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             % Disable the channels
             if obj.enabledChannels
                 for k=1:obj.channelCount
-                    disableChannel(obj, obj.channel_names{k}, obj.isOutput);
+                    disableChannel(obj, obj.iioDev, obj.channel_names{k}, obj.isOutput);
                 end
                 obj.enabledChannels = false;
             end
@@ -101,7 +101,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             
             % Enable the channel(s)
             for k=1:obj.channelCount
-                enableChannel(obj, obj.channel_names{k}, obj.isOutput);
+                enableChannel(obj, obj.iioDev, obj.channel_names{k}, obj.isOutput);
             end
             obj.enabledChannels = true;
             

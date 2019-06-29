@@ -58,22 +58,6 @@ create_bd_port -dir I otg_vbusoc
 
 create_bd_port -dir O spdif
 
-# interrupts
-
-create_bd_port -dir I -type intr ps_intr_00
-create_bd_port -dir I -type intr ps_intr_01
-create_bd_port -dir I -type intr ps_intr_02
-create_bd_port -dir I -type intr ps_intr_03
-create_bd_port -dir I -type intr ps_intr_04
-create_bd_port -dir I -type intr ps_intr_05
-create_bd_port -dir I -type intr ps_intr_06
-create_bd_port -dir I -type intr ps_intr_07
-create_bd_port -dir I -type intr ps_intr_08
-create_bd_port -dir I -type intr ps_intr_09
-create_bd_port -dir I -type intr ps_intr_10
-create_bd_port -dir I -type intr ps_intr_12
-create_bd_port -dir I -type intr ps_intr_13
-
 # instance: sys_ps7
 
 ad_ip_instance processing_system7 sys_ps7
@@ -117,11 +101,17 @@ ad_ip_parameter sys_logic_inv CONFIG.C_OPERATION not
 
 ad_ip_instance axi_clkgen axi_hdmi_clkgen
 ad_ip_instance axi_hdmi_tx axi_hdmi_core
+ad_ip_parameter axi_hdmi_core CONFIG.INTERFACE 16_BIT
 
-ad_ip_instance axi_vdma axi_hdmi_dma
-ad_ip_parameter axi_hdmi_dma CONFIG.C_M_AXIS_MM2S_TDATA_WIDTH 64
-ad_ip_parameter axi_hdmi_dma CONFIG.C_USE_MM2S_FSYNC 1
-ad_ip_parameter axi_hdmi_dma CONFIG.C_INCLUDE_S2MM 0
+ad_ip_instance axi_dmac axi_hdmi_dma
+ad_ip_parameter axi_hdmi_dma CONFIG.DMA_TYPE_SRC 0
+ad_ip_parameter axi_hdmi_dma CONFIG.DMA_TYPE_DEST 1
+ad_ip_parameter axi_hdmi_dma CONFIG.CYCLIC true
+ad_ip_parameter axi_hdmi_dma CONFIG.SYNC_TRANSFER_START 0
+ad_ip_parameter axi_hdmi_dma CONFIG.AXI_SLICE_SRC 0
+ad_ip_parameter axi_hdmi_dma CONFIG.AXI_SLICE_DEST 0
+ad_ip_parameter axi_hdmi_dma CONFIG.DMA_2D_TRANSFER true
+ad_ip_parameter axi_hdmi_dma CONFIG.DMA_DATA_WIDTH_SRC 64
 
 # audio peripherals
 
@@ -201,18 +191,21 @@ ad_connect  spi1_sdi_i sys_ps7/SPI1_MISO_I
 # hdmi
 
 ad_connect  sys_cpu_clk axi_hdmi_core/vdma_clk
-ad_connect  sys_cpu_clk axi_hdmi_dma/m_axis_mm2s_aclk
 ad_connect  axi_hdmi_core/hdmi_clk axi_hdmi_clkgen/clk_0
 ad_connect  axi_hdmi_core/hdmi_out_clk hdmi_out_clk
 ad_connect  axi_hdmi_core/hdmi_16_hsync hdmi_hsync
 ad_connect  axi_hdmi_core/hdmi_16_vsync hdmi_vsync
 ad_connect  axi_hdmi_core/hdmi_16_data_e hdmi_data_e
 ad_connect  axi_hdmi_core/hdmi_16_data hdmi_data
-ad_connect  axi_hdmi_core/vdma_valid axi_hdmi_dma/m_axis_mm2s_tvalid
-ad_connect  axi_hdmi_core/vdma_data axi_hdmi_dma/m_axis_mm2s_tdata
-ad_connect  axi_hdmi_core/vdma_ready axi_hdmi_dma/m_axis_mm2s_tready
-ad_connect  axi_hdmi_core/vdma_fs axi_hdmi_dma/mm2s_fsync
-ad_connect  axi_hdmi_core/vdma_fs axi_hdmi_core/vdma_fs_ret
+
+ad_connect  axi_hdmi_dma/m_axis axi_hdmi_core/s_axis
+
+ad_connect sys_cpu_resetn axi_hdmi_dma/s_axi_aresetn
+ad_connect sys_cpu_resetn axi_hdmi_dma/m_src_axi_aresetn
+
+ad_connect  sys_cpu_clk axi_hdmi_dma/s_axi_aclk
+ad_connect  sys_cpu_clk axi_hdmi_dma/m_src_axi_aclk
+ad_connect  sys_cpu_clk axi_hdmi_dma/m_axis_aclk
 
 # spdif audio
 
@@ -249,22 +242,22 @@ ad_connect  sys_cpu_resetn     axi_i2s_adi/DMA_REQ_RX_RSTN
 # interrupts
 
 ad_connect  sys_concat_intc/dout  sys_ps7/IRQ_F2P
-ad_connect  sys_concat_intc/In15  axi_hdmi_dma/mm2s_introut
+ad_connect  sys_concat_intc/In15  axi_hdmi_dma/irq
 ad_connect  sys_concat_intc/In14  axi_iic_main/iic2intc_irpt
-ad_connect  sys_concat_intc/In13  ps_intr_13
-ad_connect  sys_concat_intc/In12  ps_intr_12
+ad_connect  sys_concat_intc/In13  GND
+ad_connect  sys_concat_intc/In12  GND
 ad_connect  sys_concat_intc/In11  axi_iic_fmc/iic2intc_irpt
-ad_connect  sys_concat_intc/In10  ps_intr_10
-ad_connect  sys_concat_intc/In9   ps_intr_09
-ad_connect  sys_concat_intc/In8   ps_intr_08
-ad_connect  sys_concat_intc/In7   ps_intr_07
-ad_connect  sys_concat_intc/In6   ps_intr_06
-ad_connect  sys_concat_intc/In5   ps_intr_05
-ad_connect  sys_concat_intc/In4   ps_intr_04
-ad_connect  sys_concat_intc/In3   ps_intr_03
-ad_connect  sys_concat_intc/In2   ps_intr_02
-ad_connect  sys_concat_intc/In1   ps_intr_01
-ad_connect  sys_concat_intc/In0   ps_intr_00
+ad_connect  sys_concat_intc/In10  GND
+ad_connect  sys_concat_intc/In9   GND
+ad_connect  sys_concat_intc/In8   GND
+ad_connect  sys_concat_intc/In7   GND
+ad_connect  sys_concat_intc/In6   GND
+ad_connect  sys_concat_intc/In5   GND
+ad_connect  sys_concat_intc/In4   GND
+ad_connect  sys_concat_intc/In3   GND
+ad_connect  sys_concat_intc/In2   GND
+ad_connect  sys_concat_intc/In1   GND
+ad_connect  sys_concat_intc/In0   GND
 
 # interconnects and address mapping
 
@@ -276,5 +269,5 @@ ad_cpu_interconnect 0x75c00000 axi_spdif_tx_core
 ad_cpu_interconnect 0x77600000 axi_i2s_adi
 ad_cpu_interconnect 0x41620000 axi_iic_fmc
 ad_mem_hp0_interconnect sys_cpu_clk sys_ps7/S_AXI_HP0
-ad_mem_hp0_interconnect sys_cpu_clk axi_hdmi_dma/M_AXI_MM2S
+ad_mem_hp0_interconnect sys_cpu_clk axi_hdmi_dma/m_src_axi
 

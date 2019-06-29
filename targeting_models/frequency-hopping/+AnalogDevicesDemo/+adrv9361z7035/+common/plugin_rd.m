@@ -14,7 +14,7 @@ hRD.ReferenceDesignName = sprintf('ADRV9361 %s (%s)', upper(board), design);
 hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035 Frequency Hopping');
 
 % Tool information
-hRD.SupportedToolVersion = {'2017.4'};
+hRD.SupportedToolVersion = {'2018.2'};
 
 % DMA Configuration
 hRD.addParameter( ...

@@ -5,12 +5,13 @@ stages:
   - deploy
   
 # Default build
-build:2018_R1:
+build:2018_R2:
     tags:
      - vivado
      - matlab
     stage: build
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake build
      - ./CI/scripts/dockermake add_libad9361
      - ./CI/scripts/dockermake gen_tlbx
@@ -31,7 +32,7 @@ build:master:
     stage: build
     script:
      - export HDLBRANCH=hdl_2018_r2
-     - export MLRELEASE=R2018b
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake build
      - export HDLBRANCH=
      - export MLRELEASE=
@@ -41,14 +42,15 @@ build:master:
             - hdl_wa_bsp/
 
 # Test HWA no install
-test:2018_R1:
+test:2018_R2:
     tags:
      - vivado
      - matlab
     stage: test
     dependencies:
-     - build:2018_R1
+     - build:2018_R2
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake test
      - ./CI/scripts/dockermake zip
     artifacts:
@@ -60,14 +62,15 @@ test:2018_R1:
             junit: test/BSPTestResults.xml
 
 # Test HWA with install
-test_installer:2018_R1_Installer:
+test_installer:2018_R2_Installer:
     tags:
      - vivado
      - matlab
     stage: test
     dependencies:
-     - build:2018_R1
+     - build:2018_R2
     script:
+     - export MLRELEASE=R2019a
      - cp mltbx/* .
      - pwd
      - ls
@@ -83,14 +86,15 @@ test_installer:2018_R1_Installer:
             junit: test/BSPTestResults.xml
 
 # Test HWA no install
-test:2018_R1:
+test:2018_R2:
     tags:
      - vivado
      - matlab
     stage: test
     dependencies:
-     - build:2018_R1
+     - build:2018_R2
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake test
      - ./CI/scripts/dockermake zip
     artifacts:
@@ -101,6 +105,24 @@ test:2018_R1:
         reports:
             junit: test/BSPTestResults.xml
 
+# Test weekly fully sythesized design
+test:Synthesize:
+    when: manual
+    tags:
+     - matlab
+     - vivado
+    stage: test
+    dependencies:
+     - build:2018_R2
+    script:
+     - ./CI/scripts/dockermake test_synth
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/
+            - Report.pdf
+
 # Test targeting demos (no hardware)
 test:targeting_demos:
     tags:
@@ -108,8 +130,9 @@ test:targeting_demos:
      - vivado
     stage: test
     dependencies:
-     - build:2018_R1
+     - build:2018_R2
     script:
+     - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake test_targeting_demos
     artifacts:
         when: always
@@ -125,8 +148,9 @@ test_hardware:Streaming_Hardware:
      - hardware
     stage: test_hardware
     dependencies:
-     - build:2018_R1
+     - build:2018_R2
     script:
+     - export MLRELEASE=R2019a
      - cd CI/scripts
      - make test_streaming
     artifacts:
@@ -143,8 +167,9 @@ test_hardware:EVM_Hardware:
      - hardware
     stage: test_hardware
     dependencies:
-     - build:2018_R1
+     - build:2018_R2
     script:
+     - export MLRELEASE=R2019a
      - cd CI/scripts
      - make test_evm
     artifacts:
@@ -158,8 +183,8 @@ deploy:
      - matlab
     stage: deploy
     dependencies:
-     - test:2018_R1
-     - test_installer:2018_R1_Installer
+     - test:2018_R2
+     - test_installer:2018_R2_Installer
     script:
      - echo "Complete"
     artifacts:
