@@ -6,4 +6,4 @@ echo "Copying .matlab"
 cp -r /root/.matlabro /root/.matlab
 echo "Copying .Xilinx"
 cp -r /root/.Xilinxro /root/.Xilinx
-source /opt/Xilinx/Vivado/2017.4/settings64.sh
+source /opt/Xilinx/Vivado/2018.2/settings64.sh
