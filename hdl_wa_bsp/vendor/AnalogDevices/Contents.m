@@ -1,2 +1,2 @@
 % HDL Coder BSP: Analog Devices Inc
-% Version 18.2 (R2018b) 14-Feb-2019
+% Version 18.2.1 (R2018b) 27-Jun-2019

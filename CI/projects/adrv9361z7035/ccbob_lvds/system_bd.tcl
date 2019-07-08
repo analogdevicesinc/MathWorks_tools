@@ -1,6 +1,6 @@
 
-source $ad_hdl_dir/projects/adrv9361z7035/common/adrv9361z7035_bd.tcl
-source $ad_hdl_dir/projects/adrv9361z7035/common/ccbob_bd.tcl
+source ../common/adrv9361z7035_bd.tcl
+source ../common/ccbob_bd.tcl
 
 cfg_ad9361_interface LVDS
 

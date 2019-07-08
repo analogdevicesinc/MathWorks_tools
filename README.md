@@ -13,7 +13,7 @@ As with many open source packages, we use [GitHub](https://github.com/analogdevi
 
 | HDL Branch        | GitHub master status  | MATLAB Release |  Installer Package  |
 |:-----------------------:|:---------------------:|:-------:|:-------------------:|
-| 2018_R1                 | [![pipeline status](https://gitlab.com/tfcollins/MathWorks_tools/badges/master/pipeline.svg)](https://gitlab.com/tfcollins/MathWorks_tools/commits/master) | 2018b | <a href="https://gitlab.com/tfcollins/MathWorks_tools/-/jobs/artifacts/master/download?job=deploy"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" height="40" /></a>|
+| 2018_R2                 | [![pipeline status](https://gitlab.com/tfcollins/MathWorks_tools/badges/master/pipeline.svg)](https://gitlab.com/tfcollins/MathWorks_tools/commits/master) | 2019a | <a href="https://gitlab.com/tfcollins/MathWorks_tools/-/jobs/artifacts/master/download?job=deploy"><img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" data-canonical-src="https://upload.wikimedia.org/wikipedia/commons/2/21/Matlab_Logo.png" height="40" /></a>|
 
 If you use it, and like it - please let us know. If you use it, and hate it - please let us know that too.
 
