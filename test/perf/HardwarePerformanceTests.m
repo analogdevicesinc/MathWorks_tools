@@ -30,12 +30,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('usb',Rx.Device,[],false);
             
             %% Run Test
-            [~, logs] = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSONExtended(json, logs);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -69,13 +69,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Rx.Device,Rx.Address(4:end),false);
             
             %% Run Test
-            [~, logs] = testCase.SDRLoopbackLTEEVMTest('LTE5',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE5',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            %testCase.saveToJSON(json, data);
-            testCase.saveToJSONExtended(json, logs);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -107,13 +106,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Rx.Device,Rx.Address(4:end),false);
             
             %% Run Test
-            [~, logs] = testCase.SDRLoopbackLTEEVMTest('LTE5',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE5',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            %testCase.saveToJSON(json, data);
-            testCase.saveToJSONExtended(json, logs);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -144,12 +142,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('usb',Rx.Device,[],false);
             
             %% Run Test
-            [~, logs] = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSONExtended(json, logs);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -186,13 +184,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Rx.Device,Rx.Address(4:end),false);
             
             %% Run Test
-            [~, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSONExtended(json, logs);
-            %testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -224,13 +221,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Rx.Device,Rx.Address(4:end),false);
             
             %% Run Test
-            [~, logs] = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            %testCase.saveToJSON(json, data);
-            testCase.saveToJSONExtended(json, logs);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -267,12 +263,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('usb',Rx.Device,Rx.Address(5:end),false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('R4',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -310,12 +306,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Rx.Device,Rx.Address(4:end),false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -340,11 +336,11 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',DeviceRx,ip,false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,DeviceTx,DeviceRx,testname);
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -375,12 +371,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             %             testCase.CheckDevice('ip',DeviceRx,testCase.uriRX(4:end),false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
                 DeviceTx,DeviceRx,testname,TxConfig,RxConfig);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -389,28 +385,10 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             import matlab.unittest.plugins.DiagnosticsRecordingPlugin
             
             %% Test configs
-%             Frequencies = (0.4:0.1:5).*1e9;
-            Frequencies = (3:0.5:5.5).*1e9;
+            Frequencies = (0.4:0.1:5).*1e9;
             testname = 'LTE10_ADRV9009_SOM_RX_PSG';
             testCase.author = 'ADI';
             
-%             DeviceTx = @()E8267D();
-%             DeviceRx = @()adi.ADRV9009.Rx();
-%             testname = 'LTE_LTE10_ADRV9009ZU11EG';
-%             testCase.author = 'ADI';
-%             testCase.uriTX = '192.168.1.11';
-%             testCase.uriRX = 'ip:192.168.1.2';
-%             testCase.EnableCustomFilter = true;
-%             testCase.FilterFilename = 'SOM.ftr';
-%             testCase.GainControlMode = 'slow_attack';
-%             
-%             testCase.RxSamplingRate = 122.88e6;
-%             testCase.TxSamplingRate = 122.88e6;
-%             % Extended configs
-%             TxConfig = struct;
-%             TxConfig.OutputPower = -20;
-%             RxConfig = [];
-            %%
             testCase.LoopIterationsPerFrequency = 4;
             testCase.EnabledCalibration = false;
             
@@ -438,12 +416,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Rx.Device,Rx.Address(4:end),false);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -479,12 +457,12 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',Tx.Device,Tx.Address(4:end),true);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,...
                 Tx,Rx,ExtendedTxParams,ExtendedRxParams,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
 
@@ -510,11 +488,11 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             testCase.CheckDevice('ip',DeviceTx,testCase.uriTX(4:end),true);
             
             %% Run Test
-            data = testCase.SDRLoopbackLTEEVMTest('LTE5',Frequencies,DeviceTx,DeviceRx,testname);
+            logs = testCase.SDRLoopbackLTEEVMTest('LTE5',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
@@ -542,8 +520,8 @@ classdef HardwarePerformanceTests < HardwareTestGeneric
             data = testCase.SDRLoopbackLTEEVMTest('LTE10',Frequencies,DeviceTx,DeviceRx,testname);
             
             %% Log data
-            json = [testname,'_',num2str(int32(now)),'.json'];
-            testCase.saveToJSON(json, data);
+            filename = [testname,'_',num2str(int32(now)),'.mat'];
+            save(filename,'logs');
             
         end
         
