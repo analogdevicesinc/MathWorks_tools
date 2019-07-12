@@ -1,3 +1,5 @@
+function runTests(board)
+
 import matlab.unittest.TestRunner;
 import matlab.unittest.TestSuite;
 import matlab.unittest.plugins.TestReportPlugin;
@@ -5,11 +7,22 @@ import matlab.unittest.plugins.XMLPlugin
 import matlab.unittest.plugins.ToUniqueFile;
 import matlab.unittest.plugins.TAPPlugin;
 import matlab.unittest.plugins.DiagnosticsValidationPlugin
+import matlab.unittest.parameters.Parameter
 
 runParallel = false;
+SynthesizeDesign = {false};
+param = Parameter.fromData('SynthesizeDesign',SynthesizeDesign);
 
-try
+if nargin == 0
     suite = testsuite({'BSPTests'});
+else
+    boards = ['*',lower(board),'*'];
+    suite = TestSuite.fromClass(?BSPTests,'ExternalParameters',param);
+    suite = suite.selectIf('ParameterProperty','configs', 'ParameterName',boards);
+end
+    
+try
+
     runner = matlab.unittest.TestRunner.withTextOutput('OutputDetail',1);
     runner.addPlugin(DiagnosticsValidationPlugin)
     
