@@ -3,7 +3,24 @@ stages:
   - test
   - test_hardware
   - deploy
-  
+
+.hdl_tests:
+    tags:
+     - vivado
+     - matlab
+    stage: test
+    dependencies:
+     - build:2018_R2
+    artifacts:
+        when: always
+        name: "$CI_COMMIT_REF_NAME"
+        paths:
+            - test/logs/
+            - Report.pdf
+        reports:
+            junit: test/BSPTestResults.xml
+
+
 # Default build
 build:2018_R2:
     tags:
@@ -41,34 +58,57 @@ build:master:
         paths:
             - hdl_wa_bsp/
 
-# Test HWA no install
-test:2018_R2:
-    tags:
-     - vivado
-     - matlab
-    stage: test
-    dependencies:
-     - build:2018_R2
+# Test HWA no install zed
+test:2018_R2_ZED:
+    extends: .hdl_tests
     script:
      - export MLRELEASE=R2019a
+     - export BOARD=zed
      - ./CI/scripts/dockermake test
-     - ./CI/scripts/dockermake zip
-    artifacts:
-        when: always
-        paths:
-            - zip/
-            - test/logs/
-        reports:
-            junit: test/BSPTestResults.xml
+
+# Test HWA no install zc702
+test:2018_R2_ZC702:
+    extends: .hdl_tests
+    script:
+     - export MLRELEASE=R2019a
+     - export BOARD=zc702
+     - ./CI/scripts/dockermake test
+
+# Test HWA no install zc706
+test:2018_R2_ZC706:
+    extends: .hdl_tests
+    script:
+     - export MLRELEASE=R2019a
+     - export BOARD=zc706
+     - ./CI/scripts/dockermake test
+
+# Test HWA no install zcu102
+test:2018_R2_ZCU102:
+    extends: .hdl_tests
+    script:
+     - export MLRELEASE=R2019a
+     - export BOARD=zcu102
+     - ./CI/scripts/dockermake test
+
+# Test HWA no install adrv9361
+test:2018_R2_ADRV9361:
+    extends: .hdl_tests
+    script:
+     - export MLRELEASE=R2019a
+     - export BOARD=adrv9361
+     - ./CI/scripts/dockermake test
+
+# Test HWA no install adrv9364
+test:2018_R2_ADRV9364:
+    extends: .hdl_tests
+    script:
+     - export MLRELEASE=R2019a
+     - export BOARD=adrv9364
+     - ./CI/scripts/dockermake test
 
 # Test HWA with install
 test_installer:2018_R2_Installer:
-    tags:
-     - vivado
-     - matlab
-    stage: test
-    dependencies:
-     - build:2018_R2
+    extends: .hdl_tests
     script:
      - export MLRELEASE=R2019a
      - cp mltbx/* .
@@ -85,43 +125,12 @@ test_installer:2018_R2_Installer:
         reports:
             junit: test/BSPTestResults.xml
 
-# Test HWA no install
-test:2018_R2:
-    tags:
-     - vivado
-     - matlab
-    stage: test
-    dependencies:
-     - build:2018_R2
-    script:
-     - export MLRELEASE=R2019a
-     - ./CI/scripts/dockermake test
-     - ./CI/scripts/dockermake zip
-    artifacts:
-        when: always
-        paths:
-            - zip/
-            - test/logs/
-        reports:
-            junit: test/BSPTestResults.xml
-
 # Test weekly fully sythesized design
 test:Synthesize:
     when: manual
-    tags:
-     - matlab
-     - vivado
-    stage: test
-    dependencies:
-     - build:2018_R2
+    extends: .hdl_tests
     script:
      - ./CI/scripts/dockermake test_synth
-    artifacts:
-        when: always
-        name: "$CI_COMMIT_REF_NAME"
-        paths:
-            - test/
-            - Report.pdf
 
 # Test targeting demos (no hardware)
 test:targeting_demos:
@@ -183,7 +192,6 @@ deploy:
      - matlab
     stage: deploy
     dependencies:
-     - test:2018_R2
      - test_installer:2018_R2_Installer
     script:
      - echo "Complete"
