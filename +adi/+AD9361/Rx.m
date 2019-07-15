@@ -53,6 +53,19 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
         GainChannel1 = 10;
     end
     
+    properties (Nontunable)
+        %DigitalLoopbackMode Digital Loopback Mode
+        %   Option to set digital loopback mode, specified as 0,
+        %   1 or 2. Allows either to digitally loopback TX data 
+        %   into the RX path or vice versa.
+        %    Value   |    Mode
+        %   ---------------------------
+        %      0     |   Disable
+        %      1     |   Digital TX -> Digital RX
+        %      2     |   RF RX -> RF TX 
+        LoopbackMode = 0;        
+    end
+    
     properties (Nontunable, Logical) % MUST BE NONTUNABLE OR SIMULINK WARNS
         %EnableQuadratureTracking Enable Quadrature Tracking
         %   Option to enable quadrature tracking, specified as true or
@@ -68,7 +81,7 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
         %   Option to enable baseband DC tracking, specified as true or
         %   false. When this property is true, a baseband DC blocking
         %   filter is applied to the input signal.
-        EnableBasebandDCTracking = true;
+        EnableBasebandDCTracking = true;           
     end
     
     properties(Constant, Hidden)
@@ -88,7 +101,7 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
     end
     
     properties (Nontunable, Hidden)
-        devName = 'cf-ad9361-lpc';
+        devName = 'cf-ad9361-lpc';        
     end
     
     methods
@@ -216,7 +229,16 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
                     obj.setAttributeLongLong(id,'sampling_frequency',value,true,4);
                 end
             end
-        end            
+        end  
+        function set.LoopbackMode(obj, value)
+            validateattributes( value, { 'double','single', 'uint32' }, ...
+                { 'real', 'nonnegative','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',2}, ...
+                '', 'LoopbackMode');    
+            obj.LoopbackMode = value;
+            if obj.ConnectedToDevice
+                obj.setDebugAttributeLongLong('loopback',value);                    
+            end
+        end         
     end
     
     methods (Access=protected)
@@ -313,6 +335,9 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
             obj.setAttributeBool('voltage0','bb_dc_offset_tracking_en',obj.EnableBasebandDCTracking,false);
             id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
             obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
+            % Loopback Mode
+            obj.setDebugAttributeLongLong('loopback', obj.LoopbackMode);                    
+            
             % Sample rates and RF bandwidth
             if  ~obj.EnableCustomFilter
                 if libisloaded('libad9361')
