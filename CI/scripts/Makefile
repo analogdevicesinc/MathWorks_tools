@@ -33,6 +33,10 @@ ifeq ($(BOARD),)
 BOARD :=
 endif
 
+ifeq ($(INCLUDE_EXAMPLES),)
+INCLUDE_EXAMPLES := 1
+endif
+
 GITTAG := $(shell git describe --tags HEAD)
 
 .ONESHELL:
@@ -102,7 +106,7 @@ test_targeting_demos:
 	bash targeting_designs.sh
 
 gen_tlbx:
-	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "genTlbx;exit();"
+	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "genTlbx($(INCLUDE_EXAMPLES));exit();"
 
 linter:
 	${MLPATH}/$(MLRELEASE)/bin/matlab $(MLFLAGS) -r "linter;exit();"
