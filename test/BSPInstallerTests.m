@@ -19,8 +19,19 @@ classdef BSPInstallerTests < BSPTestsBase
             %system('rm *.mltbx');
             %system('curl -s https://api.github.com/repos/analogdevicesinc/MathWorks_tools/releases/latest | grep browser_download_url | cut -d "\"" -f 4 | wget --no-check-certificate -i -');
             %tbname = 'AnalogDevicesBSP_v18.1.mltbx';
-            disp('BSP Installer tests setup called');
-            tbname = strrep(regexprep(ls('*.mltbx'),'[\n\r]+',' '),' ','');
+            disp('BSP Installer tests setup called');           
+            files = dir('.');
+            for file = 1:length(files)
+                fn = files(file).name;
+                try
+                    if strcmpi(fn(end-5:end),'.mltbx') && ~contains(fn,'examples')
+                        tbname = fn;
+                        break
+                    end
+                catch
+                    continue;
+                end
+            end
             disp('BSP Installer tests setup called');
             disp(['Found: ',tbname]);
             obj.installed = matlab.addons.toolbox.installToolbox(tbname);

@@ -31,6 +31,9 @@ build:2018_R2:
      - export MLRELEASE=R2019a
      - ./CI/scripts/dockermake build
      - ./CI/scripts/dockermake add_libad9361
+     - export INCLUDE_EXAMPLES=1
+     - ./CI/scripts/dockermake gen_tlbx
+     - export INCLUDE_EXAMPLES=0
      - ./CI/scripts/dockermake gen_tlbx
      - mkdir mltbx
      - ls *.mltbx

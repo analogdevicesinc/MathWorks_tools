@@ -1,4 +1,9 @@
+function genTlbx(examples)
 
+if nargin==0
+    examples = 0;
+end
+    
 version = '19.1';
 ml = ver('MATLAB');
 ml = ml.Release(2:end-1);
@@ -9,7 +14,11 @@ cd('../..');
 p = pwd;
 cd(fileparts((mfilename('fullpath'))));
 
-fid  = fopen('bsp.tmpl','r');
+if examples
+    fid  = fopen('bsp.tmpl','r');
+else
+    fid  = fopen('bsp_noexamples.tmpl','r');
+end
 f=fread(fid,'*char')';
 fclose(fid);
 
@@ -25,7 +34,11 @@ cd('../..');
 addpath(genpath(matlabshared.supportpkg.getSupportPackageRoot));
 addpath(genpath('.'));
 rmpath(genpath('.'));
-ps = {'doc','hdl_wa_bsp','hil_models','targeting_models','deps'};
+if examples
+    ps = {'doc','hdl_wa_bsp','hil_models','targeting_models','deps'};
+else
+    ps = {'doc','hdl_wa_bsp','deps'};
+end
 paths = '';
 for p = ps
     pp = genpath(p{:});
@@ -38,7 +51,11 @@ end
 rehash
 projectFile = 'bsp.prj';
 currentVersion = matlab.addons.toolbox.toolboxVersion(projectFile);
-outputFile = ['AnalogDevicesBSP_v',currentVersion];
+if examples
+    outputFile = ['AnalogDevicesBSP_v',currentVersion];
+else
+    outputFile = ['AnalogDevicesBSP_noexamples_v',currentVersion];
+end
 matlab.addons.toolbox.packageToolbox(projectFile,outputFile)
 
 if ~usejava('desktop')
