@@ -80,10 +80,7 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
                 { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',70e6,'<=',6e9}, ...
                 '', 'CenterFrequency');
             obj.CenterFrequency = value;
-            if obj.ConnectedToDevice
-                id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
-                obj.setAttributeLongLong(id,'frequency',value,true);
-            end
+            obj.CenterFrequencySet(value);
         end
         % Check EnableCustomProfile
         function set.EnableCustomProfile(obj, value)
@@ -107,6 +104,14 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
     %% API Functions
     methods (Hidden, Access = protected)
                
+        % Set CenterFrequency for hardware
+        function CenterFrequencySet(obj, value)
+            if obj.ConnectedToDevice
+                id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
+                obj.setAttributeLongLong(id,'frequency',value,true);
+            end
+        end
+        
         function icon = getIconImpl(obj)
             icon = sprintf(['AD9371 ',obj.Type]);
         end
