@@ -13,7 +13,10 @@ cd ..
 if [ -d "hdl" ]; then
     rm -rf "hdl"
 fi
-git clone --single-branch -b $HDLBRANCH https://github.com/analogdevicesinc/hdl.git
+if ! git clone --single-branch -b $HDLBRANCH https://github.com/analogdevicesinc/hdl.git
+then
+   exit 1
+fi
 
 # Get required vivado version needed for HDL
 VER=$(awk '/set REQUIRED_VIVADO_VERSION/ {print $3}' hdl/library/scripts/adi_ip.tcl | sed 's/"//g')
