@@ -117,8 +117,8 @@ classdef Obs < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 { 'real', 'scalar', 'finite', 'nonnan', 'nonempty', '>=', -4,'<=', 71}, ...
                 '', 'Gain');
             assert(mod(value,1/4)==0, 'Gain must be a multiple of 0.25');
-            obj.GainChannel0 = value;
-            if obj.ConnectedToDevice && strcmp(obj.GainControlModeChannel0,'manual')
+            obj.Gain = value;
+            if obj.ConnectedToDevice && strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeRAW('voltage2','rf_port_select','OFF',false);
                 obj.setAttributeLongLong('voltage2','hardwaregain',value,false);
                 obj.setAttributeRAW('voltage2','rf_port_select',obj.RFPortSelect,false); %#ok<MCSUP>
@@ -126,7 +126,7 @@ classdef Obs < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
         end
         % Check EnableQuadratureTracking
         function set.EnableQuadratureTracking(obj, value)
-            obj.EnableQuadratureTrackingChannel0 = value;
+            obj.EnableQuadratureTracking = value;
             if obj.ConnectedToDevice
                 obj.setAttributeRAW('voltage2','rf_port_select','OFF',false);
                 obj.setAttributeBool('voltage2','quadrature_tracking_en',value,false);
