@@ -3,22 +3,34 @@ classdef (Abstract) Tx  < adi.common.RxTx & adi.common.DDS
     
     methods (Hidden, Access = protected)
         
-        function stepImpl(obj,varargin)
+        function numIn = getNumInputsImpl(obj)
+            if strcmp(obj.DataSource,'DDS')
+                numIn = 0;
+            else
+                numIn = 1;
+            end
+        end
+        
+    end
+    
+    methods (Hidden, Access = protected)
+        
+        function stepImpl(obj,dataIn)
             
             if strcmp(obj.DataSource,'DMA')
                 % Interleave channels include I and Q
-                c = obj.channelCount;
-                outputData = complex(zeros(length(varargin{1}), c));
+                c = obj.channelCount;               
+                s = size(dataIn);
+                assert(s(2)==c/2,sprintf('Data size must [Nx%d]\n',c/2));
                 index = 1;
-                for k = 1:c
-                    if fix(k/2)==k/2
-                        outputData(:,k) = imag(int16(varargin{index,:}).');
-                        index = index + 1;
-                    else
-                        outputData(:,k) = real(int16(varargin{index,:}).');
-                    end
+                %%
+                outputData = complex(zeros(length(dataIn)*c,1));
+                for k = 1:2:c
+                    outputData(k+0:c:end,1) = real(int16(dataIn(:,index).'));
+                    outputData(k+1:c:end,1) = imag(int16(dataIn(:,index).'));
+                    index = index + 1;
                 end
-                outputData = reshape(outputData.',numel(outputData),1);
+                %%
                 sendData(obj,outputData);
             else
                 obj.DDSUpdate();

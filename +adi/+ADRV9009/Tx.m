@@ -85,25 +85,21 @@ classdef Tx < adi.ADRV9009.Base & adi.common.Tx
     %% API Functions
     methods (Hidden, Access = protected)
         
-        function numIn = getNumInputsImpl(obj)
-            if strcmp(obj.DataSource,'DDS')
-                numIn = 0;
-            else
-                numIn = obj.channelCount/2;
-            end
-        end
-        
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
-            id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
-            id = 'altvoltage0';
-            obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
+            
+            if obj.EnableCustomProfile
+                writeProfileFile(obj);
+            end
+            
+            obj.setAttributeLongLong('altvoltage0','frequency',obj.CenterFrequency ,true);
             obj.setAttributeLongLong('voltage0','hardwaregain',obj.AttenuationChannel0,true);
             obj.setAttributeLongLong('voltage1','hardwaregain',obj.AttenuationChannel1,true);
+
             obj.ToggleDDS(strcmp(obj.DataSource,'DDS'));
             if strcmp(obj.DataSource,'DDS')
                 obj.DDSUpdate();
