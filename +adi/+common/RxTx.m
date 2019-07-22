@@ -91,6 +91,8 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
                     ~strcmpi(obj.DataSource, 'DDS');
                 flag = flag || strcmpi(prop,'EnableCyclicBuffers') &&...
                     ~strcmpi(obj.DataSource, 'DMA');
+                flag = flag || strcmpi(prop,'EnabledChannels') &&...
+                    ~strcmpi(obj.DataSource, 'DMA');
             end
             flag = flag || strcmpi(prop,'SamplesPerFrame') && strcmp(obj.Type,'Tx');
             if obj.channelCount < 3
@@ -167,7 +169,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             else
                 for k=1:obj.channelCount
                     name = obj.channel_names{obj.EnabledChannels(k)};
-                    disableChannel(obj, obj.iioDev, name, obj.isOutput);
+                    enableChannel(obj, obj.iioDev, name, obj.isOutput);
                 end
             end
             obj.enabledChannels = true;

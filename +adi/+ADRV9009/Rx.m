@@ -129,16 +129,17 @@ classdef Rx < adi.ADRV9009.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
+
+            if obj.EnableCustomProfile
+                writeProfileFile(obj);
+            end
+            
             obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlMode,false);
             obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel0,false);
             obj.setAttributeBool('voltage1','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel1,false);
             id = 'altvoltage0';
             obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
 
-            if obj.EnableCustomProfile
-                writeProfileFile(obj);
-            end
-            
             if strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);

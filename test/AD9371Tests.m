@@ -1,7 +1,7 @@
 classdef AD9371Tests < HardwareTests
     
     properties
-        uri = 'ip:192.168.1.208';
+        uri = 'ip:analog';
         SamplingRateRX = 122.88e6;
         author = 'ADI';
     end
@@ -28,7 +28,7 @@ classdef AD9371Tests < HardwareTests
         function testAD9371Rx(testCase)
             % Test Rx DMA data output
             rx = adi.AD9371.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             [out, valid] = rx();
             rx.release();
             testCase.verifyTrue(valid);
@@ -38,7 +38,7 @@ classdef AD9371Tests < HardwareTests
         function testAD9371RxCustomProfile1(testCase)
             % Test Rx custom profiles
             rx = adi.AD9371.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.EnableCustomProfile = true;
             rx.CustomProfileFileName = ...
                 'profile_TxBW50_ORxBW50_RxBW50.txt';
@@ -55,7 +55,7 @@ classdef AD9371Tests < HardwareTests
         function testAD9371RxCustomProfile2(testCase)
             % Test Rx custom profiles
             rx = adi.AD9371.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.EnableCustomProfile = true;
             rx.CustomProfileFileName = ...
                 'profile_TxBW100_ORxBW100_RxBW100.txt';
@@ -69,17 +69,56 @@ classdef AD9371Tests < HardwareTests
                 'Invalid sample rate after profile write');
         end
         
+        function testAD9371TxCustomProfile1(testCase)
+            % Test Rx custom profiles
+            tx = adi.AD9371.Tx('uri',testCase.uri);
+            tx.EnabledChannels = 1;
+            tx.EnableCustomProfile = true;
+            tx.CustomProfileFileName = ...
+                'profile_TxBW50_ORxBW50_RxBW50.txt';
+            valid = tx(complex(randn(1024,1)));
+            txSampleRate = tx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',true);
+            tx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyEqual(txSampleRate,int64(61440000),...
+                'Invalid sample rate after profile write');
+        end
+        
+        function testAD9371TxCustomProfile2(testCase)
+            % Test Rx custom profiles
+            tx = adi.AD9371.Tx('uri',testCase.uri);
+            tx.EnabledChannels = 1;
+            tx.EnableCustomProfile = true;
+            tx.CustomProfileFileName = ...
+                'profile_TxBW100_ORxBW100_RxBW100.txt';
+            valid = tx(complex(randn(1024,1)));
+            txSampleRate = tx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',true);
+            tx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyEqual(txSampleRate,int64(122880000),...
+                'Invalid sample rate after profile write');
+        end
+        
         function testAD9371RxWithTxDDS(testCase)
             % Test DDS output
             tx = adi.AD9371.Tx('uri',testCase.uri);
             tx.DataSource = 'DDS';
             toneFreq = 30e6;
             tx.DDSFrequencies = repmat(toneFreq,2,4);
+            tx.DDSScales = zeros(2,4);
+            tx.DDSScales(1,1:2) = [1 1];
+            tx.DDSPhases = zeros(2,4);
+            tx.DDSPhases(1,1) = 90000;
             tx.AttenuationChannel0 = -10;
+            tx.EnableCustomProfile = true;
+            tx.CustomProfileFileName = ...
+                'profile_TxBW100_ORxBW100_RxBW100.txt';
             tx();
             pause(1);
             rx = adi.AD9371.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.kernelBuffersCount = 1;
             for k=1:10
                 valid = false;
@@ -87,12 +126,16 @@ classdef AD9371Tests < HardwareTests
                     [out, valid] = rx();
                 end
             end
-            rx.release();
 
 %             plot(real(out));
 %             testCase.estFrequency(out,testCase.SamplingRateRX);
-            freqEst = meanfreq(double(real(out)),testCase.SamplingRateRX);
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            freqEst = meanfreq(double(real(out)),rxSampleRate);
 
+            rx.release();
+            tx.release();
+            
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
             testCase.verifyEqual(freqEst,toneFreq,'RelTol',0.01,...
@@ -106,16 +149,19 @@ classdef AD9371Tests < HardwareTests
             swv1 = dsp.SineWave(amplitude, frequency);
             swv1.ComplexOutput = true;
             swv1.SamplesPerFrame = 2^20;
-            swv1.SampleRate = testCase.SamplingRateRX*2;
+            swv1.SampleRate = testCase.SamplingRateRX;
             y = swv1();
             
             tx = adi.AD9371.Tx('uri',testCase.uri);
             tx.DataSource = 'DMA';
             tx.EnableCyclicBuffers = true;
             tx.AttenuationChannel0 = -10;
+            tx.EnableCustomProfile = true;
+            tx.CustomProfileFileName = ...
+                'profile_TxBW100_ORxBW100_RxBW100.txt';
             tx(y);
             rx = adi.AD9371.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.kernelBuffersCount = 1;
             for k=1:20
                 valid = false;
@@ -123,11 +169,15 @@ classdef AD9371Tests < HardwareTests
                     [out, valid] = rx();
                 end
             end
-            rx.release();
 
 %             plot(real(out));
 %             testCase.estFrequency(out,testCase.SamplingRateRX);
-            freqEst = meanfreq(double(real(out)),testCase.SamplingRateRX);
+            rxSampleRate = rx.getAttributeLongLong('voltage0',...
+                'sampling_frequency',false);
+            freqEst = meanfreq(double(real(out)),rxSampleRate);
+
+            rx.release();
+            tx.release();
             
             testCase.verifyTrue(valid);
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
