@@ -8,16 +8,16 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('ADRV9361 %s (%s)', upper(board), design);
+hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2017.4)', board);
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035');
+hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
 
 % Tool information
 if contains(upper(design),'MODEM')
 	hRD.SupportedToolVersion = {'2016.4'};%MODEM
 else
-	hRD.SupportedToolVersion = {'2018.2'};
+	hRD.SupportedToolVersion = {'2017.4'};
 end
 
 % Get the root directory
@@ -27,23 +27,37 @@ rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
 hRD.SharedRD = true;
 hRD.SharedRDFolder = fullfile(rootDir, 'vivado');
 
-% switch(upper(board))
-% 	case 'BOX LVDS'
-% 		board = 'ccbox_lvds';
-% 	case 'BOB LVDS'
-% 		board = 'ccbob_lvds';
-% 	case 'BOB CMOS'
-% 		board = 'ccbob_cmos';
-% 	case 'FMC LVDS'
-% 		board = 'ccfmc_lvds';
-% 	case 'FMC CMOS'
-% 		board = 'ccfmc_cmos';
-% 	case 'PCI LVDS'
-% 		board = 'ccpci_lvds';		
-% 	case 'USB LVDS'
-% 		board = 'ccusb_lvds';		
-% 	otherwise
-% 		board = 'ccbrk_lvds';	
+switch(upper(board))
+	case 'BOX LVDS'
+		board = 'ccbox_lvds';
+	case 'BOB LVDS'
+		board = 'ccbob_lvds';
+	case 'BOB CMOS'
+		board = 'ccbob_cmos';
+	case 'FMC LVDS AGC'
+		board = 'ccfmc_lvds_agc';
+	case 'FMC LVDS'
+		board = 'ccfmc_lvds';
+	case 'FMC CMOS'
+		board = 'ccfmc_cmos';
+	case 'PCI LVDS'
+		board = 'ccpci_lvds';		
+	case 'USB LVDS'
+		board = 'ccusb_lvds';		
+	otherwise
+		board = 'ccbrk_lvds';	
+end
+
+hRD.addParameter( ...
+    'ParameterID',   'en_agc', ...
+    'DisplayName',   'Control AGC', ...
+    'DefaultValue',  'Rx', ...
+    'ParameterType',  hdlcoder.ParameterType.Dropdown, ...
+    'Choice',       {'Rx', 'Tx'});
+
+
+% if strcmpi(design,'AGC')
+%     board = [board,'_agc'];
 % end
 
 %% Add custom design files
@@ -53,6 +67,10 @@ switch(upper(design))
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_rx.tcl'), ...
 			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
+% 	case 'AGC'
+% 		hRD.addCustomVivadoDesign( ...
+% 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_tx.tcl'), ...
+% 			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
 	case 'TX'
 		hRD.addCustomVivadoDesign( ...
 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_tx.tcl'), ...
@@ -98,4 +116,3 @@ hRD.CustomFiles = {...
 hRD.addClockInterface( ...
     'ClockConnection',   'util_ad9361_divclk/clk_out', ...
     'ResetConnection',   'util_ad9361_divclk_reset/peripheral_aresetn');
-	

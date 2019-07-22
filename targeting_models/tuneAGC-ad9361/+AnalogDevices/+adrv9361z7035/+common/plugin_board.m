@@ -1,4 +1,4 @@
-function hB = plugin_board()
+function hB = plugin_board(board, design)
 % Use Plugin API to create board plugin object
 
 %   Copyright 2015 The MathWorks, Inc.
@@ -6,7 +6,7 @@ function hB = plugin_board()
 hB = hdlcoder.Board;
 
 % Target Board Information
-hB.BoardName    = sprintf('AnalogDevices ADRV9361-Z7035');
+hB.BoardName    = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
 
 % FPGA Device
 hB.FPGAVendor   = 'Xilinx';
@@ -26,4 +26,3 @@ hB.JTAGChainPosition = 2;
 
 %% Add interfaces
 % Standard "External Port" interface
-
