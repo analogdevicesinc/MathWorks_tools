@@ -1,6 +1,12 @@
-classdef AD9361Sim
+classdef AD9361TRx
+    %% properties applicable to simulation-based study 
+    properties (Constant)
+        % WLAN Toolbox functions operate over 1x-rate data.
+        % Oversample signal prior to passing it through AD9361 Rx Simulink model.
+        ovx = [2 1] % ovx factor = ovx(1)/ovx(2)                
+    end
+    
     properties
-        %%
         % AGC mode (applicable only when SIM_MODE is set to 1 or 3)
         % 0 - manual
         % 1 - fast attack
@@ -9,9 +15,11 @@ classdef AD9361Sim
         AGC_MODE = 3
         % Log output of ADC block? 1/0 - Y/N
         % The size of log-file will be significantly larger if set to 1
-        % since ADC runs at a higher rate than the sample clock
+        % since ADC runs at a higher rate than the sample clock.
+        % Applicable when SIM_STUDY is set to true.
         LOG_ADC_OUTPUT = 0
         % Save log-data to .mat file? 1/0 - Y/N
+        % Applicable when SIM_STUDY is set to true.
         SAVE_LOG_DATA = 1        
     end
     
@@ -24,81 +32,105 @@ classdef AD9361Sim
         block
         rx_block
         logged_blocks        
-        error_message
+        error_message 
         log_data
         log_data_indices        
     end
     
     properties
-        rxNonHT
+        rxNonHT_2x
         input_waveform
     end
     
+    %% properties applicable to physical radio-based study 
+    properties        
+        RXBufferSize = 2^13;
+        TransmitRepeat = false
+        TimeOut = 2
+    end
+    
     methods
-        function obj = AD9361Sim(sim_settings, ad9361_settings, agc_settings)
+        function obj = AD9361TRx(sim_settings, varargin)%ad9361_settings, agc_settings)
+            if ~isempty(varargin{1})
+                ad9361_settings = varargin{1}{1};
+                agc_settings = varargin{1}{2};
+            end
             % local variables
             fs = obj.fs;
             M = obj.ovx(1);
             N = obj.ovx(2);
             SampleTime_rx = obj.SampleTime_rx;
-            AGC_MODE = ad9361_settings.AGC_MODE;
-            LOG_ADC_OUTPUT = ad9361_settings.LOG_ADC_OUTPUT;
             obj.folder_name = 'ad9361_rx_input_files';
 
-            if ((sim_settings.SIM_MODE == 0) || (sim_settings.SIM_MODE == 2))
-                %% Simulation mode #0 or #2 - no simulink-model-in-loop 
-                obj.input_waveform = obj.rxPPDU; 
+            if (sim_settings.SIM_STUDY) 
+                %% Simulation-based study 
+                if ((sim_settings.SIM_MODE == 0) || (sim_settings.SIM_MODE == 2))
+                    % Simulation mode #0 or #2 - no simulink-model-in-loop 
+                    obj.input_waveform = obj.rxWaveform; 
+                else
+                    % Simulation mode #1 or #3 - simulink-model-in-loop
+                    % generate all combinations of AGC settings
+                    [local_agc_settings, obj.num_sims] = obj.agc_settings_all_combos(agc_settings);
+
+                    % Enable logging for desired signals 
+                    obj.model = 'ad9361_rx_wlan_testbench';
+                    obj.block = 'ad9361_rx';
+                    load_system(obj.model); % load model into memory
+                    st_param = get_param(obj.model, 'ModelWorkspace');
+                    assignin(st_param,'SampleTime_rx', SampleTime_rx); % assign value to sample-time 
+                    obj = obj.gen_testWaveform_file(); % set Baseband file name
+                    obj.rx_block = strcat(obj.model, '/', obj.block);    
+
+                    obj.logged_blocks = {['ADC ' newline 'Overload ' newline 'Detector'],...
+                        ['LMT ' newline 'Peak ' newline 'Detector'],...
+                        'DDC_Filters_RX', 'In', 'Average Power Meter', 'AGC'};
+                    if (ad9361_settings.LOG_ADC_OUTPUT)
+                        obj.logged_blocks{end+1} = 'ADC_RX';
+                    end
+                    num_logged_signals = obj.enable_signal_logging();
+                    save_system(obj.model);
+
+                    % Tune AGC settings and run the AD9361 simulink model, ...
+                    sim_time = ceil(1e4*length(obj.rxNonHT_2x)/(M*fs/N))/1e4;
+                    WLAN_ad9361_simin = Simulink.SimulationInput.empty(obj.num_sims, 0);
+                    for idx = 1:obj.num_sims
+                        WLAN_ad9361_simin(idx) = Simulink.SimulationInput(obj.model);
+                        WLAN_ad9361_simin(idx) = WLAN_ad9361_simin(idx).setModelParameter('StopTime',sprintf('%f',sim_time));
+                        WLAN_ad9361_simin(idx) = obj.tune_agc_settings(ad9361_settings.AGC_MODE, idx, WLAN_ad9361_simin(idx), local_agc_settings);
+                    end
+                    WLAN_ad9361_simout = parsim(WLAN_ad9361_simin, 'ShowProgress', 'on');
+                    % then, disable signal logging and save model
+                    obj.disable_signal_logging();
+                    save_system(obj.model);
+
+                    % Extract log-data
+                    for idx = 1:obj.num_sims
+                        obj.error_message{idx} = WLAN_ad9361_simout(idx).ErrorMessage;
+                        [obj.log_data{idx}, obj.log_data_indices{idx}] = obj.extract_log_data(num_logged_signals, WLAN_ad9361_simout(idx));
+                        % Resample 9361 output to 1x rate for consumption by WLAN receiver
+                        obj.input_waveform{idx} = resample(obj.log_data{idx}{obj.log_data_indices{idx}.AD9361_Output}.Data, N, M);                    
+                    end                
+                end
             else
-                %% Simulation mode #1 or #3 - simulink-model-in-loop
-                % generate all combinations of AGC settings
-                [local_agc_settings, obj.num_sims] = obj.agc_settings_all_combos(agc_settings);
+                %% Physical radio-based study
+                obj.TransmitRepeat = false;
+                obj.TXGain = TXGains;
 
-                % Enable logging for desired signals 
-                obj.model = 'ad9361_rx_wlan_testbench';
-                obj.block = 'ad9361_rx';
-                load_system(obj.model); % load model into memory
-                st_param = get_param(obj.model, 'ModelWorkspace');
-                assignin(st_param,'SampleTime_rx', SampleTime_rx); % assign value to sample-time 
-                obj = obj.gen_testWaveform_file(); % set Baseband file name
-                obj.rx_block = strcat(obj.model, '/', obj.block);    
+                results = RunDeployedDesign(testCase);
 
-                obj.logged_blocks = {['ADC ' newline 'Overload ' newline 'Detector'],...
-                    ['LMT ' newline 'Peak ' newline 'Detector'],...
-                    'DDC_Filters_RX', 'In', 'Average Power Meter', 'AGC'};
-                if (LOG_ADC_OUTPUT)
-                    obj.logged_blocks{end+1} = 'ADC_RX';
-                end
-                num_logged_signals = obj.enable_signal_logging();
-                save_system(obj.model);
-
-                % Tune AGC settings and run the AD9361 simulink model, ...
-                sim_time = ceil(1e4*length(obj.rxNonHT)/(M*fs/N))/1e4;
-                WLAN_ad9361_simin = Simulink.SimulationInput.empty(obj.num_sims, 0);
-                for idx = 1:obj.num_sims
-                    WLAN_ad9361_simin(idx) = Simulink.SimulationInput(obj.model);
-                    WLAN_ad9361_simin(idx) = WLAN_ad9361_simin(idx).setModelParameter('StopTime',sprintf('%f',sim_time));
-                    WLAN_ad9361_simin(idx) = obj.tune_agc_settings(ad9361_settings.AGC_MODE, idx, WLAN_ad9361_simin(idx), local_agc_settings);
-                end
-                WLAN_ad9361_simout = parsim(WLAN_ad9361_simin, 'ShowProgress', 'on');
-                % then, disable signal logging and save model
-                obj.disable_signal_logging();
-                save_system(obj.model);
-
-                % Extract log-data
-                for idx = 1:obj.num_sims
-                    obj.error_message{idx} = WLAN_ad9361_simout(idx).ErrorMessage;
-                    [obj.log_data{idx}, obj.log_data_indices{idx}] = obj.extract_log_data(num_logged_signals, WLAN_ad9361_simout(idx));
-                    % Resample 9361 output to 1x rate for consumption by WLAN receiver
-                    obj.input_waveform{idx} = resample(obj.log_data{idx}{obj.log_data_indices{idx}.AD9361_Output}.Data, N, M);                    
-                end                
+                
+                
             end
             
-            obj.AGC_MODE = ad9361_settings.AGC_MODE;
-            obj.LOG_ADC_OUTPUT = ad9361_settings.LOG_ADC_OUTPUT;            
-            obj.SAVE_LOG_DATA = ad9361_settings.SAVE_LOG_DATA;
+            if ~isempty(varargin{1})
+                obj.AGC_MODE = ad9361_settings.AGC_MODE;
+                obj.LOG_ADC_OUTPUT = ad9361_settings.LOG_ADC_OUTPUT;            
+                obj.SAVE_LOG_DATA = ad9361_settings.SAVE_LOG_DATA;
+            end
         end
         
-        %% function to determine all combinations of AGC settings to apply 
+        %% functions applicable to simulation-based study 
+        % determine all combinations of AGC settings to apply 
         function [local_agc_settings, num_combos] = agc_settings_all_combos(obj, agc_settings)
             AGC_fields = fields(agc_settings);
             tuned_settings = [];
@@ -140,7 +172,7 @@ classdef AD9361Sim
             end
         end
         
-        %% function to save the test waveform in a baseband file format 
+        % save the test waveform in a baseband file format 
         function obj = gen_testWaveform_file(obj)
             fc = obj.fc;
             fs = obj.fs;
@@ -151,10 +183,10 @@ classdef AD9361Sim
             mkdir(obj.folder_name);
             obj.sig_filename = char('testWaveform_'+regexprep(string(datetime),'[:-\s]','_')+'.bb');
             obj.testwaveform_fileloc = [pwd '\' obj.folder_name '\' obj.sig_filename];
-            obj.rxNonHT = resample(obj.rxPPDU, M, N);
+            obj.rxNonHT_2x = resample(obj.rxWaveform, M, N);
             bbw = comm.BasebandFileWriter(obj.testwaveform_fileloc,(M/N)*fs,fc);
             bbw.Metadata = struct('Date',date);
-            bbw(obj.rxNonHT);
+            bbw(obj.rxNonHT_2x);
             release(bbw);
             
             top_level_blocks = find_system(obj.model);
@@ -173,11 +205,11 @@ classdef AD9361Sim
             % configure filter parameters
             set_param([obj.model '/' obj.block],'RF',num2str(fc));
             set_param([obj.model '/' obj.block],'LO',num2str(fc));
-            set_param([obj.model '/' obj.block],'Trf', ['SampleTime_rx' '/' num2str(M/N)])
+            set_param([obj.model '/' obj.block],'Trf', [num2str(obj.SampleTime_rx) '/' num2str(M/N)]);
         end
         
-        %% function to programmatically enable logging selected blocks in
-        % the Simulink model
+        % programmatically enable logging selected blocks in the Simulink 
+        % model
         function num_logged_signals = enable_signal_logging(obj)
             num_logged_signals = 0;
             for ii = 1:length(obj.logged_blocks)
@@ -196,8 +228,8 @@ classdef AD9361Sim
             end    
         end
         
-        %% function to programmatically disable logging selected blocks in
-        % the Simulink model
+        % programmatically disable logging selected blocks in the Simulink 
+        % model
         function disable_signal_logging(obj)
             for ii = 1:length(obj.logged_blocks)
                 rx_under_mask = [obj.rx_block '/' obj.logged_blocks{ii}]; 
@@ -213,8 +245,7 @@ classdef AD9361Sim
             end
         end
         
-        %% function to programmatically set AGC parameters in the Simulink
-        % model
+        % programmatically set AGC parameters in the Simulink model
         function in = tune_agc_settings(obj, AGC_MODE, idx, in, AGC_settings)
             % Toggle manual switch to select AGC mode control input
             rx_top_level = find_system(obj.model);
@@ -244,7 +275,6 @@ classdef AD9361Sim
                 end
             end
             
-            %% funtion to tune AGC settings
             rx_under_mask = find_system(obj.rx_block, 'LookUnderMasks', 'on', 'SearchDepth', 1);   
 
             for ii = 1:length(rx_under_mask)
@@ -278,8 +308,8 @@ classdef AD9361Sim
             end
         end
         
-        %% function to extract log data from each of the logged blocks in
-        % the Simulink model
+        % extract log data from each of the logged blocks in the Simulink 
+        % model
         function [log_data, indices] = extract_log_data(obj, num_logged_signals, WLAN_ad9361_sim)
             log_data = cell(num_logged_signals, 1);
             for ii = 1:num_logged_signals
@@ -343,5 +373,81 @@ classdef AD9361Sim
                 end
             end
         end
+        
+        %% functions applicable to physical radio-based study  
+        function results = RunDeployedDesign(obj)
+            % waveform transmitted by the radio 
+            txWaveform = int16(2^15.*obj.txFrms./max(abs(obj.txFrms)));
+            
+            % HW setup
+            [rx, tx] = obj.SetupHardware(obj.fs,obj.fc);
+            obj.reTuneRadio(rx,tx,txWaveform);
+            [rx, tx] = testCase.SetupHardware(obj.fs,obj.fc);
+            
+            % Transmit and Receive
+            fprintf('Initializing RX and TX devices\n');
+            if (obj.TransmitRepeat)
+                tx.EnableCyclicBuffers = true;
+                tx(txWaveform);
+                pause(0.1);
+            end
+            % Clean buffer
+            fprintf('Cleaning buffer \n');
+            for k = 10:-1:0
+                if ~obj.TransmitRepeat
+                    % Send packets
+                    pause(1);
+                    tx(txWaveform);
+                end
+                rx();
+                fprintf('%d ',k);
+                pause(0.1);
+            end
+            
+        end
+        
+        function reTuneRadio(testCase,rx,tx,data)           
+            rx.SamplingRate = fix(rx.SamplingRate*0.9);
+            tx.SamplingRate = fix(tx.SamplingRate*0.9);
+            rx.CenterFrequency = fix(rx.CenterFrequency*0.9);
+            tx.CenterFrequency = fix(tx.CenterFrequency*0.9);
+            tx(data);
+            for l=1:10
+                rx();
+            end
+            clear rx tx;
+            system(['ssh -t root@',testCase.radioIP(4:end),' /root/reg/reg']);
+        end
+        
+        function [rx,tx] = SetupHardware(obj,Rs,fc)  
+            % Receiver and transmitter objects
+            rx = adi.AD9361.Rx;
+            tx = adi.AD9361.Tx;
+            rx.uri = testCase.radioIP;
+            tx.uri = testCase.radioIP;
+            rx.channelCount = 4;
+            rx.SamplingRate = Rs;
+            tx.SamplingRate = Rs;
+            tx.AttenuationChannel0 = obj.TXGain;
+            rx.RFBandwidth = fix(Rs*1.2);
+            tx.RFBandwidth = fix(Rs*1.2);            
+            if (AGC_MODE == 0)
+                rx.GainControlModeChannel0 = 'manual';
+            elseif (AGC_MODE == 1)
+                rx.GainControlModeChannel0 = 'slow_attack';
+            elseif (AGC_MODE == 2)
+                rx.GainControlModeChannel0 = 'fast_attack';
+            end
+            
+            % Receiver Setup
+            rx.DataTimeout = obj.TimeOut;
+            rx.CenterFrequency = obj.fc;
+            rx.SamplesPerFrame = obj.RXBufferSize;
+            
+            % Transmitter Setup
+            tx.CenterFrequency = obj.fc;
+        end
+        
+        
     end
 end

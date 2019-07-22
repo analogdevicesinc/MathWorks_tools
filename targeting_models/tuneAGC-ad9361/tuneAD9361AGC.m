@@ -1,4 +1,4 @@
-classdef tuneAD9361AGC < AD9361Sim & gen80211aTestWaveform
+classdef tuneAD9361AGC < AD9361TRx & gen80211aTestWaveform & demod80211aTestWaveform
     properties (Access = public)
         %%
         % Toggle SIM_STUDY to control whether a simulation study or 
@@ -6,21 +6,24 @@ classdef tuneAD9361AGC < AD9361Sim & gen80211aTestWaveform
         % SIM_STUDY - true/false 
         SIM_STUDY = true    
         % SIM_MODE controls the simulation mode as follows:
-        %   Value  |  channel   |   radio   
-        %----------------------------------
-        %     0    |   AWGN     |    No
-        %     1    |   AWGN     |    Yes
-        %     2    |   Fading   |    No
-        %     3    |   Fading   |    Yes
+        %   value  |     channel     |   radio   
+        %---------------------------------------
+        %     0    |   AWGN          |    No
+        %     1    |   AWGN          |    Yes
+        %     2    |   AWGN+Fading   |    No
+        %     3    |   AWGN+Fading   |    Yes
         SIM_MODE = 3    
         % GAIN_MODE controls whether the simulated gain applied to each
         % packet is constant or varying (applicable when SIM_STUDY is 
         % set to true and SIM_MODE is set to 1 or 3)
         % 0 - uniform
         % 1 - non-uniform
+        % If GAIN_MODE is set to 1, but SIM_MODE is set to 0 or 2, no AGC
+        % is applied to the received signal and therefore, more bad packets
+        % might be received than what is expected.
         GAIN_MODE = 1
-        % SNR (dB) of the test waveform provided to AD9361_Rx Simulink
-        % model (applicable when SIM_STUDY is set to true)
+        % SNR (dB) of the received test waveform (applicable when SIM_STUDY 
+        % is set to true)
         snr
     end
     
@@ -34,7 +37,7 @@ classdef tuneAD9361AGC < AD9361Sim & gen80211aTestWaveform
         %
         % wlan_settings needs to have the following fields:
         % fc - carrier frequency
-        % numFrames - number of WLAN frames
+        % numPackets - number of WLAN frames
         % mcs - WLAN's MCS Index
         % seed - 0/xyz (0 - random seed; xyz - seed value)        
         % See gen80211aTestWaveform.m for more details.
@@ -48,13 +51,16 @@ classdef tuneAD9361AGC < AD9361Sim & gen80211aTestWaveform
         % larger if set to true.)
         % SAVE_LOG_DATA - true/false (Toggle to save log data to file)
         %
-        % See AD9361Sim.m for more details.
-        function obj = tuneAD9361AGC(sim_settings, wlan_settings, ad9361_settings, AGC_settings)
+        % See AD9361TRx.m for more details.
+        function obj = tuneAD9361AGC(sim_settings, wlan_settings, varargin)
             % generate IEEE 802.11a compliant test waveform
             obj = obj@gen80211aTestWaveform(sim_settings, wlan_settings);
             
             % apply AGC settings to the model and run simulations
-            obj = obj@AD9361Sim(sim_settings, ad9361_settings, AGC_settings);
+            obj = obj@AD9361TRx(sim_settings, varargin);
+            
+            % demodulate IEEE 802.11a compliant test waveform
+            obj = obj@demod80211aTestWaveform(sim_settings);
             
             obj.SIM_STUDY = sim_settings.SIM_STUDY;
             obj.SIM_MODE = sim_settings.SIM_MODE;
