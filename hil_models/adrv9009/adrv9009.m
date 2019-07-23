@@ -6,7 +6,7 @@ swv1.SamplesPerFrame = 2^20;
 swv1.SampleRate = 200e6;
 y = swv1();
 
-uri = 'ip:192.168.2.1';
+uri = 'ip:analog';
 fc = 1e9;
 
 %% Tx set up
