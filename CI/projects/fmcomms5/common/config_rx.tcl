@@ -1,0 +1,27 @@
+# Disconnect the ADC PACK pins
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_0 [get_bd_pins util_ad9361_adc_pack/adc_valid_0]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_1 [get_bd_pins util_ad9361_adc_pack/adc_valid_1]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_2 [get_bd_pins util_ad9361_adc_pack/adc_valid_2]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_3 [get_bd_pins util_ad9361_adc_pack/adc_valid_3]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_4 [get_bd_pins util_ad9361_adc_pack/adc_valid_4]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_5 [get_bd_pins util_ad9361_adc_pack/adc_valid_5]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_6 [get_bd_pins util_ad9361_adc_pack/adc_valid_6]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_valid_7 [get_bd_pins util_ad9361_adc_pack/adc_valid_7]
+
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_0 [get_bd_pins util_ad9361_adc_pack/adc_data_0]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_1 [get_bd_pins util_ad9361_adc_pack/adc_data_1]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_2 [get_bd_pins util_ad9361_adc_pack/adc_data_2]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_3 [get_bd_pins util_ad9361_adc_pack/adc_data_3]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_4 [get_bd_pins util_ad9361_adc_pack/adc_data_4]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_5 [get_bd_pins util_ad9361_adc_pack/adc_data_5]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_6 [get_bd_pins util_ad9361_adc_pack/adc_data_6]
+disconnect_bd_net /util_ad9361_adc_fifo_dout_data_7 [get_bd_pins util_ad9361_adc_pack/adc_data_7]
+
+# Connect the ADC PACK valid signals together
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_1]
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_2]
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_3]
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_4]
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_5]
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_6]
+connect_bd_net [get_bd_pins util_ad9361_adc_pack/adc_valid_0] [get_bd_pins util_ad9361_adc_pack/adc_valid_7]
