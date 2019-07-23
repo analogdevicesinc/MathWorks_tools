@@ -41,6 +41,18 @@ classdef (Abstract) Rx  < adi.common.RxTx
     methods (Hidden, Access = protected)
         
         function [data,valid] = stepImpl(obj)
+            % [data,valid] = rx() returns data received from the radio
+            % hardware associated with the receiver System object, rx.
+            % The output 'valid' indicates whether the object has received 
+            % data from the radio hardware. The first valid data frame can
+            % contain transient values, resulting in packets containing 
+            % undefined data.
+            %
+            % The output 'data' will be an [NxM] vector where N is
+            % 'SamplesPerFrame' and M is the number of elements in
+            % 'EnabledChannels'. 'data' will be complex if the devices
+            % assumes complex data operations.
+            
             % Get the data            
             if obj.ComplexData
                 kd = 1;

@@ -16,9 +16,19 @@ classdef (Abstract) Tx  < adi.common.RxTx & adi.common.DDS
     methods (Hidden, Access = protected)
         
         function valid = stepImpl(obj,dataIn)
+            % valid = tx(data) returns a logical value that indicates
+            % data was sent to the device correctly.
+            %
+            % When 'DataSource' is 'DMA' the input 'data' will be an [NxM]
+            % vector where N is the length of the input data and M is the
+            % number of elements in 'EnabledChannels'. 'data' should be
+            % complex if the device assumes complex data.
+            % 
+            % When 'DataSource' is 'DDS' the operator will take no inputs.
+            % Running the operator simply will for a DDS settings update
+            % and connect to the device if never run before.
             
             if strcmp(obj.DataSource,'DMA')
-                %%
                 if obj.ComplexData
                     % Interleave channels include I and Q
                     c = obj.channelCount;
@@ -34,7 +44,6 @@ classdef (Abstract) Tx  < adi.common.RxTx & adi.common.DDS
                     end
                     
                 else
-                    %%
                     c = obj.channelCount;
                     s = size(dataIn);
                     assert(s(2)==c,sprintf('Data size must [Nx%d]\n',c));
