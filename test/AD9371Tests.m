@@ -35,6 +35,55 @@ classdef AD9371Tests < HardwareTests
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
         end
         
+        function testAD9371Obs(testCase)
+            % Test Rx DMA data output
+            rx = adi.AD9371.ORx('uri',testCase.uri);
+            rx.RFPortSelect = 'ORX1_TX_LO';
+            rx.EnabledChannels = 1;
+            [out, valid] = rx();
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
+        function testAD9371SNF(testCase)
+            % Test Rx DMA data output
+            rx = adi.AD9371.ORx('uri',testCase.uri);
+            rx.RFPortSelect = 'SN_A';
+            rx.EnabledChannels = 1;
+            [out, valid] = rx();
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
+        function testAD9371ObsPortCycle(testCase)
+            % Test Rx DMA data output
+            rx = adi.AD9371.ORx('uri',testCase.uri);
+            rx.RFPortSelect = 'SN_A';
+            rx.EnabledChannels = 1;
+            
+            ports = { ...
+                'ORX1_TX_LO','ORX2_TX_LO',...
+                'ORX1_SN_LO','ORX2_SN_LO',...
+                'SN_A','SN_B','SN_C'};
+            
+            for k = 1:length(ports)
+                rx.RFPortSelect = ports{k};
+                for tries = 1:10
+                    [out, valid] = rx();
+                    if valid
+                        testCase.verifyGreaterThan(sum(abs(double(out))),0);
+                        break
+                    end
+                end
+            end
+            
+            rx.release();
+            testCase.verifyTrue(valid);
+            testCase.verifyGreaterThan(sum(abs(double(out))),0);
+        end
+        
         function testAD9371RxCustomProfile1(testCase)
             % Test Rx custom profiles
             rx = adi.AD9371.Rx('uri',testCase.uri);
@@ -102,6 +151,7 @@ classdef AD9371Tests < HardwareTests
         end
         
         function testAD9371RxWithTxDDS(testCase)
+            % Test assumes RX1 and TX1 are connected through a cable
             % Test DDS output
             tx = adi.AD9371.Tx('uri',testCase.uri);
             tx.DataSource = 'DDS';
@@ -144,6 +194,7 @@ classdef AD9371Tests < HardwareTests
         end
         
         function testAD9371RxWithTxData(testCase)
+            % Test assumes RX1 and TX1 are connected through a cable
             % Test Tx DMA data output
             amplitude = 2^15; frequency = 20e6;
             swv1 = dsp.SineWave(amplitude, frequency);
