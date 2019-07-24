@@ -48,6 +48,17 @@ classdef DemoTests < matlab.unittest.TestCase
                 error('BOOT.BIN Failed');
             end
         end
+        function buildHDLTuneAGC(testCase)
+            cd(fullfile(testCase.root,'targeting_models/tuneAGC-ad9361'));
+            hdlworkflow;
+            if ~isempty(out)
+                disp(out.message);
+            end
+            % Check for BOOT.BIN
+            if exist('hdl_prj/vivado_ip_prj/boot/BOOT.BIN', 'file') ~= 2
+                error('BOOT.BIN Failed');
+            end
+        end
         function buildKernelFrequencyHopper(testCase)
             cd(fullfile(testCase.root,'targeting_models/frequency-hopping'));
             system('chmod +x build_kernel.sh');

@@ -69,7 +69,7 @@ classdef tuneAGC9361AGCTests < matlab.unittest.TestCase
         function testWLAN_milAWGN(testCase)
             % Simulation settings
             sim_settings.SIM_STUDY = true;
-            sim_settings.SIM_MODE = 1;
+            sim_settings.SIM_MODE = 2;
             sim_settings.GAIN_MODE = 0;
             sim_settings.snr = 5;
 
@@ -101,15 +101,16 @@ classdef tuneAGC9361AGCTests < matlab.unittest.TestCase
             agc_settings.AvgPwrSDec = 6;
             agc_settings.AGCLockLevel = -7;
             
-            % for nn = 1:length(testCase.MCSvals{1})
-                log(testCase,1,['Testing with MCS value: ',wlan_settings.mcs]);
+            for nn = 1:length(testCase.MCSvals{1})
+                log(testCase,1,['Testing with MCS value: ', num2str(testCase.MCSvals{1}(nn))]);
                 
-                sim_obj = tuneAD9361AGC(sim_settings, wlan_settings, ad9361_settings, agc_settings);
+                wlan_settings.mcs = testCase.MCSvals{1}(nn);
+                sim_obj = tuneAD9361AGC(sim_settings, wlan_settings);
                 testCase.verifyLessThan(sim_obj.evm_per_frame, 1e-6*ones(1, wlan_settings.numPackets));
                 testCase.verifyEqual(sim_obj.bErrs_per_frame, zeros(1, wlan_settings.numPackets));
                 
                 log(testCase,1,['Bit errors observed: ',num2str(sim_obj.bErrs_per_frame)]);
-            % end
+            end
         end
     end
 end
