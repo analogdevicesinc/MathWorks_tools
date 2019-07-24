@@ -11,14 +11,10 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2017.4)', board);
 
 % Determine the board name based on the design
-hRD.BoardName = sprintf('AnalogDevices adrv9361z7035 %s (%s)', board, design);
+hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035 AGC');
 
 % Tool information
-if contains(upper(design),'MODEM')
-	hRD.SupportedToolVersion = {'2016.4'};%MODEM
-else
-	hRD.SupportedToolVersion = {'2017.4'};
-end
+hRD.SupportedToolVersion = {'2018.2'};
 
 % Get the root directory
 rootDir = fileparts(strtok(mfilename('fullpath'), '+'));

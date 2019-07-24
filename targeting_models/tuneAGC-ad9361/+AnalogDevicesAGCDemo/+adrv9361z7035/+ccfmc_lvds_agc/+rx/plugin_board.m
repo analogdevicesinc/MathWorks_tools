@@ -5,4 +5,4 @@ function hP = plugin_board()
 %   Copyright 2015 The MathWorks, Inc.
 
 % Call the common board definition function
-hP = AnalogDevices.adrv9361z7035.common.plugin_board('fmc lvds agc', 'Rx');
+hP = AnalogDevicesAGCDemo.adrv9361z7035.common.plugin_board('fmc lvds agc', 'Rx');

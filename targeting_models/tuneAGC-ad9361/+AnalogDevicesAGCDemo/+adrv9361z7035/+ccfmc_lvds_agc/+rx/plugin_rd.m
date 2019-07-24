@@ -4,5 +4,5 @@ function hRD = plugin_rd
 %   Copyright 2014-2015 The MathWorks, Inc.
 
 % Call the common reference design definition function
-hRD = AnalogDevices.adrv9361z7035.common.plugin_rd('fmc lvds agc', 'Rx');
-AnalogDevices.adrv9361z7035.ccfmc_lvds_agc.rx.add_rx_io(hRD);
+hRD = AnalogDevicesAGCDemo.adrv9361z7035.common.plugin_rd('fmc lvds agc', 'Rx');
+AnalogDevicesAGCDemo.adrv9361z7035.ccfmc_lvds_agc.rx.add_rx_io(hRD);

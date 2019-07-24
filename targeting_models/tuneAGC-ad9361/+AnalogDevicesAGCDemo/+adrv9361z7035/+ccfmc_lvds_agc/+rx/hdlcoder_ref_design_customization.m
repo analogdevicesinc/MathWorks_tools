@@ -11,7 +11,7 @@ function [rd, boardName] = hdlcoder_ref_design_customization
 
 %   Copyright 2013-2014 The MathWorks, Inc.
 
-rd = {'AnalogDevices.adrv9361z7035.ccfmc_lvds_agc.rx.plugin_rd', ...
+rd = {'AnalogDevicesAGCDemo.adrv9361z7035.ccfmc_lvds_agc.rx.plugin_rd', ...
      };
 
 boardName = 'AnalogDevices adrv9361z7035 fmc lvds agc (Rx)';
