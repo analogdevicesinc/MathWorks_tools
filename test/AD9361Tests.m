@@ -27,7 +27,7 @@ classdef AD9361Tests < HardwareTests
         function testAD9361Rx(testCase)
             % Test Rx DMA data output
             rx = adi.AD9361.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             [out, valid] = rx();
             rx.release();
             testCase.verifyTrue(valid);
@@ -37,7 +37,7 @@ classdef AD9361Tests < HardwareTests
         function testAD9361RxCustomFilter(testCase)
             % Test Rx DMA data output
             rx = adi.AD9361.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.EnableCustomFilter = true;
             rx.CustomFilterFileName = 'customAD9361filter.ftr';
             [out, valid] = rx();
@@ -51,12 +51,12 @@ classdef AD9361Tests < HardwareTests
             tx = adi.AD9361.Tx('uri',testCase.uri);
             tx.DataSource = 'DDS';
             toneFreq = 5e5;
-            tx.DDSFrequencies = repmat(toneFreq,2,4);
+            tx.DDSFrequencies = repmat(toneFreq,2,2);
             tx.AttenuationChannel0 = -10;
             tx();
             pause(1);
             rx = adi.AD9361.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.kernelBuffersCount = 1;
             for k=1:10
                 valid = false;
@@ -92,7 +92,7 @@ classdef AD9361Tests < HardwareTests
             tx.AttenuationChannel0 = -10;
             tx(y);
             rx = adi.AD9361.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.kernelBuffersCount = 1;
             for k=1:10
                 valid = false;

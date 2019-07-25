@@ -114,64 +114,7 @@ classdef Rx < adi.ADRV9009.Base & adi.common.Rx & matlab.system.mixin.SampleTime
         end
         
     end
-    
-    methods (Access=protected)
-        % Hide unused parameters when in specific modes
-        function flag = isInactivePropertyImpl(obj, prop)
-            % Call the superclass method
-            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
-        end
-        
-        function varargout = getOutputNamesImpl(obj)
-            % Return output port names for System block
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = ['chan',num2str(k)];
-            end
-            varargout{numOut} = 'valid';
-        end
-        
-        function varargout = getOutputSizeImpl(obj)
-            % Return size for each output port
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = [obj.SamplesPerFrame,1];
-            end
-            varargout{numOut} = [1,1];
-        end
-        
-        function varargout = getOutputDataTypeImpl(obj)
-            % Return data type for each output port
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = "int16";
-            end
-            varargout{numOut} = "logical";
-        end
-        
-        function varargout = isOutputComplexImpl(obj)
-            % Return true for each output port with complex data
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = true;
-            end
-            varargout{numOut} = false;
-        end
-        
-        function varargout = isOutputFixedSizeImpl(obj)
-            % Return true for each output port with fixed size
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut
-                varargout{k} = true;
-            end
-        end
-    end
-    
+       
     %% API Functions
     methods (Hidden, Access = protected)
         
@@ -180,26 +123,23 @@ classdef Rx < adi.ADRV9009.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
         end
         
-        function numOut = getNumOutputsImpl(obj)
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-        end
-        
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
+
+            if obj.EnableCustomProfile
+                writeProfileFile(obj);
+            end
+            
             obj.setAttributeRAW('voltage0','gain_control_mode',obj.GainControlMode,false);
             obj.setAttributeBool('voltage0','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel0,false);
             obj.setAttributeBool('voltage1','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel1,false);
             id = 'altvoltage0';
             obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true);
 
-            if obj.EnableCustomProfile
-                writeProfileFile(obj);
-            end
-            
             if strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);

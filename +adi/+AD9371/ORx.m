@@ -1,10 +1,12 @@
-classdef Obs < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
-    % adi.AD9371.Obs Receive data from the AD9371 transceiver observation receiver
-    %   The adi.AD9371.Obs System object is a signal source that can receive
-    %   complex data from the AD9371.
+classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
+    % adi.AD9371.ORx Receive data from the AD9371 transceiver observation receiver
+    %   The adi.AD9371.ORx System object is a signal source that can receive
+    %   complex data from the AD9371. This object is used for both
+    %   observation and sniffer paths since they share ADCs within the
+    %   transceiver itself.
     %
-    %   rx = adi.AD9371.Obs;
-    %   rx = adi.AD9371.Obs('uri','192.168.2.1');
+    %   rx = adi.AD9371.ORx;
+    %   rx = adi.AD9371.ORx('uri','192.168.2.1');
     %
     %   <a href="http://www.analog.com/media/en/technical-documentation/data-sheets/AD9371.pdf">AD9371 Datasheet</a>    
     properties
@@ -118,7 +120,7 @@ classdef Obs < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 '', 'Gain');
             assert(mod(value,1/4)==0, 'Gain must be a multiple of 0.25');
             obj.Gain = value;
-            if obj.ConnectedToDevice && strcmp(obj.GainControlMode,'manual')
+            if obj.ConnectedToDevice && strcmp(obj.GainControlMode,'manual') %#ok<MCSUP>
                 obj.setAttributeRAW('voltage2','rf_port_select','OFF',false);
                 obj.setAttributeLongLong('voltage2','hardwaregain',value,false);
                 obj.setAttributeRAW('voltage2','rf_port_select',obj.RFPortSelect,false); %#ok<MCSUP>
@@ -145,61 +147,7 @@ classdef Obs < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 obj.setAttributeRAW('voltage2','rf_port_select',obj.RFPortSelect,false);
             end
         end
-        
-        % Hide unused parameters when in specific modes
-        function flag = isInactivePropertyImpl(obj, prop)
-            % Call the superclass method
-            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
-        end
-        
-        function varargout = getOutputNamesImpl(obj)
-            % Return output port names for System block
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = ['chan',num2str(k)];
-            end
-            varargout{numOut} = 'valid';
-        end
-        
-        function varargout = getOutputSizeImpl(obj)
-            % Return size for each output port
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = [obj.SamplesPerFrame,1];
-            end
-            varargout{numOut} = [1,1];
-        end
-        
-        function varargout = getOutputDataTypeImpl(obj)
-            % Return data type for each output port
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = "int16";
-            end
-            varargout{numOut} = "logical";
-        end
-        
-        function varargout = isOutputComplexImpl(obj)
-            % Return true for each output port with complex data
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut-1
-                varargout{k} = true;
-            end
-            varargout{numOut} = false;
-        end
-        
-        function varargout = isOutputFixedSizeImpl(obj)
-            % Return true for each output port with fixed size
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-            varargout = cell(1,numOut);
-            for k=1:numOut
-                varargout{k} = true;
-            end
-        end
+
     end
     
     %% API Functions
@@ -221,15 +169,15 @@ classdef Obs < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             % This is required sine Simulink support doesn't support
             % modification to nontunable variables at SetupImpl
             
+            if obj.EnableCustomProfile
+                writeProfileFile(obj);
+            end
+            
             obj.setAttributeRAW('voltage2','rf_port_select','OFF',false);
             
             obj.setAttributeRAW('voltage2','gain_control_mode',obj.GainControlMode,false);
             obj.setAttributeBool('voltage2','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
             obj.setAttributeLongLong('altvoltage2','RX_SN_LO_frequency',obj.CenterFrequency ,true);
-            
-            if obj.EnableCustomProfile
-                writeProfileFile(obj);
-            end
             
             if strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeLongLong('voltage2','hardwaregain',obj.Gain,false);

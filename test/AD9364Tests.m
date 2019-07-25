@@ -27,7 +27,7 @@ classdef AD9364Tests < HardwareTests
         function testAD9364Rx(testCase)
             % Test Rx DMA data output
             rx = adi.AD9364.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             [out, valid] = rx();
             rx.release();
             testCase.verifyTrue(valid);
@@ -47,12 +47,12 @@ classdef AD9364Tests < HardwareTests
             tx = adi.AD9364.Tx('uri',testCase.uri);
             tx.DataSource = 'DDS';
             toneFreq = 5e5;
-            tx.DDSFrequencies = repmat(toneFreq,2,4);
+            tx.DDSFrequencies = repmat(toneFreq,2,2);
             tx.AttenuationChannel0 = -10;
             tx();
             pause(1);
             rx = adi.AD9364.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.kernelBuffersCount = 1;
             for k=1:10
                 valid = false;
@@ -88,7 +88,7 @@ classdef AD9364Tests < HardwareTests
             tx.AttenuationChannel0 = -10;
             tx(y);
             rx = adi.AD9364.Rx('uri',testCase.uri);
-            rx.channelCount = 2;
+            rx.EnabledChannels = 1;
             rx.kernelBuffersCount = 1;
             for k=1:10
                 valid = false;

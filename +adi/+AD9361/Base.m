@@ -11,10 +11,6 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
         %   integer from 2 to 16,777,216. Using values less than 3660 can
         %   yield poor performance.
         SamplesPerFrame = 2^15;
-        %channelCount channel Count
-        %   Number of enabled IQ channels. 2 enables one I and one Q
-        %   channel
-        channelCount = 2;
     end
     
     properties (Nontunable, Logical)
@@ -53,6 +49,9 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
         iioDevPHY
     end
     
+    properties (Hidden, Constant)
+        ComplexData = true;
+    end
     
     methods
         %% Constructor
@@ -70,19 +69,6 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
                 { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>',0,'<=',2^20}, ...
                 '', 'SamplesPerFrame');
             obj.SamplesPerFrame = value;
-        end
-        % Check channelCount
-        function set.channelCount(obj, value)
-            if isa(obj,'adi.AD9364.Rx') || isa(obj,'adi.AD9364.Tx')
-                validateattributes( value, { 'double','single' }, ...
-                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','even','>',1,'<=',2}, ...
-                    '', 'channelCount');
-            else
-                validateattributes( value, { 'double','single' }, ...
-                    { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','even','>',1,'<=',4}, ...
-                    '', 'channelCount');
-            end
-            obj.channelCount = value;
         end
         % Check EnableCustomFilter
         function set.EnableCustomFilter(obj, value)

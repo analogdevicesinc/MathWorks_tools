@@ -2,7 +2,7 @@
 amplitude = 2^15; frequency = 0.12e6;
 swv1 = dsp.SineWave(amplitude, frequency);
 swv1.ComplexOutput = true;
-swv1.SamplesPerFrame = 1e4*10;
+swv1.SamplesPerFrame = 1e5;
 swv1.SampleRate = 3e6;
 y = swv1();
 

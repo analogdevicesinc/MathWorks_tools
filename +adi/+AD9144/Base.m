@@ -9,10 +9,6 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
         %   integer from 2 to 16,777,216. Using values less than 3660 can
         %   yield poor performance.
         SamplesPerFrame = 2^15;
-        %channelCount channel Count
-        %   Number of enabled IQ channels. 2 enables one I and one Q
-        %   channel
-        channelCount = 2;
     end
     
     properties(Nontunable, Hidden)
@@ -23,6 +19,10 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
     
     properties (Abstract, Hidden, Constant)
        Type 
+    end
+    
+    properties (Hidden, Constant)
+        ComplexData = false;
     end
     
     methods
@@ -38,13 +38,6 @@ classdef (Abstract) Base < matlabshared.libiio.base & ...
                 { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>',0,'<',2^20+1}, ...
                 '', 'SamplesPerFrame');
             obj.SamplesPerFrame = value;
-        end
-        % Check channelCount
-        function set.channelCount(obj, value)
-            validateattributes( value, { 'double','single' }, ...
-                { 'real', 'positive','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',1,'<=',2}, ...
-                '', 'channelCount');
-            obj.channelCount = value;
         end
     end
     

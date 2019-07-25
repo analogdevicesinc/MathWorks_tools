@@ -5,6 +5,18 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         ConnectedToDevice = false;
     end
     
+    properties(Nontunable)
+        %EnabledChannels Enabled Channels
+        %   Indexs of channels to be enabled. Input should be a [1xN]
+        %   vector with the indexes of channels to be enabled. Order is
+        %   irrelevant 
+        EnabledChannels = 1;
+    end
+    
+    properties (Dependent,Hidden)
+        channelCount
+    end
+    
     properties (Nontunable, Hidden)
         DataTimeout = 5;
     end
@@ -12,14 +24,43 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
     properties (Abstract, Hidden, Constant)
         Type
     end
+
+    properties (Abstract, Hidden, Constant, Logical)
+        ComplexData
+    end
+
     
     %% Abstract API Functions
     methods (Abstract, Hidden, Access = protected)
         % Write attributes to device once connected
         setupInit(obj)
     end
-    
+        
     %% API Functions
+    methods
+        % Check EnabledChannels
+        function set.EnabledChannels(obj, value)
+            s = size(value);
+            assert(s(1)==1,'EnabledChannels must be a row vector');
+            
+            maxChan = length(obj.channel_names)/(1+obj.ComplexData);
+            assert(max(value)<=maxChan,...
+                sprintf('EnabledChannels values cannot exceed %d',maxChan));
+            
+            assert(min(value)>0,'EnabledChannels values must > 0');
+            
+            assert(length(unique(value))==length(value),...
+                'EnabledChannels must contain all unique values');
+            
+            obj.EnabledChannels = sort(value);
+        end
+        
+        function value = get.channelCount(obj)
+            value = length(obj.EnabledChannels) * (1+obj.ComplexData);
+        end
+    end
+        
+    %% Hidden API Functions
     methods (Hidden, Access = protected)
         
         % Hide unused parameters when in specific modes
@@ -49,6 +90,8 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
                 flag = flag || strcmpi(prop,'DDSPhases') &&...
                     ~strcmpi(obj.DataSource, 'DDS');
                 flag = flag || strcmpi(prop,'EnableCyclicBuffers') &&...
+                    ~strcmpi(obj.DataSource, 'DMA');
+                flag = flag || strcmpi(prop,'EnabledChannels') &&...
                     ~strcmpi(obj.DataSource, 'DMA');
             end
             flag = flag || strcmpi(prop,'SamplesPerFrame') && strcmp(obj.Type,'Tx');
@@ -83,8 +126,21 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             
             % Disable the channels
             if obj.enabledChannels
-                for k=1:obj.channelCount
-                    disableChannel(obj, obj.iioDev, obj.channel_names{k}, obj.isOutput);
+                ec = length(obj.EnabledChannels);
+                if obj.ComplexData
+                    for k=1:ec
+                        indx = obj.EnabledChannels(k)*2-1;
+                        name = obj.channel_names{indx};
+                        disableChannel(obj, obj.iioDev, name, obj.isOutput);
+                        name = obj.channel_names{indx+1};
+                        disableChannel(obj, obj.iioDev, name, obj.isOutput);
+                        
+                    end
+                else
+                    for k=1:obj.channelCount
+                        name = obj.channel_names{obj.EnabledChannels(k)};
+                        disableChannel(obj, obj.iioDev, name, obj.isOutput);
+                    end
                 end
                 obj.enabledChannels = false;
             end
@@ -100,8 +156,21 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             setupInit(obj);
             
             % Enable the channel(s)
-            for k=1:obj.channelCount
-                enableChannel(obj, obj.iioDev, obj.channel_names{k}, obj.isOutput);
+            ec = length(obj.EnabledChannels);
+            if obj.ComplexData
+                for k=1:ec
+                    indx = obj.EnabledChannels(k)*2-1;
+                    name = obj.channel_names{indx};
+                    enableChannel(obj, obj.iioDev, name, obj.isOutput);
+                    name = obj.channel_names{indx+1};
+                    enableChannel(obj, obj.iioDev, name, obj.isOutput);
+                    
+                end
+            else
+                for k=1:obj.channelCount
+                    name = obj.channel_names{obj.EnabledChannels(k)};
+                    enableChannel(obj, obj.iioDev, name, obj.isOutput);
+                end
             end
             obj.enabledChannels = true;
             
@@ -109,9 +178,6 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             if obj.channelCount>0
                 status = createBuf(obj);
                 if status
-                    for k=1:obj.channelCount
-                        disableChannel(obj, obj.channel_names{k}, obj.isOutput);
-                    end
                     releaseChanBuffers(obj);
                     cerrmsg(obj,status,['Failed to create buffer for: ' obj.devName]);
                     return
