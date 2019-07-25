@@ -106,7 +106,7 @@ hRD.CustomFiles = {...
 	fullfile('projects','adrv9361z7035', 'common')...,
     fullfile('projects','adrv9361z7035', lower(board))...,
     };	
-	
+
 %% Add interfaces
 % add clock interface
 hRD.addClockInterface( ...
