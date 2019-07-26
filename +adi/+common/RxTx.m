@@ -9,7 +9,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         %EnabledChannels Enabled Channels
         %   Indexs of channels to be enabled. Input should be a [1xN]
         %   vector with the indexes of channels to be enabled. Order is
-        %   irrelevant 
+        %   irrelevant
         EnabledChannels = 1;
     end
     
@@ -24,18 +24,61 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
     properties (Abstract, Hidden, Constant)
         Type
     end
-
+    
     properties (Abstract, Hidden, Constant, Logical)
         ComplexData
     end
-
+    
     
     %% Abstract API Functions
     methods (Abstract, Hidden, Access = protected)
         % Write attributes to device once connected
         setupInit(obj)
     end
-        
+    
+    %% Static Internal API Functions
+    methods (Static, Hidden)
+        % Count
+        % Method keeps track of existing system objects if their state is
+        % needed by others. This is typically used for profile management
+        % between RX and TX variants of the same device
+        function [out,props] = Count(inc,handle,property)
+            persistent Classes;
+            persistent Properties;
+            if isempty(Classes)
+                Classes = [];
+                Properties = [];
+            end
+            if nargin == 0
+                inc = 0;
+            end
+            if inc == 1
+                warnStruct = warning('off','MATLAB:structOnObject');
+                Properties = [Properties(:)',{struct(handle)}];
+                warning(warnStruct);
+                Classes = [Classes(:)',{class(handle)}];
+            elseif inc == -1
+                removals = [];
+                for i = 1:length(Classes)
+                      if strcmpi(Properties{i}.uri,handle.uri) && strcmpi(Classes{i},class(handle))
+                          removals = [removals; i]; %#ok<*AGROW>
+                      end
+                end
+                Properties(removals) = [];
+                Classes(removals) = [];
+            end
+            props = [];
+            if nargin == 3
+                for i = 1:length(Properties)
+                    if ~strcmpi(Classes{i},class(handle))
+                        props = [props(:)',{Properties{i}.(property)}];
+                    end
+                end
+            end
+            out = length(Classes);
+        end
+    end
+    
     %% API Functions
     methods
         % Check EnabledChannels
@@ -58,10 +101,25 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
         function value = get.channelCount(obj)
             value = length(obj.EnabledChannels) * (1+obj.ComplexData);
         end
+        % Destructor
+        function delete(obj)
+            releaseImpl(obj);
+        end
     end
-        
+    
     %% Hidden API Functions
     methods (Hidden, Access = protected)
+        
+        function setupImpl(obj)
+            % Call the superclass method
+            obj.Count(1,obj);
+            setupImpl@matlabshared.libiio.base(obj);
+        end
+        
+        function releaseImpl(obj)
+            obj.Count(-1,obj);
+            releaseImpl@matlabshared.libiio.base(obj);
+        end
         
         % Hide unused parameters when in specific modes
         function flag = isInactivePropertyImpl(obj, prop)
@@ -151,7 +209,7 @@ classdef (Abstract) RxTx < matlabshared.libiio.base
             
             obj.ConnectedToDevice = true;
             obj.bufIsCyclic = obj.EnableCyclicBuffers;
-                       
+            
             % Set attributes
             setupInit(obj);
             

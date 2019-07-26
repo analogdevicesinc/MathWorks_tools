@@ -1,4 +1,4 @@
-classdef (Abstract) Rx  < adi.common.RxTx
+classdef (Abstract) Rx  < adi.common.RxTx & matlab.system.mixin.SampleTime
     % Rx: Common shared functions between receiver classes
     properties(Constant, Hidden, Logical)
         %EnableCyclicBuffers Enable Cyclic Buffers
@@ -6,8 +6,17 @@ classdef (Abstract) Rx  < adi.common.RxTx
         EnableCyclicBuffers = false;
     end
     
+    methods (Hidden, Access = protected)
+        
+        function sts = getSampleTimeImpl(obj)
+            sts = createSampleTime(obj,'Type','Discrete',...
+                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
+        end
+        
+    end
+    
     methods (Access=protected)
-
+        
         function numOut = getNumOutputsImpl(~)
             numOut = 2;
         end

@@ -1,5 +1,5 @@
 classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
-        adi.common.DebugAttribute & ...
+        adi.common.DebugAttribute & adi.common.RxTx & ...
         matlabshared.libiio.base & matlab.system.mixin.CustomIcon
 
     %adi.AD9361.Base Class
@@ -62,6 +62,7 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
         % Destructor
         function delete(obj)
             teardownLibad9361(obj);
+            delete@adi.common.RxTx(obj);
         end
         % Check SamplesPerFrame
         function set.SamplesPerFrame(obj, value)

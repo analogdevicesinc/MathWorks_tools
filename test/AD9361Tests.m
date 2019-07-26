@@ -46,6 +46,42 @@ classdef AD9361Tests < HardwareTests
             testCase.verifyGreaterThan(sum(abs(double(out))),0);
         end
         
+        function testAD9361RxClearing(testCase)
+            % Verify clearing of system objects is working in all cases
+            rx = adi.AD9361.Rx();
+            rx.uri = testCase.uri;
+            if rx.Count ~= 0
+                error('e1');
+            end
+            rx();
+            if rx.Count ~= 1
+                error('e2');
+            end
+            rx.release();
+            if rx.Count ~= 0
+                error('e3');
+            end
+            %
+            rx = adi.AD9361.Rx();
+            rx.uri = testCase.uri;
+            if rx.Count ~= 0
+                error('e4');
+            end
+            rx();
+            delete(rx)
+            rx = adi.AD9361.Rx();
+            rx.uri = testCase.uri;
+            if rx.Count ~= 0
+                error('e5');
+            end
+            rx();            
+            if rx.Count ~= 1
+                error('e6');
+            end
+            %
+            rx.release();
+        end
+        
         function testAD9361RxWithTxDDS(testCase)
             % Test DDS output
             tx = adi.AD9361.Tx('uri',testCase.uri);

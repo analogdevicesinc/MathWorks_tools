@@ -57,9 +57,6 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & matlabshared.li
             coder.allowpcode('plain');
             obj = obj@matlabshared.libiio.base(varargin{:});
         end
-        % Destructor
-        function delete(~)
-        end
         % Check SamplesPerFrame
         function set.SamplesPerFrame(obj, value)
             validateattributes( value, { 'double','single' }, ...
