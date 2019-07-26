@@ -27,6 +27,17 @@ classdef Rx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
         GainChannel1 = 10;
     end
     
+    properties (Nontunable)
+        %DigitalLoopbackMode Digital Loopback Mode
+        %   Option to set digital loopback mode, specified as 0 or 1.
+        %   Allows digital loopback of TX data into the RX path.
+        %    Value   |    Mode
+        %   ---------------------------
+        %      0     |   Disable
+        %      1     |   Enable
+        LoopbackMode = 0;        
+    end
+    
     properties (Nontunable, Logical) % MUST BE NONTUNABLE OR SIMULINK WARNS
         %EnableQuadratureTrackingChannel0 Enable Quadrature Tracking Channel 0
         %   Option to enable quadrature tracking, specified as true or
@@ -111,8 +122,16 @@ classdef Rx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 id = 'voltage1';
                 obj.setAttributeBool(id,'quadrature_tracking_en',value,false);
             end
-        end
-        
+        end        
+        function set.LoopbackMode(obj, value)
+            validateattributes( value, { 'double','single', 'uint32' }, ...
+                { 'real', 'nonnegative','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',1}, ...
+                '', 'LoopbackMode');    
+            obj.LoopbackMode = value;
+            if obj.ConnectedToDevice
+                obj.setDebugAttributeLongLong('loopback_tx_rx',value);                    
+            end
+        end 
     end
         
     %% API Functions
@@ -138,7 +157,9 @@ classdef Rx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             obj.setAttributeBool('voltage1','quadrature_tracking_en',obj.EnableQuadratureTrackingChannel1,false);
             id = sprintf('altvoltage%d',strcmp(obj.Type,'Tx'));
             obj.setAttributeLongLong(id,'RX_LO_frequency',obj.CenterFrequency ,true);
-            
+            % Loopback Mode
+            obj.setDebugAttributeLongLong('loopback_tx_rx', obj.LoopbackMode);                    
+                        
             if strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeLongLong('voltage0','hardwaregain',obj.GainChannel0,false);
                 obj.setAttributeLongLong('voltage1','hardwaregain',obj.GainChannel1,false);
