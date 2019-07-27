@@ -23,6 +23,17 @@ classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
         Gain = 10;
     end
     
+    properties (Nontunable)
+        %DigitalLoopbackMode Digital Loopback Mode
+        %   Option to set digital loopback mode, specified as 0 or 1.
+        %   Allows digital loopback of TX data into the ORX path.
+        %    Value   |    Mode
+        %   ---------------------------
+        %      0     |   Disable
+        %      1     |   Enable
+        LoopbackMode = 0;        
+    end
+    
     properties (Nontunable, Logical) % MUST BE NONTUNABLE OR SIMULINK WARNS
         %EnableQuadratureTracking Enable Quadrature Tracking
         %   Option to enable quadrature tracking, specified as true or
@@ -135,7 +146,15 @@ classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
                 obj.setAttributeRAW('voltage2','rf_port_select',obj.RFPortSelect,false); %#ok<MCSUP>
             end
         end
-        
+        function set.LoopbackMode(obj, value)
+            validateattributes( value, { 'double','single', 'uint32' }, ...
+                { 'real', 'nonnegative','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',1}, ...
+                '', 'LoopbackMode');    
+            obj.LoopbackMode = value;
+            if obj.ConnectedToDevice
+                obj.setDebugAttributeLongLong('loopback_tx_obs',value);                    
+            end
+        end
     end
     
     methods (Access=protected)
@@ -178,6 +197,8 @@ classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
             obj.setAttributeRAW('voltage2','gain_control_mode',obj.GainControlMode,false);
             obj.setAttributeBool('voltage2','quadrature_tracking_en',obj.EnableQuadratureTracking,false);
             obj.setAttributeLongLong('altvoltage2','RX_SN_LO_frequency',obj.CenterFrequency ,true);
+            % Loopback Mode
+            obj.setDebugAttributeLongLong('loopback_tx_obs', obj.LoopbackMode);                    
             
             if strcmp(obj.GainControlMode,'manual')
                 obj.setAttributeLongLong('voltage2','hardwaregain',obj.Gain,false);
