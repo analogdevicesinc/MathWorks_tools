@@ -37,7 +37,7 @@ rmpath(genpath('.'));
 if examples
     ps = {'doc','hdl_wa_bsp','hil_models','targeting_models','deps'};
 else
-    ps = {'doc','hdl_wa_bsp','deps'};
+    ps = {'doc','hdl_wa_bsp'};
 end
 paths = '';
 for p = ps
