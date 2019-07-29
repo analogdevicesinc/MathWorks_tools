@@ -1,6 +1,13 @@
+
 set ad_hdl_dir    	[pwd]
 set ad_phdl_dir   	[pwd]
 set proj_dir		$ad_hdl_dir/projects/adrv9361z7035/ccfmc_lvds_agc
+
+#### Move files
+file rename -force $ad_hdl_dir/hdl_wa_bsp/vendor/AnalogDevices/vivado/projects $ad_hdl_dir/projects
+file rename -force $ad_hdl_dir/hdl_wa_bsp/vendor/AnalogDevices/vivado/library $ad_hdl_dir/library
+file copy -force $ad_hdl_dir/targeting_models/tuneAGC-ad9361/ccfmc_lvds_agc $ad_hdl_dir/projects/adrv9361z7035/ccfmc_lvds_agc
+####
 
 source $ad_hdl_dir/projects/scripts/adi_project.tcl
 source $ad_hdl_dir/projects/scripts/adi_board.tcl

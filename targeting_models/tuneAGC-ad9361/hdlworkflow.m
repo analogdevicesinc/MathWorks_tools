@@ -20,7 +20,7 @@ load_system('ad9361_rx_wlan_testbench_targeting');
 %% Model HDL Parameters
 %% Set Model 'ad9361_rx_wlan_testbench_targeting' HDL parameters
 hdlset_param('ad9361_rx_wlan_testbench_targeting', 'HDLSubsystem', 'ad9361_rx_wlan_testbench_targeting/HDL_DUT');
-hdlset_param('ad9361_rx_wlan_testbench_targeting', 'ReferenceDesign', 'adrv9361z7035 fmc lvds agc Base System (Vivado 2018.2)');
+hdlset_param('ad9361_rx_wlan_testbench_targeting', 'ReferenceDesign', 'FMC LVDS AGC (Rx)');
 hdlset_param('ad9361_rx_wlan_testbench_targeting', 'SynthesisTool', 'Xilinx Vivado');
 hdlset_param('ad9361_rx_wlan_testbench_targeting', 'SynthesisToolChipFamily', 'Zynq');
 hdlset_param('ad9361_rx_wlan_testbench_targeting', 'SynthesisToolDeviceName', 'xc7z035i');
@@ -162,7 +162,7 @@ hWC.RunTaskProgramTargetDevice = false;
 
 % Set properties related to 'RunTaskGenerateRTLCodeAndIPCore' Task
 hWC.IPCoreRepository = '';
-hWC.GenerateIPCoreReport = true;
+hWC.GenerateIPCoreReport = false;
 
 % Set properties related to 'RunTaskCreateProject' Task
 hWC.Objective = hdlcoder.Objective.None;
@@ -173,7 +173,7 @@ hWC.EnableIPCaching = false;
 hWC.OperatingSystem = '';
 
 % Set properties related to 'RunTaskBuildFPGABitstream' Task
-hWC.RunExternalBuild = true;
+hWC.RunExternalBuild = false;
 hWC.TclFileForSynthesisBuild = hdlcoder.BuildOption.Custom;
 hWC.CustomBuildTclFile = 'adi_build.tcl';
 
@@ -184,4 +184,14 @@ hWC.ProgrammingMethod = hdlcoder.ProgrammingMethod.Download;
 hWC.validate;
 
 %% Run the workflow
-hdlcoder.runWorkflow('ad9361_rx_wlan_testbench_targeting/HDL_DUT', hWC);
+try
+    hdlcoder.runWorkflow('ad9361_rx_wlan_testbench_targeting/HDL_DUT', hWC);
+    bdclose('all');
+    out = [];
+catch ME
+    if exist('hdl_prj/vivado_ip_prj/boot/BOOT.BIN','file')
+       ME = []; 
+    end
+    out = ME;%.identifier
+end
+

@@ -8,7 +8,7 @@ hRD = hdlcoder.ReferenceDesign('SynthesisTool', 'Xilinx Vivado');
 
 % Create the reference design for the SOM-only
 % This is the base reference design that other RDs can build upon
-hRD.ReferenceDesignName = sprintf('adrv9361z7035 %s Base System (Vivado 2018.2)', board);
+hRD.ReferenceDesignName = sprintf('%s (%s)', upper(board), design);
 
 % Determine the board name based on the design
 hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035 AGC');
@@ -16,34 +16,7 @@ hRD.BoardName = sprintf('AnalogDevices ADRV9361-Z7035 AGC');
 % Tool information
 hRD.SupportedToolVersion = {'2018.2'};
 
-% Get the root directory
-rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
-
-% Design files are shared
-hRD.SharedRD = true;
-hRD.SharedRDFolder = fullfile(rootDir, 'vivado');
-
-switch(upper(board))
-	case 'BOX LVDS'
-		board = 'ccbox_lvds';
-	case 'BOB LVDS'
-		board = 'ccbob_lvds';
-	case 'BOB CMOS'
-		board = 'ccbob_cmos';
-	case 'FMC LVDS AGC'
-		board = 'ccfmc_lvds_agc';
-	case 'FMC LVDS'
-		board = 'ccfmc_lvds';
-	case 'FMC CMOS'
-		board = 'ccfmc_cmos';
-	case 'PCI LVDS'
-		board = 'ccpci_lvds';		
-	case 'USB LVDS'
-		board = 'ccusb_lvds';		
-	otherwise
-		board = 'ccbrk_lvds';	
-end
-
+% Add AGC control
 hRD.addParameter( ...
     'ParameterID',   'en_agc', ...
     'DisplayName',   'Control AGC', ...
@@ -51,60 +24,42 @@ hRD.addParameter( ...
     'ParameterType',  hdlcoder.ParameterType.Dropdown, ...
     'Choice',       {'Rx', 'Tx'});
 
+% Get the root directory
+rootDir = fileparts(strtok(mfilename('fullpath'), '+'));
+tmp = strsplit(rootDir,'/');
+rootDir = fullfile('/',tmp{1:end-2});
+rootDirBSP = fullfile('hdl_wa_bsp','vendor','AnalogDevices','vivado');
 
-% if strcmpi(design,'AGC')
-%     board = [board,'_agc'];
-% end
+% Design files are shared
+hRD.SharedRD = true;
+hRD.SharedRDFolder = rootDir;
 
-%% Add custom design files
-% add custom Vivado design
-switch(upper(design))
-	case 'RX'
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_rx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
-% 	case 'AGC'
-% 		hRD.addCustomVivadoDesign( ...
-% 			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_tx.tcl'), ...
-% 			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
-	case 'TX'
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
-	case 'RX & TX'
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_rx_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));		
-	case 'MODEM'
-		board = 'ccbox_lvds_modem';
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project_rx_tx.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));	
-	otherwise
-		hRD.addCustomVivadoDesign( ...
-			'CustomBlockDesignTcl', fullfile('projects', 'adrv9361z7035', lower(board), 'system_project.tcl'), ...
-			'CustomTopLevelHDL',    fullfile('projects', 'adrv9361z7035', lower(board), 'system_top.v'));
-end	
+board = 'ccfmc_lvds_agc';
+
+
+hRD.addCustomVivadoDesign( ...
+    'CustomBlockDesignTcl', fullfile('targeting_models', 'tuneAGC-ad9361',  'ccfmc_lvds_agc', 'system_project_rx.tcl'), ...
+    'CustomTopLevelHDL',    fullfile('targeting_models', 'tuneAGC-ad9361',  'ccfmc_lvds_agc', 'system_top.v'));
 
 hRD.BlockDesignName = 'system';	
 	
 % custom constraint files
 board_type = strsplit(board,'_');
 hRD.CustomConstraints = {...
-    fullfile('projects', 'adrv9361z7035', 'common', strcat(board_type{1}, '_constr.xdc')), ...
-	fullfile('projects', 'adrv9361z7035', 'common', 'adrv9361z7035_constr.xdc'), ...
-	fullfile('projects', 'adrv9361z7035', 'common', strcat('adrv9361z7035_constr_', board_type{2}, '.xdc')), ...
+    fullfile(rootDirBSP, 'projects', 'adrv9361z7035', 'common', strcat(board_type{1}, '_constr.xdc')), ...
+	fullfile(rootDirBSP, 'projects', 'adrv9361z7035', 'common', 'adrv9361z7035_constr.xdc'), ...
+	fullfile(rootDirBSP, 'projects', 'adrv9361z7035', 'common', strcat('adrv9361z7035_constr_', board_type{2}, '.xdc')), ...
     };
 
 % custom source files
 hRD.CustomFiles = {...
-	fullfile('library')...,
-	fullfile('library','xilinx')...,
-	fullfile('projects','common')...,
-	fullfile('projects','scripts')...,
-	fullfile('projects','fmcomms2')...,
-	fullfile('projects','adrv9361z7035', 'common')...,
-    fullfile('projects','adrv9361z7035', lower(board))...,
+	fullfile(rootDirBSP, 'library')...,
+	fullfile(rootDirBSP, 'library','xilinx')...,
+	fullfile(rootDirBSP, 'projects','common')...,
+	fullfile(rootDirBSP, 'projects','scripts')...,
+	fullfile(rootDirBSP, 'projects','fmcomms2')...,
+	fullfile(rootDirBSP, 'projects','adrv9361z7035', 'common')...,
+    fullfile('targeting_models', 'tuneAGC-ad9361', 'ccfmc_lvds_agc')...,
     };	
 	
 %% Add interfaces
