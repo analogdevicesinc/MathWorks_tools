@@ -61,7 +61,7 @@ hRD.CustomFiles = {...
 	fullfile(rootDirBSP, 'projects','adrv9361z7035', 'common')...,
     fullfile('targeting_models', 'tuneAGC-ad9361', 'ccfmc_lvds_agc')...,
     };	
-	
+
 %% Add interfaces
 % add clock interface
 hRD.addClockInterface( ...
