@@ -1,4 +1,4 @@
-classdef tuneAGC9361AGCTests < matlab.unittest.TestCase
+classdef tuneAGCad9361Tests < matlab.unittest.TestCase
     
     properties(TestParameter)
         MCSvals = {0:7};

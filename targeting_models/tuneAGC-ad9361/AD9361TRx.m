@@ -62,7 +62,7 @@ classdef AD9361TRx
             SampleTime_rx = obj.SampleTime_rx;
             obj.folder_name = 'ad9361_rx_input_files';
 
-            if (sim_settings.SIM_STUDY) 
+            % if (sim_settings.SIM_STUDY) 
                 %% Simulation-based study 
                 if ((sim_settings.SIM_MODE == 0) || (sim_settings.SIM_MODE == 2))
                     % Simulation mode #0 or #2 - no simulink-model-in-loop 
@@ -111,16 +111,16 @@ classdef AD9361TRx
                         obj.input_waveform{idx} = resample(obj.log_data{idx}{obj.log_data_indices{idx}.AD9361_Output}.Data, N, M);                    
                     end                
                 end
-            else
-                %% Physical radio-based study
-                obj.TransmitRepeat = false;
-                obj.TXGain = TXGains;
-
-                results = RunDeployedDesign(testCase);
-
-                
-                
-            end
+%             else
+%                 %% Physical radio-based study
+%                 obj.TransmitRepeat = false;
+%                 obj.TXGain = TXGains;
+% 
+%                 results = RunDeployedDesign(testCase);
+% 
+%                 
+%                 
+%             end
             
             if ~isempty(varargin{1})
                 obj.AGC_MODE = ad9361_settings.AGC_MODE;
