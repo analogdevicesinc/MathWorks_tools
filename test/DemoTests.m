@@ -12,6 +12,8 @@ classdef DemoTests < matlab.unittest.TestCase
             testCase.root = here;
             addpath(genpath(fullfile(here,'targeting_models/frequency-hopping')));
             addpath(genpath(fullfile(here,'hdl_wa_bsp')));
+            addpath(genpath(fullfile(here,'targeting_models/tuneAGC-ad9361/support')));
+            addpath(genpath(fullfile(here,'targeting_models/tuneAGC-ad9361/captures')));
         end
         function setupVivado(~)
             v=ver('matlab'); Release = v.Release;
