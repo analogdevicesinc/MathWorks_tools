@@ -8,6 +8,16 @@ version = '19.1';
 ml = ver('MATLAB');
 ml = ml.Release(2:end-1);
 
+%% Unpack verilog source
+if ~examples
+cd('../../');
+cd('hdl_wa_bsp/vendor/AnalogDevices/vivado');
+!find -name '*.zip' -exec sh -c 'unzip -d "${1%.*}" "$1"' _ {} \;
+!rm -r *.zip
+cd('../../../..');
+cd('CI/scripts');
+end
+
 %%
 cd(fileparts((mfilename('fullpath'))));
 cd('../..');
