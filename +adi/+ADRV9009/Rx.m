@@ -1,4 +1,4 @@
-classdef Rx < adi.ADRV9009.Base & adi.common.Rx & matlab.system.mixin.SampleTime
+classdef Rx < adi.ADRV9009.Base & adi.common.Rx
     % adi.ADRV9009.Rx Receive data from the ADRV9009 transceiver
     %   The adi.ADRV9009.Rx System object is a signal source that can receive
     %   complex data from the ADRV9009.
@@ -117,12 +117,7 @@ classdef Rx < adi.ADRV9009.Base & adi.common.Rx & matlab.system.mixin.SampleTime
        
     %% API Functions
     methods (Hidden, Access = protected)
-        
-        function sts = getSampleTimeImpl(obj)
-            sts = createSampleTime(obj,'Type','Discrete',...
-                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
-        end
-        
+
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods

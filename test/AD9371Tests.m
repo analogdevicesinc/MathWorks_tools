@@ -150,6 +150,31 @@ classdef AD9371Tests < HardwareTests
                 'Invalid sample rate after profile write');
         end
         
+        function testAD9371RxTxProfileWarnings(testCase)
+            rx = adi.AD9371.Rx;
+            rx.uri = testCase.uri;
+            rx.EnableCustomProfile = true;
+            rx.CustomProfileFileName = ...
+                'profile_TxBW50_ORxBW50_RxBW50.txt';
+            tx = adi.AD9371.Tx;
+            tx.uri = testCase.uri;
+            tx.EnabledChannels = 1;
+            tx.EnableCustomProfile = true;
+            tx.CustomProfileFileName = ...
+                'profile_TxBW50_ORxBW50_RxBW50.txt';
+            
+            testCase.verifyWarning(@RunTxRx,'AD9371:Profile:RXTX',...
+                'No expected warning issued');
+            
+            function RunTxRx
+                rx();
+                tx(complex(randn(1024,1)));
+                rx.release();
+                tx.release();
+            end
+            
+        end
+        
         function testAD9371RxWithTxDDS(testCase)
             % Test assumes RX1 and TX1 are connected through a cable
             % Test DDS output

@@ -1,4 +1,4 @@
-classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
+classdef ORx < adi.AD9371.Base & adi.common.Rx
     % adi.AD9371.ORx Receive data from the AD9371 transceiver observation receiver
     %   The adi.AD9371.ORx System object is a signal source that can receive
     %   complex data from the AD9371. This object is used for both
@@ -104,7 +104,7 @@ classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
     
     methods
         %% Constructor
-        function obj = Obs(varargin)
+        function obj = ORx(varargin)
             coder.allowpcode('plain');
             obj = obj@adi.AD9371.Base(varargin{:});
         end
@@ -171,16 +171,7 @@ classdef ORx < adi.AD9371.Base & adi.common.Rx & matlab.system.mixin.SampleTime
     
     %% API Functions
     methods (Hidden, Access = protected)
-        
-        function sts = getSampleTimeImpl(obj)
-            sts = createSampleTime(obj,'Type','Discrete',...
-                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
-        end
-        
-        function numOut = getNumOutputsImpl(obj)
-            numOut = obj.channelCount/2 + 1; % +1 for valid
-        end
-        
+                
         function setupInit(obj)
             % Write all attributes to device once connected through set
             % methods

@@ -14,6 +14,14 @@ classdef (Abstract) Tx  < adi.common.RxTx & adi.common.DDS
     end
     
     methods (Hidden, Access = protected)
+
+        function setupImpl(obj,data)
+            if strcmp(obj.DataSource,'DMA')
+                obj.SamplesPerFrame = size(data,1);
+            end
+            % Call the superclass method
+            setupImpl@adi.common.RxTx(obj);
+        end
         
         function valid = stepImpl(obj,dataIn)
             % valid = tx(data) returns a logical value that indicates

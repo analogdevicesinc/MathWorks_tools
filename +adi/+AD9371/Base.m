@@ -57,9 +57,6 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
             coder.allowpcode('plain');
             obj = obj@matlabshared.libiio.base(varargin{:});
         end
-        % Destructor
-        function delete(~)
-        end
         % Check SamplesPerFrame
         function set.SamplesPerFrame(obj, value)
             validateattributes( value, { 'double','single' }, ...
@@ -153,6 +150,15 @@ classdef (Abstract, Hidden = true) Base < adi.common.Attribute & ...
 
         
         function writeProfileFile(obj)
+            if obj.Count() > 1
+                [~,props] = obj.Count(0,obj,'EnableCustomProfile');
+                if any(props{:})
+                   warning('AD9371:Profile:RXTX',...
+                       ['Existing objects in the workspace have written profiles.\n',...
+                       'Doing so again can have undesirable side affects.\n',...
+                       'First stepped object should only set profile.']); 
+                end
+            end            
             profle_data_str = fileread(obj.CustomProfileFileName);
             % Wrap update in read writes since once profiles are loaded
             % some attributes get lost

@@ -65,23 +65,6 @@ classdef Tx < adi.ADRV9009.Base & adi.common.Tx
         
     end
     
-    methods (Access=protected)
-        function setupImpl(obj,data)
-            if strcmp(obj.DataSource,'DMA')
-                obj.SamplesPerFrame = size(data,1);
-            end
-            % Call the superclass method
-            setupImpl@matlabshared.libiio.base(obj);
-        end
-
-        % Hide unused parameters when in specific modes
-        function flag = isInactivePropertyImpl(obj, prop)
-            % Call the superclass method
-            flag = isInactivePropertyImpl@adi.common.RxTx(obj,prop);
-        end
-        
-    end
-    
     %% API Functions
     methods (Hidden, Access = protected)
         

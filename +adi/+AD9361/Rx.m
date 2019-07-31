@@ -1,5 +1,5 @@
 classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
-        adi.common.Rx & matlab.system.mixin.SampleTime
+        adi.common.Rx
     % adi.AD9361.Rx Receive data from the AD9361 transceiver
     %   The adi.AD9361.Rx System object is a signal source that can receive
     %   complex data from the AD9361.
@@ -243,11 +243,6 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
     
     %% API Functions
     methods (Hidden, Access = protected)
-        
-        function sts = getSampleTimeImpl(obj)
-            sts = createSampleTime(obj,'Type','Discrete',...
-                'SampleTime',obj.SamplesPerFrame/obj.SamplingRate);
-        end
                 
         function setupInit(obj)
             % Write all attributes to device once connected through set
