@@ -13,7 +13,7 @@ if ~examples
 cd('../../');
 cd('hdl_wa_bsp/vendor/AnalogDevices/vivado');
 !find -name '*.zip' -exec sh -c 'unzip -d "${1%.*}" "$1"' _ {} \;
-!rm -r *.zip
+!find . -name "*.zip" -type f -delete
 cd('../../../..');
 cd('CI/scripts');
 end
