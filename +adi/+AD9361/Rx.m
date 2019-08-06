@@ -84,11 +84,32 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
         EnableBasebandDCTracking = true;           
     end
     
+    properties
+        %RFPortSelect RF Port Select
+        %    'A_BALANCED'
+        %    'B_BALANCED'
+        %    'C_BALANCED'
+        %    'A_N'
+        %    'A_P'
+        %    'B_N'
+        %    'B_P'
+        %    'C_N'
+        %    'C_P'
+        %    'TX_MONITOR1'
+        %    'TX_MONITOR2'
+        %    'TX_MONITOR1_2'
+        RFPortSelect = 'A_BALANCED';
+    end
+    
     properties(Constant, Hidden)
         GainControlModeChannel0Set = matlab.system.StringSet({ ...
             'manual','fast_attack','slow_attack','hybrid'});
         GainControlModeChannel1Set = matlab.system.StringSet({ ...
             'manual','fast_attack','slow_attack','hybrid'});
+        RFPortSelectSet = matlab.system.StringSet({ ...
+            'A_BALANCED', 'B_BALANCED', 'C_BALANCED',...
+            'A_N', 'A_P', 'B_N', 'B_P', 'C_N', 'C_P',...
+            'TX_MONITOR1', 'TX_MONITOR2', 'TX_MONITOR1_2'});
     end
     
     properties (Hidden, Nontunable, Access = protected)
@@ -109,6 +130,13 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
         function obj = Rx(varargin)
             coder.allowpcode('plain');
             obj = obj@adi.AD9361.Base(varargin{:});
+        end
+        % Check RFPortSelect
+        function set.RFPortSelect(obj, value)
+            obj.RFPortSelect = value;
+            if obj.ConnectedToDevice
+                obj.setAttributeRAW('voltage0','rf_port_select',value,false);
+            end
         end
         % Check GainControlModeChannel0
         function set.GainControlModeChannel0(obj, value)
@@ -283,6 +311,7 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
             else
                 writeFilterFile(obj);
             end
+            obj.setAttributeRAW('voltage0','rf_port_select',obj.RFPortSelect,false);
 
             if (obj.CustomAGC)
                 % Initialize hardware to reflect debug attribute changes
