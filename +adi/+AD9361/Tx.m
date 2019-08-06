@@ -182,7 +182,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             if strcmp(obj.DataSource,'DDS')
                 obj.DDSUpdate();
             end
-            obj.setAttributeRAW('voltage0','rf_port_select',obj.RFPortSelect,false);
+            obj.setAttributeRAW('voltage0','rf_port_select',obj.RFPortSelect,true);
         end
         
     end
