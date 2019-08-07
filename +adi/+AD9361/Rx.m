@@ -286,7 +286,9 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
             obj.setAttributeLongLong(id,'frequency',obj.CenterFrequency ,true,4);
             % Loopback Mode
             obj.setDebugAttributeLongLong('loopback', obj.LoopbackMode);                    
-            
+            % Enable Rx1-Rx2 Phase Inversion
+            obj.setDebugAttributeLongLong('adi,rx1-rx2-phase-inversion-enable', obj.EnableRx1Rx2PhaseInversion);                    
+                        
             % Sample rates and RF bandwidth
             if  ~obj.EnableCustomFilter
                 if libisloaded('libad9361')
