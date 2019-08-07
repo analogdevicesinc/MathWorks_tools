@@ -49,11 +49,29 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
         devName = 'cf-ad9361-dds-core-lpc';
     end
     
+    properties
+        %RFPortSelect RF Port Select
+        %    'A'
+        %    'B'
+        RFPortSelect = 'A';
+    end
+    
+    properties(Constant, Hidden)
+        RFPortSelectSet = matlab.system.StringSet({'A', 'B'});
+    end     
+    
     methods
         %% Constructor
         function obj = Tx(varargin)
             coder.allowpcode('plain');
             obj = obj@adi.AD9361.Base(varargin{:});
+        end
+        % Check RFPortSelect
+        function set.RFPortSelect(obj, value)
+            obj.RFPortSelect = value;
+            if obj.ConnectedToDevice
+                obj.setAttributeRAW('voltage0','rf_port_select',value,false);
+            end
         end
         % Check Attentuation
         function set.AttenuationChannel0(obj, value)
@@ -164,6 +182,7 @@ classdef Tx < adi.AD9361.Base & adi.common.Tx
             if strcmp(obj.DataSource,'DDS')
                 obj.DDSUpdate();
             end
+            obj.setAttributeRAW('voltage0','rf_port_select',obj.RFPortSelect,true);
         end
         
     end
