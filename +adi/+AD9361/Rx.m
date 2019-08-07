@@ -95,6 +95,12 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
         isOutput = false;
     end
     
+    properties (Hidden)
+        %EnableRx1Rx2PhaseInversion 	
+        %   If enabled, RX1 and RX2 are phase aligned 
+        EnableRx1Rx2PhaseInversion = 0;
+    end
+    
     properties(Nontunable, Hidden, Constant)
         Type = 'Rx';
         channel_names = {'voltage0','voltage1','voltage2','voltage3'};
@@ -237,6 +243,15 @@ classdef Rx < adi.AD9361.Base & adi.AD9361.TuneAGC & ...
             obj.LoopbackMode = value;
             if obj.ConnectedToDevice
                 obj.setDebugAttributeLongLong('loopback',value);                    
+            end
+        end         
+        function set.EnableRx1Rx2PhaseInversion(obj, value)
+            validateattributes( value, { 'double','single', 'uint32' }, ...
+                { 'real', 'nonnegative','scalar', 'finite', 'nonnan', 'nonempty','integer','>=',0,'<=',1}, ...
+                '', 'EnableRx1Rx2PhaseInversion');    
+            obj.EnableRx1Rx2PhaseInversion = value;
+            if obj.ConnectedToDevice
+                obj.setDebugAttributeLongLong('adi,rx1-rx2-phase-inversion-enable',value);                    
             end
         end         
     end
