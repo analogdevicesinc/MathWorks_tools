@@ -13,19 +13,27 @@ classdef FrequencyHopper < adi.common.Attribute & ...
         ForcedEnabled = true;
     end
     
+    properties (Hidden)
+       channelCount = 0; 
+    end
+    
     properties(Nontunable, Hidden)
         Timeout = Inf;
         kernelBuffersCount = 0;
         dataTypeStr = 'int16';
         phyDevName = 'axi-hopper';
         iioDevPHY
-        channelCount = 0;
         devName = 'axi-hopper';
         SamplesPerFrame = 0;
     end
     
+    properties (Hidden, Constant, Logical)
+        ComplexData = false;
+    end
+    
     properties(Nontunable, Hidden, Constant)
         Type = 'Rx';
+        channel_names = {''};
     end
     
     properties (Hidden, Nontunable, Access = protected)
@@ -87,6 +95,31 @@ classdef FrequencyHopper < adi.common.Attribute & ...
     
     %% API Functions
     methods (Hidden, Access = protected)
+        function setupImpl(obj)
+            % Setup LibIIO
+            setupLib(obj);
+            
+            % Initialize the pointers
+            initPointers(obj);
+            
+            getContext(obj);
+            
+            setContextTimeout(obj);
+            
+            % Get the device
+            obj.iioDev = getDev(obj, obj.devName);
+            
+            obj.needsTeardown = true;
+            
+            % Pre-calculate values to be used faster in stepImpl()
+            obj.pIsInSimulink = coder.const(obj.isInSimulink);
+            obj.pNumBufferBytes = coder.const(obj.numBufferBytes);
+            setupInit(obj);
+        end
+        function [data,valid] = stepImpl(~)
+            data = 0;
+            valid = false;
+        end
         function setupInit(obj)
             % Do writes directly to hardware without using set methods.
             % This is required sine Simulink support doesn't support
