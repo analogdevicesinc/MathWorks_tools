@@ -115,6 +115,7 @@ classdef FrequencyHopper < adi.common.Attribute & ...
             obj.pIsInSimulink = coder.const(obj.isInSimulink);
             obj.pNumBufferBytes = coder.const(obj.numBufferBytes);
             setupInit(obj);
+            obj.ConnectedToDevice = true;
         end
         function [data,valid] = stepImpl(~)
             data = 0;
