@@ -1,3 +1,5 @@
+# THIS REPO IS DEPRECATED AND ARCHIVED. SUPPORT HAS BEEN MOVED TO [ADI Transceiver Toolbox](github.com/analogdevicesinc/TransceiverToolbox/)
+
 # mathworks_tools
 ### Analog Devices, Inc. Board Support Packages
 
